@@ -1,0 +1,14 @@
+{
+  "extends": "../../.config/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM"],
+    "types": ["vite/client", "chrome"],
+    "resolveJsonModule": true,
+  },
+  "include": ["src", "*.config.ts", "package.json"],
+  "exclude": ["dist"],
+  "references": [{ "path": "../../lib/client" }, { "path": "../../lib/ui-react" }],
+}

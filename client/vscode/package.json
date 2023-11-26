@@ -1,0 +1,210 @@
+{
+  "name": "opencodegraph",
+  "private": true,
+  "displayName": "OpenCodeGraph",
+  "version": "0.2.3",
+  "publisher": "sourcegraph",
+  "license": "Apache-2.0",
+  "icon": "resources/logomark-v0.png",
+  "description": "Code metadata from all your dev tools, in your editor",
+  "scripts": {
+    "dev": "pnpm run -s dev:desktop",
+    "dev:insiders": "pnpm run -s dev:desktop:insiders",
+    "start:dev:desktop": "NODE_ENV=development code --extensionDevelopmentPath=$PWD --disable-extension=sourcegraph.opencodegraph --inspect-extensions=9333 --new-window test/fixtures/workspace",
+    "dev:desktop": "pnpm run -s build:dev:desktop && pnpm run start:dev:desktop",
+    "dev:desktop:insiders": "pnpm run -s build:dev:desktop && NODE_ENV=development code-insiders --extensionDevelopmentPath=$PWD --disable-extension=sourcegraph.opencodegraph --inspect-extensions=9333 --new-window . --goto ./src/controller.ts:16:5",
+    "dev:desktop:vsix": "RELEASE_TYPE=pre pnpm run -s release:dry-run && code --user-data-dir=/tmp/ocg-tmp-vscode --install-extension dist/opencodegraph.vsix && code --user-data-dir=/tmp/ocg-tmp-vscode --new-window test/fixtures/workspace",
+    "dev:web": "pnpm run -s build:dev:web && pnpm run -s _dev:vscode-test-web --browserType none",
+    "watch:dev:web": "concurrently \"pnpm run -s watch:build:dev:web\" \"pnpm run -s _dev:vscode-test-web --browserType none\"",
+    "_dev:vscode-test-web": "vscode-test-web --port 3199 --extensionDevelopmentPath=. ${WORKSPACE-test/fixtures/workspace}",
+    "build": "tsc --build && pnpm run -s _build:esbuild:desktop && pnpm run -s _build:esbuild:web",
+    "_build:desktop": "pnpm run -s _build:esbuild:desktop",
+    "_build:web": "pnpm run -s _build:esbuild:web",
+    "build:dev:desktop": "pnpm run -s _build:esbuild:desktop",
+    "build:dev:web": "pnpm run -s _build:esbuild:web",
+    "watch:build:dev:web": "pnpm run -s _build:esbuild:web --watch",
+    "watch:build:dev:desktop": "pnpm run -s _build:esbuild:desktop --watch",
+    "_build:esbuild": "node --experimental-specifier-resolution=node --loader ts-node/esm/transpile-only dev/build.mts",
+    "_build:esbuild:desktop": "BUILD_TARGET=desktop pnpm run -s _build:esbuild",
+    "_build:esbuild:web": "BUILD_TARGET=web pnpm run -s _build:esbuild",
+    "release": "node --experimental-specifier-resolution=node --loader ts-node/esm dev/release.mts",
+    "release:dry-run": "RELEASE_DRY_RUN=1 pnpm run -s release",
+    "test": "pnpm run -s test:unit && pnpm run -s test:integration",
+    "test:integration": "tsc --build ./test/integration && pnpm run -s build:dev:desktop && node --inspect -r ts-node/register dist/tsc/test/integration/main.js",
+    "test:unit": "vitest",
+    "vscode:prepublish": "pnpm -s run build"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Education"
+  ],
+  "preview": true,
+  "keywords": [
+    "opencodegraph",
+    "metadata"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "client/vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/sourcegraph/opencodegraph/issues"
+  },
+  "homepage": "https://opencodegraph.org",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "dist/extension.node.js",
+  "browser": "dist/extension.web.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "OpenCodeGraph",
+      "properties": {
+        "opencodegraph.enable": {
+          "description": "Enable or disable OpenCodeGraph.",
+          "order": 1,
+          "type": "boolean",
+          "default": true
+        },
+        "opencodegraph.providers": {
+          "description": "Configure the OpenCodeGraph providers to use, as an object mapping provider URIs to settings (or `true`/`false`). Example: `{\"https://example.com/opencodegraph\": true}`",
+          "order": 2,
+          "type": "object",
+          "propertyNames": {
+            "description": "The OpenCodeGraph provider's URL (or relative file path).",
+            "type": "string",
+            "format": [
+              "uri",
+              "uri-reference"
+            ]
+          },
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "object",
+                "additionalProperties": true
+              }
+            ]
+          },
+          "examples": [
+            {
+              "https://sourcegraph.com/.api/opencodegraph": true
+            }
+          ]
+        },
+        "opencodegraph.debug": {
+          "description": "Enable debug logging to troubleshoot problems with OpenCodeGraph.",
+          "order": 3,
+          "type": "boolean",
+          "default": false,
+          "scope": "window"
+        }
+      }
+    },
+    "commands": [
+      {
+        "category": "OpenCodeGraph",
+        "title": "Enable/Disable",
+        "command": "opencodegraph.toggleEnable"
+      },
+      {
+        "category": "OpenCodeGraph",
+        "title": "Clear Authentication",
+        "command": "opencodegraph.clearAuthentication"
+      },
+      {
+        "category": "OpenCodeGraph",
+        "title": "Show Context for File",
+        "command": "opencodegraph.showFileAnnotations",
+        "enablement": "config.opencodegraph.enable",
+        "shortTitle": "OpenCodeGraph Context",
+        "icon": "$(ocg-logo)"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "opencodegraph.toggleEnable"
+        },
+        {
+          "command": "opencodegraph.clearAuthentication"
+        },
+        {
+          "command": "opencodegraph.showFileAnnotations"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "opencodegraph.showFileAnnotations",
+          "when": "config.opencodegraph.enable",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "opencodegraph.showFileAnnotations",
+        "key": "ctrl+alt+/",
+        "mac": "cmd+alt+/"
+      }
+    ],
+    "icons": {
+      "ocg-logo": {
+        "description": "OpenCodeGraph logo",
+        "default": {
+          "fontPath": "resources/ocg-icons.woff",
+          "fontCharacter": "\\EA01"
+        }
+      },
+      "ocg-logo-off": {
+        "description": "OpenCodeGraph logo with strikethrough",
+        "default": {
+          "fontPath": "resources/ocg-icons.woff",
+          "fontCharacter": "\\EA02"
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "OpenCodeGraph only uses providers (configured in `opencodegraph.providers`) from trusted workspaces because providers may execute arbitrary code.",
+      "restrictedConfigurations": [
+        "opencodegraph.providers"
+      ]
+    },
+    "virtualWorkspaces": true
+  },
+  "dependencies": {
+    "@opencodegraph/client": "workspace:*",
+    "esbuild-wasm": "^0.19.10",
+    "path-browserify": "^1.0.1",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "20.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.3.2",
+    "@vscode/test-web": "^0.0.47",
+    "@vscode/vsce": "^2.22.0",
+    "concurrently": "^8.2.2",
+    "esbuild": "^0.19.8",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "ovsx": "^0.8.2",
+    "vscode-uri": "^3.0.8"
+  },
+  "sideEffects": false
+}

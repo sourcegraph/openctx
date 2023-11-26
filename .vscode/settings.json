@@ -1,0 +1,37 @@
+{
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  },
+  "files.exclude": {
+    "**/.eslintcache": true,
+    "**/dist": true,
+    "**/.vscode-test": true,
+    "**/.vscode-test-web": true,
+    "coverage/": true,
+    "pnpm-lock.yaml": true,
+    ".stylelintcache": true
+  },
+  "editor.formatOnSave": true,
+  "npm.packageManager": "pnpm",
+  "npm.runSilent": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.semicolons": "remove",
+  "typescript.tsc.autoDetect": "off",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifierEnding": "auto",
+  "task.allowAutomaticTasks": "on",
+  "eslint.lintTask.enable": false,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "mdx"],
+  "[typescriptreact][typescript][jsonc][css][javascript][mdx]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "css.lint.unknownAtRules": "ignore",
+  "[mdx][markdown]": {
+    "editor.insertSpaces": true
+  },
+  "opencodegraph.providers": {
+    // "https://sourcegraph.test:3443/.api/opencodegraph": true
+  }
+}

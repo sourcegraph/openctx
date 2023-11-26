@@ -1,0 +1,24 @@
+[build]
+publish = "web/dist/client"
+command = "pnpm --filter @opencodegraph/opencodegraph.org run build"
+
+[build.environment]
+# Keep this in sync with package.json "engines".
+NODE_VERSION = "20.10.0"
+
+[[redirects]]
+from = "/npm/*"
+to = "https://esm.sh/v135/:splat/es2022/dist.bundle.js?bundle-deps"
+status = 301
+force = true
+
+[[redirects]]
+from = "/docs"
+to = "/docs/start"
+status = 301
+force = true
+
+[[headers]]
+for = "/*"
+[headers.values]
+Access-Control-Allow-Origin = "*"

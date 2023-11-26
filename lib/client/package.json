@@ -1,0 +1,38 @@
+{
+  "name": "@opencodegraph/client",
+  "version": "0.0.2",
+  "description": "OpenCodeGraph client library",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "lib/client"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/testdata/**"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest",
+    "prepublishOnly": "tsc --build --clean && pnpm run build"
+  },
+  "dependencies": {
+    "@opencodegraph/protocol": "workspace:*",
+    "@opencodegraph/provider": "workspace:*",
+    "@opencodegraph/schema": "workspace:*",
+    "lru-cache": "^10.1.0",
+    "picomatch": "^3.0.1",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^2.3.3",
+    "vitest-fetch-mock": "^0.2.2"
+  }
+}

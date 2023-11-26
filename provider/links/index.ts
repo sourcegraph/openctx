@@ -1,0 +1,196 @@
+import {
+    matchGlob,
+    type AnnotationsParams,
+    type AnnotationsResult,
+    type CapabilitiesParams,
+    type CapabilitiesResult,
+    type OpenCodeGraphItem,
+    type OpenCodeGraphProvider,
+    type OpenCodeGraphRange,
+} from '@opencodegraph/provider'
+
+/** Settings for the `links` OpenCodeGraph provider. */
+export interface Settings {
+    links?: LinkPattern[]
+}
+
+interface LinkPattern {
+    /** Title of the link. */
+    title: string
+
+    /** URL of the link. */
+    url: string
+
+    /** A description of the link's destination. */
+    description?: string
+
+    /** The type of link (if applicable), which may affect the appearance. */
+    type?: 'docs'
+
+    /** Whether to show a preview of the URL on hover. */
+    preview?: boolean
+
+    /** Glob pattern matching the file URIs to annotate. */
+    path: string
+
+    /**
+     * Regexp pattern matching the locations in a file to annotate. If undefined, it adds the link
+     * to the top of the file.
+     *
+     * The pattern may contain capture groups. The values of matched capture groups can be used in
+     * the `title`, `url`, and `description` fields by using:
+     *
+     * - $n for the nth capture group
+     * - $<name> for the named capture group with the given name
+     * - $<name|queryEscape> for the value of encodeURIComponent($<name>), for the `url` field
+     *
+     * For example, if a LinkPattern has a title `Hello, $1` and a pattern `(alice|bob)`, then the
+     * title returned to the client would be `Hello, alice` for every occurrence of `alice` in the
+     * text, and likewise `Hello, bob` for every occurrence of `bob`.
+     */
+    pattern?: string
+}
+
+/**
+ * An [OpenCodeGraph](https://opencodegraph.org) provider that annotates code files with links based
+ * on a configurable list of patterns.
+ *
+ * For example, you can use this to display the following kinds of things:
+ *
+ * - a link to internal security docs alongside any externally accessible API handlers;
+ * - a link to CSS styling guidelines atop CSS files in your web app;
+ * - a link to internal build/release docs in all build files
+ * - etc.
+ *
+ * These links will be visible in every dev's editor, in code search, on the code host, and in code
+ * review (assuming all of those tools have OpenCodeGraph support).
+ */
+const links: OpenCodeGraphProvider<Settings> = {
+    capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
+        return { selector: settings.links?.map(({ path }) => ({ path })) || [] }
+    },
+
+    annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
+        const compiledPatterns:
+            | (Pick<LinkPattern, 'title' | 'url' | 'description' | 'preview' | 'type'> & {
+                  pattern?: RegExp
+                  matchPath: (path: string) => boolean
+              })[]
+            | undefined = settings.links?.map(({ pattern, path, ...other }) => ({
+            ...other,
+            pattern: pattern ? new RegExp(pattern, 'dg') : undefined,
+            matchPath: matchGlob(path),
+        }))
+
+        const result: AnnotationsResult = {
+            items: [],
+            annotations: [],
+        }
+        const hasItem = (id: string): boolean => result.items.some(item => item.id === id)
+
+        const lines = params.content.split(/\r?\n/)
+
+        for (const { title, url, description, preview, type, matchPath, pattern } of compiledPatterns || []) {
+            if (!matchPath(new URL(params.file).pathname)) {
+                continue
+            }
+
+            const ranges = matchResults(pattern, lines)
+            for (const { range, groups } of ranges) {
+                const item: OpenCodeGraphItem = {
+                    id: '',
+                    title: interpolate(title, groups),
+                    detail: description ? interpolate(description, groups) : undefined,
+                    url: interpolate(url, groups),
+                    preview,
+                }
+                item.id = `${item.url}:${item.title}:${item.detail || ''}`
+
+                if (type === 'docs') {
+                    item.title = `📘 Docs: ${item.title}`
+                }
+
+                result.annotations.push({
+                    item: { id: item.id },
+                    range,
+                })
+
+                if (!hasItem(item.id)) {
+                    result.items.push(item)
+                }
+            }
+        }
+
+        return result
+    },
+}
+
+export default links
+
+interface MatchResult {
+    range: OpenCodeGraphRange
+    groups?: MatchGroup[]
+}
+
+interface MatchGroup {
+    name: string | number
+    value: string
+}
+
+function matchResults(pattern: RegExp | undefined, lines: string[]): MatchResult[] {
+    const results: MatchResult[] = []
+    for (const [i, line] of lines.entries()) {
+        if (!pattern) {
+            // If no pattern, add the link to the top.
+            results.push({
+                range: {
+                    start: { line: i, character: 0 },
+                    end: { line: i, character: line.length },
+                },
+            })
+            break
+        }
+
+        for (const match of line.matchAll(pattern)) {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const [start, end] = match.indices![0]
+            results.push({
+                range: {
+                    start: { line: i, character: start },
+                    end: { line: i, character: end },
+                },
+                groups: makeGroups(match),
+            })
+            break // only add one match per line
+        }
+    }
+    return results
+}
+
+function makeGroups(match: RegExpMatchArray): MatchGroup[] {
+    const namedGroups: MatchGroup[] = match.groups
+        ? Object.entries(match.groups).map(([name, value]) => ({ name, value }))
+        : []
+    const positionalGroups: MatchGroup[] = match.map((value, i) => ({ name: i, value }))
+    return [...namedGroups, ...positionalGroups]
+}
+
+function interpolate(text: string, groups?: MatchGroup[]): string {
+    if (!groups) {
+        return text
+    }
+    return text.replaceAll(/\$(\d+)|\$<([^>]+)>/g, (_, nStr: string, name: string) => {
+        if (nStr) {
+            const n = parseInt(nStr, 10)
+            const group = groups.find(g => g.name === n)
+            return group?.value ?? _
+        }
+        if (name) {
+            const isQueryEscape = name.endsWith('|queryEscape')
+            name = name.replace(/\|queryEscape$/, '')
+            const group = groups.find(g => g.name === name)
+            return group ? (isQueryEscape ? encodeURIComponent(group.value) : group.value) : _
+        }
+        return _
+    })
+}

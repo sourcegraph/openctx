@@ -1,0 +1,34 @@
+{
+  "name": "@opencodegraph/ui-standalone",
+  "version": "0.0.1",
+  "description": "OpenCodeGraph standalone UI library",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "lib/ui-standalone"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/*.story.*",
+    "!dist/**/*.ts?(x)",
+    "dist/**/*.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "prebuild": "mkdir -p dist && cp -R src/* dist/ && find dist/ -name '*.tsx' -delete",
+    "build": "pnpm run --silent prebuild && tsc --build",
+    "test": "vitest",
+    "storybook": "storybook dev --no-open --no-version-updates --no-release-notes",
+    "prepublishOnly": "tsc --build --clean && pnpm run build"
+  },
+  "dependencies": {
+    "@opencodegraph/schema": "workspace:*",
+    "clsx": "^2.0.0"
+  }
+}

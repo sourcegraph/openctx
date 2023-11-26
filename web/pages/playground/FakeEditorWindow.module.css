@@ -1,0 +1,40 @@
+.container :global(.ocg-chip) {
+    outline: solid 1px transparent;
+}
+
+.container:not(:hover) :global(.ocg-chip) {
+    /* Repeating yellow outline when visible (except when hovering). */
+    animation-name: flash-border-slow;
+    animation-duration: 5000ms;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+}
+
+@keyframes flash-border-slow {
+    0%,
+    75%,
+    100% {
+        outline-color: transparent;
+    }
+    15% {
+        outline-color: hsla(50, 100%, 50%, 0.8);
+    }
+}
+
+.container:hover :global(.ocg-chip) {
+    /* Yellow outline on hover. */
+    animation-name: flash-border;
+    animation-duration: 1200ms;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: 2;
+}
+
+@keyframes flash-border {
+    0%,
+    100% {
+        outline-color: transparent;
+    }
+    50% {
+        outline-color: hsla(50, 100%, 50%, 0.8);
+    }
+}

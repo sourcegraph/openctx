@@ -1,0 +1,29 @@
+{
+  "name": "@opencodegraph/schema",
+  "version": "0.0.1",
+  "description": "OpenCodeGraph schema",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "lib/schema"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "generate": "node --no-warnings=ExperimentalWarning --loader ts-node/esm/transpile-only dev/generateJsonSchemaTypes.ts src/opencodegraph.schema.json > src/opencodegraph.schema.ts && pnpm -w run format \"$PNPM_SCRIPT_SRC_DIR/src/opencodegraph.schema.ts\"",
+    "build": "pnpm run --silent generate && tsc --build",
+    "test": "vitest",
+    "prepublishOnly": "tsc --build --clean && pnpm run build"
+  },
+  "devDependencies": {
+    "json-schema-ref-parser": "^9.0.9",
+    "json-schema-to-typescript": "^13.1.1"
+  }
+}

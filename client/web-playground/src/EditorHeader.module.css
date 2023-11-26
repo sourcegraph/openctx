@@ -1,0 +1,25 @@
+.header {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 0.25rem 0;
+}
+
+.header h1 {
+    margin: 0;
+    white-space: nowrap;
+}
+
+.status {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.status--ok {
+    color: green;
+}
+
+.status--error {
+    color: red;
+}

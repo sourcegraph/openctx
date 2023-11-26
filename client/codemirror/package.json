@@ -1,0 +1,42 @@
+{
+  "name": "@opencodegraph/codemirror-extension",
+  "version": "0.0.3",
+  "description": "OpenCodeGraph extension for CodeMirror",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "client/codemirror"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "README.md",
+    "dist",
+    "!**/*.test.*"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest",
+    "demo": "pnpm -C demo run -s dev"
+  },
+  "dependencies": {
+    "@opencodegraph/client": "workspace:*",
+    "@opencodegraph/ui-react": "workspace:*",
+    "deep-equal": "^2.2.3"
+  },
+  "devDependencies": {
+    "@codemirror/state": "^6.3.1",
+    "@codemirror/view": "^6.22.0",
+    "@types/deep-equal": "^1.0.4",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.15",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "peerDependencies": {
+    "@codemirror/state": "^6.2.0",
+    "@codemirror/view": "^6.7.2"
+  }
+}

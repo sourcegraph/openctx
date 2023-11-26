@@ -1,0 +1,65 @@
+export const info = {
+  title: 'Concepts',
+  group: 'dev',
+}
+
+# Concepts
+
+## Items and annotations
+
+An **item** is a piece of information that is relevant to parts of a code file, such as:
+
+- A link to an internal wiki page with documentation about a package
+- A link to live logs being printed by a logging statement
+- A design mockup (image) showing how a UI component should appear
+- A user analytics chart showing how often a certain UI button is pressed
+
+The item describes how to present the information to the user and exposes raw information to code AI tools.
+
+An **annotation** attaches an item to one or more ranges in a code file.
+
+## Providers
+
+A provider returns information (items and annotations) about a code file.
+
+A provider is just a program that implements the [provider API](protocol.mdx#provider-api), which is basically: "given a file, return a list of annotations (for ranges in the file)".
+
+Although there is no formal distinction between different kinds of providers, most providers will fit into one of these categories:
+
+- Tool provider: a provider that integrates with an external dev tool (such as a log viewer or issue tracker) and provides relevant information from that tool.
+- Custom provider: a provider that shows information from your custom internal dev tools or based on ad-hoc code analysis for your specific needs.
+- Proxy provider: a provider that wraps other providers, for caching, configuration, authentication, etc.
+
+See "[Provider API](protocol.mdx#provider-api)" for more information.
+
+## User configuration
+
+A list of provider URIs is the only configuration needed for OpenCodeGraph.
+
+To use a provider in your editor, you just need its URL (e.g., `https://example.com/opencodegraph`).
+
+For example, the following is an example of VS Code user settings for OpenCodeGraph:
+
+```json
+{
+  "opencodegraph.providers": {
+    "https://sourcegraph.com/.api/opencodegraph": {},
+    "https://opencodegraph.org/npm/@opencodegraph/provider-storybook": { ... },
+    "https://opencodegraph.org/npm/@opencodegraph/provider-prometheus": { ... }
+  }
+}
+```
+
+The first provider (`https://sourcegraph.com/.api/opencodegraph`) is an HTTP endpoint. The others are JavaScript bundles that are executed on the client.
+
+See the [playground](/playground) for examples of providers with settings.
+
+## Open questions & known issues
+
+### Authenticating with providers
+
+How do clients authenticate with providers? Right now, a few hostnames are hard-coded in the VS Code extension as needing authentication, and the user will be prompted for a token. Should clients prompt the user for authentication when the server returns HTTP 401 Unauthorized? There is no standard way for authenticating to services, so this would not work in general.
+
+### Implementing providers: thin clients or lots-of-logic?
+
+Will OpenCodeGraph providers be super lightweight presentation-layer programs that hit some existing system that makes the data easy to fetch? Maybe that existing system is a separate server built for OCG to hit for now, but ideally in the future (years) it would become a common endpoint for dev tools vendors to expose, like oEmbed.

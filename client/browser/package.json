@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "name": "@opencodegraph/browser-extension",
+  "version": "0.0.3",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "release": "pnpm release:chrome",
+    "release:chrome": "rm -rf dist && pnpm run -s build && cd dist && zip -r opencodegraph-chrome-extension.zip * && mv opencodegraph-chrome-extension.zip ..",
+    "test": "vitest",
+    "dev:create-icons": "bash dev/create-icons.sh"
+  },
+  "type": "module",
+  "dependencies": {
+    "@opencodegraph/client": "workspace:*",
+    "@opencodegraph/provider": "workspace:*",
+    "@opencodegraph/provider-hello-world": "workspace:*",
+    "@opencodegraph/provider-links": "workspace:*",
+    "@opencodegraph/provider-storybook": "workspace:*",
+    "@opencodegraph/provider-prometheus": "workspace:*",
+    "@opencodegraph/ui-standalone": "workspace:*",
+    "clsx": "^2.0.0",
+    "deep-equal": "^2.2.3",
+    "jsonc-parser": "^3.2.0",
+    "observable-hooks": "^4.2.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^1.0.14",
+    "@types/chrome": "^0.0.254",
+    "@types/deep-equal": "^1.0.4",
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.15",
+    "@vitejs/plugin-react": "^4.0.2",
+    "svgexport": "^0.4.2",
+    "vite-plugin-monaco-editor": "^1.1.0",
+    "webextension-polyfill": "^0.10.0"
+  }
+}

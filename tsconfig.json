@@ -1,0 +1,33 @@
+{
+  "extends": "./.config/tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "files": [],
+  "exclude": ["**/dist", "client/browser"],
+  "references": [
+    { "path": "lib/client" },
+    { "path": "lib/protocol" },
+    { "path": "lib/provider" },
+    { "path": "lib/schema" },
+    { "path": "lib/schema/dev" },
+    { "path": "lib/ui-react" },
+    { "path": "lib/ui-standalone" },
+    { "path": "client/browser" },
+    { "path": "client/codemirror" },
+    { "path": "client/codemirror/demo" },
+    { "path": "client/monaco-editor" },
+    { "path": "client/monaco-editor/demo" },
+    { "path": "client/vscode" },
+    { "path": "client/vscode/dev" },
+    { "path": "client/vscode/test/integration" },
+    { "path": "client/web-playground" },
+    { "path": "provider/hello-world" },
+    { "path": "provider/links" },
+    { "path": "provider/prometheus" },
+    { "path": "provider/storybook" },
+    { "path": "web" },
+    { "path": "web/tsconfig.node.json" },
+    { "path": "web/src/server" }
+  ]
+}

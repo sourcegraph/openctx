@@ -1,0 +1,69 @@
+body {
+    font-family: system-ui, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.header {
+    position: sticky;
+    top: 0;
+
+    background-color: Canvas;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    border-bottom: solid 1px ButtonBorder;
+    padding: 0.75rem 1rem;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    fill: currentColor;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header nav {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.header nav a {
+    font-size: 90%;
+    font-family: monospace;
+}
+
+.main {
+    background-color: black;
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.main > :first-child {
+    border-right: solid 8px black;
+}
+
+.editor {
+    flex: 1;
+    overflow: hidden;
+}
+
+.editor-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
