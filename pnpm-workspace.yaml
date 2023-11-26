@@ -1,0 +1,7 @@
+packages:
+  - client/*
+  - client/codemirror/demo
+  - client/monaco-editor/demo
+  - lib/*
+  - provider/*
+  - web

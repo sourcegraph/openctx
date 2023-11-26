@@ -1,0 +1,21 @@
+{
+  "extends": "../.config/tsconfig.base.json",
+  "compilerOptions": {
+    "useDefineForClassFields": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["vite/client"],
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+  },
+  "include": ["src", "pages", "renderer", "content", "pages/**/*.mdx", "content/**/*.mdx"],
+  "exclude": ["src/server"],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./src/server/tsconfig.json" },
+    { "path": "../client/web-playground" },
+  ],
+}

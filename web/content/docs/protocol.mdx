@@ -1,0 +1,137 @@
+export const info = {
+  title: 'Protocol specification',
+  group: 'dev',
+}
+
+# Protocol specification
+
+The current protocol version is 0.1.
+
+## Provider API
+
+Providers can be implemented:
+
+- as an HTTP endpoint.
+- as a JavaScript file (with a `default` export). See "[Creating a provider](creating-a-provider.mdx)".
+
+Both ways of implementing a provider use the same methods and types for communication. For simplicity, this document describes the protocol as implemented over HTTP.
+
+A provider is specified by a URL that responds to HTTP POST requests.
+
+- Request body (JSON): `interface RequestMessage { method: string, params?: object, settings?: object }`
+- Response body (JSON): `interface ResponseMessage { result?: object, error?: { code: integer, message: string, data?: any } }`
+
+Providers are stateless.
+
+Providers must implement 2 API methods:
+
+- [Capabilities](#capabilities)
+- [Annotations](#annotations)
+
+### Capabilities
+
+The capabilities request is sent by the client to the provider to retrieve information about the provider's capabilities and when it should be invoked. This avoids unnecessary invocations of the provider on files where it would not have any annotations.
+
+**Request:** `{ method: "capabilities", params: CapabilitiesParams, settings?: object }`
+
+```typescript
+interface CapabilitiesParams {
+  // empty for now
+}
+```
+
+**Response:** `{ result: CapabilitiesResult }` or `{ error: { code, integer, data? } }`
+
+```typescript
+interface CapabilitiesResult {
+  /**
+   * Selects the scope (repositories, files, and languages) in which this
+   * provider should be called.
+   *
+   * If one or more selectors are given, all must be satisfied for the
+   * provider to be called. If undefined, the provider is called on all files.
+   * If empty, the provider is never invoked.
+   */
+  selector?: Selector[]
+}
+
+/**
+ * Defines a scope in which a provider is called, as a subset of languages,
+ * repositories, and/or files.
+ *
+ * To satisfy a selector, all of the selector's conditions must be met. For
+ * example, if both `path` and `content` are specified, the file must satisfy
+ * both conditions.
+ */
+interface Selector {
+  /**
+   * A glob that must match the file path for the provider to be called. If the
+   * file's location is represented as a URI, the URI's scheme is stripped
+   * before being matched against this glob.
+   */
+  path?: string
+
+  /**
+   * A literal string that must be present in the file's content for the
+   * provider to be called.
+   */
+  contentContains?: string
+}
+```
+
+### Annotations
+
+The annotations request is sent by the client to the provider to fetch a list of annotations and items for a file.
+
+**Request:** `{ method: "annotations", params: AnnotationsParams, settings?: object }`
+
+```typescript
+interface AnnotationsParams {
+  /** The file's URI (e.g., `file:///home/alice/foo.js`). **/
+  file: string
+
+  /** The file's content. **/
+  content: string
+}
+```
+
+**Response:** `{ result: AnnotationsResult }` or `{ error: { code, integer, data? } }`
+
+```typescript
+interface AnnotationsResult {
+  /** Items that contain information relevant to the file. */
+  items: OpenCodeGraphItem[]
+
+  /** Annotations that attach items to specific ranges in the file. */
+  annotations: OpenCodeGraphAnnotation[]
+}
+
+interface OpenCodeGraphItem {
+  id: string
+
+  title: string
+
+  /** An external link with more information. */
+  url?: string
+
+  image?: { url?: string }
+
+  // Some fields omitted.
+}
+
+interface OpenCodeGraphAnnotation {
+  /** The item (referenced by its `OpenCodeGraph.id`). */
+  item: { id: string }
+
+  /** The range in the file that the item is relevant to. */
+  range: { start: Position; end: Position }
+}
+
+interface Position {
+  /** Line number (0-indexed). */
+  line: number
+
+  /** Character offset on line (0-indexed). */
+  character: number
+}
+```

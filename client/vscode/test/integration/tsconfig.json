@@ -1,0 +1,11 @@
+{
+  "extends": "../../../../.config/tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "rootDir": ".",
+    "outDir": "../../dist/tsc/test/integration",
+    "types": ["mocha", "node"],
+  },
+  "include": ["*.ts"],
+  "references": [{ "path": "../../" }],
+}

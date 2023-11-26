@@ -1,0 +1,89 @@
+.wrapper {
+    @apply leading-[1.75];
+}
+
+.wrapper h1,
+.wrapper h2,
+.wrapper h3,
+.wrapper h4,
+.wrapper h5,
+.wrapper h6 {
+    @apply font-bold tracking-tight;
+}
+
+.wrapper h1 {
+    @apply text-5xl mt-2 mb-8;
+}
+
+.wrapper h2 {
+    @apply text-3xl mt-10 mb-4;
+}
+
+.wrapper h3 {
+    @apply text-2xl mt-5 mb-2;
+}
+
+.wrapper h4 {
+    @apply text-xl mt-4 mb-2;
+}
+
+.wrapper h5 {
+    @apply text-lg mt-4 mb-2;
+}
+
+.wrapper h6 {
+    @apply text-base italic mt-4 mb-2;
+}
+
+.wrapper p {
+    @apply mb-2;
+}
+
+.wrapper em {
+    @apply italic;
+}
+
+.wrapper pre {
+    @apply my-5 p-3 rounded text-[95%];
+}
+
+.wrapper ul > li {
+    @apply list-disc;
+}
+
+.wrapper ol > li {
+    @apply list-decimal;
+}
+
+.wrapper ol,
+.wrapper ul {
+    @apply pl-5 mb-2;
+}
+
+.wrapper ol > li,
+.wrapper ul > li {
+    @apply list-outside list-item pl-1 pb-2;
+}
+
+.wrapper table td {
+    @apply p-3;
+}
+
+.wrapper :global(.ch-codeblock) {
+    @apply mt-4 mb-6;
+    box-shadow: none;
+}
+
+.wrapper code:not(:global(.ch-code-scroll-parent)) {
+    @apply text-sm font-semibold text-foreground-em;
+}
+.wrapper code:not(:global(.ch-code-scroll-parent))::before {
+    content: '`';
+}
+.wrapper code:not(:global(.ch-code-scroll-parent))::after {
+    content: '`';
+}
+
+.wrapper hr {
+    @apply border-0 border-b border-solid border-muted my-8;
+}

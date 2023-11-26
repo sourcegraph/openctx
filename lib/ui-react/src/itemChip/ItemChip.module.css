@@ -1,0 +1,97 @@
+/* TODO(sqs): dedupe with ui-standalone */
+
+.item {
+    display: inline-flex;
+    flex-direction: column;
+    position: relative;
+    gap: 2px;
+
+    padding: 2px 3px;
+}
+
+.item--has-detail {
+    cursor: pointer;
+}
+
+.item-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.title {
+    margin: 0;
+    font-weight: unset;
+    font-size: unset;
+    line-height: unset;
+}
+
+.popover-content {
+    padding: 3px 5px;
+    margin: 3px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background-color: canvas;
+}
+
+.detail {
+    margin: 0;
+}
+
+.image-container {
+    max-width: 32rem;
+    overflow: hidden;
+}
+
+.image {
+    height: 100%;
+    width: 100%;
+    object-fit: contain;
+}
+
+:root {
+    --iframe-width: 350px;
+    --iframe-height: 210px;
+    --iframe-scale: 0.6;
+}
+
+.iframe-container {
+    width: var(--iframe-width);
+    height: var(--iframe-height);
+    overflow: hidden;
+    position: relative;
+}
+
+.iframe {
+    border: 0;
+    width: calc(var(--iframe-width) / var(--iframe-scale));
+    height: calc(var(--iframe-height) / var(--iframe-scale));
+    transform: scale(var(--iframe-scale));
+    transform-origin: 0 0;
+    position: absolute;
+    opacity: 0;
+}
+
+.iframe--loaded {
+    opacity: 1;
+    transition: opacity 0.1s ease-in-out;
+}
+
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    /* Just in case `pointer-events: none` is set on a parent. */
+    pointer-events: auto;
+    content: '';
+}
+
+.list {
+    display: inline-flex;
+    align-items: flex-end;
+
+    gap: 0.25rem;
+}

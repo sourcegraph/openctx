@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "@opencodegraph/codemirror-extension-demo",
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.3.2",
+    "@codemirror/lang-javascript": "^6.2.1",
+    "@codemirror/state": "^6.3.1",
+    "@codemirror/view": "^6.22.0",
+    "@opencodegraph/client": "workspace:*",
+    "@opencodegraph/codemirror-extension": "workspace:*",
+    "@opencodegraph/provider-hello-world": "workspace:*"
+  }
+}

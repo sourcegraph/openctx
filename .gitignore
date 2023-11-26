@@ -1,0 +1,13 @@
+node_modules/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+.DS_Store
+.env
+.idea/
+out/
+dist/
+dist-ssr/
+/coverage/
+.vscode-test/
+.vscode-test-web/

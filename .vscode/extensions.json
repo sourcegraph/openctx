@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "sourcegraph.opencodegraph",
+    "sourcegraph.cody-ai",
+    "esbenp.prettier-vscode",
+    "ecmel.vscode-html-css",
+    "dbaeumer.vscode-eslint",
+    "stylelint.vscode-stylelint",
+    "tamasfe.even-better-toml",
+    "unifiedjs.vscode-mdx",
+    "bradlc.vscode-tailwindcss"
+  ]
+}

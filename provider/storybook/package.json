@@ -1,0 +1,31 @@
+{
+  "name": "@opencodegraph/provider-storybook",
+  "version": "0.0.2",
+  "description": "Add Storybook links and image previews to your code (OpenCodeGraph provider)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "provider/storybook"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "index.ts",
+    "!**/*.test.*",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@opencodegraph/provider": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest-fetch-mock": "^0.2.2"
+  }
+}
