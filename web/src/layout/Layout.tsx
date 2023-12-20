@@ -77,7 +77,7 @@ const NavMenu: React.FunctionComponent<{ className?: string }> = ({ className })
             <NavigationMenuItem>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild={true}>
                     <Link
-                        href="https://sourcegraph.com/github.com/sourcegraph/opencodegraph"
+                        href="https://github.com/sourcegraph/opencodegraph"
                         target="_blank"
                         className="flex items-center gap-2 no-underline"
                     >
