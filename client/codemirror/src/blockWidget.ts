@@ -1,6 +1,7 @@
 import { RangeSetBuilder, type EditorState, type Extension } from '@codemirror/state'
 import { Decoration, EditorView, WidgetType, type DecorationSet } from '@codemirror/view'
-import { type Annotation, type Item } from '@openctx/client'
+import { type Item } from '@openctx/client'
+import { prepareItemsForPresentation } from '@openctx/ui-common'
 import deepEqual from 'deep-equal'
 import { openCtxDataFacet, type OpenCtxDecorationsConfig } from './extension'
 
@@ -41,30 +42,30 @@ class BlockWidget extends WidgetType {
 
 function computeDecorations(
     state: EditorState,
-    annotations: Annotation[],
+    items: Item[],
     config: OpenCtxDecorationsConfig
 ): DecorationSet {
     const builder = new RangeSetBuilder<Decoration>()
 
-    const annotationsByLine: { line: number; annotations: Annotation[] }[] = []
-    for (const ann of annotations) {
-        let cur = annotationsByLine.at(-1)
-        if (!cur || cur.line !== ann.range.start.line) {
-            cur = { line: ann.range.start.line, annotations: [] }
-            annotationsByLine.push(cur)
+    const itemsByLine: { line: number; items: Item[] }[] = []
+    for (const item of prepareItemsForPresentation(items)) {
+        let cur = itemsByLine.at(-1)
+        const startLine = item.ui?.presentationHints?.includes('show-at-top-of-file') ? 0 : item.range?.start.line ?? 0
+        if (!cur || cur.line !== startLine) {
+            cur = { line: startLine, items: [] }
+            itemsByLine.push(cur)
         }
-        cur.annotations.push(ann)
+        cur.items.push(item)
     }
 
-    for (const { line: lineNum, annotations } of annotationsByLine) {
-        const lineItems = annotations.map(ann => ann.item)
+    for (const { line: lineNum, items } of itemsByLine) {
         const line = state.doc.line(lineNum + 1)
         const indent = line.text.match(/^\s*/)?.[0]
         builder.add(
             line.from,
             line.from,
             Decoration.widget({
-                widget: new BlockWidget(lineItems, indent, config),
+                widget: new BlockWidget(items, indent, config),
             })
         )
     }

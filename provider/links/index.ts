@@ -1,7 +1,7 @@
 import {
     matchGlob,
-    type AnnotationsParams,
-    type AnnotationsResult,
+    type ItemsParams,
+    type ItemsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
     type Provider,
@@ -20,7 +20,7 @@ interface LinkPattern {
     /** URL of the link. */
     url: string
 
-    /** A description of the link's destination. */
+    /** A description of the link's destination. Markdown is supported. */
     description?: string
 
     /** The type of link (if applicable), which may affect the appearance. */
@@ -66,7 +66,7 @@ const links: Provider<Settings> = {
         return { selector: settings.links?.map(({ path }) => ({ path })) || [] }
     },
 
-    annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
+    items(params: ItemsParams, settings: Settings): ItemsResult {
         const compiledPatterns:
             | (Pick<LinkPattern, 'title' | 'url' | 'description' | 'type'> & {
                   pattern?: RegExp
@@ -79,7 +79,7 @@ const links: Provider<Settings> = {
         }))
 
         const lines = params.content.split(/\r?\n/)
-        const anns: AnnotationsResult = []
+        const items: ItemsResult = []
         for (const { title, url, description, type, matchPath, pattern } of compiledPatterns || []) {
             if (!matchPath(new URL(params.file).pathname)) {
                 continue
@@ -87,18 +87,16 @@ const links: Provider<Settings> = {
 
             const ranges = matchResults(pattern, lines)
             for (const { range, groups } of ranges) {
-                anns.push({
-                    item: {
-                        title: `${type === 'docs' ? '📘 Docs: ' : ''}${interpolate(title, groups)}`,
-                        detail: description ? interpolate(description, groups) : undefined,
-                        url: interpolate(url, groups),
-                    },
+                items.push({
+                    title: `${type === 'docs' ? '📘 Docs: ' : ''}${interpolate(title, groups)}`,
+                    url: interpolate(url, groups),
+                    ui: description ? { detail: interpolate(description, groups), format: 'markdown' } : undefined,
                     range,
                 })
             }
         }
 
-        return anns
+        return items
     },
 }
 

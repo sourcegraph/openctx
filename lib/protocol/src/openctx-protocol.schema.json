@@ -5,24 +5,52 @@
   "description": "OpenCtx client/provider protocol",
   "allowComments": true,
   "oneOf": [
-    { "$ref": "#/definitions/RequestMessage" },
-    { "$ref": "#/definitions/ResponseMessage" },
-    { "$ref": "#/definitions/ResponseError" },
-    { "$ref": "#/definitions/ProviderSettings" },
-    { "$ref": "#/definitions/CapabilitiesParams" },
-    { "$ref": "#/definitions/CapabilitiesResult" },
-    { "$ref": "#/definitions/AnnotationsParams" },
-    { "$ref": "#/definitions/AnnotationsResult" }
+    {
+      "$ref": "#/definitions/RequestMessage"
+    },
+    {
+      "$ref": "#/definitions/ResponseMessage"
+    },
+    {
+      "$ref": "#/definitions/ResponseError"
+    },
+    {
+      "$ref": "#/definitions/ProviderSettings"
+    },
+    {
+      "$ref": "#/definitions/CapabilitiesParams"
+    },
+    {
+      "$ref": "#/definitions/CapabilitiesResult"
+    },
+    {
+      "$ref": "#/definitions/ItemsParams"
+    },
+    {
+      "$ref": "#/definitions/ItemsResult"
+    }
   ],
   "definitions": {
     "RequestMessage": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["method"],
+      "required": [
+        "method"
+      ],
       "properties": {
-        "method": { "type": "string" },
-        "params": { "type": ["object", "array"], "tsType": "unknown" },
-        "settings": { "$ref": "#/definitions/ProviderSettings" }
+        "method": {
+          "type": "string"
+        },
+        "params": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "tsType": "unknown"
+        },
+        "settings": {
+          "$ref": "#/definitions/ProviderSettings"
+        }
       }
     },
     "ProviderSettings": {
@@ -34,18 +62,39 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "result": { "type": ["object", "array"], "tsType": "unknown" },
-        "error": { "$ref": "#/definitions/ResponseError" }
+        "result": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "tsType": "unknown"
+        },
+        "error": {
+          "$ref": "#/definitions/ResponseError"
+        }
       }
     },
     "ResponseError": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["code", "message"],
+      "required": [
+        "code",
+        "message"
+      ],
       "properties": {
-        "code": { "type": "integer" },
-        "message": { "type": "string" },
-        "data": { "type": ["object", "array"], "tsType": "unknown" }
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": [
+            "object",
+            "array"
+          ],
+          "tsType": "unknown"
+        }
       }
     },
     "CapabilitiesParams": {
@@ -80,10 +129,13 @@
         }
       }
     },
-    "AnnotationsParams": {
+    "ItemsParams": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["file", "content"],
+      "required": [
+        "file",
+        "content"
+      ],
       "properties": {
         "file": {
           "description": "The file's URI.",
@@ -95,12 +147,12 @@
         }
       }
     },
-    "AnnotationsResult": {
+    "ItemsResult": {
       "type": "array",
       "items": {
-        "$ref": "../../schema/src/openctx.schema.json#/definitions/Annotation"
+        "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
       },
-      "tsType": "Annotation[]"
+      "tsType": "Item[]"
     }
   }
 }

@@ -24,17 +24,18 @@
     "@codemirror/lint": "^6.4.2",
     "@openctx/client": "workspace:*",
     "@openctx/codemirror-extension": "workspace:*",
+    "@openctx/provider-docs": "workspace:*",
     "@openctx/provider-links": "workspace:*",
     "@openctx/provider-storybook": "workspace:*",
     "@openctx/ui-react": "workspace:*",
     "@uiw/react-codemirror": "^4.21.21",
     "observable-hooks": "^4.2.3",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
-    "@types/react": "^18",
-    "@types/react-dom": "^18"
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18"
   }
 }

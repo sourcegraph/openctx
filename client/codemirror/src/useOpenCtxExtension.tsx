@@ -1,30 +1,30 @@
 import type { Extension } from '@codemirror/state'
-import { type Annotation } from '@openctx/client'
-import { IndentationWrapper, ItemChipList } from '@openctx/ui-react'
+import { type Item } from '@openctx/client'
+import { ChipList, IndentationWrapper } from '@openctx/ui-react'
 import { useMemo } from 'react'
 import { createRoot } from 'react-dom/client'
 import { openCtxData, showOpenCtxDecorations } from './extension'
 
 export function useOpenCtxExtension({
     visibility,
-    annotations,
+    items,
 }: {
     visibility: boolean
-    annotations: Annotation[] | undefined
+    items: Item[] | undefined
 }): Extension {
     // TODO(sqs): useCompartment results in sometimes the facet data being stale because the editor is reconfigured
     return useMemo(
         () =>
             visibility
                 ? [
-                      openCtxData(annotations),
+                      openCtxData(items),
                       showOpenCtxDecorations({
                           visibility,
                           createDecoration(container, { indent, items }) {
                               const root = createRoot(container)
                               root.render(
                                   <IndentationWrapper indent={indent}>
-                                      <ItemChipList
+                                      <ChipList
                                           items={items}
                                           chipClassName="octx-chip"
                                           popoverClassName="octx-chip-popover"
@@ -40,6 +40,6 @@ export function useOpenCtxExtension({
                       }),
                   ]
                 : [],
-        [visibility, annotations]
+        [visibility, items]
     )
 }

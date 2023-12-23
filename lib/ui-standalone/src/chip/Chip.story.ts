@@ -1,9 +1,9 @@
 import { type Item } from '@openctx/schema'
 import type { Meta, StoryObj } from '@storybook/html'
-import { createItemChip } from './ItemChip'
+import { createChip } from './Chip'
 
 const meta: Meta = {
-    title: 'ItemChip',
+    title: 'Chip',
     decorators: [
         story => {
             const container = document.createElement('div')
@@ -22,25 +22,24 @@ const FIXTURE_ITEM: Item = {
     title: '📘 Docs: CSS in client/web',
 }
 
-export const Text: StoryObj = { render: () => createItemChip({ item: FIXTURE_ITEM }) }
+export const Text: StoryObj = { render: () => createChip({ item: { ...FIXTURE_ITEM } }) }
 
 export const Link: StoryObj = {
-    render: () => createItemChip({ item: { ...FIXTURE_ITEM, url: 'https://example.com' } }),
+    render: () => createChip({ item: { ...FIXTURE_ITEM, url: 'https://example.com' } }),
 }
 
 export const Detail: StoryObj = {
-    render: () => createItemChip({ item: { ...FIXTURE_ITEM, detail: 'View doc page' } }),
+    render: () => createChip({ item: { ...FIXTURE_ITEM, ui: { detail: 'View doc page' } } }),
 }
 
 export const Image: StoryObj = {
     render: () =>
-        createItemChip({
+        createChip({
             item: {
                 ...FIXTURE_ITEM,
-                image: {
-                    url: 'https://lh3.googleusercontent.com/d_S5gxu_S1P6NR1gXeMthZeBzkrQMHdI5uvXrpn3nfJuXpCjlqhLQKH_hbOxTHxFhp5WugVOEcl4WDrv9rmKBDOMExhKU5KmmLFQVg',
-                    width: 512,
-                    height: 300,
+                ui: {
+                    detail: '<img src="https://lh3.googleusercontent.com/d_S5gxu_S1P6NR1gXeMthZeBzkrQMHdI5uvXrpn3nfJuXpCjlqhLQKH_hbOxTHxFhp5WugVOEcl4WDrv9rmKBDOMExhKU5KmmLFQVg" width=512 height=300 />',
+                    format: 'markdown',
                 },
             },
         }),
