@@ -1,7 +1,6 @@
 # Prometheus context provider for OpenCodeGraph
 
-This is a context provider for [OpenCodeGraph](https://opencodegraph.org) that lets you hover over a Prometheus metric's registration in your code to see what it's doing in prod and to click through to the live metrics on [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), or another
-metrics viewer.
+This is a context provider for [OpenCodeGraph](https://opencodegraph.org) that lets you hover over a Prometheus metric's registration in your code to see what it's doing in prod and to click through to the live metrics on [Prometheus](https://prometheus.io/), [Grafana](https://grafana.com/), or another metrics viewer.
 
 ## Screenshot
 
