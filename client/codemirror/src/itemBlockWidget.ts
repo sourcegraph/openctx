@@ -1,6 +1,6 @@
 import { RangeSetBuilder, type EditorState, type Extension } from '@codemirror/state'
 import { Decoration, EditorView, WidgetType, type DecorationSet } from '@codemirror/view'
-import { type Annotation, type Item } from '@opencodegraph/client'
+import { type Annotation } from '@opencodegraph/client'
 import deepEqual from 'deep-equal'
 import { openCodeGraphDataFacet, type OpenCodeGraphDecorationsConfig } from './extension'
 
@@ -9,7 +9,7 @@ class BlockWidget extends WidgetType {
     private decoration: ReturnType<OpenCodeGraphDecorationsConfig['createDecoration']> | undefined
 
     constructor(
-        private readonly items: Item[],
+        private readonly anns: Annotation[],
         private readonly indent: string | undefined,
         private readonly config: OpenCodeGraphDecorationsConfig
     ) {
@@ -17,7 +17,7 @@ class BlockWidget extends WidgetType {
     }
 
     public eq(other: BlockWidget): boolean {
-        return this.config.visibility === other.config.visibility && deepEqual(this.items, other.items)
+        return this.config.visibility === other.config.visibility && deepEqual(this.anns, other.anns)
     }
 
     public toDOM(): HTMLElement {
@@ -25,7 +25,7 @@ class BlockWidget extends WidgetType {
             this.container = document.createElement('div')
             this.decoration = this.config.createDecoration(this.container, {
                 indent: this.indent,
-                items: this.items,
+                annotations: this.anns,
             })
         }
         return this.container
@@ -49,22 +49,22 @@ function computeDecorations(
     const annotationsByLine: { line: number; annotations: Annotation[] }[] = []
     for (const ann of annotations) {
         let cur = annotationsByLine.at(-1)
-        if (!cur || cur.line !== ann.range.start.line) {
-            cur = { line: ann.range.start.line, annotations: [] }
+        const startLine = ann.range?.start.line ?? 0
+        if (!cur || cur.line !== startLine) {
+            cur = { line: startLine, annotations: [] }
             annotationsByLine.push(cur)
         }
         cur.annotations.push(ann)
     }
 
     for (const { line: lineNum, annotations } of annotationsByLine) {
-        const lineItems = annotations.map(ann => ann.item)
         const line = state.doc.line(lineNum + 1)
         const indent = line.text.match(/^\s*/)?.[0]
         builder.add(
             line.from,
             line.from,
             Decoration.widget({
-                widget: new BlockWidget(lineItems, indent, config),
+                widget: new BlockWidget(annotations, indent, config),
             })
         )
     }

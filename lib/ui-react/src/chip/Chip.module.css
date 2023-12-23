@@ -1,6 +1,6 @@
-/* TODO(sqs): dedupe with ui-react */
+/* TODO(sqs): dedupe with ui-standalone */
 
-.item {
+.chip {
     display: inline-flex;
     flex-direction: column;
     position: relative;
@@ -9,11 +9,7 @@
     padding: 2px 3px;
 }
 
-.item--has-detail {
-    cursor: pointer;
-}
-
-.item-header {
+.chip-header {
     display: flex;
     justify-content: space-between;
 }
@@ -25,21 +21,9 @@
     line-height: unset;
 }
 
-.popover {
-    border: none;
-    padding: 0;
-    background-color: unset;
-    max-width: min(80vw, 450px);
-}
-
-.popover:popover-open {
-    position: absolute;
-    inset: unset;
-}
-
 .popover-content {
     padding: 3px 5px;
-    margin-bottom: 3px;
+    margin: 3px 0;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -48,17 +32,6 @@
 
 .detail {
     margin: 0;
-}
-
-.image-container {
-    max-width: 32rem;
-    overflow: hidden;
-}
-
-.image {
-    height: 100%;
-    width: 100%;
-    object-fit: contain;
 }
 
 .stretched-link::after {
