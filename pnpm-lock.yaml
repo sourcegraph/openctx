@@ -439,9 +439,9 @@ importers:
       '@opencodegraph/schema':
         specifier: workspace:*
         version: link:../schema
-      '@reach/popover':
-        specifier: ^0.18.0
-        version: 0.18.0(react-dom@18.2.0)(react@18.2.0)
+      '@opencodegraph/ui-standalone':
+        specifier: workspace:*
+        version: link:../ui-standalone
       classnames:
         specifier: ^2.3.2
         version: 2.3.2
@@ -5025,66 +5025,6 @@ packages:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
       '@babel/runtime': 7.23.5
-    dev: false
-
-  /@reach/observe-rect@1.2.0:
-    resolution: {integrity: sha512-Ba7HmkFgfQxZqqaeIWWkNK0rEhpxVQHIoVyW1YDSkGsGIXzcaW4deC8B0pZrNSSyLTdIk7y+5olKt5+g0GmFIQ==}
-    dev: false
-
-  /@reach/polymorphic@0.18.0(react@18.2.0):
-    resolution: {integrity: sha512-N9iAjdMbE//6rryZZxAPLRorzDcGBnluf7YQij6XDLiMtfCj1noa7KyLpEc/5XCIB/EwhX3zCluFAwloBKdblA==}
-    peerDependencies:
-      react: ^16.8.0 || 17.x
-    dependencies:
-      react: 18.2.0
-    dev: false
-
-  /@reach/popover@0.18.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-mpnWWn4w74L2U7fcneVdA6Fz3yKWNdZIRMoK8s6H7F8U2dLM/qN7AjzjEBqi6LXKb3Uf1ge4KHSbMixW0BygJQ==}
-    peerDependencies:
-      react: ^16.8.0 || 17.x
-      react-dom: ^16.8.0 || 17.x
-    dependencies:
-      '@reach/polymorphic': 0.18.0(react@18.2.0)
-      '@reach/portal': 0.18.0(react-dom@18.2.0)(react@18.2.0)
-      '@reach/rect': 0.18.0(react-dom@18.2.0)(react@18.2.0)
-      '@reach/utils': 0.18.0(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      tabbable: 5.3.3
-    dev: false
-
-  /@reach/portal@0.18.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-TImozRapd576ofRk30Le2L3lRTFXF1p47B182wnp5eMTdZa74JX138BtNGEPJFOyrMaVmguVF8SSwZ6a0fon1Q==}
-    peerDependencies:
-      react: ^16.8.0 || 17.x
-      react-dom: ^16.8.0 || 17.x
-    dependencies:
-      '@reach/utils': 0.18.0(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: false
-
-  /@reach/rect@0.18.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Xk8urN4NLn3F70da/DtByMow83qO6DF6vOxpLjuDBqud+kjKgxAU9vZMBSZJyH37+F8mZinRnHyXtlLn5njQOg==}
-    peerDependencies:
-      react: ^16.8.0 || 17.x
-      react-dom: ^16.8.0 || 17.x
-    dependencies:
-      '@reach/observe-rect': 1.2.0
-      '@reach/utils': 0.18.0(react-dom@18.2.0)(react@18.2.0)
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-    dev: false
-
-  /@reach/utils@0.18.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-KdVMdpTgDyK8FzdKO9SCpiibuy/kbv3pwgfXshTI6tEcQT1OOwj7BAksnzGC0rPz0UholwC+AgkqEl3EJX3M1A==}
-    peerDependencies:
-      react: ^16.8.0 || 17.x
-      react-dom: ^16.8.0 || 17.x
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@rollup/pluginutils@4.2.1:
@@ -15419,10 +15359,6 @@ packages:
       '@pkgr/utils': 2.4.2
       tslib: 2.6.2
     dev: true
-
-  /tabbable@5.3.3:
-    resolution: {integrity: sha512-QD9qKY3StfbZqWOPLp0++pOrAVb/HbUi5xCc8cUo4XjP19808oaMiDzn0leBY5mCespIBM0CIZePzZjgzR83kA==}
-    dev: false
 
   /table@6.8.1:
     resolution: {integrity: sha512-Y4X9zqrCftUhMeH2EptSSERdVKt/nEdijTOacGD/97EKjhQ/Qs8RTlEGABSJNNN8lac9kheH+af7yAkEWlgneA==}
