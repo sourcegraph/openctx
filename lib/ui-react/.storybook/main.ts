@@ -11,8 +11,5 @@ const config: StorybookConfig = {
     async viteFinal(config) {
         return mergeConfig(config, { css: { modules: { localsConvention: 'camelCaseOnly' } } })
     },
-    docs: {
-        autodocs: 'tag',
-    },
 }
 export default config
