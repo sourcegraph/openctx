@@ -19,7 +19,7 @@ export default meta
 
 const FIXTURE_ELEMENT = document.createElement('div')
 FIXTURE_ELEMENT.innerHTML = 'foo bar'
-FIXTURE_ELEMENT.style.backgroundColor = '#ccci'
+FIXTURE_ELEMENT.style.backgroundColor = '#ccc'
 
 export const NoIndent: StoryObj = {
     render: () => createIndentationWrapper({ indent: undefined, children: [FIXTURE_ELEMENT] }),
