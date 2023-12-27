@@ -100,13 +100,13 @@ interface AnnotationsParams {
 ```typescript
 interface AnnotationsResult {
   /** Items that contain information relevant to the file. */
-  items: OpenCodeGraphItem[]
+  items: Item[]
 
   /** Annotations that attach items to specific ranges in the file. */
-  annotations: OpenCodeGraphAnnotation[]
+  annotations: Annotation[]
 }
 
-interface OpenCodeGraphItem {
+interface Item {
   id: string
 
   title: string
@@ -119,8 +119,8 @@ interface OpenCodeGraphItem {
   // Some fields omitted.
 }
 
-interface OpenCodeGraphAnnotation {
-  /** The item (referenced by its `OpenCodeGraph.id`). */
+interface Annotation {
+  /** The item (referenced by its `Item.id`). */
   item: { id: string }
 
   /** The range in the file that the item is relevant to. */

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "opencodegraph-protocol.schema.json#",
-  "title": "OpenCodeGraphProtocol",
+  "title": "Protocol",
   "description": "OpenCodeGraph client/provider protocol",
   "allowComments": true,
   "oneOf": [
@@ -104,17 +104,17 @@
           "description": "Items that contain information relevant to the file.",
           "type": "array",
           "items": {
-            "$ref": "../../schema/src/opencodegraph.schema.json#/definitions/OpenCodeGraphItem"
+            "$ref": "../../schema/src/opencodegraph.schema.json#/definitions/Item"
           },
-          "tsType": "OpenCodeGraphItem[]"
+          "tsType": "Item[]"
         },
         "annotations": {
           "description": "Annotations that attach items to specific ranges in the file.",
           "type": "array",
           "items": {
-            "$ref": "../../schema/src/opencodegraph.schema.json#/definitions/OpenCodeGraphAnnotation"
+            "$ref": "../../schema/src/opencodegraph.schema.json#/definitions/Annotation"
           },
-          "tsType": "OpenCodeGraphAnnotation[]"
+          "tsType": "Annotation[]"
         }
       }
     }

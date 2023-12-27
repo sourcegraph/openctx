@@ -1,6 +1,6 @@
 import { RangeSetBuilder, type EditorState, type Extension } from '@codemirror/state'
 import { Decoration, EditorView, WidgetType, type DecorationSet } from '@codemirror/view'
-import { type Annotation, type OpenCodeGraphItem } from '@opencodegraph/client'
+import { type Annotation, type Item } from '@opencodegraph/client'
 import deepEqual from 'deep-equal'
 import { openCodeGraphDataFacet, type OpenCodeGraphDecorationsConfig } from './extension'
 
@@ -9,7 +9,7 @@ class BlockWidget extends WidgetType {
     private decoration: ReturnType<OpenCodeGraphDecorationsConfig['createDecoration']> | undefined
 
     constructor(
-        private readonly items: OpenCodeGraphItem[],
+        private readonly items: Item[],
         private readonly indent: string | undefined,
         private readonly config: OpenCodeGraphDecorationsConfig
     ) {

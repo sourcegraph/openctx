@@ -1,4 +1,4 @@
-import { createClient, type Annotation, type OpenCodeGraphRange } from '@opencodegraph/client'
+import { createClient, type Annotation, type Range } from '@opencodegraph/client'
 import { catchError, combineLatest, from, map, mergeMap, of, tap, type Observable } from 'rxjs'
 import * as vscode from 'vscode'
 import { createApi, type ExtensionApi } from './api'
@@ -142,7 +142,7 @@ function ignoreDoc(doc: vscode.TextDocument): boolean {
     return doc.uri.scheme === 'output' || doc.lineCount > 5000
 }
 
-function makeRange(range: OpenCodeGraphRange): vscode.Range {
+function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
 }
 

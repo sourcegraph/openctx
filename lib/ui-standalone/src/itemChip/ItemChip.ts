@@ -1,4 +1,4 @@
-import { type OpenCodeGraphItem } from '@opencodegraph/schema'
+import { type Item } from '@opencodegraph/schema'
 import clsx from 'clsx'
 import styles from './ItemChip.module.css'
 import { getPopoverDimensions } from './popover'
@@ -11,7 +11,7 @@ export function createItemChip({
     className,
     popoverClassName,
 }: {
-    item: OpenCodeGraphItem
+    item: Item
     className?: string
     popoverClassName?: string
 }): HTMLElement {
@@ -86,7 +86,7 @@ function createPopoverContent({
     image,
     iframe,
     className,
-}: Pick<OpenCodeGraphItem, 'title' | 'detail' | 'image'> & { iframe?: string; className?: string }): HTMLElement {
+}: Pick<Item, 'title' | 'detail' | 'image'> & { iframe?: string; className?: string }): HTMLElement {
     const el = document.createElement('aside')
     el.className = clsx(styles.popoverContent, className)
 
@@ -150,7 +150,7 @@ export function createItemChipList({
     chipClassName,
     popoverClassName,
 }: {
-    items: OpenCodeGraphItem[]
+    items: Item[]
     className?: string
     chipClassName?: string
     popoverClassName?: string

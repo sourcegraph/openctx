@@ -1,5 +1,5 @@
 import { type AnnotationsParams, type AnnotationsResult, type ProviderSettings } from '@opencodegraph/protocol'
-import { type OpenCodeGraphItem, type OpenCodeGraphRange } from '@opencodegraph/schema'
+import { type Item, type Range } from '@opencodegraph/schema'
 import {
     catchError,
     combineLatest,
@@ -19,8 +19,8 @@ import { type ProviderClient } from './providerClient/createProviderClient'
 /**
  * An OpenCodeGraph annotation.
  */
-export interface Annotation<R extends OpenCodeGraphRange = OpenCodeGraphRange> {
-    item: OpenCodeGraphItem
+export interface Annotation<R extends Range = Range> {
+    item: Item
     range: R
 }
 
@@ -42,7 +42,7 @@ export interface ProviderClientWithSettings {
 /**
  * Observes OpenCodeGraph annotations from the configured providers.
  */
-export function observeAnnotations<R extends OpenCodeGraphRange>(
+export function observeAnnotations<R extends Range>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: AnnotationsParams,
     { emitPartial, logger, makeRange }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & { emitPartial?: boolean }
@@ -65,7 +65,7 @@ export function observeAnnotations<R extends OpenCodeGraphRange>(
         ),
         map(result => mergeData(result)),
         map(result => {
-            const items: Record<string, OpenCodeGraphItem> = {}
+            const items: Record<string, Item> = {}
             for (const item of result.items) {
                 items[item.id] = item
             }

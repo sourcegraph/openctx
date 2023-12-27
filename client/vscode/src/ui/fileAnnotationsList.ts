@@ -1,4 +1,4 @@
-import { type Annotation, type OpenCodeGraphItem } from '@opencodegraph/client'
+import { type Annotation, type Item } from '@opencodegraph/client'
 import * as vscode from 'vscode'
 import { type Controller } from '../controller'
 
@@ -13,7 +13,7 @@ export function createShowFileAnnotationsList(controller: Controller): vscode.Di
 }
 
 interface QuickPickItem extends vscode.QuickPickItem {
-    item?: OpenCodeGraphItem
+    item?: Item
     firstRange?: vscode.Range
 }
 

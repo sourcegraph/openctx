@@ -1,8 +1,8 @@
-import { type Annotation, type Client, type OpenCodeGraphRange } from '@opencodegraph/client'
+import { type Annotation, type Client, type Range } from '@opencodegraph/client'
 import * as monaco from 'monaco-editor'
 
 /**
- * Like {@link monaco.Range}, but also overlaps with {@link OpenCodeGraphRange}.
+ * Like {@link monaco.Range}, but also overlaps with {@link Range}.
  */
 class MonacoRange extends monaco.Range {
     constructor(startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
@@ -19,7 +19,7 @@ class MonacoRange extends monaco.Range {
 }
 
 /**
- * Like {@link monaco.Position}, but also overlaps with {@link OpenCodeGraphPosition}.
+ * Like {@link monaco.Position}, but also overlaps with {@link Position}.
  */
 class MonacoPosition extends monaco.Position {
     constructor(position: monaco.Position) {
@@ -35,12 +35,12 @@ class MonacoPosition extends monaco.Position {
 }
 
 /**
- * Convert a {@link OpenCodeGraphRange} to a range that can be used with the Monaco editor
+ * Convert a {@link Range} to a range that can be used with the Monaco editor
  * ({@link monaco.Range}).
  *
  * Use it in {@link import('@opencodegraph/client').createClient}'s `makeRange` environment field.
  */
-export function makeRange(range: OpenCodeGraphRange): MonacoRange {
+export function makeRange(range: Range): MonacoRange {
     return new MonacoRange(range.start.line, range.start.character, range.end.line, range.end.character)
 }
 

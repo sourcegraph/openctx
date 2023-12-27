@@ -1,5 +1,5 @@
 import { type AnnotationsParams, type AnnotationsResult } from '@opencodegraph/protocol'
-import { type OpenCodeGraphRange } from '@opencodegraph/schema'
+import { type Range } from '@opencodegraph/schema'
 import { firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
@@ -31,9 +31,9 @@ function fixtureResult(id: string): Annotation {
 }
 
 function createTestClient(
-    env: Partial<ClientEnv<OpenCodeGraphRange>> & Required<Pick<ClientEnv<OpenCodeGraphRange>, 'configuration'>>
-): Client<OpenCodeGraphRange> {
-    return createClient<OpenCodeGraphRange>({
+    env: Partial<ClientEnv<Range>> & Required<Pick<ClientEnv<Range>, 'configuration'>>
+): Client<Range> {
+    return createClient<Range>({
         authInfo: () => of(null),
         makeRange: r => r,
         ...env,

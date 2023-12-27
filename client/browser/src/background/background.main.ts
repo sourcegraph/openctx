@@ -1,7 +1,7 @@
 import '../shared/polyfills'
 // ^^ import polyfills first
 import { createClient } from '@opencodegraph/client'
-import { type OpenCodeGraphProvider } from '@opencodegraph/provider'
+import { type Provider } from '@opencodegraph/provider'
 import helloWorldProvider from '@opencodegraph/provider-hello-world'
 import linksProvider from '@opencodegraph/provider-links'
 import prometheusProvider from '@opencodegraph/provider-prometheus'
@@ -10,14 +10,14 @@ import { Subscription } from 'rxjs'
 import { addMessageListenersForBackgroundApi } from '../browser-extension/web-extension-api/rpc'
 import { configurationChanges } from '../configuration'
 
-const BUILTIN_PROVIDER_MODULES: Record<string, OpenCodeGraphProvider<any>> = {
+const BUILTIN_PROVIDER_MODULES: Record<string, Provider<any>> = {
     ['https://opencodegraph.org/npm/@opencodegraph/provider-hello-world']: helloWorldProvider,
     ['https://opencodegraph.org/npm/@opencodegraph/provider-links']: linksProvider,
     ['https://opencodegraph.org/npm/@opencodegraph/provider-storybook']: storybookProvider,
     ['https://opencodegraph.org/npm/@opencodegraph/provider-prometheus']: prometheusProvider,
 }
 
-function getBuiltinProvider(uri: string): OpenCodeGraphProvider {
+function getBuiltinProvider(uri: string): Provider {
     const mod = BUILTIN_PROVIDER_MODULES[uri]
     if (!mod) {
         throw new Error(

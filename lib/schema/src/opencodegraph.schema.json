@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "opencodegraph.schema.json#",
-  "title": "OpenCodeGraphData",
+  "title": "Data",
   "description": "Metadata about code",
   "allowComments": true,
   "type": "object",
@@ -10,15 +10,15 @@
   "properties": {
     "items": {
       "type": "array",
-      "items": { "$ref": "#/definitions/OpenCodeGraphItem" }
+      "items": { "$ref": "#/definitions/Item" }
     },
     "annotations": {
       "type": "array",
-      "items": { "$ref": "#/definitions/OpenCodeGraphAnnotation" }
+      "items": { "$ref": "#/definitions/Annotation" }
     }
   },
   "definitions": {
-    "OpenCodeGraphItem": {
+    "Item": {
       "type": "object",
       "additionalProperties": false,
       "required": ["id", "title"],
@@ -32,10 +32,10 @@
           "description": "If `preview` is set, show this URL as the preview instead of `url`.",
           "type": "string"
         },
-        "image": { "$ref": "#/definitions/OpenCodeGraphImage" }
+        "image": { "$ref": "#/definitions/ItemImage" }
       }
     },
-    "OpenCodeGraphImage": {
+    "ItemImage": {
       "type": "object",
       "additionalProperties": false,
       "required": ["url"],
@@ -46,14 +46,14 @@
         "alt": { "type": "string" }
       }
     },
-    "OpenCodeGraphAnnotation": {
+    "Annotation": {
       "type": "object",
       "additionalProperties": false,
       "required": ["range", "item"],
       "properties": {
-        "range": { "$ref": "#/definitions/OpenCodeGraphRange" },
+        "range": { "$ref": "#/definitions/Range" },
         "item": {
-          "title": "OpenCodeGraphItemRef",
+          "title": "ItemRef",
           "type": "object",
           "additionalProperties": false,
           "required": ["id"],
@@ -63,16 +63,16 @@
         }
       }
     },
-    "OpenCodeGraphRange": {
+    "Range": {
       "type": "object",
       "additionalProperties": false,
       "required": ["start", "end"],
       "properties": {
-        "start": { "$ref": "#/definitions/OpenCodeGraphPosition" },
-        "end": { "$ref": "#/definitions/OpenCodeGraphPosition" }
+        "start": { "$ref": "#/definitions/Position" },
+        "end": { "$ref": "#/definitions/Position" }
       }
     },
-    "OpenCodeGraphPosition": {
+    "Position": {
       "type": "object",
       "additionalProperties": false,
       "required": ["line", "character"],

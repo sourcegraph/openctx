@@ -1,4 +1,4 @@
-import { type Client, type OpenCodeGraphRange } from '@opencodegraph/client'
+import { type Client, type Range } from '@opencodegraph/client'
 
 /**
  * Wrapper type for a string of JSONC (JSON with comments and trailing commas).
@@ -21,7 +21,7 @@ export interface ManagedStorageItems {}
 /**
  * Functions in the background page that can be invoked from content scripts.
  */
-export interface BackgroundApi extends Pick<Client<OpenCodeGraphRange>, 'annotationsChanges'> {}
+export interface BackgroundApi extends Pick<Client<Range>, 'annotationsChanges'> {}
 
 /**
  * Shape of the handler object in the background worker.

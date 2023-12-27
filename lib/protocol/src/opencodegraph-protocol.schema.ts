@@ -1,9 +1,9 @@
-import { OpenCodeGraphAnnotation, OpenCodeGraphItem } from '@opencodegraph/schema'
+import { Annotation, Item } from '@opencodegraph/schema'
 
 /**
  * OpenCodeGraph client/provider protocol
  */
-export type OpenCodeGraphProtocol =
+export type Protocol =
     | RequestMessage
     | ResponseMessage
     | ResponseError
@@ -73,9 +73,9 @@ export interface AnnotationsResult {
     /**
      * Items that contain information relevant to the file.
      */
-    items: OpenCodeGraphItem[]
+    items: Item[]
     /**
      * Annotations that attach items to specific ranges in the file.
      */
-    annotations: OpenCodeGraphAnnotation[]
+    annotations: Annotation[]
 }
