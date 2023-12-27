@@ -38,7 +38,6 @@ describe('links', () => {
                     id: 'https://example.com/foo:Foo:',
                     title: '📘 Docs: Foo',
                     url: 'https://example.com/foo',
-                    preview: true,
                 },
             ],
             annotations: [
@@ -81,7 +80,6 @@ describe('links', () => {
                     title: 'Print foo $3 b/a+r',
                     detail: 'b/a+r',
                     url: 'https://example.com/search?q=b%2Fa%2Br',
-                    preview: undefined,
                 },
             ],
             annotations: [

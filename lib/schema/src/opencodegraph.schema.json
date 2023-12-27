@@ -27,11 +27,6 @@
         "title": { "type": "string" },
         "detail": { "type": "string" },
         "url": { "description": "An external URL with more information.", "type": "string", "format": "uri" },
-        "preview": { "description": "Show a preview of the link.", "type": "boolean" },
-        "previewUrl": {
-          "description": "If `preview` is set, show this URL as the preview instead of `url`.",
-          "type": "string"
-        },
         "image": { "$ref": "#/definitions/ItemImage" }
       }
     },

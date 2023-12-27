@@ -61,34 +61,6 @@
     object-fit: contain;
 }
 
-:root {
-    --iframe-width: 350px;
-    --iframe-height: 210px;
-    --iframe-scale: 0.6;
-}
-
-.iframe-container {
-    width: var(--iframe-width);
-    height: var(--iframe-height);
-    overflow: hidden;
-    position: relative;
-}
-
-.iframe {
-    border: 0;
-    width: calc(var(--iframe-width) / var(--iframe-scale));
-    height: calc(var(--iframe-height) / var(--iframe-scale));
-    transform: scale(var(--iframe-scale));
-    transform-origin: 0 0;
-    position: absolute;
-    opacity: 0;
-}
-
-.iframe--loaded {
-    opacity: 1;
-    transition: opacity 0.1s ease-in-out;
-}
-
 .stretched-link::after {
     position: absolute;
     top: 0;

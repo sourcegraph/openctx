@@ -12,7 +12,7 @@ export const ItemChip: React.FunctionComponent<{
     className?: string
     popoverClassName?: string
 }> = ({ item, className, popoverClassName }) => {
-    const hasDetail = Boolean(item.detail || item.image || ((item.url || item.previewUrl) && item.preview))
+    const hasDetail = Boolean(item.detail || item.image)
 
     const [popoverVisible, setPopoverVisible] = useState(false)
     const showPopover = useCallback((): void => setPopoverVisible(true), [])
@@ -29,12 +29,7 @@ export const ItemChip: React.FunctionComponent<{
             {hasDetail && anchorRef.current && (
                 <Popover anchor={anchorRef.current} visible={popoverVisible}>
                     <aside className={classNames(styles.popoverContent, popoverClassName)}>
-                        <ItemDetail
-                            title={item.title}
-                            detail={item.detail}
-                            image={item.image}
-                            iframe={item.preview ? item.previewUrl ?? item.url : undefined}
-                        />
+                        <ItemDetail title={item.title} detail={item.detail} image={item.image} />
                     </aside>
                 </Popover>
             )}
@@ -46,39 +41,12 @@ const ItemTitle: React.FunctionComponent<{
     title: Item['title']
 }> = ({ title }) => <h4 className={styles.title}>{title}</h4>
 
-const ItemDetail: React.FunctionComponent<Pick<Item, 'title' | 'detail' | 'image'> & { iframe?: string }> = ({
-    title,
-    detail,
-    image,
-    iframe,
-}) => {
-    // Wait for the iframe to load before displaying it, to reduce visual flicker.
-    const [iframeLoaded, setIframeLoaded] = useState(false)
-    const onIframeLoad = useCallback<React.ReactEventHandler<HTMLIFrameElement>>(ev => {
-        // Calling setTimeout reduces the visual flicker.
-        setTimeout(() => setIframeLoaded(true))
-    }, [])
-    return (
-        <>
-            {detail && <p className={styles.detail}>{detail}</p>}
-            {image && <ItemImage image={image} />}
-            {iframe && !image && (
-                <div className={styles.iframeContainer}>
-                    <iframe
-                        title={title}
-                        className={classNames(styles.iframe, iframeLoaded ? styles.iframeLoaded : null)}
-                        src={iframe}
-                        frameBorder={0}
-                        scrolling="no"
-                        tabIndex={-1}
-                        sandbox="allow-scripts allow-same-origin"
-                        onLoad={onIframeLoad}
-                    />
-                </div>
-            )}
-        </>
-    )
-}
+const ItemDetail: React.FunctionComponent<Pick<Item, 'title' | 'detail' | 'image'>> = ({ detail, image }) => (
+    <>
+        {detail && <p className={styles.detail}>{detail}</p>}
+        {image && <ItemImage image={image} />}
+    </>
+)
 
 const ItemImage: React.FunctionComponent<{
     image: NonNullable<Item['image']>

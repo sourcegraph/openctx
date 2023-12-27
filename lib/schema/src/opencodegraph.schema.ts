@@ -13,14 +13,6 @@ export interface Item {
      * An external URL with more information.
      */
     url?: string
-    /**
-     * Show a preview of the link.
-     */
-    preview?: boolean
-    /**
-     * If `preview` is set, show this URL as the preview instead of `url`.
-     */
-    previewUrl?: string
     image?: ItemImage
 }
 export interface ItemImage {

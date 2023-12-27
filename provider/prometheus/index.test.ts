@@ -40,7 +40,6 @@ var histogram = promauto.NewHistogram(prometheus.HistogramOpts{
                     id: 'random_numbers',
                     title: '📟 Prometheus metric: random_numbers',
                     url: 'https://example.com/?q=random_numbers',
-                    preview: true,
                 },
             ],
             annotations: [

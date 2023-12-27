@@ -49,13 +49,3 @@ export const Image: Story = {
         },
     },
 }
-
-export const Iframe: Story = {
-    args: {
-        item: {
-            ...FIXTURE_ITEM,
-            url: 'https://example.com',
-            preview: true,
-        },
-    },
-}

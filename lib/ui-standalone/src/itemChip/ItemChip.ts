@@ -15,7 +15,7 @@ export function createItemChip({
     className?: string
     popoverClassName?: string
 }): HTMLElement {
-    const hasDetail = Boolean(item.detail || item.image || ((item.url || item.previewUrl) && item.preview))
+    const hasDetail = Boolean(item.detail || item.image)
 
     const el = document.createElement('aside')
     el.className = clsx(styles.item, hasDetail ? styles.itemHasDetail : null, className)
@@ -48,7 +48,6 @@ export function createItemChip({
         popoverEl.append(
             createPopoverContent({
                 ...item,
-                iframe: item.preview ? item.previewUrl ?? item.url : undefined,
                 className: popoverClassName,
             })
         )
@@ -81,12 +80,10 @@ export function createItemChip({
 }
 
 function createPopoverContent({
-    title,
     detail,
     image,
-    iframe,
     className,
-}: Pick<Item, 'title' | 'detail' | 'image'> & { iframe?: string; className?: string }): HTMLElement {
+}: Pick<Item, 'detail' | 'image'> & { className?: string }): HTMLElement {
     const el = document.createElement('aside')
     el.className = clsx(styles.popoverContent, className)
 
@@ -112,30 +109,6 @@ function createPopoverContent({
 
         imageContainerEl.append(imageEl)
         el.append(imageContainerEl)
-    }
-
-    if (iframe) {
-        const iframeContainerEl = document.createElement('div')
-        iframeContainerEl.className = styles.iframeContainer
-
-        const iframeEl = document.createElement('iframe')
-        iframeEl.className = styles.iframe
-        iframeEl.src = iframe
-        iframeEl.title = title
-        iframeEl.frameBorder = '0'
-        iframeEl.scrolling = 'no'
-        iframeEl.tabIndex = -1
-        iframeEl.sandbox.add('allow-scripts', 'allow-same-origin')
-
-        // Wait for the iframe to load before displaying it, to reduce visual flicker.
-        const onIframeLoad = (): void => {
-            iframeEl.classList.add(styles.iframeLoaded)
-            iframeEl.removeEventListener('load', onIframeLoad)
-        }
-        iframeEl.addEventListener('load', onIframeLoad)
-
-        iframeContainerEl.append(iframeEl)
-        el.append(iframeContainerEl)
     }
 
     return el
