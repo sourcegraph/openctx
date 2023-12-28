@@ -26,7 +26,6 @@
     "@opencodegraph/schema": "workspace:*"
   },
   "devDependencies": {
-    "json-schema-ref-parser": "^9.0.9",
     "json-schema-to-typescript": "^13.1.1"
   }
 }
