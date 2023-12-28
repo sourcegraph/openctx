@@ -1,8 +1,8 @@
 import { type OpenCodeGraphItem } from '@opencodegraph/schema'
-import { getCollisions, Popover, type Position } from '@reach/popover'
 import classNames from 'classnames'
 import React, { useCallback, useRef, useState } from 'react'
 import styles from './ItemChip.module.css'
+import { Popover } from './Popover'
 
 /**
  * A single OpenCodeGraph item, displayed as a "chip".
@@ -15,19 +15,19 @@ export const ItemChip: React.FunctionComponent<{
     const hasDetail = Boolean(item.detail || item.image || ((item.url || item.previewUrl) && item.preview))
 
     const [popoverVisible, setPopoverVisible] = useState(false)
-    const showPopover = useCallback<React.MouseEventHandler>(() => setPopoverVisible(true), [])
-    const hidePopover = useCallback<React.MouseEventHandler>(() => setPopoverVisible(false), [])
+    const showPopover = useCallback((): void => setPopoverVisible(true), [])
+    const hidePopover = useCallback((): void => setPopoverVisible(false), [])
 
-    const ref = useRef(null)
+    const anchorRef = useRef<HTMLElement>(null)
 
     return (
-        <aside className={classNames(styles.item, hasDetail ? styles.itemHasDetail : null, className)} ref={ref}>
-            <header onMouseEnter={showPopover} onMouseLeave={hidePopover}>
+        <aside className={classNames(styles.item, hasDetail ? styles.itemHasDetail : null, className)} ref={anchorRef}>
+            <header onMouseEnter={showPopover} onMouseLeave={hidePopover} onFocus={showPopover} onBlur={hidePopover}>
                 <ItemTitle title={item.title} />
                 {item.url && <a className={styles.stretchedLink} aria-hidden={true} href={item.url} />}
             </header>
-            {hasDetail && popoverVisible && (
-                <Popover targetRef={ref} position={positionTopStart} as="div">
+            {hasDetail && anchorRef.current && (
+                <Popover anchor={anchorRef.current} visible={popoverVisible}>
                     <aside className={classNames(styles.popoverContent, popoverClassName)}>
                         <ItemDetail
                             title={item.title}
@@ -40,22 +40,6 @@ export const ItemChip: React.FunctionComponent<{
             )}
         </aside>
     )
-}
-
-const positionTopStart: Position = (targetRect, popoverRect) => {
-    if (!targetRect || !popoverRect) {
-        return {}
-    }
-
-    const { directionRight, directionDown } = getCollisions(targetRect, popoverRect)
-    return {
-        left: directionRight
-            ? `${targetRect.right - popoverRect.width + window.scrollX}px`
-            : `${targetRect.left + window.scrollX}px`,
-        top: directionDown
-            ? `${targetRect.top + targetRect.height + window.scrollY}px`
-            : `${targetRect.top - popoverRect.height + window.scrollY}px`,
-    }
 }
 
 const ItemTitle: React.FunctionComponent<{

@@ -69,8 +69,8 @@ export const baseTheme = EditorView.baseTheme({
     [hackRootCssSelector('.ocg-chip-popover')]: {
         backgroundColor: '#000000',
         color: 'white',
-        fontSize: '78%',
         border: 'solid 1px #ffffff22',
+        whiteSpace: 'normal',
     },
 
     // Move line number down to the line with code, not the line with the annotations.

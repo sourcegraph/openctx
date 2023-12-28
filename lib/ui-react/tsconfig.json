@@ -13,5 +13,8 @@
     {
       "path": "../schema",
     },
+    {
+      "path": "../ui-standalone",
+    },
   ],
 }
