@@ -46,7 +46,3 @@ export const Image: StoryObj = {
             },
         }),
 }
-
-export const Iframe: StoryObj = {
-    render: () => createItemChip({ item: { ...FIXTURE_ITEM, url: 'https://example.com', preview: true } }),
-}

@@ -92,7 +92,6 @@ const prometheus: Provider<Settings> = {
                     id: '',
                     title: `📟 Prometheus metric: ${metricName}`,
                     url: urlTemplate.replaceAll('$1', metricName),
-                    preview: true,
                 }
                 item.id = metricName
 

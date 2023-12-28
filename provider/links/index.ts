@@ -90,7 +90,7 @@ const links: Provider<Settings> = {
 
         const lines = params.content.split(/\r?\n/)
 
-        for (const { title, url, description, preview, type, matchPath, pattern } of compiledPatterns || []) {
+        for (const { title, url, description, type, matchPath, pattern } of compiledPatterns || []) {
             if (!matchPath(new URL(params.file).pathname)) {
                 continue
             }
@@ -102,7 +102,6 @@ const links: Provider<Settings> = {
                     title: interpolate(title, groups),
                     detail: description ? interpolate(description, groups) : undefined,
                     url: interpolate(url, groups),
-                    preview,
                 }
                 item.id = `${item.url}:${item.title}:${item.detail || ''}`
 

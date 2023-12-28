@@ -63,8 +63,6 @@ const storybook: Provider<Settings> = {
                         id: `${story}:${i}`,
                         title: `🖼️ Storybook: ${component}/${storyName}`,
                         url: storyURL,
-                        preview: true,
-                        previewUrl: chromaticIframeURL(component, storyName, settings),
                     }
 
                     item.image = await getImagePreview(storyURL)
@@ -93,8 +91,6 @@ const storybook: Provider<Settings> = {
                         id: `${storyTitle}:${i}`,
                         title: `🖼️ Storybook: ${storyTitle}`,
                         url: storyURL,
-                        preview: true,
-                        previewUrl: chromaticIframeURL(storyTitle, story, settings),
                     }
 
                     item.image = await getImagePreview(storyURL)
@@ -167,16 +163,6 @@ function rootStorybookURL(settings: Settings): URL {
 function chromaticStoryURL(component: string, story: string, settings: Settings): string {
     const url = rootStorybookURL(settings)
     url.searchParams.set('path', `/story/${chromaticStorySlug(component, story)}`)
-    return url.toString()
-}
-
-function chromaticIframeURL(component: string, story: string, settings: Settings): string {
-    const url = new URL('/iframe.html', rootStorybookURL(settings))
-    url.searchParams.set('id', chromaticStorySlug(component, story))
-    url.searchParams.set('singleStory', 'true')
-    url.searchParams.set('controls', 'false')
-    url.searchParams.set('embed', 'true')
-    url.searchParams.set('viewMode', 'story')
     return url.toString()
 }
 

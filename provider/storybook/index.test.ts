@@ -57,9 +57,6 @@ export const Bar: Story = {}
                         id: 'Foo:0',
                         title: '🖼️ Storybook: a/b/Foo',
                         url: 'https://main--abc123.chromatic.com/?path=%2Fstory%2Fa-b--foo',
-                        preview: true,
-                        previewUrl:
-                            'https://main--abc123.chromatic.com/iframe.html?id=a-b--foo&singleStory=true&controls=false&embed=true&viewMode=story',
                         image: {
                             url: 'https://example.com/thumbnail.png',
                             alt: 'chromatic-oembed-image',
@@ -71,9 +68,6 @@ export const Bar: Story = {}
                         id: 'Bar:1',
                         title: '🖼️ Storybook: a/b/Bar',
                         url: 'https://main--abc123.chromatic.com/?path=%2Fstory%2Fa-b--bar',
-                        preview: true,
-                        previewUrl:
-                            'https://main--abc123.chromatic.com/iframe.html?id=a-b--bar&singleStory=true&controls=false&embed=true&viewMode=story',
                     },
                 ],
                 annotations: [
