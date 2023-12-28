@@ -21,7 +21,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "prebuild": "mkdir -p dist && cp -R src/* dist/ && find dist/ -name '*.tsx' -delete",
+    "prebuild": "mkdir -p dist && cp -R src/* dist/ && find dist/ -name '*.ts' -not -name '*.d.ts' -delete",
     "build": "pnpm run --silent prebuild && tsc --build",
     "test": "vitest",
     "storybook": "storybook dev --no-open --no-version-updates --no-release-notes",
