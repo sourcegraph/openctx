@@ -22,7 +22,7 @@ export interface RequestMessage {
  * User settings sent by the client to the provider.
  */
 export interface ProviderSettings {
-    [k: string]: unknown
+    [k: string]: unknown | undefined
 }
 export interface ResponseMessage {
     result?: unknown
