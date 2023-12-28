@@ -1,6 +1,6 @@
 {
   "name": "@opencodegraph/provider",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "OpenCodeGraph provider library",
   "license": "Apache-2.0",
   "repository": {

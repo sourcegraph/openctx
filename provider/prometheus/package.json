@@ -1,6 +1,6 @@
 {
   "name": "@opencodegraph/provider-prometheus",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Hover over a Prometheus metric to see what it's doing in prod (OpenCodeGraph provider)",
   "license": "Apache-2.0",
   "repository": {
