@@ -1,6 +1,6 @@
-import { OpenCodeGraphProvider } from '@opencodegraph/provider'
+import { Provider } from '@opencodegraph/provider'
 
-const provider: OpenCodeGraphProvider = {
+const provider: Provider = {
     capabilities: () => ({ selector: [{ path: 'foo' }] }),
     annotations: () => ({ items: [], annotations: [] }),
 }

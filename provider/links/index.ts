@@ -4,9 +4,9 @@ import {
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
-    type OpenCodeGraphItem,
-    type OpenCodeGraphProvider,
-    type OpenCodeGraphRange,
+    type Item,
+    type Provider,
+    type Range,
 } from '@opencodegraph/provider'
 
 /** Settings for the `links` OpenCodeGraph provider. */
@@ -65,7 +65,7 @@ interface LinkPattern {
  * These links will be visible in every dev's editor, in code search, on the code host, and in code
  * review (assuming all of those tools have OpenCodeGraph support).
  */
-const links: OpenCodeGraphProvider<Settings> = {
+const links: Provider<Settings> = {
     capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
         return { selector: settings.links?.map(({ path }) => ({ path })) || [] }
     },
@@ -97,7 +97,7 @@ const links: OpenCodeGraphProvider<Settings> = {
 
             const ranges = matchResults(pattern, lines)
             for (const { range, groups } of ranges) {
-                const item: OpenCodeGraphItem = {
+                const item: Item = {
                     id: '',
                     title: interpolate(title, groups),
                     detail: description ? interpolate(description, groups) : undefined,
@@ -128,7 +128,7 @@ const links: OpenCodeGraphProvider<Settings> = {
 export default links
 
 interface MatchResult {
-    range: OpenCodeGraphRange
+    range: Range
     groups?: MatchGroup[]
 }
 

@@ -1,5 +1,5 @@
 import { type AnnotationsParams, type AnnotationsResult } from '@opencodegraph/protocol'
-import { type OpenCodeGraphRange } from '@opencodegraph/schema'
+import { type Range } from '@opencodegraph/schema'
 import { of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
@@ -33,7 +33,7 @@ describe('observeAnnotations', () => {
     test('simple', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             expectObservable(
-                observeAnnotations<OpenCodeGraphRange>(
+                observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [{ providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} }],
                     }),
@@ -47,7 +47,7 @@ describe('observeAnnotations', () => {
     test('no providers', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             expectObservable(
-                observeAnnotations<OpenCodeGraphRange>(
+                observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [],
                     }),
@@ -61,7 +61,7 @@ describe('observeAnnotations', () => {
     test('2 providers', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             expectObservable(
-                observeAnnotations<OpenCodeGraphRange>(
+                observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             { providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} },
@@ -86,7 +86,7 @@ describe('observeAnnotations', () => {
                 settings: {},
             }
             expectObservable(
-                observeAnnotations<OpenCodeGraphRange>(
+                observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             erroringProvider,
@@ -110,7 +110,7 @@ describe('observeAnnotations', () => {
     test('config changes', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             expectObservable(
-                observeAnnotations<OpenCodeGraphRange>(
+                observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a-b', {
                         a: [{ providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} }],
                         b: [

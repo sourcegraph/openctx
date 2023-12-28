@@ -10,11 +10,11 @@
 // When VS Code supports dynamic import()s for extensions, we can remove this.
 
 import { readFile } from 'fs/promises'
-import { type OpenCodeGraphProvider } from '@opencodegraph/client'
+import { type Provider } from '@opencodegraph/client'
 import * as esbuild from 'esbuild-wasm/esm/browser'
 import * as vscode from 'vscode'
 
-function requireFromString(cjsSource: string, filename: string): { default: OpenCodeGraphProvider } {
+function requireFromString(cjsSource: string, filename: string): { default: Provider } {
     const Module: any = module.constructor
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const m = new Module()
@@ -27,7 +27,7 @@ function requireFromString(cjsSource: string, filename: string): { default: Open
 export async function dynamicImportFromSource(
     _uri: string,
     esmSource?: string
-): Promise<{ exports: { default: OpenCodeGraphProvider } }> {
+): Promise<{ exports: { default: Provider } }> {
     if (esmSource === undefined) {
         throw new Error('vscode dynamicImport requires esmSource')
     }

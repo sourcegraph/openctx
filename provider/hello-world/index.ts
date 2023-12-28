@@ -1,11 +1,11 @@
 import {
+    type Annotation,
     type AnnotationsParams,
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
-    type OpenCodeGraphAnnotation,
-    type OpenCodeGraphItem,
-    type OpenCodeGraphProvider,
+    type Item,
+    type Provider,
     type ProviderSettings,
 } from '@opencodegraph/provider'
 
@@ -13,13 +13,13 @@ import {
  * A demo [OpenCodeGraph](https://opencodegraph.org) provider that annotates every 10th line in every
  * file with "✨ Hello, world!".
  */
-const helloWorld: OpenCodeGraphProvider = {
+const helloWorld: Provider = {
     capabilities(params: CapabilitiesParams, settings: ProviderSettings): CapabilitiesResult {
         return {}
     },
 
     annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
-        const item: OpenCodeGraphItem = {
+        const item: Item = {
             id: 'hello-world',
             title: '✨ Hello, world!',
             detail: 'From OpenCodeGraph',
@@ -27,7 +27,7 @@ const helloWorld: OpenCodeGraphProvider = {
         }
 
         const lines = params.content.split('\n')
-        const annotations: OpenCodeGraphAnnotation[] = []
+        const annotations: Annotation[] = []
         for (const [i, line] of lines.entries()) {
             if (i % 10 !== 0) {
                 continue

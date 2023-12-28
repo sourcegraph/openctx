@@ -3,10 +3,10 @@ import {
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
-    type OpenCodeGraphImage,
-    type OpenCodeGraphItem,
-    type OpenCodeGraphProvider,
-    type OpenCodeGraphRange,
+    type Item,
+    type ItemImage,
+    type Provider,
+    type Range,
 } from '@opencodegraph/provider'
 
 // Keep in sync with README.md
@@ -31,7 +31,7 @@ export interface Settings {
  * image previews from [Storybook](https://storybook.js.org/), so you can see what your UI
  * components look like.
  */
-const storybook: OpenCodeGraphProvider<Settings> = {
+const storybook: Provider<Settings> = {
     capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
         if (!settings.storybookUrl) {
             return {}
@@ -59,7 +59,7 @@ const storybook: OpenCodeGraphProvider<Settings> = {
                 for (const [i, story] of matches.entries()) {
                     const storyName = getStoryNameAlias(story, params.content)
                     const storyURL = chromaticStoryURL(component, storyName, settings)
-                    const item: OpenCodeGraphItem = {
+                    const item: Item = {
                         id: `${story}:${i}`,
                         title: `🖼️ Storybook: ${component}/${storyName}`,
                         url: storyURL,
@@ -89,7 +89,7 @@ const storybook: OpenCodeGraphProvider<Settings> = {
                 if (storyTitle) {
                     const story = 'Default'
                     const storyURL = chromaticStoryURL(storyTitle, story, settings)
-                    const item: OpenCodeGraphItem = {
+                    const item: Item = {
                         id: `${storyTitle}:${i}`,
                         title: `🖼️ Storybook: ${storyTitle}`,
                         url: storyURL,
@@ -114,9 +114,9 @@ const storybook: OpenCodeGraphProvider<Settings> = {
 
 export default storybook
 
-function firstSubmatchMatches(pattern: RegExp, lines: string[]): { matches: string[]; ranges: OpenCodeGraphRange[] } {
+function firstSubmatchMatches(pattern: RegExp, lines: string[]): { matches: string[]; ranges: Range[] } {
     const matches: string[] = []
-    const ranges: OpenCodeGraphRange[] = []
+    const ranges: Range[] = []
     for (const [i, line] of lines.entries()) {
         const match = line.match(pattern)
         if (match) {
@@ -180,7 +180,7 @@ function chromaticIframeURL(component: string, story: string, settings: Settings
     return url.toString()
 }
 
-async function getImagePreview(storyUrlStr: string): Promise<OpenCodeGraphImage | undefined> {
+async function getImagePreview(storyUrlStr: string): Promise<ItemImage | undefined> {
     const storyUrl = new URL(storyUrlStr)
     if (!storyUrl.hostname.endsWith('.chromatic.com')) {
         return undefined // only oEmbed for Chromatic is supported

@@ -1,4 +1,4 @@
-import { type Annotation, type AnnotationsParams, type OpenCodeGraphItem } from '@opencodegraph/client'
+import { type Annotation, type AnnotationsParams, type Item } from '@opencodegraph/client'
 import { createItemChipList } from '@opencodegraph/ui-standalone'
 import { combineLatest, debounceTime, EMPTY, map, mergeMap, Observable, startWith, tap } from 'rxjs'
 import { toLineRangeStrings } from '../../shared/util/toLineRangeStrings'
@@ -109,7 +109,7 @@ function redraw(annotations: Annotation[]): void {
         }
     }
 
-    function addChipsToCodeRow(line: number, items: OpenCodeGraphItem[]): void {
+    function addChipsToCodeRow(line: number, items: Item[]): void {
         const lineEl = document.querySelector(`.react-file-line[data-line-number="${line + 1}"]`)
         if (lineEl) {
             const chipList = createItemChipList(

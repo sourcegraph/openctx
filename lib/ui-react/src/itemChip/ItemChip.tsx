@@ -1,4 +1,4 @@
-import { type OpenCodeGraphItem } from '@opencodegraph/schema'
+import { type Item } from '@opencodegraph/schema'
 import classNames from 'classnames'
 import React, { useCallback, useRef, useState } from 'react'
 import styles from './ItemChip.module.css'
@@ -8,7 +8,7 @@ import { Popover } from './Popover'
  * A single OpenCodeGraph item, displayed as a "chip".
  */
 export const ItemChip: React.FunctionComponent<{
-    item: OpenCodeGraphItem
+    item: Item
     className?: string
     popoverClassName?: string
 }> = ({ item, className, popoverClassName }) => {
@@ -43,12 +43,15 @@ export const ItemChip: React.FunctionComponent<{
 }
 
 const ItemTitle: React.FunctionComponent<{
-    title: OpenCodeGraphItem['title']
+    title: Item['title']
 }> = ({ title }) => <h4 className={styles.title}>{title}</h4>
 
-const ItemDetail: React.FunctionComponent<
-    Pick<OpenCodeGraphItem, 'title' | 'detail' | 'image'> & { iframe?: string }
-> = ({ title, detail, image, iframe }) => {
+const ItemDetail: React.FunctionComponent<Pick<Item, 'title' | 'detail' | 'image'> & { iframe?: string }> = ({
+    title,
+    detail,
+    image,
+    iframe,
+}) => {
     // Wait for the iframe to load before displaying it, to reduce visual flicker.
     const [iframeLoaded, setIframeLoaded] = useState(false)
     const onIframeLoad = useCallback<React.ReactEventHandler<HTMLIFrameElement>>(ev => {
@@ -78,7 +81,7 @@ const ItemDetail: React.FunctionComponent<
 }
 
 const ItemImage: React.FunctionComponent<{
-    image: NonNullable<OpenCodeGraphItem['image']>
+    image: NonNullable<Item['image']>
 }> = ({ image }) => (
     <div className={styles.imageContainer}>
         <img src={image.url} alt={image.alt} width={image.width} height={image.height} className={styles.image} />
@@ -89,7 +92,7 @@ const ItemImage: React.FunctionComponent<{
  * A list of OCG items.
  */
 export const ItemChipList: React.FunctionComponent<{
-    items: OpenCodeGraphItem[]
+    items: Item[]
     className?: string
     chipClassName?: string
     popoverClassName?: string

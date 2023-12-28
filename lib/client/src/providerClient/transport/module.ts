@@ -1,4 +1,4 @@
-import { type OpenCodeGraphProvider as Provider } from '@opencodegraph/provider'
+import { type Provider } from '@opencodegraph/provider'
 import type { ProviderTransport, ProviderTransportOptions } from './createTransport'
 
 export function createRemoteModuleFileTransport(

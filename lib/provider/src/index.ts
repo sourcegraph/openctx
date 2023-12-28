@@ -4,7 +4,7 @@
 // eslint-disable-next-line import/extensions
 import matchGlob from 'picomatch/lib/picomatch.js'
 
-export type { Provider as OpenCodeGraphProvider } from './provider'
+export type { Provider as Provider } from './provider'
 export type * from '@opencodegraph/schema'
 export type * from '@opencodegraph/protocol'
 

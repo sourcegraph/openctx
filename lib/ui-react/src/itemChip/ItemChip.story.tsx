@@ -1,8 +1,8 @@
-import type { OpenCodeGraphItem } from '@opencodegraph/schema'
+import type { Item } from '@opencodegraph/schema'
 import { type Meta, type StoryObj } from '@storybook/react'
 import { ItemChip } from './ItemChip'
 
-const FIXTURE_ITEM: OpenCodeGraphItem = {
+const FIXTURE_ITEM: Item = {
     id: 'css-docs',
     title: '📘 Docs: CSS in client/web',
 }

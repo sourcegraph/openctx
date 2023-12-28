@@ -4,10 +4,10 @@ import {
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
-    type OpenCodeGraphItem,
-    type OpenCodeGraphPosition,
-    type OpenCodeGraphProvider,
-    type OpenCodeGraphRange,
+    type Item,
+    type Position,
+    type Provider,
+    type Range,
 } from '@opencodegraph/provider'
 
 /** Settings for the Prometheus OpenCodeGraph provider. */
@@ -56,7 +56,7 @@ interface MetricRegistrationPattern {
  * - TODO(sqs): Hit the Prometheus/Grafana APIs to fetch data (eg `curl -XPOST
  *   'https://prometheus.demo.do.prometheus.io/api/v1/query?query=go_gc_duration_seconds&timeout=200ms'`).
  */
-const prometheus: OpenCodeGraphProvider<Settings> = {
+const prometheus: Provider<Settings> = {
     capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
         return { selector: settings.metricRegistrationPatterns?.map(({ path }) => ({ path })) || [] }
     },
@@ -88,7 +88,7 @@ const prometheus: OpenCodeGraphProvider<Settings> = {
 
             const ranges = matchResults(pattern, params.content, positionCalculator)
             for (const { range, metricName } of ranges) {
-                const item: OpenCodeGraphItem = {
+                const item: Item = {
                     id: '',
                     title: `📟 Prometheus metric: ${metricName}`,
                     url: urlTemplate.replaceAll('$1', metricName),
@@ -114,7 +114,7 @@ const prometheus: OpenCodeGraphProvider<Settings> = {
 export default prometheus
 
 interface MatchResult {
-    range: OpenCodeGraphRange
+    range: Range
     metricName: string
 }
 
@@ -135,7 +135,7 @@ function matchResults(pattern: RegExp, content: string, pos: PositionCalculator)
     return results
 }
 
-type PositionCalculator = (offset: number) => OpenCodeGraphPosition
+type PositionCalculator = (offset: number) => Position
 function createFilePositionCalculator(content: string): PositionCalculator {
     const lines = content.split('\n')
     return (offset: number) => {

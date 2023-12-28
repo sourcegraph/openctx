@@ -1,6 +1,6 @@
 import { type AnnotationsParams, type ProviderSettings } from '@opencodegraph/protocol'
-import { type OpenCodeGraphProvider } from '@opencodegraph/provider'
-import { type OpenCodeGraphRange } from '@opencodegraph/schema'
+import { type Provider } from '@opencodegraph/provider'
+import { type Range } from '@opencodegraph/schema'
 import { LRUCache } from 'lru-cache'
 import {
     catchError,
@@ -27,7 +27,7 @@ import { createProviderClient, type ProviderClient } from '../providerClient/cre
  *
  * @template R The type to use for ranges (such as `vscode.Range` for VS Code extensions).
  */
-export interface ClientEnv<R extends OpenCodeGraphRange> {
+export interface ClientEnv<R extends Range> {
     /**
      * The configuration (set by the user in the client application) that applies to a file,
      * typically the file that is being annotated with OpenCodeGraph information.
@@ -58,23 +58,20 @@ export interface ClientEnv<R extends OpenCodeGraphRange> {
      * @param range A plain range.
      * @returns A "rich" range (such as `vscode.Range`).
      */
-    makeRange: (range: OpenCodeGraphRange) => R
+    makeRange: (range: Range) => R
 
     /**
      * Called (if set) to dynamically import an OpenCodeGraph provider from a URI. This can be used
      * by runtimes that need to pre-bundle providers.
      */
-    dynamicImportFromUri?: (uri: string) => Promise<{ default: OpenCodeGraphProvider }>
+    dynamicImportFromUri?: (uri: string) => Promise<{ default: Provider }>
 
     /**
      * Called (if set) to dynamically import an OpenCodeGraph provider from its ES module source
      * code. This can be used by runtimes that only support `require()` and CommonJS (such as VS
      * Code).
      */
-    dynamicImportFromSource?: (
-        uri: string,
-        esmSource: string
-    ) => Promise<{ exports: { default: OpenCodeGraphProvider } }>
+    dynamicImportFromSource?: (uri: string, esmSource: string) => Promise<{ exports: { default: Provider } }>
 
     /**
      * @internal
@@ -98,7 +95,7 @@ export interface AuthInfo {
  *
  * @template R The type to use for ranges (such as `vscode.Range` for VS Code extensions).
  */
-export interface Client<R extends OpenCodeGraphRange> {
+export interface Client<R extends Range> {
     /**
      * Get the annotations returned by the configured providers for the given file.
      *
@@ -141,7 +138,7 @@ export interface Client<R extends OpenCodeGraphRange> {
  *
  * @template R The type to use for ranges (such as `vscode.Range` for VS Code extensions).
  */
-export function createClient<R extends OpenCodeGraphRange>(env: ClientEnv<R>): Client<R> {
+export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     const subscriptions: Unsubscribable[] = []
 
     const providerCache = createProviderPool()

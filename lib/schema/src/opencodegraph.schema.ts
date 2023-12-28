@@ -1,11 +1,11 @@
 /**
  * Metadata about code
  */
-export interface OpenCodeGraphData {
-    items: OpenCodeGraphItem[]
-    annotations: OpenCodeGraphAnnotation[]
+export interface Data {
+    items: Item[]
+    annotations: Annotation[]
 }
-export interface OpenCodeGraphItem {
+export interface Item {
     id: string
     title: string
     detail?: string
@@ -21,26 +21,26 @@ export interface OpenCodeGraphItem {
      * If `preview` is set, show this URL as the preview instead of `url`.
      */
     previewUrl?: string
-    image?: OpenCodeGraphImage
+    image?: ItemImage
 }
-export interface OpenCodeGraphImage {
+export interface ItemImage {
     url: string
     width?: number
     height?: number
     alt?: string
 }
-export interface OpenCodeGraphAnnotation {
-    range: OpenCodeGraphRange
-    item: OpenCodeGraphItemRef
+export interface Annotation {
+    range: Range
+    item: ItemRef
 }
-export interface OpenCodeGraphRange {
-    start: OpenCodeGraphPosition
-    end: OpenCodeGraphPosition
+export interface Range {
+    start: Position
+    end: Position
 }
-export interface OpenCodeGraphPosition {
+export interface Position {
     line: number
     character: number
 }
-export interface OpenCodeGraphItemRef {
+export interface ItemRef {
     id: string
 }
