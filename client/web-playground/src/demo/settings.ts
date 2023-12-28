@@ -9,7 +9,6 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
                     title: 'Telemetry',
                     url: 'https://docs.sourcegraph.com/dev/background-information/telemetry#sourcegraph-web-app',
                     type: 'docs',
-                    preview: true,
                     path: '**/*.ts?(x)',
                     pattern: 'eventLogger\\.',
                 },
@@ -17,7 +16,6 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
                     title: 'CSS in client/web',
                     url: 'https://docs.sourcegraph.com/dev/background-information/web/styling#styling-ui',
                     type: 'docs',
-                    preview: true,
                     path: '**/*.ts?(x)',
                     pattern: '^import styles from',
                 },
@@ -25,7 +23,6 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
                     title: 'Bazel at Sourcegraph',
                     url: 'https://docs.sourcegraph.com/dev/background-information/bazel#bazel-at-sourcegraph',
                     type: 'docs',
-                    preview: true,
                     path: '**/{BUILD.bazel,*.bzl,*.bazelrc,WORKSPACE}',
                 },
                 {

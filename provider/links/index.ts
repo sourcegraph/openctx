@@ -27,9 +27,6 @@ interface LinkPattern {
     /** The type of link (if applicable), which may affect the appearance. */
     type?: 'docs'
 
-    /** Whether to show a preview of the URL on hover. */
-    preview?: boolean
-
     /** Glob pattern matching the file URIs to annotate. */
     path: string
 
@@ -72,7 +69,7 @@ const links: Provider<Settings> = {
 
     annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
         const compiledPatterns:
-            | (Pick<LinkPattern, 'title' | 'url' | 'description' | 'preview' | 'type'> & {
+            | (Pick<LinkPattern, 'title' | 'url' | 'description' | 'type'> & {
                   pattern?: RegExp
                   matchPath: (path: string) => boolean
               })[]

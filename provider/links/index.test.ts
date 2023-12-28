@@ -10,7 +10,6 @@ describe('links', () => {
                 url: 'https://example.com/foo',
                 path: '**/*.ts',
                 type: 'docs',
-                preview: true,
                 pattern: /foo/.source,
             },
             { title: 'Bar', url: 'https://example.com/bar', path: '**/*.go', type: 'docs', pattern: /bar/.source },
