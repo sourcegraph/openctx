@@ -1,5 +1,5 @@
 import { type Item } from '@opencodegraph/schema'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import React, { useCallback, useRef, useState } from 'react'
 import styles from './ItemChip.module.css'
 import { Popover } from './Popover'
@@ -21,14 +21,14 @@ export const ItemChip: React.FunctionComponent<{
     const anchorRef = useRef<HTMLElement>(null)
 
     return (
-        <aside className={classNames(styles.item, hasDetail ? styles.itemHasDetail : null, className)} ref={anchorRef}>
+        <aside className={clsx(styles.item, hasDetail ? styles.itemHasDetail : null, className)} ref={anchorRef}>
             <header onMouseEnter={showPopover} onMouseLeave={hidePopover} onFocus={showPopover} onBlur={hidePopover}>
                 <ItemTitle title={item.title} />
                 {item.url && <a className={styles.stretchedLink} aria-hidden={true} href={item.url} />}
             </header>
             {hasDetail && anchorRef.current && (
                 <Popover anchor={anchorRef.current} visible={popoverVisible}>
-                    <aside className={classNames(styles.popoverContent, popoverClassName)}>
+                    <aside className={clsx(styles.popoverContent, popoverClassName)}>
                         <ItemDetail title={item.title} detail={item.detail} image={item.image} />
                     </aside>
                 </Popover>
@@ -65,7 +65,7 @@ export const ItemChipList: React.FunctionComponent<{
     chipClassName?: string
     popoverClassName?: string
 }> = ({ items, className, chipClassName, popoverClassName }) => (
-    <div className={classNames(styles.list, className)}>
+    <div className={clsx(styles.list, className)}>
         {items.map(item => (
             <ItemChip key={item.id} item={item} className={chipClassName} popoverClassName={popoverClassName} />
         ))}
