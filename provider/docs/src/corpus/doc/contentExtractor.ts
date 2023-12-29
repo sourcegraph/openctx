@@ -1,6 +1,6 @@
 import { Readability } from '@mozilla/readability'
-import { parseDOM } from '../../dom'
-import { type Doc } from './doc'
+import { parseDOM } from '../../dom.ts'
+import { type Doc } from './doc.ts'
 
 export interface Content {
     /**
@@ -22,19 +22,25 @@ export interface Content {
 }
 
 export interface ContentExtractor {
+    /**
+     * The ID of the content extractor is used as a cache key for its output. Change the ID to
+     * invalidate previously cached data when the chunker implementation changes significantly.
+     */
     id: string
+
     extractContent(doc: Doc): Promise<Content | null>
 }
 
 export const extractContentUsingMozillaReadability: ContentExtractor = {
     id: 'mozillaReadability',
     async extractContent(doc) {
-        const info = new Readability(await parseDOM(doc.text, doc.url), {
+        const dom = await parseDOM(doc.text, doc.url)
+        const info = new Readability(dom, {
             charThreshold: 500,
         }).parse()
         return info
             ? {
-                  title: info.title,
+                  title: dom.title,
                   content: info.content,
                   textContent: info.textContent,
               }

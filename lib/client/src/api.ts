@@ -20,7 +20,7 @@ import { type ProviderClient } from './providerClient/createProviderClient'
  * An OpenCodeGraph annotation.
  */
 export interface Annotation<R extends Range = Range> extends Omit<AnnotationWithPlainRange, 'range'> {
-    range: R | undefined
+    range?: R | undefined
 }
 
 /**
@@ -74,6 +74,13 @@ export function observeAnnotations<R extends Range>(
                     }
                     return (a.range?.start.character ?? 0) - (b.range?.start.character ?? 0)
                 })
-        )
+        ),
+        tap(anns => {
+            if (LOG_ANNOTATIONS) {
+                logger?.(`got ${anns.length} annotations: ${JSON.stringify(anns)}`)
+            }
+        })
     )
 }
+
+const LOG_ANNOTATIONS = true

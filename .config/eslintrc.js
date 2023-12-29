@@ -34,6 +34,7 @@ const config = {
         'unicorn/switch-case-braces': 'off',
         'unicorn/prefer-event-target': 'off',
         'unicorn/prefer-dom-node-remove': 'off',
+        'unicorn/filename-case': 'off',
         'ban/ban': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         'jsx-a11y/anchor-has-content': 'off',
@@ -88,6 +89,12 @@ const config = {
       rules: {
         'import/no-default-export': 'off',
         'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+        'import/extensions': ['error', 'ignorePackages'],
+      },
+    },
+    {
+      files: ['provider/docs/**/*.ts'],
+      rules: {
         'import/extensions': ['error', 'ignorePackages'],
       },
     },
