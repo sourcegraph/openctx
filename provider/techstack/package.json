@@ -1,5 +1,5 @@
 {
-  "name": "@opencodegraph/provider-techstack",
+  "name": "@openctx/provider-techstack",
   "version": "0.0.1",
   "description": "Add tech stack file annotations to your code.",
   "license": "Apache-2.0",
@@ -23,6 +23,8 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@opencodegraph/provider": "workspace:*"
+    "@openctx/provider": "workspace:*",
+    "vite-plugin-node-polyfills": "^0.19.0",
+    "yaml": "^2.3.4"
   }
 }
