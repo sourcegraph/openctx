@@ -1,8 +1,8 @@
 import {
-    type ItemsParams,
-    type ItemsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
+    type ItemsParams,
+    type ItemsResult,
     type ProviderSettings,
 } from '@openctx/protocol'
 
