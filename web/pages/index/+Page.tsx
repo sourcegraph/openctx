@@ -62,6 +62,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'Links', type: 'provider', slug: 'links' },
     { name: 'Sourcegraph search', type: 'provider', slug: 'sourcegraph-search' },
     { name: 'Web pages', type: 'provider', slug: 'web' },
+    { name: 'Tech Stack File', type: 'provider', slug: 'techstack' },
 ]
 
 const IntegrationsSection: FunctionComponent<{ className?: string }> = ({ className }) => {
