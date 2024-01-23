@@ -7,12 +7,15 @@ import {
     type Provider
 } from '@opencodegraph/provider'
 
-import filetype from './extensions'
+export interface Settings {
+    /** Organization slug */
+    organization: string
 
-export interface Settings { dsn: string }
+    /** Individual project id */
+    project: string
 
-function configure(settings: Settings): any {
-    // TODO
+    /** Sentry auth token */
+    token: string
 }
 
 const sentry: Provider<Settings> = {
