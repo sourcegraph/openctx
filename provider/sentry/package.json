@@ -1,11 +1,11 @@
 {
-  "name": "@opencodegraph/provider-sentry",
+  "name": "@openctx/provider-sentry",
   "version": "0.0.1",
   "description": "Preview sentry issues in your code",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcegraph/opencodegraph",
+    "url": "https://github.com/sourcegraph/openctx",
     "directory": "provider/sentry"
   },
   "type": "module",
@@ -23,7 +23,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@opencodegraph/provider": "workspace:*"
+    "@openctx/provider": "workspace:*"
   },
   "devDependencies": {
     "vitest-fetch-mock": "^0.2.2"
