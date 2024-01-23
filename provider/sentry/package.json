@@ -1,0 +1,31 @@
+{
+  "name": "@opencodegraph/provider-sentry",
+  "version": "0.0.1",
+  "description": "Preview sentry issues in your code",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/opencodegraph",
+    "directory": "provider/sentry"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "index.ts",
+    "!**/*.test.*",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@opencodegraph/provider": "workspace:*"
+  },
+  "devDependencies": {
+    "vitest-fetch-mock": "^0.2.2"
+  }
+}
