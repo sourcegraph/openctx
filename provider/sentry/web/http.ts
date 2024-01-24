@@ -26,7 +26,7 @@ export class HTTP {
         const r: Response = await fetch(this.url + route, {
             method: "PUT",
             headers: this.headers(),
-            body: data
+            body: JSON.stringify(data)
         })
 
         if (r.status === 200) return r.json()
@@ -37,7 +37,7 @@ export class HTTP {
         const r: Response = await fetch(this.url + route, {
             method: "POST",
             headers: this.headers(),
-            body: data
+            body: JSON.stringify(data)
         })
 
         if (r.status === 200) return r.json()

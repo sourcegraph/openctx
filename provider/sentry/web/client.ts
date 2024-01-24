@@ -10,7 +10,7 @@ export class Sentry {
 
     constructor(settings: Settings) {
         this.settings = settings
-        this.http = new HTTP('/api/0', this.settings.token)
+        this.http = new HTTP('https://sentry.io/api/0', this.settings.token)
     }
 
     /**
