@@ -19,7 +19,11 @@ export class Sentry {
      * @param org - identifier or slug for an organization.
      */
     async organization(org: string): Promise<any> {
-        return await this.http.get(`/organizations/${org}`)
+        try {
+            return await this.http.get(`/organizations/${org}/`)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     /**
@@ -29,7 +33,11 @@ export class Sentry {
      * @param proj - identifier or slug for a project.
      */
     async project(org: string, proj: string): Promise<any> {
-        return await this.http.get(`/projects/${org}/${proj}`)
+        try {
+            return await this.http.get(`/projects/${org}/${proj}/`)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     /**
@@ -39,6 +47,10 @@ export class Sentry {
     * @param proj - identifier or slug for a project.
     */
     async issues(org: string, proj: string): Promise<any> {
-        return await this.http.get(`/projects/${org}/${proj}/issues`)
+        try {
+            return await this.http.get(`/projects/${org}/${proj}/issues/`)
+        } catch (e) {
+            console.error(e)
+        }
     }
 }
