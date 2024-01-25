@@ -18,7 +18,7 @@ export class HTTP {
             headers: this.headers()
         })
 
-        if (r.status === 200) return r.json()
+        if (r.status === 200) return r
         throw Error(`GET "${this.url + route}" failed with ${r.status}`)
     }
 
@@ -29,7 +29,7 @@ export class HTTP {
             body: JSON.stringify(data)
         })
 
-        if (r.status === 200) return r.json()
+        if (r.status === 200) return r
         throw Error(`PUT "${this.url + route}" failed with ${r.status}`)
     }
 
@@ -40,7 +40,7 @@ export class HTTP {
             body: JSON.stringify(data)
         })
 
-        if (r.status === 200) return r.json()
+        if (r.status === 200) return r
         throw Error(`POST "${this.url + route}" failed with ${r.status}`)
     }
 
@@ -50,7 +50,7 @@ export class HTTP {
             headers: this.headers()
         })
 
-        if (r.status === 200) return r.json()
+        if (r.status === 200) return r
         throw Error(`DELETE "${this.url + route}" failed with ${r.status}`)
     }
 }
