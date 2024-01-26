@@ -1,7 +1,6 @@
 
 import { Settings } from '../index'
 import { HTTP } from './http'
-import { WebEvent, WebIssue, WebProject, WebOrganization } from './schema'
 
 
 export class Sentry {
