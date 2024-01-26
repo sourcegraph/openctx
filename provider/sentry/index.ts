@@ -1,3 +1,4 @@
+/* eslint-disable no-multiple-empty-lines */
 
 import {
     type AnnotationsParams,
@@ -6,6 +7,7 @@ import {
     type CapabilitiesResult,
     type Provider
 } from '@opencodegraph/provider'
+
 
 export interface Settings {
     /** Organization slug */
