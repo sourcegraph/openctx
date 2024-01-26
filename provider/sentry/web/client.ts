@@ -20,7 +20,8 @@ export class Sentry {
      */
     async organization(org: string): Promise<any> {
         try {
-            return await this.http.get(`/organizations/${org}/`)
+            const r = await this.http.get(`/organizations/${org}/`)
+            return r.json() ?? r.text
         } catch (e) {
             console.error(e)
         }
@@ -34,7 +35,8 @@ export class Sentry {
      */
     async project(org: string, proj: string): Promise<any> {
         try {
-            return await this.http.get(`/projects/${org}/${proj}/`)
+            const r = await this.http.get(`/projects/${org}/${proj}/`)
+            return r.json() ?? r.text
         } catch (e) {
             console.error(e)
         }
@@ -48,7 +50,8 @@ export class Sentry {
     */
     async issues(org: string, proj: string): Promise<any> {
         try {
-            return await this.http.get(`/projects/${org}/${proj}/issues/`)
+            const r = await this.http.get(`/projects/${org}/${proj}/issues/`)
+            return r.json() ?? r.text
         } catch (e) {
             console.error(e)
         }
