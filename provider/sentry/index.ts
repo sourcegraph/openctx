@@ -7,6 +7,7 @@ import {
     type CapabilitiesResult,
     type Provider
 } from '@opencodegraph/provider'
+import * as extensions from './extensions'
 
 
 export interface Settings {
@@ -18,11 +19,14 @@ export interface Settings {
 
     /** Sentry auth token */
     token: string
+
+    /** Sentry platform */
+    platform?: string   // TODO: Use platform value from sentry API
 }
 
 const sentry: Provider<Settings> = {
     capabilities(params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
-        // TODO
+        return { selector: extensions.filetype(settings.platform) }
     },
 
     async annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
