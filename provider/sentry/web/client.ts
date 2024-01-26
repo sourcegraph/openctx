@@ -1,11 +1,12 @@
+/* eslint-disable no-multiple-empty-lines */
 
-import { Settings } from '../index'
 import { HTTP } from './http'
+import { type Settings } from '../index'
 
 
 export class Sentry {
-    http: HTTP
-    settings: Settings
+    private http: HTTP
+    private settings: Settings
 
     constructor(settings: Settings) {
         this.settings = settings
@@ -17,7 +18,7 @@ export class Sentry {
      *
      * @param org - identifier or slug for an organization.
      */
-    async organization(org: string): Promise<any> {
+    public async organization(org: string): Promise<any> {
         try {
             const r = await this.http.get(`/organizations/${org}/`)
             return r.json() ?? r.text
@@ -32,7 +33,7 @@ export class Sentry {
      * @param org - identifier or slug for an organization.
      * @param proj - identifier or slug for a project.
      */
-    async project(org: string, proj: string): Promise<any> {
+    public async project(org: string, proj: string): Promise<any> {
         try {
             const r = await this.http.get(`/projects/${org}/${proj}/`)
             return r.json() ?? r.text
@@ -47,7 +48,7 @@ export class Sentry {
     * @param org - identifier or slug for an organization.
     * @param proj - identifier or slug for a project.
     */
-    async issues(org: string, proj: string): Promise<any> {
+    public async issues(org: string, proj: string): Promise<any> {
         try {
             const r = await this.http.get(`/projects/${org}/${proj}/issues/`)
             return r.json() ?? r.text
