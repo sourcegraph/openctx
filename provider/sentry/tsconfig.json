@@ -6,7 +6,7 @@
     "outDir": "dist",
     "lib": ["ESNext"],
   },
-  "include": ["*.ts"],
+  "include": ["*.ts", "**/*.ts"],
   "exclude": ["dist", "vitest.config.ts"],
   "references": [{ "path": "../../lib/provider" }],
 }

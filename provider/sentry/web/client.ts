@@ -43,11 +43,11 @@ export class Sentry {
     }
 
     /**
-    * Returns all issues for a project.
-    *
-    * @param org - identifier or slug for an organization.
-    * @param proj - identifier or slug for a project.
-    */
+     * Returns all issues for a project.
+     *
+     * @param org - identifier or slug for an organization.
+     * @param proj - identifier or slug for a project.
+     */
     public async issues(org: string, proj: string): Promise<any> {
         try {
             const r = await this.http.get(`/projects/${org}/${proj}/issues/`)
