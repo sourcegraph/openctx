@@ -1,4 +1,3 @@
-/* eslint-disable no-multiple-empty-lines */
 
 import {
     type AnnotationsParams,
@@ -7,6 +6,7 @@ import {
     type CapabilitiesResult,
     type Provider
 } from '@opencodegraph/provider'
+
 import * as extensions from './extensions'
 
 
@@ -30,7 +30,7 @@ const sentry: Provider<Settings> = {
     },
 
     async annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
-        // TODO
+        const result: AnnotationsResult = { items: [], annotations: [] }
     }
 }
 

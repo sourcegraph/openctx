@@ -1,4 +1,3 @@
-/* eslint-disable no-multiple-empty-lines */
 
 import { type Selector } from '@opencodegraph/provider'
 

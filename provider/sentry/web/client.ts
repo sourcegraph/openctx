@@ -1,4 +1,3 @@
-/* eslint-disable no-multiple-empty-lines */
 
 import { HTTP } from './http'
 import { type Settings } from '../index'
