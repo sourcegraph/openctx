@@ -11,7 +11,7 @@ import { annotationsByLine, LINE_CHIPS_CLASSNAME, styledItemChipListParams } fro
  *
  * Good URLs to test on:
  *
- * - Small file: https://github.com/sourcegraph/sourcegraph/blob/main/internal/repos/conf.go
+ * - Small file: https://github.com/sourcegraph/sourcegraph/blob/main/cmd/repo-updater/internal/repoupdater/observability.go
  * - Large file: https://github.com/sourcegraph/sourcegraph/blob/main/internal/repos/github.go#L1300
  */
 export function injectOnGitHubCodeView(
