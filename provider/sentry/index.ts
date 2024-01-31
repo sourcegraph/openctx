@@ -14,7 +14,7 @@ export interface Settings {
     /** Organization slug */
     organization: string
 
-    /** Individual project id */
+    /** Individual project slug */
     project: string
 
     /** Sentry auth token */
