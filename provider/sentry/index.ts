@@ -26,7 +26,8 @@ export interface Settings {
 
 const sentry: Provider<Settings> = {
     capabilities(params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
-        return { selector: extensions.filetype(settings.platform) }
+        return { selector: extensions.filetype(settings.platform || 'null')
+                                     .map(ext => new Object({path: ext})) }
     },
 
     async annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {

@@ -1,8 +1,7 @@
 
-import { type Selector } from '@opencodegraph/provider'
+interface Languages { [key: string]: string[] }
 
-
-const languages = {
+const languages: Languages = {
     c: ['.c', '.cxx'],
     cpp: ['.h', '.hpp', '.cpp', '.cxx'],
     dart: ['.dart'],
@@ -18,13 +17,13 @@ const languages = {
     swift: ['.swift'],
     typescript: ['.ts', '.tsx'],
 }
-const shortforms = {
+const shortforms: Languages = {
     py: languages.python,
     js: languages.javascript,
     ts: languages.typescript,
 }
 
 
-export const filetype = function (platform: string): Selector {
-    return { path: (languages[platform] ?? shortforms[platform]) || [] }
+export const filetype = function (platform: string): string[] {
+  return (languages[platform] ?? shortforms[platform]) || []
 }
