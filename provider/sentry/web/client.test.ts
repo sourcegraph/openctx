@@ -1,4 +1,5 @@
 
+import 'dotenv/config'
 import { describe, expect, test } from 'vitest'
 
 import { Sentry } from './client'
