@@ -3,6 +3,12 @@ import type { ProviderSettings } from '@openctx/client'
 async function getProviders(): Promise<Record<string, ProviderSettings | boolean>> {
     const providerSettings: Record<string, ProviderSettings | boolean> = {
         '../../../../provider/hello-world/index.ts': true,
+        '../../../../provider/sentry/index.ts': {
+            organization: import.meta.env.VITE_SENTRY_ORG_SLUG,
+            project: import.meta.env.VITE_SENTRY_PROJ_SLUG,
+            token: import.meta.env.VITE_SENTRY_AUTH_TOKEN,
+            platform: import.meta.env.VITE_SENTRY_PROJECT_PLATFORM
+        },
         '../../../../provider/links/index.ts': {
             links: [
                 {
