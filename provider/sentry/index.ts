@@ -53,7 +53,7 @@ const sentry: Provider<Settings> = {
                         result.items.push({
                             id: frame.lineNo,
                             title: `🔺 ${err.title ?? err.message}` ?? 'Unknown Error',
-                            url: `https://${project.slug}.sentry.io/issues/${err.groupID}/?project=${err.projectID}`
+                            url: `https://${project.organization.slug}.sentry.io/issues/${err.groupID}/?project=${err.projectID}`
                         })
                         result.annotations.push({
                             item: { id: frame.lineNo },
