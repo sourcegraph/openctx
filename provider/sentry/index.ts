@@ -46,9 +46,9 @@ const sentry: Provider<Settings> = {
         const project: any = await client.project(settings.organization, settings.project)
 
         errs.forEach((err: any) => {
-            const stacktrace = err.entries.filter(e => e.type === 'stacktrace')
-            stacktrace.forEach(trace => {
-                trace.data.frames.forEach(frame => {
+            const stacktrace = err.entries.filter((e: any) => e.type === 'stacktrace')
+            stacktrace.forEach((trace: any) => {
+                trace.data.frames.forEach((frame: any) => {
                     if (frame.lineNo <= params.content.split(/\r?\n/).length) {
                         result.items.push({
                             id: frame.lineNo,
