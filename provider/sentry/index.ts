@@ -30,6 +30,25 @@ export interface Settings {
     platform?: string   // TODO: Use platform value from sentry API
 }
 
+function parseStacktrace(frames: any, params: AnnotationsParams, metadata: any): void {
+    frames.forEach((frame: any) => {
+        if (frame.lineNo <= params.content.split(/\r?\n/).length) {
+            metadata.result.items.push({
+                id: frame.lineNo,
+                title: `🔺 ${metadata.err.title ?? metadata.err.message}` ?? 'Unknown Error',
+                url: `https://${metadata.project.organization.slug}.sentry.io/issues/${metadata.err.groupID}/?project=${metadata.err.projectID}`
+            })
+            metadata.result.annotations.push({
+                item: { id: frame.lineNo },
+                range: {
+                    start: { line: frame.lineNo, character: 0 },
+                    end: { line: frame.lineNo, character: 1 }
+                }
+            })
+        }
+    })
+}
+
 const sentry: Provider<Settings> = {
     capabilities(params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
         return {} // FIXME: Map platform correctly
@@ -39,35 +58,33 @@ const sentry: Provider<Settings> = {
 
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
         const client: Sentry = new Sentry(settings)
-        const result: AnnotationsResult = { items: [], annotations: [] }
+        const metadata = {
+            err: null,
+            result: { items: [], annotations: [] },
+            project: await client.project(settings.organization, settings.project),
+        }
 
         // Fetch project & issues from Sentry
         const errs: any = await client.errors(settings.organization, settings.project)
-        const project: any = await client.project(settings.organization, settings.project)
+        errs?.forEach((err: any) => {
+            // Update metadata
+            metadata.err = err
 
-        errs.forEach((err: any) => {
+            // Parse through stacktrace if available
             const stacktrace = err.entries.filter((e: any) => e.type === 'stacktrace')
-            stacktrace.forEach((trace: any) => {
-                trace.data.frames.forEach((frame: any) => {
-                    if (frame.lineNo <= params.content.split(/\r?\n/).length) {
-                        result.items.push({
-                            id: frame.lineNo,
-                            title: `🔺 ${err.title ?? err.message}` ?? 'Unknown Error',
-                            url: `https://${project.organization.slug}.sentry.io/issues/${err.groupID}/?project=${err.projectID}`
-                        })
-                        result.annotations.push({
-                            item: { id: frame.lineNo },
-                            range: {
-                                start: { line: frame.lineNo, character: 0 },
-                                end: { line: frame.lineNo, character: 1 }
-                            }
-                        })
-                    }
-                })
+            stacktrace?.forEach((val: any) => parseStacktrace(val.data.frames, params, metadata))
+
+            // Parse through exception if available
+            const exception = err.entries.filter((e: any) => e.type === 'exception')
+            exception?.forEach((exc: any) => {
+                exc.data.values.forEach((val: any) => parseStacktrace(val.stacktrace.frames, params, metadata))
             })
+
+            // TODO: Can we have an API response with both 'stacktrace' and 'exception' keys?
+            //       How should we handle that scenario?
         })
 
-        return result
+        return metadata.result
     },
 }
 
