@@ -8,9 +8,9 @@ import { type Settings } from '../index'
 
 describe('sentry client', () => {
     const SETTINGS: Settings = {
-        organization: process.env.SENTRY_ORG_SLUG || ('null' as string),
-        project: process.env.SENTRY_PROJ_SLUG || ('null' as string),
-        token: process.env.SENTRY_AUTH_TOKEN || ('null' as string)
+        token: process.env.SENTRY_AUTH_TOKEN || 'null',
+        project: process.env.SENTRY_PROJ_SLUG || 'null',
+        organization: process.env.SENTRY_ORG_SLUG || 'null',
     }
     const client: Sentry = new Sentry(SETTINGS)
 

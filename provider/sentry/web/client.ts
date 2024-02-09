@@ -20,7 +20,7 @@ export class Sentry {
     /**
      * Returns a Sentry organization information.
      *
-     * @param org - identifier or slug for an organization.
+     * @param org - organization slug.
      */
     public async organization(org: string): Promise<any> {
         try {
@@ -34,8 +34,8 @@ export class Sentry {
     /**
      * Returns details of an individual project.
      * 
-     * @param org - identifier or slug for an organization.
-     * @param proj - identifier or slug for a project.
+     * @param org - organization slug.
+     * @param proj - project slug.
      */
     public async project(org: string, proj: string): Promise<any> {
         try {
@@ -49,8 +49,8 @@ export class Sentry {
     /**
      * Returns all issues for a project.
      *
-     * @param org - identifier or slug for an organization.
-     * @param proj - identifier or slug for a project.
+     * @param org - organization slug.
+     * @param proj - project slug.
      */
     public async issues(org: string, proj: string): Promise<any> {
         try {
