@@ -1,5 +1,5 @@
-import { type Annotation } from '@opencodegraph/client'
-import { type createItemChipList } from '@opencodegraph/ui-standalone'
+import { type Annotation } from '@openctx/client'
+import { type createItemChipList } from '@openctx/ui-standalone'
 
 export function annotationsByLine(annotations: Annotation[]): { line: number; annotations: Annotation[] }[] {
     const byLine: { line: number; annotations: Annotation[] }[] = []
@@ -14,7 +14,7 @@ export function annotationsByLine(annotations: Annotation[]): { line: number; an
     return byLine
 }
 
-export const LINE_CHIPS_CLASSNAME = 'ocg-line-chips'
+export const LINE_CHIPS_CLASSNAME = 'octx-line-chips'
 
 export function styledItemChipListParams(
     params: Omit<Parameters<typeof createItemChipList>[0], 'className' | 'chipClassName' | 'popoverClassName'>
@@ -22,7 +22,7 @@ export function styledItemChipListParams(
     return {
         ...params,
         className: LINE_CHIPS_CLASSNAME,
-        chipClassName: 'ocg-chip',
-        popoverClassName: 'ocg-chip-popover',
+        chipClassName: 'octx-chip',
+        popoverClassName: 'octx-chip-popover',
     }
 }

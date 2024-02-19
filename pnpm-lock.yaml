@@ -106,25 +106,25 @@ importers:
 
   client/browser:
     dependencies:
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../lib/client
-      '@opencodegraph/provider':
+      '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
-      '@opencodegraph/provider-hello-world':
+      '@openctx/provider-hello-world':
         specifier: workspace:*
         version: link:../../provider/hello-world
-      '@opencodegraph/provider-links':
+      '@openctx/provider-links':
         specifier: workspace:*
         version: link:../../provider/links
-      '@opencodegraph/provider-prometheus':
+      '@openctx/provider-prometheus':
         specifier: workspace:*
         version: link:../../provider/prometheus
-      '@opencodegraph/provider-storybook':
+      '@openctx/provider-storybook':
         specifier: workspace:*
         version: link:../../provider/storybook
-      '@opencodegraph/ui-standalone':
+      '@openctx/ui-standalone':
         specifier: workspace:*
         version: link:../../lib/ui-standalone
       clsx:
@@ -179,10 +179,10 @@ importers:
 
   client/codemirror:
     dependencies:
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../lib/client
-      '@opencodegraph/ui-react':
+      '@openctx/ui-react':
         specifier: workspace:*
         version: link:../../lib/ui-react
       deep-equal:
@@ -225,19 +225,19 @@ importers:
       '@codemirror/view':
         specifier: ^6.22.0
         version: 6.22.0
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../../lib/client
-      '@opencodegraph/codemirror-extension':
+      '@openctx/codemirror-extension':
         specifier: workspace:*
         version: link:..
-      '@opencodegraph/provider-hello-world':
+      '@openctx/provider-hello-world':
         specifier: workspace:*
         version: link:../../../provider/hello-world
 
   client/monaco-editor:
     dependencies:
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../lib/client
     devDependencies:
@@ -247,13 +247,13 @@ importers:
 
   client/monaco-editor/demo:
     dependencies:
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../../lib/client
-      '@opencodegraph/monaco-editor-extension':
+      '@openctx/monaco-editor-extension':
         specifier: workspace:*
         version: link:..
-      '@opencodegraph/provider-hello-world':
+      '@openctx/provider-hello-world':
         specifier: workspace:*
         version: link:../../../provider/hello-world
       monaco-editor:
@@ -266,7 +266,7 @@ importers:
 
   client/vscode:
     dependencies:
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../lib/client
       esbuild-wasm:
@@ -330,19 +330,19 @@ importers:
       '@codemirror/lint':
         specifier: ^6.4.2
         version: 6.4.2
-      '@opencodegraph/client':
+      '@openctx/client':
         specifier: workspace:*
         version: link:../../lib/client
-      '@opencodegraph/codemirror-extension':
+      '@openctx/codemirror-extension':
         specifier: workspace:*
         version: link:../codemirror
-      '@opencodegraph/provider-links':
+      '@openctx/provider-links':
         specifier: workspace:*
         version: link:../../provider/links
-      '@opencodegraph/provider-storybook':
+      '@openctx/provider-storybook':
         specifier: workspace:*
         version: link:../../provider/storybook
-      '@opencodegraph/ui-react':
+      '@openctx/ui-react':
         specifier: workspace:*
         version: link:../../lib/ui-react
       '@uiw/react-codemirror':
@@ -370,13 +370,13 @@ importers:
 
   lib/client:
     dependencies:
-      '@opencodegraph/protocol':
+      '@openctx/protocol':
         specifier: workspace:*
         version: link:../protocol
-      '@opencodegraph/provider':
+      '@openctx/provider':
         specifier: workspace:*
         version: link:../provider
-      '@opencodegraph/schema':
+      '@openctx/schema':
         specifier: workspace:*
         version: link:../schema
       lru-cache:
@@ -398,7 +398,7 @@ importers:
 
   lib/protocol:
     dependencies:
-      '@opencodegraph/schema':
+      '@openctx/schema':
         specifier: workspace:*
         version: link:../schema
     devDependencies:
@@ -408,10 +408,10 @@ importers:
 
   lib/provider:
     dependencies:
-      '@opencodegraph/protocol':
+      '@openctx/protocol':
         specifier: workspace:*
         version: link:../protocol
-      '@opencodegraph/schema':
+      '@openctx/schema':
         specifier: workspace:*
         version: link:../schema
       picomatch:
@@ -430,10 +430,10 @@ importers:
 
   lib/ui-react:
     dependencies:
-      '@opencodegraph/schema':
+      '@openctx/schema':
         specifier: workspace:*
         version: link:../schema
-      '@opencodegraph/ui-standalone':
+      '@openctx/ui-standalone':
         specifier: workspace:*
         version: link:../ui-standalone
       clsx:
@@ -455,7 +455,7 @@ importers:
 
   lib/ui-standalone:
     dependencies:
-      '@opencodegraph/schema':
+      '@openctx/schema':
         specifier: workspace:*
         version: link:../schema
       clsx:
@@ -464,25 +464,25 @@ importers:
 
   provider/hello-world:
     dependencies:
-      '@opencodegraph/provider':
+      '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
 
   provider/links:
     dependencies:
-      '@opencodegraph/provider':
+      '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
 
   provider/prometheus:
     dependencies:
-      '@opencodegraph/provider':
+      '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
 
   provider/storybook:
     dependencies:
-      '@opencodegraph/provider':
+      '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
     devDependencies:
@@ -516,22 +516,22 @@ importers:
       '@mdx-js/rollup':
         specifier: ^3.0.0
         version: 3.0.0(rollup@4.6.1)
-      '@opencodegraph/codemirror-extension':
+      '@openctx/codemirror-extension':
         specifier: workspace:*
         version: link:../client/codemirror
-      '@opencodegraph/monaco-editor-extension':
+      '@openctx/monaco-editor-extension':
         specifier: workspace:*
         version: link:../client/monaco-editor
-      '@opencodegraph/provider-links':
+      '@openctx/provider-links':
         specifier: workspace:*
         version: link:../provider/links
-      '@opencodegraph/provider-prometheus':
+      '@openctx/provider-prometheus':
         specifier: workspace:*
         version: link:../provider/prometheus
-      '@opencodegraph/provider-storybook':
+      '@openctx/provider-storybook':
         specifier: workspace:*
         version: link:../provider/storybook
-      '@opencodegraph/web-playground':
+      '@openctx/web-playground':
         specifier: workspace:*
         version: link:../client/web-playground
       '@radix-ui/react-dialog':

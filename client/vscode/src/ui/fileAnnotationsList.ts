@@ -1,8 +1,8 @@
-import { type Annotation, type Item } from '@opencodegraph/client'
+import { type Annotation, type Item } from '@openctx/client'
 import * as vscode from 'vscode'
 import { type Controller } from '../controller'
 
-const COMMAND_ID = 'opencodegraph.showFileAnnotations'
+const COMMAND_ID = 'openctx.showFileAnnotations'
 
 export function createShowFileAnnotationsList(controller: Controller): vscode.Disposable {
     const disposables: vscode.Disposable[] = []
@@ -31,7 +31,7 @@ async function showQuickPick(controller: Controller): Promise<void> {
 
     const quickPick = vscode.window.createQuickPick<QuickPickItem>()
     disposables.push(quickPick)
-    quickPick.title = 'OpenCodeGraph Context for File'
+    quickPick.title = 'OpenCtx Context for File'
     quickPick.busy = true
     quickPick.keepScrollPosition = false
     quickPick.matchOnDescription = true
@@ -40,14 +40,13 @@ async function showQuickPick(controller: Controller): Promise<void> {
 
     const subscription = controller.observeAnnotations(editor.document).subscribe(
         anns => {
-            quickPick.items =
-                anns && anns.length > 0 ? toQuickPickItems(anns) : [{ label: 'No OpenCodeGraph annotations' }]
+            quickPick.items = anns && anns.length > 0 ? toQuickPickItems(anns) : [{ label: 'No OpenCtx annotations' }]
             quickPick.busy = false
         },
         error => {
             console.error(error)
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            vscode.window.showErrorMessage('Error loading OpenCodeGraph annotations')
+            vscode.window.showErrorMessage('Error loading OpenCtx annotations')
             disposeAll()
         },
         () => disposeAll()

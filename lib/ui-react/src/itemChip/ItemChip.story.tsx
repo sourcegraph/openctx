@@ -1,4 +1,4 @@
-import type { Item } from '@opencodegraph/schema'
+import type { Item } from '@openctx/schema'
 import { type Meta, type StoryObj } from '@storybook/react'
 import { ItemChip } from './ItemChip'
 

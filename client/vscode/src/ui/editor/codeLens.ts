@@ -1,4 +1,4 @@
-import { type Annotation } from '@opencodegraph/client'
+import { type Annotation } from '@openctx/client'
 import { firstValueFrom, map } from 'rxjs'
 import * as vscode from 'vscode'
 import { type Controller } from '../../controller'
@@ -57,7 +57,7 @@ function createCodeLens(
 function createShowHoverCommand(): {
     createCommandArgs: (uri: vscode.Uri, pos: vscode.Position) => Pick<vscode.Command, 'command' | 'arguments'>
 } & vscode.Disposable {
-    const COMMAND_ID = 'opencodegraph._showHover'
+    const COMMAND_ID = 'openctx._showHover'
     const disposable = vscode.commands.registerCommand(COMMAND_ID, (uri: vscode.Uri, pos: vscode.Position) => {
         const editor = vscode.window.activeTextEditor
         if (!editor || editor.document.uri.toString() !== uri.toString()) {

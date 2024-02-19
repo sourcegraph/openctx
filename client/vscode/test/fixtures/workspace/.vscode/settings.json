@@ -1,12 +1,12 @@
 {
-  "opencodegraph.enable": true,
-  "opencodegraph.debug": true,
-  "cody.autocomplete.experimental.graphContext": "opencodegraph",
-  "opencodegraph.providers": {
-    // "https://sourcegraph.test:3443/.api/opencodegraph": true,
+  "openctx.enable": true,
+  "openctx.debug": true,
+  "cody.autocomplete.experimental.graphContext": "openctx",
+  "openctx.providers": {
+    // "https://sourcegraph.test:3443/.api/openctx": true,
     // "../../../../../../provider/hello-world/dist/index.js": true,
-    "https://opencodegraph.org/npm/@opencodegraph/provider-hello-world": true,
-    "https://opencodegraph.org/npm/@opencodegraph/provider-links": {
+    "https://openctx.org/npm/@openctx/provider-hello-world": true,
+    "https://openctx.org/npm/@openctx/provider-links": {
       "links": [
         {
           "title": "Telemetry",
