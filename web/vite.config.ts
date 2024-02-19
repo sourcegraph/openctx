@@ -32,7 +32,9 @@ export default defineConfig(({ mode }) => ({
                   ]
                 : [],
     },
-    optimizeDeps: { include: ['react/jsx-runtime', 'react/jsx-dev-runtime', 'vike-react/renderer/onRenderClient'] },
+    optimizeDeps: {
+        include: ['react/jsx-runtime', 'react/jsx-dev-runtime', 'vike-react/renderer/onRenderClient'],
+    },
     server: {
         port: 5800,
     },

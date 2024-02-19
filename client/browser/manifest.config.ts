@@ -2,8 +2,6 @@ import { defineManifest } from '@crxjs/vite-plugin'
 import packageJson from './package.json'
 
 const { version } = packageJson
-
-// eslint-disable-next-line import/no-default-export
 export default defineManifest(env => ({
     manifest_version: 3,
     name: env.mode === 'development' ? 'OpenCtx [dev]' : 'OpenCtx',

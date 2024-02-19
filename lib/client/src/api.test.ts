@@ -1,5 +1,5 @@
-import { type AnnotationsParams, type AnnotationsResult } from '@openctx/protocol'
-import { type Range } from '@openctx/schema'
+import type { AnnotationsParams, AnnotationsResult } from '@openctx/protocol'
+import type { Range } from '@openctx/schema'
 import { of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
@@ -37,7 +37,12 @@ describe('observeAnnotations', () => {
             expectObservable(
                 observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a', {
-                        a: [{ providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} }],
+                        a: [
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('a')) },
+                                settings: {},
+                            },
+                        ],
                     }),
                     FIXTURE_PARAMS,
                     OPTS
@@ -66,14 +71,23 @@ describe('observeAnnotations', () => {
                 observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
-                            { providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} },
-                            { providerClient: { annotations: () => of(fixtureProviderResult('b')) }, settings: {} },
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('a')) },
+                                settings: {},
+                            },
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('b')) },
+                                settings: {},
+                            },
                         ],
                     }),
                     FIXTURE_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureResult('a'), fixtureResult('b')] } satisfies Record<string, Annotation[]>)
+            ).toBe('a', { a: [fixtureResult('a'), fixtureResult('b')] } satisfies Record<
+                string,
+                Annotation[]
+            >)
         })
     })
 
@@ -92,12 +106,20 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             erroringProvider,
-                            { providerClient: { annotations: () => of(fixtureProviderResult('b')) }, settings: {} },
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('b')) },
+                                settings: {},
+                            },
                         ],
 
                         b: [erroringProvider],
 
-                        c: [{ providerClient: { annotations: () => of(fixtureProviderResult('b')) }, settings: {} }],
+                        c: [
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('b')) },
+                                settings: {},
+                            },
+                        ],
                     }),
                     FIXTURE_PARAMS,
                     OPTS
@@ -114,10 +136,21 @@ describe('observeAnnotations', () => {
             expectObservable(
                 observeAnnotations<Range>(
                     cold<ProviderClientWithSettings[]>('a-b', {
-                        a: [{ providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} }],
+                        a: [
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('a')) },
+                                settings: {},
+                            },
+                        ],
                         b: [
-                            { providerClient: { annotations: () => of(fixtureProviderResult('a')) }, settings: {} },
-                            { providerClient: { annotations: () => of(fixtureProviderResult('b')) }, settings: {} },
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('a')) },
+                                settings: {},
+                            },
+                            {
+                                providerClient: { annotations: () => of(fixtureProviderResult('b')) },
+                                settings: {},
+                            },
                         ],
                     }),
                     FIXTURE_PARAMS,

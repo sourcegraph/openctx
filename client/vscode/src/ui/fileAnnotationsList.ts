@@ -1,6 +1,6 @@
-import { type Annotation, type Item } from '@openctx/client'
+import type { Annotation, Item } from '@openctx/client'
 import * as vscode from 'vscode'
-import { type Controller } from '../controller'
+import type { Controller } from '../controller'
 
 const COMMAND_ID = 'openctx.showFileAnnotations'
 
@@ -40,12 +40,12 @@ async function showQuickPick(controller: Controller): Promise<void> {
 
     const subscription = controller.observeAnnotations(editor.document).subscribe(
         anns => {
-            quickPick.items = anns && anns.length > 0 ? toQuickPickItems(anns) : [{ label: 'No OpenCtx annotations' }]
+            quickPick.items =
+                anns && anns.length > 0 ? toQuickPickItems(anns) : [{ label: 'No OpenCtx annotations' }]
             quickPick.busy = false
         },
         error => {
             console.error(error)
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             vscode.window.showErrorMessage('Error loading OpenCtx annotations')
             disposeAll()
         },
@@ -57,8 +57,14 @@ async function showQuickPick(controller: Controller): Promise<void> {
         quickPick.onDidChangeActive(activeItems => {
             const activeItem = activeItems[0]
             if (activeItem?.firstRange) {
-                editor.revealRange(activeItem.firstRange, vscode.TextEditorRevealType.InCenterIfOutsideViewport)
-                editor.selection = new vscode.Selection(activeItem.firstRange.start, activeItem.firstRange.end)
+                editor.revealRange(
+                    activeItem.firstRange,
+                    vscode.TextEditorRevealType.InCenterIfOutsideViewport
+                )
+                editor.selection = new vscode.Selection(
+                    activeItem.firstRange.start,
+                    activeItem.firstRange.end
+                )
             }
         })
     )
@@ -70,7 +76,6 @@ async function showQuickPick(controller: Controller): Promise<void> {
                 return
             }
             if (selectedItem.item?.url) {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 vscode.commands.executeCommand('vscode.open', selectedItem.item?.url)
             }
             disposeAll()
@@ -80,7 +85,6 @@ async function showQuickPick(controller: Controller): Promise<void> {
     disposables.push(
         quickPick.onDidTriggerItemButton(e => {
             if (e.item.item?.url) {
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 vscode.commands.executeCommand('vscode.open', e.item.item.url)
             }
             disposeAll()

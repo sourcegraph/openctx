@@ -3,14 +3,14 @@
  */
 
 import { readFile } from 'fs/promises'
+import { compile as compileJSONSchema } from 'json-schema-to-typescript'
 import path from 'path'
 import { pathToFileURL } from 'url'
-import { compile as compileJSONSchema } from 'json-schema-to-typescript'
 
 async function generateSchema(schemaPath: string, preamble?: string): Promise<void> {
     const schema = await readFile(schemaPath, 'utf8')
     const types = await compileJSONSchema(JSON.parse(schema), 'settings.schema', {
-        bannerComment: '', // no eslint-disable
+        bannerComment: '', // no lint disable lines
         cwd: path.dirname(schemaPath),
         additionalProperties: false,
         strictIndexSignatures: true,

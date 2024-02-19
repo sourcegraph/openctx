@@ -1,6 +1,6 @@
 import { RangeSetBuilder, type EditorState, type Extension } from '@codemirror/state'
 import { Decoration, EditorView, WidgetType, type DecorationSet } from '@codemirror/view'
-import { type Annotation, type Item } from '@openctx/client'
+import type { Annotation, Item } from '@openctx/client'
 import deepEqual from 'deep-equal'
 import { openCtxDataFacet, type OpenCtxDecorationsConfig } from './extension'
 

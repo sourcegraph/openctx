@@ -10,5 +10,6 @@ describe('toLineRangeStrings', () => {
 
     test('non-sequential lines', () => expect(toLineRangeStrings([10, 0, 1])).toEqual(['10', '0-1']))
 
-    test('non-contiguous lines', () => expect(toLineRangeStrings([1, 3, 5, 6])).toEqual(['1', '3', '5-6']))
+    test('non-contiguous lines', () =>
+        expect(toLineRangeStrings([1, 3, 5, 6])).toEqual(['1', '3', '5-6']))
 })

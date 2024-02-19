@@ -1,6 +1,6 @@
-import { type AnnotationsParams, type ProviderSettings } from '@openctx/protocol'
-import { type Provider } from '@openctx/provider'
-import { type Range } from '@openctx/schema'
+import type { AnnotationsParams, ProviderSettings } from '@openctx/protocol'
+import type { Provider } from '@openctx/provider'
+import type { Range } from '@openctx/schema'
 import { LRUCache } from 'lru-cache'
 import {
     catchError,
@@ -17,8 +17,12 @@ import {
     type Unsubscribable,
 } from 'rxjs'
 import { observeAnnotations, type Annotation, type ObservableProviderClient } from '../api'
-import { configurationFromUserInput, type Configuration, type ConfigurationUserInput } from '../configuration'
-import { type Logger } from '../logger'
+import {
+    configurationFromUserInput,
+    type Configuration,
+    type ConfigurationUserInput,
+} from '../configuration'
+import type { Logger } from '../logger'
 import { createProviderClient, type ProviderClient } from '../providerClient/createProviderClient'
 
 /**
@@ -71,7 +75,10 @@ export interface ClientEnv<R extends Range> {
      * code. This can be used by runtimes that only support `require()` and CommonJS (such as VS
      * Code).
      */
-    dynamicImportFromSource?: (uri: string, esmSource: string) => Promise<{ exports: { default: Provider } }>
+    dynamicImportFromSource?: (
+        uri: string,
+        esmSource: string
+    ) => Promise<{ exports: { default: Provider } }>
 
     /**
      * @internal
@@ -187,17 +194,20 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                       providerClient: env.__mock__?.getProviderClient
                                           ? env.__mock__.getProviderClient()
                                           : providerCache.getOrCreate(
-                                                { providerUri, authInfo: authInfo ?? undefined },
-                                                {
-                                                    logger,
-                                                    dynamicImportFromUri: env.dynamicImportFromUri,
-                                                    dynamicImportFromSource: env.dynamicImportFromSource,
-                                                }
-                                            ),
+                                                  { providerUri, authInfo: authInfo ?? undefined },
+                                                  {
+                                                      logger,
+                                                      dynamicImportFromUri: env.dynamicImportFromUri,
+                                                      dynamicImportFromSource:
+                                                          env.dynamicImportFromSource,
+                                                  }
+                                              ),
                                       settings,
                                   })),
                                   catchError(error => {
-                                      logger(`Error creating provider client for ${providerUri}: ${error}`)
+                                      logger(
+                                          `Error creating provider client for ${providerUri}: ${error}`
+                                      )
                                       return of(null)
                                   })
                               )
@@ -209,7 +219,8 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
             // Filter out null clients.
             map(providerClients =>
                 providerClients.filter(
-                    (providerClient): providerClient is ProviderClientWithSettings => providerClient !== null
+                    (providerClient): providerClient is ProviderClientWithSettings =>
+                        providerClient !== null
                 )
             )
         )

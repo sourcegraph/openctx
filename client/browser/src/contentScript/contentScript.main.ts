@@ -1,7 +1,7 @@
 import '../shared/polyfills'
 // ^^ import polyfills first
-import { type Annotation } from '@openctx/client'
-import { type AnnotationsParams } from '@openctx/provider'
+import type { Annotation } from '@openctx/client'
+import type { AnnotationsParams } from '@openctx/provider'
 import deepEqual from 'deep-equal'
 import { combineLatest, distinctUntilChanged, mergeMap, throttleTime, type Observable } from 'rxjs'
 import { background } from '../browser-extension/web-extension-api/runtime'
@@ -20,7 +20,11 @@ type Injector = (location: URL, annotationsChanges_: typeof annotationsChanges) 
 const INJECTORS: Injector[] = [injectOnGitHubCodeView, injectOnGitHubPullRequestFilesView]
 
 const subscription = locationChanges
-    .pipe(mergeMap(location => combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges)))))
+    .pipe(
+        mergeMap(location =>
+            combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges)))
+        )
+    )
     .subscribe()
 window.addEventListener('unload', () => subscription.unsubscribe())
 

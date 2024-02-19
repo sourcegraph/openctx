@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'mdx/types'
+import type { FunctionComponent } from 'mdx/types'
 import { useEffect, useState, type ComponentType, type ReactElement } from 'react'
 
 export const ClientOnlySync: FunctionComponent<{

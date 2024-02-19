@@ -74,14 +74,20 @@ export const OptionsPage: FunctionComponent = () => {
                 <label className={styles.title} htmlFor={TEXTAREA_ID}>
                     Configuration for OpenCtx
                 </label>
-                <a href="https://openctx.org/docs" target="_blank" rel="noreferrer" className={styles.docsLink}>
+                <a
+                    href="https://openctx.org/docs"
+                    target="_blank"
+                    rel="noreferrer"
+                    className={styles.docsLink}
+                >
                     Docs
                 </a>
             </h1>
             <textarea
                 ref={textareaRef}
-                autoFocus={true}
                 id={TEXTAREA_ID}
+                // biome-ignore lint/a11y/noAutofocus: ...
+                autoFocus={true}
                 className={clsx(styles.editor, formDisabled && styles.editorDisabled)}
                 readOnly={isLoading}
                 value={pendingConfig ?? configuration}

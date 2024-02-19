@@ -1,4 +1,4 @@
-import { type Item } from '@openctx/schema'
+import type { Item } from '@openctx/schema'
 import clsx from 'clsx'
 import styles from './ItemChip.module.css'
 import { getPopoverDimensions } from './popover'

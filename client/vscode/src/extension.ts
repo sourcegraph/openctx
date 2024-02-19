@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { type ExtensionApi } from './api'
+import type { ExtensionApi } from './api'
 import { secretsChanges } from './authInfo'
 import { createController } from './controller'
 

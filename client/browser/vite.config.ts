@@ -1,6 +1,6 @@
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react'
-import { defineConfig, Plugin } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import manifest from './manifest.config'
 
 const viteManifestHackIssue846: Plugin & { renderCrxManifest: (manifest: any, bundle: any) => void } = {
@@ -11,6 +11,7 @@ const viteManifestHackIssue846: Plugin & { renderCrxManifest: (manifest: any, bu
     renderCrxManifest(_manifest, bundle) {
         bundle['manifest.json'] = bundle['.vite/manifest.json']
         bundle['manifest.json'].fileName = 'manifest.json'
+        // biome-ignore lint/performance/noDelete: Property must be fully deleted.
         delete bundle['.vite/manifest.json']
     },
 }

@@ -1,10 +1,11 @@
 import { javascript } from '@codemirror/lang-javascript'
 import { createClient } from '@openctx/client'
-import { type ConfigurationUserInput } from '@openctx/client/src/configuration'
+import type { ConfigurationUserInput } from '@openctx/client/src/configuration'
 import { useOpenCtxExtension } from '@openctx/codemirror-extension'
 import CodeMirror, { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { useObservableState } from 'observable-hooks'
-import React, { useMemo, useState } from 'react'
+import type React from 'react'
+import { useMemo, useState } from 'react'
 import { catchError, NEVER, of, tap } from 'rxjs'
 import { mergeCodeMirrorProps } from './codemirror'
 import { EditorHeader } from './EditorHeader'
@@ -41,11 +42,9 @@ export const AnnotatedEditor: React.FunctionComponent<{
                     Promise.resolve({
                         enable: true,
                         providers: JSON.parse(settings)[
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                             'openctx.providers'
                         ] as ConfigurationUserInput['providers'],
                     }),
-                // eslint-disable-next-line @typescript-eslint/require-await
                 authInfo: async provider => {
                     const hostname = new URL(provider).hostname
                     if (hostname === 'sourcegraph.test') {
@@ -80,7 +79,6 @@ export const AnnotatedEditor: React.FunctionComponent<{
                     ? client.annotationsChanges({ file: fileUri, content: value }).pipe(
                           tap({
                               next: () => setError(undefined),
-                              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                               error: error => setError(error.message ?? `${error}`),
                           }),
                           catchError(() => of([]))
@@ -95,7 +93,10 @@ export const AnnotatedEditor: React.FunctionComponent<{
         visibility: true,
         annotations,
     })
-    const extensions = useMemo(() => [javascript({ jsx: true, typescript: true }), octxExtension], [octxExtension])
+    const extensions = useMemo(
+        () => [javascript({ jsx: true, typescript: true }), octxExtension],
+        [octxExtension]
+    )
 
     return (
         <section className={className}>

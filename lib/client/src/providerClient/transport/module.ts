@@ -1,4 +1,4 @@
-import { type Provider } from '@openctx/provider'
+import type { Provider } from '@openctx/provider'
 import type { ProviderTransport, ProviderTransportOptions } from './createTransport'
 
 export function createRemoteModuleFileTransport(
@@ -33,7 +33,11 @@ export function createRemoteModuleFileTransport(
 
                   const moduleSource = await resp.text()
                   try {
-                      const mod = await importModuleFromString(providerUri, moduleSource, dynamicImportFromSource)
+                      const mod = await importModuleFromString(
+                          providerUri,
+                          moduleSource,
+                          dynamicImportFromSource
+                      )
                       return providerFromModule(mod)
                   } catch (error) {
                       console.log(error)
@@ -48,10 +52,10 @@ export function createLocalModuleFileTransport(
     { dynamicImportFromUri }: Pick<ProviderTransportOptions, 'dynamicImportFromUri'>
 ): ProviderTransport {
     return lazyProvider(
-        // eslint-disable-next-line jsdoc/no-bad-blocks
-        (dynamicImportFromUri ? dynamicImportFromUri(moduleUrl) : import(/* @vite-ignore */ moduleUrl)).then(
-            providerFromModule
-        )
+        (dynamicImportFromUri
+            ? dynamicImportFromUri(moduleUrl)
+            : import(/* @vite-ignore */ moduleUrl)
+        ).then(providerFromModule)
     )
 }
 
@@ -72,7 +76,6 @@ async function importModuleFromString(
 
     // Note: Used by VS Code Web.
     const url = `data:text/javascript;charset=utf-8;base64,${base64Encode(source)}`
-    // eslint-disable-next-line jsdoc/no-bad-blocks
     return import(/* @vite-ignore */ url)
 }
 

@@ -11,7 +11,7 @@ describe('esmToCommonJS', () => {
         process.env.DESKTOP_BUILD = 'true'
     })
     afterEach(() => {
-        delete process.env.DESKTOP_BUILD
+        process.env.DESKTOP_BUILD = undefined
     })
 
     test('works', async () => {

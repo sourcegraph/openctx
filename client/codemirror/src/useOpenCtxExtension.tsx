@@ -1,5 +1,5 @@
 import type { Extension } from '@codemirror/state'
-import { type Annotation } from '@openctx/client'
+import type { Annotation } from '@openctx/client'
 import { IndentationWrapper, ItemChipList } from '@openctx/ui-react'
 import { useMemo } from 'react'
 import { createRoot } from 'react-dom/client'

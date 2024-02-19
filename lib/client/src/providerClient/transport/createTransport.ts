@@ -1,6 +1,6 @@
-import { type Provider } from '@openctx/provider/src/provider'
-import { type AuthInfo, type ClientEnv } from '../../client/client'
-import { type Logger } from '../../logger'
+import type { Provider } from '@openctx/provider/src/provider'
+import type { AuthInfo, ClientEnv } from '../../client/client'
+import type { Logger } from '../../logger'
 import { cachedTransport } from './cache'
 import { createHttpTransport } from './http'
 import { createLocalModuleFileTransport, createRemoteModuleFileTransport } from './module'
@@ -31,10 +31,16 @@ export interface ProviderTransportOptions
  *
  * @internal
  */
-export function createTransport(providerUri: string, options: ProviderTransportOptions): ProviderTransport {
+export function createTransport(
+    providerUri: string,
+    options: ProviderTransportOptions
+): ProviderTransport {
     function doResolveProvider(providerUri: string): ProviderTransport {
         let url = new URL(providerUri)
-        if (url.protocol === 'file:' || (runtimeSupportsImportFromUrl() && isRemoteJavaScriptFile(url))) {
+        if (
+            url.protocol === 'file:' ||
+            (runtimeSupportsImportFromUrl() && isRemoteJavaScriptFile(url))
+        ) {
             if (isHttpsPlusJs(url)) {
                 url = removePlusJs(url)
             }
@@ -60,7 +66,11 @@ export function createTransport(providerUri: string, options: ProviderTransportO
 }
 
 function isRemoteJavaScriptFile(url: URL): boolean {
-    return (isHttpOrHttps(url) && hasJavaScriptExt(url.pathname)) || isHttpsPlusJs(url) || isWellKnownNpmUrl(url)
+    return (
+        (isHttpOrHttps(url) && hasJavaScriptExt(url.pathname)) ||
+        isHttpsPlusJs(url) ||
+        isWellKnownNpmUrl(url)
+    )
 }
 
 function isHttpOrHttps(url: URL): boolean {
@@ -92,7 +102,6 @@ function runtimeSupportsImportFromUrl(): boolean {
     //
     // TODO(sqs): this is hacky and not correct in general
     //
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     return typeof window !== 'undefined'
 }

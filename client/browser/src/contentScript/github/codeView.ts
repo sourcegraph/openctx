@@ -1,4 +1,4 @@
-import { type Annotation, type AnnotationsParams, type Item } from '@openctx/client'
+import type { Annotation, AnnotationsParams, Item } from '@openctx/client'
 import { createItemChipList } from '@openctx/ui-standalone'
 import { combineLatest, debounceTime, EMPTY, map, mergeMap, Observable, startWith, tap } from 'rxjs'
 import { toLineRangeStrings } from '../../shared/util/toLineRangeStrings'
@@ -191,7 +191,9 @@ function lineNumbersFromReactFileLines(reactFileLineEls: HTMLElement[]): number[
 }
 
 function getReactFileLine(lineNumber: number): HTMLDivElement {
-    const el = document.querySelector<HTMLDivElement>(`.react-file-line[data-line-number="${lineNumber + 1}"]`)
+    const el = document.querySelector<HTMLDivElement>(
+        `.react-file-line[data-line-number="${lineNumber + 1}"]`
+    )
     if (!el) {
         throw new Error(`no .react-file-line for line number ${lineNumber}`)
     }

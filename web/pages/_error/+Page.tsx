@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react'
+import type { FunctionComponent } from 'react'
 
 export const Page: FunctionComponent<{ is404: boolean }> = ({ is404 }) =>
     is404 ? (

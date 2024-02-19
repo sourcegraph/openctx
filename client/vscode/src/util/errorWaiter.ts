@@ -31,7 +31,13 @@ export function createErrorWaiter(delay: number, errorCountThreshold: number): E
             errorCount++
             lastErrorAt = Date.now()
             if (errorCount === errorCountThreshold) {
-                console.log('Got many errors, waiting', delay, 'ms before retrying.', errorCount, errorCountThreshold)
+                console.log(
+                    'Got many errors, waiting',
+                    delay,
+                    'ms before retrying.',
+                    errorCount,
+                    errorCountThreshold
+                )
                 if (timeoutHandle === undefined) {
                     timeoutHandle = setTimeout(() => {
                         errorCount = 0

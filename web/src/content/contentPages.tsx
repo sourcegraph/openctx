@@ -2,8 +2,8 @@ import { MDXProvider } from '@mdx-js/react'
 import { useEffect, useState, type ComponentType } from 'react'
 import { renderToString } from 'react-dom/server'
 import { render } from 'vike/abort'
-import { type OnBeforePrerenderStartSync, type OnBeforeRenderAsync, type PageContext } from 'vike/types'
-import { type PageContextForTitle } from '../../renderer/+title.ts'
+import type { OnBeforePrerenderStartSync, OnBeforeRenderAsync, PageContext } from 'vike/types'
+import type { PageContextForTitle } from '../../renderer/+title.ts'
 import { MDX_COMPONENTS } from '../components/content/MdxComponents.tsx'
 
 export interface ConfigForContentPages {
@@ -24,7 +24,7 @@ export interface PageContextForContentPage {
      * Available in {@link PageContext} on server pre-rendered pages and on non-initial client page
      * loads.
      */
-    contentPageComponent?: ComponentType<{}>
+    contentPageComponent?: ComponentType
 
     /** Used on initial client page loads. */
     contentPageHtml?: TrustedHTML
@@ -97,7 +97,7 @@ function contentPagePathToSlug(path: string, base: string): string {
 }
 
 interface ContentPage {
-    MDXContent: ComponentType<{}>
+    MDXContent: ComponentType
     info: ContentPageInfo
 }
 
@@ -126,11 +126,14 @@ async function getContentPage(content: ContentPages, slug: string): Promise<Cont
         const unexpectedErrors = allResults
             .filter(
                 (res): res is PromiseRejectedResult =>
-                    res.status === 'rejected' && !String(res.reason).includes('Unknown variable dynamic import')
+                    res.status === 'rejected' &&
+                    !String(res.reason).includes('Unknown variable dynamic import')
             )
             .map(res => res.reason)
         if (unexpectedErrors.length > 0) {
-            throw new Error(`unexpected errors in getContentPage(${slug}): ${unexpectedErrors.join(', ')}`)
+            throw new Error(
+                `unexpected errors in getContentPage(${slug}): ${unexpectedErrors.join(', ')}`
+            )
         }
 
         const fulfilledResult = allResults.find(
@@ -159,10 +162,10 @@ export function slugFromPageContext(pageContext: PageContext): string {
 export function useContentPageComponent(
     content: ContentPages,
     pageContext: PageContext & PageContextForContentPage
-): ComponentType<{}> | undefined {
+): ComponentType | undefined {
     const slug = slugFromPageContext(pageContext)
 
-    const [component, setComponent] = useState<ComponentType<{}> | undefined>(() =>
+    const [component, setComponent] = useState<ComponentType | undefined>(() =>
         // Server page render.
         'contentPageComponent' in pageContext ? pageContext.contentPageComponent : undefined
     )

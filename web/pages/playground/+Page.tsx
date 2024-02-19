@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'react'
+import type { FunctionComponent } from 'react'
 import { layoutItemClassName, normalLayoutClassName } from '../../src/layout/config.ts'
 import { Playground } from './Playground.tsx'
 import Text from './text.mdx'

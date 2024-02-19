@@ -1,9 +1,10 @@
-import { type ContentPages } from '../../src/content/contentPages.tsx'
+import type { ContentPages } from '../../src/content/contentPages.tsx'
 
 export const content: ContentPages = {
     routePath: '/docs',
     fsPath: '../../content/docs',
-    listContentPagePaths: () => Object.keys(import.meta.glob('../../content/docs/**/*.mdx', { as: 'url' })),
+    listContentPagePaths: () =>
+        Object.keys(import.meta.glob('../../content/docs/**/*.mdx', { as: 'url' })),
     importContentPages: () => import.meta.glob('../../content/docs/**/*.mdx'),
     importContentPage: slug => [
         import(`../../content/docs/${slug}.mdx`),

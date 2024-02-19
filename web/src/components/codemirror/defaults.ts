@@ -1,5 +1,5 @@
 import { EditorView } from '@codemirror/view'
-import { type SettingsEditor } from '@openctx/web-playground'
+import type { SettingsEditor } from '@openctx/web-playground'
 import { octxDarkTheme, octxHighlightStyle } from './colorTheme.ts'
 
 const makeChipTextSmaller = EditorView.theme({

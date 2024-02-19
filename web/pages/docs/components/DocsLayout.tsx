@@ -1,9 +1,15 @@
 import { Menu } from 'lucide-react'
-import { useCallback, useState, type FunctionComponent, type MouseEventHandler, type ReactNode } from 'react'
+import {
+    useCallback,
+    useState,
+    type FunctionComponent,
+    type MouseEventHandler,
+    type ReactNode,
+} from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
 import { Button } from '../../../src/components/ui/button.tsx'
 import { Sheet, SheetContent, SheetTrigger } from '../../../src/components/ui/sheet.tsx'
-import { type PageContextForContentPageIndex } from '../../../src/content/contentPages.tsx'
+import type { PageContextForContentPageIndex } from '../../../src/content/contentPages.tsx'
 import { NavMenu } from './NavMenu.tsx'
 
 export const DocsLayout: FunctionComponent<{ children: ReactNode }> = ({ children }) => {

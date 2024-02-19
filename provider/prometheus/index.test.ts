@@ -1,4 +1,4 @@
-import { type AnnotationsResult, type CapabilitiesResult } from '@openctx/provider'
+import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import prometheus, { type Settings } from './index'
 

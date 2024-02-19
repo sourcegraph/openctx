@@ -3,7 +3,7 @@ import firaCodeFontUrl from '/FiraCode.woff2'
 import interItalicFontUrl from '/Inter-italic.var.woff2'
 import interRomanFontUrl from '/Inter-roman.var.woff2'
 import svgIconUrl from '/logomark-v0.svg'
-import { type FunctionComponent } from 'react'
+import type { FunctionComponent } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
 
 const CANONICAL_BASE_URL = new URL('https://openctx.org')

@@ -7,7 +7,13 @@ import { Layout } from '../src/layout/Layout.tsx'
 const config: Config = {
     extends: vikeReact,
 
-    passToClient: ['routeParams', 'layoutClassName', 'contentPageInfo', 'contentPageHtml', 'contentPageInfos'],
+    passToClient: [
+        'routeParams',
+        'layoutClassName',
+        'contentPageInfo',
+        'contentPageHtml',
+        'contentPageInfos',
+    ],
     prerender: true,
     meta: {
         onBeforeRender: {
@@ -23,7 +29,8 @@ const config: Config = {
 
     Layout,
     Head,
-    description: 'Annotate code with info from other dev tools, in your editor and anywhere else you view code.',
+    description:
+        'Annotate code with info from other dev tools, in your editor and anywhere else you view code.',
     favicon,
 }
 

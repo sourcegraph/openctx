@@ -1,5 +1,5 @@
-import { type AnnotationsParams, type AnnotationsResult, type ProviderSettings } from '@openctx/protocol'
-import { type Item, type Range } from '@openctx/schema'
+import type { AnnotationsParams, AnnotationsResult, ProviderSettings } from '@openctx/protocol'
+import type { Item, Range } from '@openctx/schema'
 import {
     catchError,
     combineLatest,
@@ -13,8 +13,8 @@ import {
     type Observable,
     type ObservableInput,
 } from 'rxjs'
-import { type ClientEnv } from './client/client'
-import { type ProviderClient } from './providerClient/createProviderClient'
+import type { ClientEnv } from './client/client'
+import type { ProviderClient } from './providerClient/createProviderClient'
 
 /**
  * An OpenCtx annotation.
@@ -45,7 +45,11 @@ export interface ProviderClientWithSettings {
 export function observeAnnotations<R extends Range>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: AnnotationsParams,
-    { emitPartial, logger, makeRange }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & { emitPartial?: boolean }
+    {
+        emitPartial,
+        logger,
+        makeRange,
+    }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & { emitPartial?: boolean }
 ): Observable<Annotation<R>[]> {
     return providerClients.pipe(
         mergeMap(providerClients =>

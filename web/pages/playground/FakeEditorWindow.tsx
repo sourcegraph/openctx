@@ -76,12 +76,7 @@ const noop = (): void => {}
 
 const AnnotatedEditor: typeof _AnnotatedEditor = props => (
     <ClientOnlySync
-        component={useCallback(
-            () => (
-                <_AnnotatedEditor {...props} />
-            ),
-            [props]
-        )}
+        component={useCallback(() => <_AnnotatedEditor {...props} />, [props])}
         initial={<div className="p-3" />}
     />
 )

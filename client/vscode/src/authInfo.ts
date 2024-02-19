@@ -1,9 +1,13 @@
-import { type AuthInfo } from '@openctx/client'
+import type { AuthInfo } from '@openctx/client'
 import { BehaviorSubject, type Observable } from 'rxjs'
 import * as vscode from 'vscode'
 
 // TODO(sqs): un-hardcode
-const HOSTNAMES_NEEDING_ACCESS_TOKENS = ['sourcegraph.com', 'sourcegraph.test', 'sourcegraph.sourcegraph.com']
+const HOSTNAMES_NEEDING_ACCESS_TOKENS = [
+    'sourcegraph.com',
+    'sourcegraph.test',
+    'sourcegraph.sourcegraph.com',
+]
 
 const SECRET_STORAGE_KEY_PREFIX = 'openctx:access-token:'
 
@@ -39,7 +43,10 @@ export function secretsChanges(secrets: vscode.SecretStorage): {
     return { disposable: vscode.Disposable.from(...disposables), observable: subject }
 }
 
-export async function getAuthInfo(secrets: vscode.SecretStorage, providerUri: string): Promise<AuthInfo | null> {
+export async function getAuthInfo(
+    secrets: vscode.SecretStorage,
+    providerUri: string
+): Promise<AuthInfo | null> {
     const hostname = new URL(providerUri).hostname
     if (!HOSTNAMES_NEEDING_ACCESS_TOKENS.includes(hostname)) {
         return null
@@ -58,7 +65,10 @@ export async function getAuthInfo(secrets: vscode.SecretStorage, providerUri: st
 // Don't bother the user again if they dismiss the auth info prompt
 const promptedForAuthInfo = new Map<URL['hostname'], boolean>()
 
-async function promptForAuthInfo(secrets: vscode.SecretStorage, hostname: string): Promise<string | undefined> {
+async function promptForAuthInfo(
+    secrets: vscode.SecretStorage,
+    hostname: string
+): Promise<string | undefined> {
     const alreadyPrompted = promptedForAuthInfo.get(hostname)
     if (alreadyPrompted) {
         return undefined

@@ -1,4 +1,4 @@
-import { type PageContext } from 'vike/types'
+import type { PageContext } from 'vike/types'
 
 export interface PageContextForTitle {
     pageTitle?: string

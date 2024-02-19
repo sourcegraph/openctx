@@ -1,4 +1,4 @@
-import { type FunctionComponent } from 'mdx/types'
+import type { FunctionComponent } from 'mdx/types'
 import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react'
 
 export const ClientOnlyLazy: FunctionComponent<{

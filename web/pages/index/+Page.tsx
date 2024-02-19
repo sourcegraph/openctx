@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { CornerRightDownIcon } from 'lucide-react'
-import { type FunctionComponent } from 'react'
+import type { FunctionComponent } from 'react'
 import { Link } from '../../src/components/Link.tsx'
 import { Button } from '../../src/components/ui/button.tsx'
 import { LogotextHorizColorImage } from '../../src/layout/logo.tsx'
@@ -18,7 +18,8 @@ export const Page: FunctionComponent = () => (
             </h1>
 
             <p className="mt-4 max-w-lg text-center text-lg">
-                See contextual info about code from your dev tools, in your editor and anywhere else you read code.
+                See contextual info about code from your dev tools, in your editor and anywhere else you
+                read code.
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-4">
@@ -34,8 +35,8 @@ export const Page: FunctionComponent = () => (
         </p>
         <FakeEditorWindow className="mb-4 mt-2" />
         <p className="mb-16 text-center text-sm italic text-muted-foreground">
-            (Don't worry. It doesn't actually blink yellow in your editor, and you can easily hide the annotations when
-            you don't want them.)
+            (Don't worry. It doesn't actually blink yellow in your editor, and you can easily hide the
+            annotations when you don't want them.)
         </p>
     </>
 )

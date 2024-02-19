@@ -25,7 +25,6 @@ async function startServer(): Promise<void> {
     }
 
     // Vike middleware (should always be last).
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     app.get('*', async (req, res, next) => {
         const pageContextInit = {
             urlOriginal: req.originalUrl,
@@ -39,7 +38,9 @@ async function startServer(): Promise<void> {
         if (res.writeEarlyHints) {
             res.writeEarlyHints({ link: earlyHints.map(e => e.earlyHintLink) })
         }
-        headers.forEach(([name, value]) => res.setHeader(name, value))
+        for (const [name, value] of headers) {
+            res.setHeader(name, value)
+        }
         res.status(statusCode)
         res.send(body)
     })

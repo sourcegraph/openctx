@@ -14,7 +14,6 @@ _Status: alpha_
 
 <!-- Keep in sync with web/content/docs/start.mdx -->
 
-<!-- prettier-ignore -->
 1. Install [OpenCtx for VS Code](https://marketplace.visualstudio.com/items?itemName=sourcegraph.openctx) (`sourcegraph.openctx`).
 1. Add the following to your VS Code settings:
       ```json

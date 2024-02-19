@@ -1,7 +1,7 @@
 import '../shared/polyfills'
 // ^^ import polyfills first
 import { createClient } from '@openctx/client'
-import { type Provider } from '@openctx/provider'
+import type { Provider } from '@openctx/provider'
 import helloWorldProvider from '@openctx/provider-hello-world'
 import linksProvider from '@openctx/provider-links'
 import prometheusProvider from '@openctx/provider-prometheus'
@@ -11,10 +11,10 @@ import { addMessageListenersForBackgroundApi } from '../browser-extension/web-ex
 import { configurationChanges } from '../configuration'
 
 const BUILTIN_PROVIDER_MODULES: Record<string, Provider<any>> = {
-    ['https://openctx.org/npm/@openctx/provider-hello-world']: helloWorldProvider,
-    ['https://openctx.org/npm/@openctx/provider-links']: linksProvider,
-    ['https://openctx.org/npm/@openctx/provider-storybook']: storybookProvider,
-    ['https://openctx.org/npm/@openctx/provider-prometheus']: prometheusProvider,
+    'https://openctx.org/npm/@openctx/provider-hello-world': helloWorldProvider,
+    'https://openctx.org/npm/@openctx/provider-links': linksProvider,
+    'https://openctx.org/npm/@openctx/provider-storybook': storybookProvider,
+    'https://openctx.org/npm/@openctx/provider-prometheus': prometheusProvider,
 }
 
 function getBuiltinProvider(uri: string): Provider {
