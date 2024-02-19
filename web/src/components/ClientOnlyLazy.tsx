@@ -1,5 +1,12 @@
-import type { FunctionComponent } from 'mdx/types'
-import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react'
+import {
+    Suspense,
+    lazy,
+    useEffect,
+    useState,
+    type ComponentType,
+    type FunctionComponent,
+    type ReactNode,
+} from 'react'
 
 export const ClientOnlyLazy: FunctionComponent<{
     component: () => Promise<{ default: ComponentType }>
