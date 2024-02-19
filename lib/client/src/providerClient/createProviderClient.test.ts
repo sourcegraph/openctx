@@ -1,6 +1,6 @@
-import { type AnnotationsResult, type ProviderSettings } from '@openctx/protocol'
+import type { AnnotationsResult, ProviderSettings } from '@openctx/protocol'
 import { describe, expect, test, vi } from 'vitest'
-import { type Logger } from '../logger'
+import type { Logger } from '../logger'
 import { createProviderClient } from './createProviderClient'
 
 function testdataFileUri(file: string): string {
@@ -32,21 +32,27 @@ describe('createProviderClient', () => {
         test('top-level throw', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('topLevelThrow.js'), { logger })
-            await expect(pc.annotations({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow('topLevelThrow')
+            await expect(pc.annotations({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow(
+                'topLevelThrow'
+            )
             expect(logger.mock.lastCall?.[0]).toContain('Error: topLevelThrow')
         })
 
         test('throw in capabilities', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('capabilitiesThrow.js'), { logger })
-            await expect(pc.annotations({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow('capabilitiesThrow')
+            await expect(pc.annotations({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow(
+                'capabilitiesThrow'
+            )
             expect(logger.mock.lastCall?.[0]).toContain('Error: capabilitiesThrow')
         })
 
         test('throw in annotations', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('annotationsThrow.js'), { logger })
-            await expect(pc.annotations({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow('annotationsThrow')
+            await expect(pc.annotations({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow(
+                'annotationsThrow'
+            )
             expect(logger.mock.lastCall?.[0]).toContain('Error: annotationsThrow')
         })
     })
@@ -63,7 +69,6 @@ describe('createProviderClient', () => {
             capabilitiesCalls: 0,
             annotationsCalls: 0,
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         ;(global as any).__test__transportReuseInfo = info
 
         const pc0 = createProviderClient(testdataFileUri('transportReuse.js'), {})

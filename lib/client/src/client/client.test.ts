@@ -1,10 +1,10 @@
-import { type AnnotationsParams, type AnnotationsResult } from '@openctx/protocol'
-import { type Range } from '@openctx/schema'
+import type { AnnotationsParams, AnnotationsResult } from '@openctx/protocol'
+import type { Range } from '@openctx/schema'
 import { firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
-import { type Annotation } from '../api'
-import { type ConfigurationUserInput } from '../configuration'
+import type { Annotation } from '../api'
+import type { ConfigurationUserInput } from '../configuration'
 import { createClient, type Client, type ClientEnv } from './client'
 
 function testdataFileUri(file: string): string {

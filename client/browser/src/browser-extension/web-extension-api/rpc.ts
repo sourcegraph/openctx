@@ -1,6 +1,6 @@
 import { Observable, Subscription, type Unsubscribable } from 'rxjs'
 import { isBackground } from '../../shared/env'
-import { type BackgroundApi } from './types'
+import type { BackgroundApi } from './types'
 
 interface RequestMessage {
     /**
@@ -84,11 +84,16 @@ function callBackgroundMethodReturningObservable(method: string, args: unknown[]
 /**
  * Create a proxy for an Observable-returning background API method.
  */
-export function proxyBackgroundMethodReturningObservable<M extends keyof BackgroundApi>(method: M): BackgroundApi[M] {
+export function proxyBackgroundMethodReturningObservable<M extends keyof BackgroundApi>(
+    method: M
+): BackgroundApi[M] {
     if (isBackground) {
-        throw new Error('tried to call background service worker function from background service worker itself')
+        throw new Error(
+            'tried to call background service worker function from background service worker itself'
+        )
     }
-    return (...args: any[]) => callBackgroundMethodReturningObservable(method, args) as ReturnType<BackgroundApi[M]>
+    return (...args: any[]) =>
+        callBackgroundMethodReturningObservable(method, args) as ReturnType<BackgroundApi[M]>
 }
 
 /**
@@ -119,9 +124,7 @@ export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubsc
             throw new Error('no sender tab ID')
         }
 
-        let subscription: Subscription | undefined
-        // eslint-disable-next-line prefer-const
-        subscription = handler.apply(api, args as any).subscribe({
+        const subscription = handler.apply(api, args as any).subscribe({
             next: value => {
                 browser.tabs
                     .sendMessage(senderTabId, { streamId, streamEvent: 'next', data: value })
@@ -129,7 +132,6 @@ export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubsc
             },
             error: error => {
                 browser.tabs
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
                     .sendMessage(senderTabId, { streamId, streamEvent: 'error', data: error.toString() })
                     .catch(console.error)
                 if (subscription) {
@@ -137,7 +139,9 @@ export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubsc
                 }
             },
             complete: () => {
-                browser.tabs.sendMessage(senderTabId, { streamId, streamEvent: 'complete' }).catch(console.error)
+                browser.tabs
+                    .sendMessage(senderTabId, { streamId, streamEvent: 'complete' })
+                    .catch(console.error)
                 if (subscription) {
                     subscriptions.remove(subscription)
                 }

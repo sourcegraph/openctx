@@ -1,11 +1,11 @@
-import {
-    type AnnotationsParams,
-    type AnnotationsResult,
-    type CapabilitiesParams,
-    type CapabilitiesResult,
-    type ItemImage,
-    type Provider,
-    type Range,
+import type {
+    AnnotationsParams,
+    AnnotationsResult,
+    CapabilitiesParams,
+    CapabilitiesResult,
+    ItemImage,
+    Provider,
+    Range,
 } from '@openctx/provider'
 
 // Keep in sync with README.md
@@ -35,7 +35,12 @@ const storybook: Provider<Settings> = {
         if (!settings.storybookUrl) {
             return {}
         }
-        return { selector: [{ path: '**/*.story.(t|j)s?(x)' }, { path: '**/*.(t|j)s(x)', contentContains: 'react' }] }
+        return {
+            selector: [
+                { path: '**/*.story.(t|j)s?(x)' },
+                { path: '**/*.(t|j)s(x)', contentContains: 'react' },
+            ],
+        }
     },
 
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
@@ -53,8 +58,10 @@ const storybook: Provider<Settings> = {
             const component = getStoryTitle(params.content)
             if (component) {
                 // Incorrectly warns about `/d`.
-                // eslint-disable-next-line unicorn/better-regex
-                const { matches, ranges } = firstSubmatchMatches(/export const (\w+): Story/d, contentLines)
+                const { matches, ranges } = firstSubmatchMatches(
+                    /export const (\w+): Story/d,
+                    contentLines
+                )
                 for (const [i, story] of matches.entries()) {
                     const storyName = getStoryNameAlias(story, params.content)
                     const storyURL = chromaticStoryURL(component, storyName, settings)
@@ -72,7 +79,6 @@ const storybook: Provider<Settings> = {
             // Component file.
             const { matches, ranges } = firstSubmatchMatches(
                 // Incorrectly warns about `/d`.
-                // eslint-disable-next-line unicorn/better-regex
                 /export const ([A-Z]\w+): (?:(?:React\.)?FC|FunctionComponent|Component|SFC)\b/d,
                 contentLines
             )
@@ -105,7 +111,6 @@ function firstSubmatchMatches(pattern: RegExp, lines: string[]): { matches: stri
     for (const [i, line] of lines.entries()) {
         const match = line.match(pattern)
         if (match) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const [start, end] = match.indices![1]
             matches.push(match[1])
             ranges.push({

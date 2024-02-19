@@ -1,4 +1,4 @@
-import { type Annotation, type Client, type Range } from '@openctx/client'
+import type { Annotation, Client, Range } from '@openctx/client'
 import * as monaco from 'monaco-editor'
 
 /**
@@ -57,9 +57,12 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
         const disposables: monaco.IDisposable[] = []
 
         disposables.push(
-            monaco.editor.registerCommand(OPEN_URL_COMMAND, (_accessor: unknown, url: string | monaco.Uri) => {
-                window.open(url.toString(), '_blank')
-            })
+            monaco.editor.registerCommand(
+                OPEN_URL_COMMAND,
+                (_accessor: unknown, url: string | monaco.Uri) => {
+                    window.open(url.toString(), '_blank')
+                }
+            )
         )
 
         disposables.push(
@@ -70,7 +73,10 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
                     }
 
                     // TODO(sqs): don't only get first value
-                    const anns = await client.annotations({ file: model.uri.toString(), content: model.getValue() })
+                    const anns = await client.annotations({
+                        file: model.uri.toString(),
+                        content: model.getValue(),
+                    })
 
                     return {
                         lenses: anns.map(toCodeLens),

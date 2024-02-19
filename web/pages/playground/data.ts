@@ -78,12 +78,14 @@ const settings = {
                 {
                     path: '**/*.ts?(x)',
                     pattern: "new prometheusClient\\.(?:Histogram|Summary)\\({\\s*name: '([^']+)",
-                    urlTemplate: 'https://prometheus.demo.do.prometheus.io/graph?g0.expr=$1&g0.tab=0&g0.stacked=1',
+                    urlTemplate:
+                        'https://prometheus.demo.do.prometheus.io/graph?g0.expr=$1&g0.tab=0&g0.stacked=1',
                 },
             ],
         } satisfies import('@openctx/provider-prometheus').Settings,
         [providerBundleUrl('@openctx/provider-storybook@0.0.3', providerStorybookUrl)]: {
-            storybookUrl: 'https://daeeaa811098f52f15a110dbaf76b6c416191c3b--5f0f381c0e50750022dc6bf7.chromatic.com/', // this is a public URL because our storybooks are public
+            storybookUrl:
+                'https://daeeaa811098f52f15a110dbaf76b6c416191c3b--5f0f381c0e50750022dc6bf7.chromatic.com/', // this is a public URL because our storybooks are public
         } satisfies import('@openctx/provider-storybook').Settings,
     },
 }

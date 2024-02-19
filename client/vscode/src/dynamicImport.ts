@@ -10,17 +10,14 @@
 // When VS Code supports dynamic import()s for extensions, we can remove this.
 
 import { readFile } from 'fs/promises'
-import { type Provider } from '@openctx/client'
+import type { Provider } from '@openctx/client'
 import * as esbuild from 'esbuild-wasm/esm/browser'
 import * as vscode from 'vscode'
 
 function requireFromString(cjsSource: string, filename: string): { default: Provider } {
     const Module: any = module.constructor
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const m = new Module()
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     m._compile(cjsSource, filename)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     return m.exports
 }
 
@@ -51,7 +48,6 @@ async function initializeEsbuildOnce(): Promise<void> {
     async function run(): Promise<void> {
         if (typeof self === 'undefined') {
             // Required for tests to pass in Node.
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
             ;(globalThis as any).self = globalThis
         }
 
@@ -59,7 +55,6 @@ async function initializeEsbuildOnce(): Promise<void> {
 
         if (vscode.env.uiKind === vscode.UIKind.Desktop && process.env.DESKTOP_BUILD) {
             if (!globalThis.crypto) {
-                // eslint-disable-next-line @typescript-eslint/no-require-imports
                 globalThis.crypto ??= require('crypto')
             }
             const wasmModule = await readFile(require.resolve('esbuild-wasm/esbuild.wasm'))

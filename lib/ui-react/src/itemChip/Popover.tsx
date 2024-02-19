@@ -41,7 +41,6 @@ export const Popover: FunctionComponent<{
     }, [hidePopover, showPopover, visible])
 
     return (
-        // eslint-disable-next-line react/no-unknown-property
         <div popover="auto" ref={popoverEl} className={styles.popover}>
             {children}
         </div>

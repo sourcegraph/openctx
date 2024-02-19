@@ -1,4 +1,4 @@
-import { type ProviderSettings } from '@openctx/protocol'
+import type { ProviderSettings } from '@openctx/protocol'
 
 /**
  * Raw configuration set by the user in the client application. Use
@@ -33,7 +33,9 @@ export function configurationFromUserInput(raw: ConfigurationUserInput): Configu
     }
 }
 
-function providersFromUserInput(providers: ConfigurationUserInput['providers']): Configuration['providers'] {
+function providersFromUserInput(
+    providers: ConfigurationUserInput['providers']
+): Configuration['providers'] {
     return Object.entries(providers ?? [])
         .map(([providerUri, settings]) =>
             settings ? { providerUri, settings: settings === true ? {} : settings } : null

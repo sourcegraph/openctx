@@ -1,4 +1,4 @@
-import { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
+import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 
 export function mergeCodeMirrorProps(
     defaults: Omit<ReactCodeMirrorProps, 'value' | 'onChange'>,

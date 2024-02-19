@@ -1,7 +1,8 @@
 import { json, jsonParseLinter } from '@codemirror/lang-json'
 import { linter } from '@codemirror/lint'
 import CodeMirror, { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
-import React, { useMemo } from 'react'
+import type React from 'react'
+import { useMemo } from 'react'
 import { mergeCodeMirrorProps } from './codemirror'
 import { EditorHeader } from './EditorHeader'
 

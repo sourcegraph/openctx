@@ -129,7 +129,6 @@ function matchResults(pattern: RegExp | undefined, lines: string[]): MatchResult
         }
 
         for (const match of line.matchAll(pattern)) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const [start, end] = match.indices![0]
             results.push({
                 range: {

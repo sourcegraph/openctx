@@ -1,12 +1,12 @@
-import {
-    type Annotation,
-    type AnnotationsParams,
-    type AnnotationsResult,
-    type CapabilitiesParams,
-    type CapabilitiesResult,
-    type Item,
-    type Provider,
-    type ProviderSettings,
+import type {
+    Annotation,
+    AnnotationsParams,
+    AnnotationsResult,
+    CapabilitiesParams,
+    CapabilitiesResult,
+    Item,
+    Provider,
+    ProviderSettings,
 } from '@openctx/provider'
 
 /**

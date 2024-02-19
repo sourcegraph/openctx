@@ -30,5 +30,6 @@ export const Indented: StoryObj = {
 }
 
 export const ExtraMargin: StoryObj = {
-    render: () => createIndentationWrapper({ indent: '    ', extraMargin: 50, children: [FIXTURE_ELEMENT] }),
+    render: () =>
+        createIndentationWrapper({ indent: '    ', extraMargin: 50, children: [FIXTURE_ELEMENT] }),
 }

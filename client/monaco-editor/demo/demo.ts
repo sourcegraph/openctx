@@ -10,7 +10,9 @@ container.style.height = '100%'
 document.body.append(container)
 
 const editor = monaco.editor.create(container, {
-    value: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => `console.log("Hello, world #${n}");`).join('\n'),
+    value: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        .map(n => `console.log("Hello, world #${n}");`)
+        .join('\n'),
     language: 'javascript',
     theme: 'vs-dark',
     minimap: { enabled: false },

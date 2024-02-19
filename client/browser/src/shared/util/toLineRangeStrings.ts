@@ -23,13 +23,11 @@ export function toLineRangeStrings(lines: number[]): string[] {
             // End of current range, start of a new range.
             lineRanges.push(lineRangeString(startLine, prevLine))
             startLine = line
-            continue
         }
     }
 
     // Unfinished range at the end of the file.
     if (startLine !== null) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         lineRanges.push(lineRangeString(startLine, lines.at(-1)!))
     }
 

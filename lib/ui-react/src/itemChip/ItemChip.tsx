@@ -1,6 +1,7 @@
-import { type Item } from '@openctx/schema'
+import type { Item } from '@openctx/schema'
 import clsx from 'clsx'
-import React, { useCallback, useRef, useState } from 'react'
+import type React from 'react'
+import { useCallback, useRef, useState } from 'react'
 import styles from './ItemChip.module.css'
 import { Popover } from './Popover'
 
@@ -21,10 +22,19 @@ export const ItemChip: React.FunctionComponent<{
     const anchorRef = useRef<HTMLElement>(null)
 
     return (
-        <aside className={clsx(styles.item, hasDetail ? styles.itemHasDetail : null, className)} ref={anchorRef}>
-            <header onMouseEnter={showPopover} onMouseLeave={hidePopover} onFocus={showPopover} onBlur={hidePopover}>
+        <aside
+            className={clsx(styles.item, hasDetail ? styles.itemHasDetail : null, className)}
+            ref={anchorRef}
+        >
+            <header
+                onMouseEnter={showPopover}
+                onMouseLeave={hidePopover}
+                onFocus={showPopover}
+                onBlur={hidePopover}
+            >
                 <ItemTitle title={item.title} />
-                {item.url && <a className={styles.stretchedLink} aria-hidden={true} href={item.url} />}
+                {/* biome-ignore lint/a11y/useAnchorContent: Screen readers will read the content of the element over which this anchor is stretched. */}
+                {item.url && <a className={styles.stretchedLink} href={item.url} />}
             </header>
             {hasDetail && anchorRef.current && (
                 <Popover anchor={anchorRef.current} visible={popoverVisible}>
@@ -41,7 +51,10 @@ const ItemTitle: React.FunctionComponent<{
     title: Item['title']
 }> = ({ title }) => <h4 className={styles.title}>{title}</h4>
 
-const ItemDetail: React.FunctionComponent<Pick<Item, 'title' | 'detail' | 'image'>> = ({ detail, image }) => (
+const ItemDetail: React.FunctionComponent<Pick<Item, 'title' | 'detail' | 'image'>> = ({
+    detail,
+    image,
+}) => (
     <>
         {detail && <p className={styles.detail}>{detail}</p>}
         {image && <ItemImage image={image} />}
@@ -52,7 +65,13 @@ const ItemImage: React.FunctionComponent<{
     image: NonNullable<Item['image']>
 }> = ({ image }) => (
     <div className={styles.imageContainer}>
-        <img src={image.url} alt={image.alt} width={image.width} height={image.height} className={styles.image} />
+        <img
+            src={image.url}
+            alt={image.alt}
+            width={image.width}
+            height={image.height}
+            className={styles.image}
+        />
     </div>
 )
 
@@ -67,7 +86,12 @@ export const ItemChipList: React.FunctionComponent<{
 }> = ({ items, className, chipClassName, popoverClassName }) => (
     <div className={clsx(styles.list, className)}>
         {items.map((item, i) => (
-            <ItemChip key={item.url ?? i} item={item} className={chipClassName} popoverClassName={popoverClassName} />
+            <ItemChip
+                key={item.url ?? i}
+                item={item}
+                className={chipClassName}
+                popoverClassName={popoverClassName}
+            />
         ))}
     </div>
 )

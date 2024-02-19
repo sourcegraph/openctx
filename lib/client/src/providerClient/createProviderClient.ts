@@ -1,4 +1,4 @@
-import { type AnnotationsParams, type AnnotationsResult, type ProviderSettings } from '@openctx/protocol'
+import type { AnnotationsParams, AnnotationsResult, ProviderSettings } from '@openctx/protocol'
 import { scopedLogger } from '../logger'
 import { matchSelectors } from './selector'
 import { createTransport, type ProviderTransportOptions } from './transport/createTransport'
@@ -34,7 +34,10 @@ export function createProviderClient(
     const transport = createTransport(providerUri, { ...options, cache: true, logger })
 
     return {
-        async annotations(params: AnnotationsParams, settings: ProviderSettings): Promise<AnnotationsResult | null> {
+        async annotations(
+            params: AnnotationsParams,
+            settings: ProviderSettings
+        ): Promise<AnnotationsResult | null> {
             let match: (params: AnnotationsParams) => boolean | undefined
             try {
                 logger?.('checking provider capabilities')

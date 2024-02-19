@@ -1,4 +1,4 @@
-import { type Client, type Range } from '@openctx/client'
+import type { Client, Range } from '@openctx/client'
 
 /**
  * Wrapper type for a string of JSONC (JSON with comments and trailing commas).
@@ -10,13 +10,13 @@ interface JSONCString {
     jsonc: string
 }
 
-export interface LocalStorageItems {}
+export type LocalStorageItems = Record<string, never>
 
 export interface SyncStorageItems {
     configuration: JSONCString
 }
 
-export interface ManagedStorageItems {}
+export type ManagedStorageItems = Record<string, never>
 
 /**
  * Functions in the background page that can be invoked from content scripts.

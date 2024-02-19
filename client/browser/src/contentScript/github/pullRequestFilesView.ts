@@ -1,9 +1,19 @@
-import { type Annotation, type AnnotationsParams } from '@openctx/client'
+import type { Annotation, AnnotationsParams } from '@openctx/client'
 import { createItemChipList } from '@openctx/ui-standalone'
-import { combineLatest, EMPTY, filter, fromEvent, map, mergeMap, startWith, tap, type Observable } from 'rxjs'
+import {
+    EMPTY,
+    combineLatest,
+    filter,
+    fromEvent,
+    map,
+    mergeMap,
+    startWith,
+    tap,
+    type Observable,
+} from 'rxjs'
 import { DEBUG, debugTap } from '../debug'
 import { withDOMElements } from '../detectElements'
-import { annotationsByLine, LINE_CHIPS_CLASSNAME, styledItemChipListParams } from '../openCtxUtil'
+import { LINE_CHIPS_CLASSNAME, annotationsByLine, styledItemChipListParams } from '../openCtxUtil'
 
 /**
  * Inject OpenCtx features into the GitHub pull request files view.
@@ -38,7 +48,10 @@ export function injectOnGitHubPullRequestFilesView(
                 diffData.files
                     .flatMap(file => [file.oldFile, file.newFile])
                     .map(file =>
-                        annotationsChanges({ content: file.content, file: `github://${file.path}` }).pipe(
+                        annotationsChanges({
+                            content: file.content,
+                            file: `github://${file.path}`,
+                        }).pipe(
                             tap(annotations => {
                                 try {
                                     redraw(file, annotations)
@@ -151,7 +164,6 @@ function getDiffViewData(fileEls: HTMLElement[]): DiffViewData {
         }
 
         const oldFile: DiffViewFileVersionData = {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             path: fileEl.dataset.tagsearchPath!, //  TODO(sqs): support renamed files
             content: fileContentFromDiffViewSelector(tableEl, codeSelector(tableEl, 'old')),
             tableEl,
@@ -159,7 +171,6 @@ function getDiffViewData(fileEls: HTMLElement[]): DiffViewData {
         }
 
         const newFile: DiffViewFileVersionData = {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             path: fileEl.dataset.tagsearchPath!, //  TODO(sqs): support renamed files
             content: fileContentFromDiffViewSelector(tableEl, codeSelector(tableEl, 'new')),
             tableEl,

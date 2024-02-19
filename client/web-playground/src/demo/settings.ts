@@ -1,4 +1,4 @@
-import { type ProviderSettings } from '@openctx/client'
+import type { ProviderSettings } from '@openctx/client'
 
 async function getProviders(): Promise<Record<string, ProviderSettings | boolean>> {
     const providerSettings: Record<string, ProviderSettings | boolean> = {

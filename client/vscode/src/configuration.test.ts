@@ -1,4 +1,4 @@
-import { type ClientConfiguration } from '@openctx/client'
+import type { ClientConfiguration } from '@openctx/client'
 import { describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
 import { URI as vscodeUri } from 'vscode-uri'
@@ -24,13 +24,12 @@ describe('getClientConfiguration', () => {
                 },
                 inspect: () => ({
                     key: 'openctx.providers',
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-                    globalValue: { './globalValue.js': true, 'https://example.com/globalValue': true } as any,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    globalValue: {
+                        './globalValue.js': true,
+                        'https://example.com/globalValue': true,
+                    } as any,
                     workspaceValue: { './workspaceValue.js': true } as any,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     workspaceFolderValue: { './workspaceFolderValue.js': true } as any,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                     workspaceFolderLanguageValue: { './workspaceFolderLanguageValue.js': true } as any,
                 }),
             })

@@ -24,7 +24,9 @@ const client = createClient({
     logger: console.error,
 })
 
-const CONTENT = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => `console.log("Hello, world #${n}");`).join('\n')
+const CONTENT = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    .map(n => `console.log("Hello, world #${n}");`)
+    .join('\n')
 
 const annotations = await client.annotations({ file: 'file:///foo.js', content: CONTENT })
 

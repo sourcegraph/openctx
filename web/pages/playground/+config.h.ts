@@ -1,4 +1,4 @@
-import { type Config } from 'vike/types'
+import type { Config } from 'vike/types'
 
 const config: Config = {
     pageTitle: 'Playground',

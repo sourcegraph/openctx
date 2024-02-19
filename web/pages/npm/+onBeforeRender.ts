@@ -1,5 +1,5 @@
 import { redirect, render } from 'vike/abort'
-import { type OnBeforeRenderSync } from 'vike/types'
+import type { OnBeforeRenderSync } from 'vike/types'
 
 // TODO(sqs): This needs to be defined in a way that static page hosts can use and return HTTP
 // redirects, not just frontend redirects. See https://github.com/vikejs/vike/issues/1347. For now,

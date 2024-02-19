@@ -1,5 +1,4 @@
-import { Annotation } from '@openctx/schema'
-
+import type { Annotation } from '@openctx/schema'
 /**
  * OpenCtx client/provider protocol
  */
@@ -12,6 +11,7 @@ export type Protocol =
     | CapabilitiesResult
     | AnnotationsParams
     | AnnotationsResult
+export type CapabilitiesParams = Record<string, never>
 export type AnnotationsResult = Annotation[]
 
 export interface RequestMessage {
@@ -34,7 +34,6 @@ export interface ResponseError {
     message: string
     data?: unknown
 }
-export interface CapabilitiesParams {}
 export interface CapabilitiesResult {
     /**
      * Selects the scope (repositories, files, and languages) in which this provider should be called.

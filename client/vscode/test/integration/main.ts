@@ -1,5 +1,5 @@
-import * as path from 'path'
 import { runTests } from '@vscode/test-electron'
+import * as path from 'path'
 
 async function main(): Promise<void> {
     // When run, this script's filename is `client/vscode/dist/tsc/test/integration/main.js`, so
@@ -14,7 +14,14 @@ async function main(): Promise<void> {
     const extensionDevelopmentPath = clientVsCodeRoot
 
     // The path to the test runner script, passed to --extensionTestsPath.
-    const extensionTestsPath = path.resolve(clientVsCodeRoot, 'dist', 'tsc', 'test', 'integration', 'index')
+    const extensionTestsPath = path.resolve(
+        clientVsCodeRoot,
+        'dist',
+        'tsc',
+        'test',
+        'integration',
+        'index'
+    )
 
     // Download VS Code, unzip it, and run the integration test.
     await runTests({
@@ -27,8 +34,6 @@ async function main(): Promise<void> {
         ],
     })
 }
-
-// eslint-disable-next-line unicorn/prefer-top-level-await
 main().catch(error => {
     console.error('Failed to run tests:', error)
     process.exit(1)

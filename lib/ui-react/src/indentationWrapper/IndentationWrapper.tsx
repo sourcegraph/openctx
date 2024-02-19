@@ -1,4 +1,4 @@
-import { type FunctionComponent, type ReactNode } from 'react'
+import type { FunctionComponent, ReactNode } from 'react'
 
 /**
  * Indents its content by the specified whitespace. This is used to align OpenCtx item chips with the
@@ -9,7 +9,6 @@ export const IndentationWrapper: FunctionComponent<{
     extraMargin?: number
     children: ReactNode
 }> = ({ indent, extraMargin, children }) => (
-    // eslint-disable-next-line react/forbid-dom-props
     <div style={{ display: 'flex', marginLeft: extraMargin ? `${extraMargin}px` : undefined }}>
         {/* eslint-disable-next-line react/forbid-dom-props */}
         <pre style={{ height: 0, overflow: 'hidden', visibility: 'hidden' }}>{indent}</pre>

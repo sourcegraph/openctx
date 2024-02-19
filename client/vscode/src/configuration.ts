@@ -1,5 +1,5 @@
 import path from 'path'
-import { type ClientConfiguration } from '@openctx/client'
+import type { ClientConfiguration } from '@openctx/client'
 import * as vscode from 'vscode'
 
 /**
@@ -55,7 +55,9 @@ function resolveProviderUrisInConfig(
                     providerUri.startsWith(`..${path.sep}`) ||
                     providerUri.startsWith(`.${path.sep}`)
                 if (isRelativeFilePath) {
-                    providerUri = fromUri.with({ path: path.resolve(fromUri.path, providerUri) }).toString()
+                    providerUri = fromUri
+                        .with({ path: path.resolve(fromUri.path, providerUri) })
+                        .toString()
                 }
                 return [providerUri, settings]
             })
@@ -92,12 +94,18 @@ function resolveProviderUrisInConfig(
         Object.assign(merged, info.globalLanguageValue)
     }
     if (info.workspaceLanguageValue && workspaceFile) {
-        Object.assign(merged, rewriteProviderRelativeFilePaths(info.workspaceLanguageValue, workspaceFile))
+        Object.assign(
+            merged,
+            rewriteProviderRelativeFilePaths(info.workspaceLanguageValue, workspaceFile)
+        )
     }
     if (info.workspaceFolderLanguageValue) {
         Object.assign(
             merged,
-            rewriteProviderRelativeFilePaths(info.workspaceFolderLanguageValue, workspaceFolderSettingsFileUri)
+            rewriteProviderRelativeFilePaths(
+                info.workspaceFolderLanguageValue,
+                workspaceFolderSettingsFileUri
+            )
         )
     }
 

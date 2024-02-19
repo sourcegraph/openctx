@@ -52,12 +52,9 @@ const _Playground: FunctionComponent<{ className?: string }> = ({ className }) =
 
 export const Playground: typeof _Playground = props => (
     <ClientOnlySync
-        component={useCallback(
-            () => (
-                <_Playground {...props} />
-            ),
-            [props]
-        )}
-        initial={<div className="mt-64 text-center text-sm font-bold text-muted-foreground">Loading...</div>}
+        component={useCallback(() => <_Playground {...props} />, [props])}
+        initial={
+            <div className="mt-64 text-center text-sm font-bold text-muted-foreground">Loading...</div>
+        }
     />
 )

@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { ExternalLink } from 'lucide-react'
 import { useMemo, type FunctionComponent } from 'react'
 import { Link } from '../../../src/components/Link.tsx'
-import { type ContentPageInfo } from '../../../src/content/contentPages.ts'
+import type { ContentPageInfo } from '../../../src/content/contentPages.ts'
 
 export const NavMenu: FunctionComponent<{
     contentPageInfos: ContentPageInfo[]

@@ -1,6 +1,6 @@
 import { Facet, type Extension } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { type Annotation, type Item } from '@openctx/client'
+import type { Annotation, Item } from '@openctx/client'
 import { openCtxWidgets } from './itemBlockWidget'
 
 export interface OpenCtxDecorationsConfig {

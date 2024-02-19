@@ -1,7 +1,7 @@
-import { type Annotation } from '@openctx/client'
+import type { Annotation } from '@openctx/client'
 import { firstValueFrom, map } from 'rxjs'
 import * as vscode from 'vscode'
-import { type Controller } from '../../controller'
+import type { Controller } from '../../controller'
 
 export function createHoverProvider(controller: Controller): vscode.HoverProvider & vscode.Disposable {
     return {
@@ -10,7 +10,9 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
                 controller.observeAnnotations(doc).pipe(
                     map(anns => {
                         const containedByAnns = anns?.filter(ann => ann.range.contains(pos))
-                        return containedByAnns && containedByAnns.length > 0 ? createHover(containedByAnns) : null
+                        return containedByAnns && containedByAnns.length > 0
+                            ? createHover(containedByAnns)
+                            : null
                     })
                 )
             )
@@ -24,7 +26,9 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
 function createHover(anns: Annotation<vscode.Range>[]): vscode.Hover {
     const contents: vscode.Hover['contents'] = []
     for (const { item } of anns) {
-        contents.push(new vscode.MarkdownString(item.title.includes('*') ? item.title : `**${item.title}**`))
+        contents.push(
+            new vscode.MarkdownString(item.title.includes('*') ? item.title : `**${item.title}**`)
+        )
         if (item.detail) {
             contents.push(new vscode.MarkdownString(item.detail))
         }

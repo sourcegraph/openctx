@@ -13,7 +13,9 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util'
 import { createErrorWaiter } from './util/errorWaiter'
 
 export interface Controller {
-    observeAnnotations(doc: Pick<vscode.TextDocument, 'uri' | 'getText'>): Observable<Annotation<vscode.Range>[] | null>
+    observeAnnotations(
+        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
+    ): Observable<Annotation<vscode.Range>[] | null>
     onDidChangeProviders: vscode.Event<void>
 }
 
@@ -51,7 +53,9 @@ export function createController(
     const client = createClient<vscode.Range>({
         configuration: file => {
             const scope = file ? vscode.Uri.parse(file) : undefined
-            return observeWorkspaceConfigurationChanges('openctx', scope).pipe(map(() => getClientConfiguration(scope)))
+            return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
+                map(() => getClientConfiguration(scope))
+            )
         },
         authInfo: provider => secrets.pipe(mergeMap(secrets => from(getAuthInfo(secrets, provider)))),
         makeRange,
@@ -95,7 +99,8 @@ export function createController(
                         error(): void {
                             // Show an error notification unless we've recently shown one (to avoid annoying
                             // the user).
-                            const shouldNotify = errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
+                            const shouldNotify =
+                                errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
                             if (shouldNotify) {
                                 showErrorNotification(outputChannel)
                             }
@@ -146,7 +151,6 @@ function makeRange(range: Range): vscode.Range {
 
 function showErrorNotification(outputChannel: vscode.OutputChannel): void {
     const OPEN_LOG = 'Open Log'
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     vscode.window
         .showErrorMessage('OpenCtx annotations failed.', {
             title: OPEN_LOG,

@@ -1,7 +1,7 @@
 enum ScriptEnvironment {
-    Content,
-    Background,
-    Options,
+    Content = 0,
+    Background = 1,
+    Options = 2,
 }
 
 function getScriptEnvironment(): ScriptEnvironment {
@@ -11,9 +11,7 @@ function getScriptEnvironment(): ScriptEnvironment {
     } else if (
         globalThis.browser &&
         typeof self !== 'undefined' &&
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         (globalThis as any).ServiceWorkerGlobalScope !== undefined &&
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         self instanceof ServiceWorkerGlobalScope
     ) {

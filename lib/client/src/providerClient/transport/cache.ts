@@ -10,7 +10,9 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
     function cachedMethodCall<M extends Exclude<keyof ProviderTransport, 'dispose'>>(
         method: M,
         args: Parameters<ProviderTransport[M]>,
-        fn: (...args: Parameters<ProviderTransport[M]>) => Promise<Awaited<ReturnType<ProviderTransport[M]>>>
+        fn: (
+            ...args: Parameters<ProviderTransport[M]>
+        ) => Promise<Awaited<ReturnType<ProviderTransport[M]>>>
     ): Promise<Awaited<ReturnType<ProviderTransport[M]>>> {
         const fullKey = `${method}:${JSON.stringify(args)}`
         const entry = cache.get(fullKey) as Awaited<ReturnType<ProviderTransport[M]>> | undefined
@@ -25,9 +27,13 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
     }
     return {
         capabilities: (...args) =>
-            cachedMethodCall('capabilities', args, (params, settings) => provider.capabilities(params, settings)),
+            cachedMethodCall('capabilities', args, (params, settings) =>
+                provider.capabilities(params, settings)
+            ),
         annotations: (...args) =>
-            cachedMethodCall('annotations', args, (params, settings) => provider.annotations(params, settings)),
+            cachedMethodCall('annotations', args, (params, settings) =>
+                provider.annotations(params, settings)
+            ),
         dispose: () => {
             cache.clear()
             provider.dispose?.()

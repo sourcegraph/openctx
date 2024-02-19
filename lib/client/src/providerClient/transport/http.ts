@@ -1,8 +1,8 @@
-import {
-    type AnnotationsResult,
-    type CapabilitiesResult,
-    type RequestMessage,
-    type ResponseMessage,
+import type {
+    AnnotationsResult,
+    CapabilitiesResult,
+    RequestMessage,
+    ResponseMessage,
 } from '@openctx/protocol'
 import { scopedLogger } from '../../logger'
 import type { ProviderTransport, ProviderTransportOptions } from './createTransport'
@@ -18,7 +18,9 @@ export function createHttpTransport(
         if (logger) {
             // Omit `content` because can be very large.
             const paramsForLog =
-                req.params && 'content' in (req.params as any) ? { ...req.params, content: undefined } : req.params
+                req.params && 'content' in (req.params as any)
+                    ? { ...req.params, content: undefined }
+                    : req.params
             logger?.(`${req.method} request: params=${JSON.stringify(paramsForLog)}`)
         }
 
@@ -37,9 +39,7 @@ export function createHttpTransport(
                 `sending HTTP request to OpenCtx provider: ${[
                     `providerUri=${providerUri}`,
                     `method=${req.method}`,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     `error=${JSON.stringify('message' in error ? error.message : error)}`,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     error.cause ? `cause=${error.cause}` : null,
                 ]
                     .filter(s => s)
@@ -53,7 +53,9 @@ export function createHttpTransport(
 
         try {
             const { result, error } = (await resp.json()) as ResponseMessage
-            logger?.(`${req.method} response: result=${JSON.stringify(result)} error=${JSON.stringify(error)}`)
+            logger?.(
+                `${req.method} response: result=${JSON.stringify(result)} error=${JSON.stringify(error)}`
+            )
             if (error) {
                 throw new Error(
                     `OpenCtx response error: ${[
@@ -74,7 +76,6 @@ export function createHttpTransport(
                 `reading JSON HTTP request body from OpenCtx provider: ${[
                     `providerUri=${providerUri}`,
                     `method=${req.method}`,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
                     `error=${JSON.stringify('message' in error ? error.message : error)}`,
                 ].join(' ')}`
             )

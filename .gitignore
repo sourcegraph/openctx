@@ -1,5 +1,4 @@
 node_modules/
-.eslintcache
 .stylelintcache
 *.tsbuildinfo
 .DS_Store

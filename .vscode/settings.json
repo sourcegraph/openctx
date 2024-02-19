@@ -1,37 +1,32 @@
 {
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/dist": true
-  },
-  "files.exclude": {
-    "**/.eslintcache": true,
-    "**/dist": true,
-    "**/.vscode-test": true,
-    "**/.vscode-test-web": true,
-    "coverage/": true,
-    "pnpm-lock.yaml": true,
-    ".stylelintcache": true
-  },
-  "editor.formatOnSave": true,
-  "npm.packageManager": "pnpm",
-  "npm.runSilent": true,
-  "typescript.preferences.quoteStyle": "single",
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.format.semicolons": "remove",
-  "typescript.tsc.autoDetect": "off",
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.preferences.importModuleSpecifierEnding": "auto",
-  "task.allowAutomaticTasks": "on",
-  "eslint.lintTask.enable": false,
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "mdx"],
-  "[typescriptreact][typescript][jsonc][css][javascript][mdx]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "css.lint.unknownAtRules": "ignore",
-  "[mdx][markdown]": {
-    "editor.insertSpaces": true
-  },
-  "openctx.providers": {
-    // "https://sourcegraph.test:3443/.api/openctx": true
-  }
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true
+    },
+    "files.exclude": {
+        "**/dist": true,
+        "**/.vscode-test": true,
+        "**/.vscode-test-web": true,
+        "coverage/": true,
+        "pnpm-lock.yaml": true,
+        ".stylelintcache": true
+    },
+    "editor.formatOnSave": true,
+    "npm.packageManager": "pnpm",
+    "npm.runSilent": true,
+    "typescript.preferences.quoteStyle": "single",
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "typescript.format.semicolons": "remove",
+    "typescript.tsc.autoDetect": "off",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.preferences.importModuleSpecifierEnding": "auto",
+    "task.allowAutomaticTasks": "on",
+    "editor.defaultFormatter": "biomejs.biome",
+    "css.lint.unknownAtRules": "ignore",
+    "[mdx][markdown]": {
+        "editor.insertSpaces": true
+    },
+    "openctx.providers": {
+        // "https://sourcegraph.test:3443/.api/openctx": true
+    }
 }

@@ -38,8 +38,8 @@ export const Layout: FunctionComponent<{ children: ReactNode }> = ({ children })
                 </main>
                 <footer className="mt-6 border-t border-border">
                     <p className="mx-auto max-w-screen-lg px-6 py-3 text-xs text-muted-foreground">
-                        Maintained by <Link href="https://sourcegraph.com">Sourcegraph</Link>. Licensed under Apache
-                        2.0.
+                        Maintained by <Link href="https://sourcegraph.com">Sourcegraph</Link>. Licensed
+                        under Apache 2.0.
                     </p>
                 </footer>
             </MDXProvider>

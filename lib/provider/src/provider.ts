@@ -1,9 +1,9 @@
-import {
-    type AnnotationsParams,
-    type AnnotationsResult,
-    type CapabilitiesParams,
-    type CapabilitiesResult,
-    type ProviderSettings,
+import type {
+    AnnotationsParams,
+    AnnotationsResult,
+    CapabilitiesParams,
+    CapabilitiesResult,
+    ProviderSettings,
 } from '@openctx/protocol'
 
 /**
@@ -19,7 +19,10 @@ export interface Provider<S extends {} = ProviderSettings> {
      * annotations anyway, so it probably should be like "annotations" and "resolveAnnotations" or
      * some optimization so the client doesnt need to always send over the full text.
      */
-    capabilities(params: CapabilitiesParams, settings: S): CapabilitiesResult | Promise<CapabilitiesResult>
+    capabilities(
+        params: CapabilitiesParams,
+        settings: S
+    ): CapabilitiesResult | Promise<CapabilitiesResult>
 
     /**
      * Returns OpenCtx annotations for the given file.

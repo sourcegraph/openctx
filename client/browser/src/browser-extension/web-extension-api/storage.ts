@@ -23,7 +23,10 @@ export const storage: {
     >
 } = globalThis.browser && browser.storage
 
-export const observeStorageKey = <A extends browser.storage.AreaName, K extends keyof ExtensionStorageItems[A]>(
+export const observeStorageKey = <
+    A extends browser.storage.AreaName,
+    K extends keyof ExtensionStorageItems[A],
+>(
     areaName: A,
     key: K
 ): Observable<ExtensionStorageItems[A][K] | undefined> => {
@@ -34,9 +37,9 @@ export const observeStorageKey = <A extends browser.storage.AreaName, K extends 
     return concat(
         // Start with current value of the item
         defer(() =>
-            from((storage[areaName] as browser.storage.StorageArea<ExtensionStorageItems[A]>).get(key)).pipe(
-                map(items => (items as ExtensionStorageItems[A])[key])
-            )
+            from(
+                (storage[areaName] as browser.storage.StorageArea<ExtensionStorageItems[A]>).get(key)
+            ).pipe(map(items => (items as ExtensionStorageItems[A])[key]))
         ),
         // Emit every new value from change events that affect that item
         fromBrowserEvent(storage.onChanged).pipe(

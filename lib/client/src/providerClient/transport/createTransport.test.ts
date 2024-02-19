@@ -1,12 +1,14 @@
 import { readFile } from 'node:fs/promises'
-import { type CapabilitiesResult, type ResponseMessage } from '@openctx/protocol'
+import type { CapabilitiesResult, ResponseMessage } from '@openctx/protocol'
 import { afterEach } from 'node:test'
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 import { createTransport, type ProviderTransport } from './createTransport'
 
 async function expectProviderTransport(provider: ProviderTransport) {
-    expect(await provider.capabilities({}, {})).toEqual<CapabilitiesResult>({ selector: [{ path: 'foo' }] })
+    expect(await provider.capabilities({}, {})).toEqual<CapabilitiesResult>({
+        selector: [{ path: 'foo' }],
+    })
 }
 
 function testdataFileUri(file: string): string {
@@ -20,16 +22,20 @@ describe('createTransport', () => {
     afterAll(() => fetchMocker.disableMocks())
 
     describe('module file', () => {
-        test('ESM .mjs', () => expectProviderTransport(createTransport(testdataFileUri('esmExtProvider.mjs'), {})))
+        test('ESM .mjs', () =>
+            expectProviderTransport(createTransport(testdataFileUri('esmExtProvider.mjs'), {})))
 
-        test('ESM .js', () => expectProviderTransport(createTransport(testdataFileUri('esmProvider.js'), {})))
+        test('ESM .js', () =>
+            expectProviderTransport(createTransport(testdataFileUri('esmProvider.js'), {})))
 
-        test('ESM .ts', () => expectProviderTransport(createTransport(testdataFileUri('esmProvider.ts'), {})))
+        test('ESM .ts', () =>
+            expectProviderTransport(createTransport(testdataFileUri('esmProvider.ts'), {})))
 
         test('CommonJS .cjs', () =>
             expectProviderTransport(createTransport(testdataFileUri('commonjsExtProvider.cjs'), {})))
 
-        test('CommonJS .js', () => expectProviderTransport(createTransport(testdataFileUri('commonjsProvider.js'), {})))
+        test('CommonJS .js', () =>
+            expectProviderTransport(createTransport(testdataFileUri('commonjsProvider.js'), {})))
 
         test('not found', async () => {
             const provider = createTransport('file:///doesnotexist', {})
@@ -107,7 +113,10 @@ describe('createTransport', () => {
 
         describe('errors', () => {
             test('bad Content-Type', async () => {
-                fetchMocker.mockResponseOnce('', { status: 200, headers: { 'Content-Type': 'text/html' } })
+                fetchMocker.mockResponseOnce('', {
+                    status: 200,
+                    headers: { 'Content-Type': 'text/html' },
+                })
                 const provider = createTransport('https://example.com/a.js', {})
                 await expect(provider.capabilities({}, {})).rejects.toMatch(/invalid Content-Type/)
             })

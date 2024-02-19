@@ -105,7 +105,6 @@ interface MatchResult {
 function matchResults(pattern: RegExp, content: string, pos: PositionCalculator): MatchResult[] {
     const results: MatchResult[] = []
     for (const match of content.matchAll(pattern)) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const [start, end] = match.indices![1]
         results.push({
             range: {

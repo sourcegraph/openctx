@@ -1,9 +1,10 @@
-import { type AnnotationsResult, type CapabilitiesResult } from '@openctx/provider'
+import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import helloWorld from './index'
 
 describe('helloWorld', () => {
-    test('capabilities', () => expect(helloWorld.capabilities({}, {})).toStrictEqual<CapabilitiesResult>({}))
+    test('capabilities', () =>
+        expect(helloWorld.capabilities({}, {})).toStrictEqual<CapabilitiesResult>({}))
 
     test('annotations', () =>
         expect(
