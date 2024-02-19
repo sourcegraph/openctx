@@ -18,6 +18,18 @@ to = "/docs/start"
 status = 301
 force = true
 
+[[redirects]]
+from = "http://opencodegraph.org/*"
+to = "https://openctx.org/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://opencodegraph.org/*"
+to = "https://openctx.org/:splat"
+status = 301
+force = true
+
 [[headers]]
 for = "/*"
 [headers.values]
