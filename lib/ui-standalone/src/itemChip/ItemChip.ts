@@ -1,10 +1,10 @@
-import { type Item } from '@opencodegraph/schema'
+import { type Item } from '@openctx/schema'
 import clsx from 'clsx'
 import styles from './ItemChip.module.css'
 import { getPopoverDimensions } from './popover'
 
 /**
- * A single OpenCodeGraph item, displayed as a "chip".
+ * A single OpenCtx item, displayed as a "chip".
  */
 export function createItemChip({
     item,
@@ -115,7 +115,7 @@ function createPopoverContent({
 }
 
 /**
- * A list of OCG items.
+ * A list of OpenCtx items.
  */
 export function createItemChipList({
     items,

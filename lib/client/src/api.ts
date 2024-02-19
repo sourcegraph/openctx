@@ -1,5 +1,5 @@
-import { type AnnotationsParams, type AnnotationsResult, type ProviderSettings } from '@opencodegraph/protocol'
-import { type Item, type Range } from '@opencodegraph/schema'
+import { type AnnotationsParams, type AnnotationsResult, type ProviderSettings } from '@openctx/protocol'
+import { type Item, type Range } from '@openctx/schema'
 import {
     catchError,
     combineLatest,
@@ -17,7 +17,7 @@ import { type ClientEnv } from './client/client'
 import { type ProviderClient } from './providerClient/createProviderClient'
 
 /**
- * An OpenCodeGraph annotation.
+ * An OpenCtx annotation.
  */
 export interface Annotation<R extends Range = Range> {
     item: Item
@@ -40,7 +40,7 @@ export interface ProviderClientWithSettings {
 }
 
 /**
- * Observes OpenCodeGraph annotations from the configured providers.
+ * Observes OpenCtx annotations from the configured providers.
  */
 export function observeAnnotations<R extends Range>(
     providerClients: Observable<ProviderClientWithSettings[]>,

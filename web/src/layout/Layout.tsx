@@ -54,7 +54,7 @@ const NavMenu: React.FunctionComponent<{ className?: string }> = ({ className })
                 <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild={true}>
                     <Link href="/" className="relative no-underline">
                         <LogotextHorizColorImage />
-                        <span className="absolute right-[5px] top-[-4px] bg-destructive px-1 py-0 font-mono text-[75%] font-semibold leading-normal text-destructive-foreground">
+                        <span className="absolute right-[-10px] top-[-3px] bg-destructive px-1 py-0 font-mono text-[75%] font-semibold leading-normal text-destructive-foreground">
                             alpha
                         </span>
                     </Link>
@@ -77,7 +77,7 @@ const NavMenu: React.FunctionComponent<{ className?: string }> = ({ className })
             <NavigationMenuItem>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()} asChild={true}>
                     <Link
-                        href="https://github.com/sourcegraph/opencodegraph"
+                        href="https://github.com/sourcegraph/openctx"
                         target="_blank"
                         className="flex items-center gap-2 no-underline"
                     >

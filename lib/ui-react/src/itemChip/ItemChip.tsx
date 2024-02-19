@@ -1,11 +1,11 @@
-import { type Item } from '@opencodegraph/schema'
+import { type Item } from '@openctx/schema'
 import clsx from 'clsx'
 import React, { useCallback, useRef, useState } from 'react'
 import styles from './ItemChip.module.css'
 import { Popover } from './Popover'
 
 /**
- * A single OpenCodeGraph item, displayed as a "chip".
+ * A single OpenCtx item, displayed as a "chip".
  */
 export const ItemChip: React.FunctionComponent<{
     item: Item
@@ -57,7 +57,7 @@ const ItemImage: React.FunctionComponent<{
 )
 
 /**
- * A list of OCG items.
+ * A list of OpenCtx items.
  */
 export const ItemChipList: React.FunctionComponent<{
     items: Item[]

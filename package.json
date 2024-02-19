@@ -1,12 +1,12 @@
 {
   "private": true,
-  "name": "@opencodegraph/root",
+  "name": "@openctx/root",
   "description": "Information about code from all your dev tools (issues, logging, docs, design, analytics, etc.), in your editor and accessible through one API.",
   "license": "Apache-2.0",
-  "homepage": "https://opencodegraph.org",
+  "homepage": "https://openctx.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcegraph/opencodegraph"
+    "url": "https://github.com/sourcegraph/openctx"
   },
   "engines": {
     "node": "^v20.10.0",

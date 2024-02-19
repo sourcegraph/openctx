@@ -1,11 +1,11 @@
 {
-  "name": "@opencodegraph/codemirror-extension",
+  "name": "@openctx/codemirror-extension",
   "version": "0.0.4",
-  "description": "OpenCodeGraph extension for CodeMirror",
+  "description": "OpenCtx extension for CodeMirror",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcegraph/opencodegraph",
+    "url": "https://github.com/sourcegraph/openctx",
     "directory": "client/codemirror"
   },
   "main": "dist/index.js",
@@ -22,8 +22,8 @@
     "demo": "pnpm -C demo run -s dev"
   },
   "dependencies": {
-    "@opencodegraph/client": "workspace:*",
-    "@opencodegraph/ui-react": "workspace:*",
+    "@openctx/client": "workspace:*",
+    "@openctx/ui-react": "workspace:*",
     "deep-equal": "^2.2.3"
   },
   "devDependencies": {
