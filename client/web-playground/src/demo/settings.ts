@@ -2,7 +2,14 @@ import { type ProviderSettings } from '@openctx/client'
 
 async function getProviders(): Promise<Record<string, ProviderSettings | boolean>> {
     const providerSettings: Record<string, ProviderSettings | boolean> = {
-        '../../../../provider/hello-world/index.ts': true,
+        '../../../../provider/hello-world/index.ts': false,
+        '../../../../provider/docs/src/provider/provider.ts': {
+            index: new URL(
+                // 'tmp-octx-provider-docs/sourcegraph-docs-old-web.index.json',
+                'tmp-octx-provider-docs/vite-docs-web.index.json',
+                import.meta.url
+            ).toString(),
+        } satisfies import('@openctx/provider-docs').Settings,
         '../../../../provider/links/index.ts': {
             links: [
                 {
@@ -38,10 +45,12 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
         } satisfies import('@openctx/provider-storybook').Settings,
     }
 
-    const providerModules = import.meta.glob('../../../../provider/*/index.ts', { as: 'url' })
+    const providerModules = import.meta.glob('../../../../provider/{*/index.ts,docs/src/provider/provider.ts}', {
+        as: 'url',
+    })
     for (const [path, url] of Object.entries(providerModules)) {
         const providerUri = new URL(await url(), import.meta.url).toString()
-        const settings = providerSettings[path] ?? true
+        const settings = providerSettings[path] ?? false // TODO(sqs): back to true
         delete providerSettings[path]
         providerSettings[providerUri] = settings
     }

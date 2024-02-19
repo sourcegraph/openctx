@@ -24,6 +24,7 @@
     "@codemirror/lint": "^6.4.2",
     "@openctx/client": "workspace:*",
     "@openctx/codemirror-extension": "workspace:*",
+    "@openctx/provider-docs": "workspace:*",
     "@openctx/provider-links": "workspace:*",
     "@openctx/provider-storybook": "workspace:*",
     "@openctx/ui-react": "workspace:*",

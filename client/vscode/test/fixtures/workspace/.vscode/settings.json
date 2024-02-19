@@ -3,6 +3,14 @@
   "openctx.debug": true,
   "cody.autocomplete.experimental.graphContext": "openctx",
   "openctx.providers": {
+    "../../../../../../provider/docs/dist/provider.cjs": {
+      // "index": "http://localhost:5900/@fs/home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
+      // "index": "file:///home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
+      "index": "file:///home/sqs/tmp/openctx-provider-docs/sourcegraph-docs-old-web.index.json",
+    },
+    "../../../../../../provider/hello-world/dist/index.js": true,
+  },
+  "openctx.providers2": {
     // "https://sourcegraph.test:3443/.api/openctx": true,
     // "../../../../../../provider/hello-world/dist/index.js": true,
     "https://openctx.org/npm/@openctx/provider-hello-world": true,

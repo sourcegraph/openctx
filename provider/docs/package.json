@@ -1,0 +1,40 @@
+{
+  "name": "@openctx/provider-docs",
+  "version": "0.0.1",
+  "description": "Add contextual documentation to your code from an existing documentation corpus (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/docs"
+  },
+  "type": "module",
+  "main": "dist/provider.js",
+  "files": [
+    "dist",
+    "!**/*.test.*",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build && esbuild src/provider/provider.ts --bundle --outfile=dist/provider.cjs --platform=node --format=cjs --sourcemap --define:self=global --loader:.node=file --alias:sharp=/dev/null --define:import.meta.url=import_meta_url --inject:./polyfill1.js",
+    "test": "vitest",
+    "create-archive": "node --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node --loader ts-node/esm/transpile-only bin/create-archive.ts",
+    "create-index": "node --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node --loader ts-node/esm/transpile-only bin/create-index.ts",
+    "search": "node --no-warnings=ExperimentalWarning --experimental-specifier-resolution=node --loader ts-node/esm/transpile-only bin/search.ts"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "@openctx/provider": "workspace:*",
+    "@xenova/transformers": "^2.13.4",
+    "buffer": "^6.0.3",
+    "jsdom": "^23.2.0",
+    "lru-cache": "^10.1.0",
+    "onnxruntime-web": "^1.16.3"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.6",
+    "esbuild": "^0.19.11",
+    "vitest-fetch-mock": "^0.2.2"
+  }
+}
