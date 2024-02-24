@@ -1,8 +1,8 @@
-import favicon from '/logomark-v0.svg'
-import vikeReact from 'vike-react'
+import vikeReact from 'vike-react/config'
 import type { Config } from 'vike/types'
 import { Head } from '../src/layout/Head.tsx'
 import { Layout } from '../src/layout/Layout.tsx'
+import favicon from '/logomark-v0.svg'
 
 const config: Config = {
     extends: vikeReact,
@@ -29,8 +29,6 @@ const config: Config = {
 
     Layout,
     Head,
-    description:
-        'Annotate code with info from other dev tools, in your editor and anywhere else you view code.',
     favicon,
 }
 
