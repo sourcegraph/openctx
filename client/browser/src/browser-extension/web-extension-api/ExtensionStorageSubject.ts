@@ -1,4 +1,4 @@
-import { Observable, type BehaviorSubject, type NextObserver } from 'rxjs'
+import { type BehaviorSubject, type NextObserver, Observable } from 'rxjs'
 import { observeStorageKey, storage } from './storage'
 import type { LocalStorageItems } from './types'
 

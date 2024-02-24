@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { ExternalLink } from 'lucide-react'
-import { useMemo, type FunctionComponent } from 'react'
+import { type FunctionComponent, useMemo } from 'react'
 import { Link } from '../../../src/components/Link.tsx'
 import type { ContentPageInfo } from '../../../src/content/contentPages.ts'
 

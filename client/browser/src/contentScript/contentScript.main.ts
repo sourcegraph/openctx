@@ -1,9 +1,10 @@
 import '../shared/polyfills'
 // ^^ import polyfills first
+
 import type { Annotation } from '@openctx/client'
 import type { AnnotationsParams } from '@openctx/provider'
 import deepEqual from 'deep-equal'
-import { combineLatest, distinctUntilChanged, mergeMap, throttleTime, type Observable } from 'rxjs'
+import { type Observable, combineLatest, distinctUntilChanged, mergeMap, throttleTime } from 'rxjs'
 import { background } from '../browser-extension/web-extension-api/runtime'
 import './contentScript.main.css'
 import { debugTap } from './debug'

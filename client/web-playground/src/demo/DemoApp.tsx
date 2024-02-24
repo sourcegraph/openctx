@@ -1,4 +1,4 @@
-import { useEffect, useState, type FunctionComponent } from 'react'
+import { type FunctionComponent, useEffect, useState } from 'react'
 import { AnnotatedEditor } from '../AnnotatedEditor'
 import { SettingsEditor } from '../SettingsEditor'
 import styles from './DemoApp.module.css'

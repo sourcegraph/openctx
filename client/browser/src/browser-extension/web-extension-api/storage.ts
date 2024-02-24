@@ -1,4 +1,4 @@
-import { concat, defer, filter, from, map, of, type Observable } from 'rxjs'
+import { type Observable, concat, defer, filter, from, map, of } from 'rxjs'
 import { platform } from '../../shared/platform'
 import { fromBrowserEvent } from './fromBrowserEvent'
 import type { LocalStorageItems, ManagedStorageItems, SyncStorageItems } from './types'

@@ -1,9 +1,9 @@
 import { readFile } from 'node:fs/promises'
-import type { CapabilitiesResult, ResponseMessage } from '@openctx/protocol'
 import { afterEach } from 'node:test'
+import type { CapabilitiesResult, ResponseMessage } from '@openctx/protocol'
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
-import { createTransport, type ProviderTransport } from './createTransport'
+import { type ProviderTransport, createTransport } from './createTransport'
 
 async function expectProviderTransport(provider: ProviderTransport) {
     expect(await provider.capabilities({}, {})).toEqual<CapabilitiesResult>({

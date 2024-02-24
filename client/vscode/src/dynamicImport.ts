@@ -9,9 +9,9 @@
 //
 // When VS Code supports dynamic import()s for extensions, we can remove this.
 
-import { readFile } from 'fs/promises'
 import type { Provider } from '@openctx/client'
 import * as esbuild from 'esbuild-wasm/esm/browser'
+import { readFile } from 'fs/promises'
 import * as vscode from 'vscode'
 
 function requireFromString(cjsSource: string, filename: string): { default: Provider } {

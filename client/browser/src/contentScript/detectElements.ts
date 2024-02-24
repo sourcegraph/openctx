@@ -1,4 +1,4 @@
-import { map, Observable } from 'rxjs'
+import { Observable, map } from 'rxjs'
 
 /**
  * Return an Observable that emits the first DOM element that matches the given selector. If none is

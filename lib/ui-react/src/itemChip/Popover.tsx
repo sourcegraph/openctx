@@ -1,5 +1,5 @@
 import { getPopoverDimensions } from '@openctx/ui-standalone'
-import { useCallback, useEffect, useRef, type FunctionComponent, type ReactNode } from 'react'
+import { type FunctionComponent, type ReactNode, useCallback, useEffect, useRef } from 'react'
 import styles from './Popover.module.css'
 
 /**

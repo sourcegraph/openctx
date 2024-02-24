@@ -1,12 +1,12 @@
 import clsx from 'clsx'
 import { useObservableState } from 'observable-hooks'
 import {
-    useCallback,
-    useRef,
-    useState,
     type ChangeEventHandler,
     type FormEventHandler,
     type FunctionComponent,
+    useCallback,
+    useRef,
+    useState,
 } from 'react'
 import { storage } from '../browser-extension/web-extension-api/storage'
 import { configurationStringChanges } from '../configuration'

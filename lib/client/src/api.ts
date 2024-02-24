@@ -1,6 +1,8 @@
 import type { AnnotationsParams, AnnotationsResult, ProviderSettings } from '@openctx/protocol'
 import type { Item, Range } from '@openctx/schema'
 import {
+    type Observable,
+    type ObservableInput,
     catchError,
     combineLatest,
     defer,
@@ -10,8 +12,6 @@ import {
     of,
     startWith,
     tap,
-    type Observable,
-    type ObservableInput,
 } from 'rxjs'
 import type { ClientEnv } from './client/client'
 import type { ProviderClient } from './providerClient/createProviderClient'

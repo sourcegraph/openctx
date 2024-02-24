@@ -1,10 +1,10 @@
 import { AnnotatedEditor, SettingsEditor } from '@openctx/web-playground'
 import clsx from 'clsx'
-import { useCallback, useState, type FunctionComponent } from 'react'
+import { type FunctionComponent, useCallback, useState } from 'react'
 import { ClientOnlySync } from '../../src/components/ClientOnlySync.tsx'
 import { DEFAULT_CODEMIRROR_PROPS } from '../../src/components/codemirror/defaults.ts'
-import { INITIAL_FILE, INITIAL_SETTINGS } from './data.ts'
 import { Preload } from './Preload.tsx'
+import { INITIAL_FILE, INITIAL_SETTINGS } from './data.ts'
 
 const CODEMIRROR_PROPS: React.ComponentProps<typeof SettingsEditor>['codeMirrorProps'] = {
     ...DEFAULT_CODEMIRROR_PROPS,

@@ -5,7 +5,7 @@ import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
 import type { Annotation } from '../api'
 import type { ConfigurationUserInput } from '../configuration'
-import { createClient, type Client, type ClientEnv } from './client'
+import { type Client, type ClientEnv, createClient } from './client'
 
 function testdataFileUri(file: string): string {
     return `file://${__dirname}/testdata/${file}`
