@@ -11,8 +11,8 @@ export const Page: FunctionComponent = () => (
         <div className="flex flex-col items-center pt-6">
             <h1 className="relative">
                 <LogotextHorizColorImage size="lg" />
-                <span className="absolute right-[5px] top-[-4px] bg-destructive px-1 py-0 font-mono text-[75%] font-semibold leading-normal text-destructive-foreground">
-                    alpha
+                <span className="absolute right-[-61px] top-[0px] bg-destructive px-1 py-0 font-mono text-[75%] font-semibold leading-normal text-destructive-foreground">
+                    experimental
                 </span>
                 <span className="sr-only">OpenCtx</span>
             </h1>

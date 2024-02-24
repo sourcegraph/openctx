@@ -10,7 +10,7 @@ _Hover over a UI component in code to see what it looks like_
 
 ## Usage
 
-_Status: alpha_
+_Status: experimental_
 
 <!-- Keep in sync with web/content/docs/start.mdx -->
 

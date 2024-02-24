@@ -10,7 +10,7 @@ OpenCtx is an open standard for annotating code with info from other dev tools (
 
 See [openctx.org](https://openctx.org) for more info.
 
-_Status: alpha_
+_Status: experimental_
 
 ---
 
