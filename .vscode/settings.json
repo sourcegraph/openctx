@@ -25,7 +25,8 @@
     "css.lint.unknownAtRules": "ignore",
     "editor.codeActionsOnSave": {
         "source.fixAll": "explicit",
-        "source.organizeImports": "explicit"
+        "source.organizeImports": "never",
+        "source.organizeImports.biome": "explicit"
     },
     "[mdx][markdown]": {
         "editor.insertSpaces": true
