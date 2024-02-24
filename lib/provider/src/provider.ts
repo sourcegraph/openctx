@@ -1,8 +1,8 @@
 import type {
-    AnnotationsParams,
-    AnnotationsResult,
     CapabilitiesParams,
     CapabilitiesResult,
+    ItemsParams,
+    ItemsResult,
     ProviderSettings,
 } from '@openctx/protocol'
 
@@ -16,7 +16,7 @@ export interface Provider<S extends {} = ProviderSettings> {
      * Reports the capabilities of the provider.
      *
      * TODO(sqs): fix this...right now capabilities needs to be sent each time right before
-     * annotations anyway, so it probably should be like "annotations" and "resolveAnnotations" or
+     * items anyway, so it probably should be like "items" and "resolveItems" or
      * some optimization so the client doesnt need to always send over the full text.
      */
     capabilities(
@@ -25,9 +25,9 @@ export interface Provider<S extends {} = ProviderSettings> {
     ): CapabilitiesResult | Promise<CapabilitiesResult>
 
     /**
-     * Returns OpenCtx annotations for the given file.
+     * Returns OpenCtx items for the given file.
      */
-    annotations(params: AnnotationsParams, settings: S): AnnotationsResult | Promise<AnnotationsResult>
+    items(params: ItemsParams, settings: S): ItemsResult | Promise<ItemsResult>
 
     /**
      * Called when the provider will no longer be used. The provider should release its resources,

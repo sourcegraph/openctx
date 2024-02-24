@@ -4,13 +4,14 @@
     "noEmit": true
   },
   "files": [],
-  "exclude": ["**/dist", "client/browser"],
+  "exclude": ["**/dist", "**/testdata", "client/browser"],
   "references": [
     { "path": "lib/client" },
     { "path": "lib/protocol" },
     { "path": "lib/provider" },
     { "path": "lib/schema" },
     { "path": "lib/schema/dev" },
+    { "path": "lib/ui-common" },
     { "path": "lib/ui-react" },
     { "path": "lib/ui-standalone" },
     { "path": "client/browser" },

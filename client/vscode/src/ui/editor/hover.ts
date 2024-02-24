@@ -1,4 +1,4 @@
-import type { Annotation } from '@openctx/client'
+import type { Item } from '@openctx/client'
 import { firstValueFrom, map } from 'rxjs'
 import * as vscode from 'vscode'
 import type { Controller } from '../../controller'
@@ -7,11 +7,13 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
     return {
         async provideHover(doc, pos): Promise<vscode.Hover | null> {
             return firstValueFrom(
-                controller.observeAnnotations(doc).pipe(
-                    map(anns => {
-                        const containedByAnns = anns?.filter(ann => ann.range.contains(pos))
-                        return containedByAnns && containedByAnns.length > 0
-                            ? createHover(containedByAnns)
+                controller.observeItems(doc).pipe(
+                    map(items => {
+                        const containedByItems = items?.filter(item =>
+                            (item.range ?? ZERO_RANGE).contains(pos)
+                        )
+                        return containedByItems && containedByItems.length > 0
+                            ? createHover(containedByItems)
                             : null
                     })
                 )
@@ -23,41 +25,37 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
     }
 }
 
-function createHover(anns: Annotation<vscode.Range>[]): vscode.Hover {
-    const contents: vscode.Hover['contents'] = []
-    for (const { item } of anns) {
-        contents.push(
-            new vscode.MarkdownString(item.title.includes('*') ? item.title : `**${item.title}**`)
-        )
-        if (item.detail) {
-            contents.push(new vscode.MarkdownString(item.detail))
-        }
-        if (item.image) {
-            // Scale down image dimensions so the image isn't too big.
-            const MAX_WIDTH = 400
-            let width = item.image.width ?? MAX_WIDTH
-            let height = item.image.height
-            if (width > MAX_WIDTH) {
-                const origWidth = width
-                width = MAX_WIDTH
-                height = height ? Math.round(height * (MAX_WIDTH / origWidth)) : undefined
-            }
+const ZERO_RANGE = new vscode.Range(0, 0, 0, 0)
 
-            const m = new vscode.MarkdownString(
-                `<img src="${encodeURI(item.image.url)}" width="${width}" height="${height ?? 'auto'}" ${
-                    item.image.alt ? `alt="${item.image.alt}"` : ''
-                } />`
-            )
-            m.supportHtml = true
-            contents.push(m)
+function createHover(items: Item<vscode.Range>[]): vscode.Hover {
+    const contents: vscode.Hover['contents'] = []
+    for (const item of items) {
+        const content = new vscode.MarkdownString()
+        content.supportHtml = true
+
+        // Render title in bold.
+        content.appendMarkdown('**')
+        content.appendText(item.title)
+        content.appendMarkdown('**')
+
+        if (item.ui?.hover?.markdown || item.ui?.hover?.text) {
+            content.appendMarkdown('\n\n')
+            if (item.ui.hover.markdown) {
+                content.appendMarkdown(item.ui.hover.markdown)
+            } else if (item.ui.hover.text) {
+                content.appendText(item.ui.hover.text)
+            }
         }
         if (item.url) {
-            contents.push(new vscode.MarkdownString(`[Open in browser...](${item.url})`))
+            content.appendMarkdown('\n\n')
+            content.appendMarkdown(`[Open in browser...](${item.url})`)
         }
+
+        contents.push(content)
     }
 
     return {
         contents,
-        range: anns[0].range, // TODO(sqs): use smallest overlapping range
+        range: items[0].range, // TODO(sqs): use smallest overlapping range
     }
 }

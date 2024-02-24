@@ -1,4 +1,4 @@
-import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
+import type { CapabilitiesResult, ItemsResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import prometheus, { type Settings } from './index'
 
@@ -19,9 +19,9 @@ describe('prometheus', () => {
         })
     })
 
-    test('annotations', () => {
+    test('items', () => {
         expect(
-            prometheus.annotations(
+            prometheus.items(
                 {
                     file: 'file:///a/b.go',
                     content: `
@@ -34,12 +34,10 @@ var histogram = promauto.NewHistogram(prometheus.HistogramOpts{
                 },
                 SETTINGS
             )
-        ).toEqual<AnnotationsResult>([
+        ).toEqual<ItemsResult>([
             {
-                item: {
-                    title: '📟 Prometheus metric: random_numbers',
-                    url: 'https://example.com/?q=random_numbers',
-                },
+                title: '📟 Prometheus metric: random_numbers',
+                url: 'https://example.com/?q=random_numbers',
                 range: {
                     start: { line: 2, character: 14 },
                     end: { line: 2, character: 28 },

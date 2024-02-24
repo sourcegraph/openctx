@@ -11,24 +11,18 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src",
-    "!**/*.test.*",
-    "!**/*.story.*",
-    "!dist/**/*.ts?(x)",
-    "dist/**/*.d.ts"
-  ],
+  "files": ["dist", "src", "!**/*.test.*", "!**/*.story.*", "!dist/**/*.ts?(x)", "dist/**/*.d.ts"],
   "sideEffects": false,
   "scripts": {
     "prebuild": "mkdir -p dist && cp -R src/* dist/ && find dist/ -name '*.ts' -not -name '*.d.ts' -delete",
     "build": "pnpm run --silent prebuild && tsc --build",
     "test": "vitest",
-    "storybook": "storybook dev --no-open --no-version-updates --no-release-notes",
+    "storybook": "storybook dev --no-version-updates -p 5811",
     "prepublishOnly": "tsc --build --clean && pnpm run build"
   },
   "dependencies": {
     "@openctx/schema": "workspace:*",
-    "clsx": "^2.0.0"
+    "@openctx/ui-common": "workspace:*",
+    "clsx": "^2.1.0"
   }
 }

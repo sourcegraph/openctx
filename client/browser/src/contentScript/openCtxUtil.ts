@@ -1,29 +1,28 @@
-import type { Annotation } from '@openctx/client'
-import type { createItemChipList } from '@openctx/ui-standalone'
+import type { Item } from '@openctx/client'
+import type { createChipList } from '@openctx/ui-standalone'
 
-export function annotationsByLine(
-    annotations: Annotation[]
-): { line: number; annotations: Annotation[] }[] {
-    const byLine: { line: number; annotations: Annotation[] }[] = []
-    for (const ann of annotations) {
+export function itemsByLine(items: Item[]): { line: number; items: Item[] }[] {
+    const byLine: { line: number; items: Item[] }[] = []
+    for (const item of items) {
         let cur = byLine.at(-1)
-        if (!cur || cur.line !== ann.range.start.line) {
-            cur = { line: ann.range.start.line, annotations: [] }
+        const startLine = item.range?.start.line ?? 0
+        if (!cur || cur.line !== startLine) {
+            cur = { line: startLine, items: [] }
             byLine.push(cur)
         }
-        cur.annotations.push(ann)
+        cur.items.push(item)
     }
     return byLine
 }
 
 export const LINE_CHIPS_CLASSNAME = 'octx-line-chips'
 
-export function styledItemChipListParams(
+export function styledChipListParams(
     params: Omit<
-        Parameters<typeof createItemChipList>[0],
+        Parameters<typeof createChipList>[0],
         'className' | 'chipClassName' | 'popoverClassName'
     >
-): Parameters<typeof createItemChipList>[0] {
+): Parameters<typeof createChipList>[0] {
     return {
         ...params,
         className: LINE_CHIPS_CLASSNAME,

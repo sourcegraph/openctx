@@ -1,5 +1,5 @@
-import type { Annotation, AnnotationsParams } from '@openctx/client'
-import { createItemChipList } from '@openctx/ui-standalone'
+import type { Item, ItemsParams } from '@openctx/client'
+import { createChipList } from '@openctx/ui-standalone'
 import {
     EMPTY,
     type Observable,
@@ -13,7 +13,7 @@ import {
 } from 'rxjs'
 import { DEBUG, debugTap } from '../debug'
 import { withDOMElements } from '../detectElements'
-import { LINE_CHIPS_CLASSNAME, annotationsByLine, styledItemChipListParams } from '../openCtxUtil'
+import { LINE_CHIPS_CLASSNAME, itemsByLine, styledChipListParams } from '../openCtxUtil'
 
 /**
  * Inject OpenCtx features into the GitHub pull request files view.
@@ -26,7 +26,7 @@ import { LINE_CHIPS_CLASSNAME, annotationsByLine, styledItemChipListParams } fro
  */
 export function injectOnGitHubPullRequestFilesView(
     location: URL,
-    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>
+    itemsChanges: (params: ItemsParams) => Observable<Item[]>
 ): Observable<void> {
     // All GitHub PR file view URLs contain `/pull/` and `/files` in the path.
     if (!location.pathname.includes('/pull/') && !location.pathname.endsWith('/files')) {
@@ -48,13 +48,10 @@ export function injectOnGitHubPullRequestFilesView(
                 diffData.files
                     .flatMap(file => [file.oldFile, file.newFile])
                     .map(file =>
-                        annotationsChanges({
-                            content: file.content,
-                            file: `github://${file.path}`,
-                        }).pipe(
-                            tap(annotations => {
+                        itemsChanges({ content: file.content, file: `github://${file.path}` }).pipe(
+                            tap(items => {
                                 try {
-                                    redraw(file, annotations)
+                                    redraw(file, items)
                                 } catch (error) {
                                     console.error(error)
                                 }
@@ -68,7 +65,7 @@ export function injectOnGitHubPullRequestFilesView(
     )
 }
 
-function getItemChipListElementsAtEndOfLine(lineEl: HTMLElement): HTMLElement[] {
+function getChipListElementsAtEndOfLine(lineEl: HTMLElement): HTMLElement[] {
     // There might be 2 of these in a unified (non-split) diff, since one was added by each of the old
     // and new file's providers.
     return [
@@ -79,25 +76,25 @@ function getItemChipListElementsAtEndOfLine(lineEl: HTMLElement): HTMLElement[] 
     )
 }
 
-function redraw(file: DiffViewFileVersionData, annotations: Annotation[]): void {
+function redraw(file: DiffViewFileVersionData, items: Item[]): void {
     // TODO(sqs): use line numbers as though they were in the original file, not just the displayed
     // excerpt from the diff.
 
     const lineEls = file.tableEl.querySelectorAll<HTMLElement>(file.codeSelector)
-    for (const { line, annotations: lineAnnotations } of annotationsByLine(annotations)) {
+    for (const { line, items: lineItems } of itemsByLine(items)) {
         const lineEl = lineEls[line]
         if (!lineEl) {
             console.error(`could not find lineEl for line ${line} (lineEls.length == ${lineEls.length})`)
             continue
         }
 
-        for (const chipListEl of getItemChipListElementsAtEndOfLine(lineEl)) {
+        for (const chipListEl of getChipListElementsAtEndOfLine(lineEl)) {
             chipListEl.remove()
         }
 
-        const chipList = createItemChipList(
-            styledItemChipListParams({
-                items: lineAnnotations.map(ann => ann.item),
+        const chipList = createChipList(
+            styledChipListParams({
+                items: lineItems,
             })
         )
         lineEl.append(chipList)
@@ -189,7 +186,7 @@ function codeSelector(tableEl: HTMLTableElement, version: 'old' | 'new'): string
             : 'td[data-split-side="right"] .blob-code-inner, td[data-split-side="right"].blob-code-inner'
     }
 
-    // Omit .blob-expanded from the new version of the code to avoid double annotations.
+    // Omit .blob-expanded from the new version of the code to avoid double items.
     return version === 'old'
         ? ':where(.blob-code-context, .blob-code-deletion, .blob-expanded) .blob-code-inner'
         : ':where(.blob-code-context, .blob-code-addition) .blob-code-inner'
@@ -201,7 +198,7 @@ function fileContentFromDiffViewSelector(fileDiffTableEl: HTMLTableElement, sele
     return els
         .map(el => {
             // Ignore innerText from the OpenCtx chip.
-            const chipListEls = getItemChipListElementsAtEndOfLine(el)
+            const chipListEls = getChipListElementsAtEndOfLine(el)
             for (const chipListEl of chipListEls) {
                 chipListEl.hidden = true
             }

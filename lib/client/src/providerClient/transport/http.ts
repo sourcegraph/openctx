@@ -1,9 +1,4 @@
-import type {
-    AnnotationsResult,
-    CapabilitiesResult,
-    RequestMessage,
-    ResponseMessage,
-} from '@openctx/protocol'
+import type { CapabilitiesResult, ItemsResult, RequestMessage, ResponseMessage } from '@openctx/protocol'
 import { scopedLogger } from '../../logger'
 import type { ProviderTransport, ProviderTransportOptions } from './createTransport'
 
@@ -84,6 +79,6 @@ export function createHttpTransport(
 
     return {
         capabilities: async params => send<CapabilitiesResult>({ method: 'capabilities', params }),
-        annotations: async params => send<AnnotationsResult>({ method: 'annotations', params }),
+        items: async params => send<ItemsResult>({ method: 'items', params }),
     }
 }

@@ -1,4 +1,4 @@
-import { type Annotation, type Range, createClient } from '@openctx/client'
+import { type Item, type Range, createClient } from '@openctx/client'
 import { type Observable, catchError, combineLatest, from, map, mergeMap, of, tap } from 'rxjs'
 import * as vscode from 'vscode'
 import { type ExtensionApi, createApi } from './api'
@@ -7,15 +7,15 @@ import { getClientConfiguration } from './configuration'
 import { dynamicImportFromSource } from './dynamicImport'
 import { createCodeLensProvider } from './ui/editor/codeLens'
 import { createHoverProvider } from './ui/editor/hover'
-import { createShowFileAnnotationsList } from './ui/fileAnnotationsList'
+import { createShowFileItemsList } from './ui/fileItemsList'
 import { createStatusBarItem } from './ui/statusBarItem'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util'
 import { createErrorWaiter } from './util/errorWaiter'
 
 export interface Controller {
-    observeAnnotations(
+    observeItems(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
-    ): Observable<Annotation<vscode.Range>[] | null>
+    ): Observable<Item<vscode.Range>[] | null>
     onDidChangeProviders: vscode.Event<void>
 }
 
@@ -72,7 +72,7 @@ export function createController(
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
+        observeItems(doc: vscode.TextDocument): Observable<Item<vscode.Range>[] | null> {
             if (ignoreDoc(doc)) {
                 return of(null)
             }
@@ -82,7 +82,7 @@ export function createController(
             }
 
             return client
-                .annotationsChanges(
+                .itemsChanges(
                     {
                         file: doc.uri.toString(),
                         content: doc.getText(),
@@ -123,7 +123,7 @@ export function createController(
     // disabled, the provider will quickly return no results.
     const codeLensProvider = createCodeLensProvider(controller)
     const hoverProvider = createHoverProvider(controller)
-    const quickPickCommand = createShowFileAnnotationsList(controller)
+    const quickPickCommand = createShowFileItemsList(controller)
     disposables.push(
         codeLensProvider,
         hoverProvider,
@@ -145,14 +145,14 @@ function ignoreDoc(doc: vscode.TextDocument): boolean {
     return doc.uri.scheme === 'output' || doc.lineCount > 5000
 }
 
-function makeRange(range: Range): vscode.Range {
+export function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
 }
 
 function showErrorNotification(outputChannel: vscode.OutputChannel): void {
     const OPEN_LOG = 'Open Log'
     vscode.window
-        .showErrorMessage('OpenCtx annotations failed.', {
+        .showErrorMessage('OpenCtx items failed.', {
             title: OPEN_LOG,
         } satisfies vscode.MessageItem)
         .then(action => {

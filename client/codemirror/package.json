@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@openctx/client": "workspace:*",
+    "@openctx/ui-common": "workspace:*",
     "@openctx/ui-react": "workspace:*",
     "deep-equal": "^2.2.3"
   },
