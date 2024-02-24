@@ -106,6 +106,17 @@ function redraw(annotations: Annotation[]): void {
                 line,
                 lineAnns.map(ann => ann.item)
             )
+
+            try {
+                // Need to set z-index or else the chips won't be hoverable or clickable because the
+                // virtual textarea covers them. This does not seem to cause any other issues.
+                const lineParentEl = fileLineEl.parentElement?.parentElement
+                if (lineParentEl && !lineParentEl.style.zIndex) {
+                    lineParentEl.style.zIndex = '1'
+                }
+            } catch (error) {
+                console.debug(`Unable to set z-index on file line parent for line ${line}.`)
+            }
         }
     }
 
