@@ -24,8 +24,8 @@
     "deep-equal": "^2.2.3",
     "jsonc-parser": "^3.2.0",
     "observable-hooks": "^4.2.3",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "@types/deep-equal": "^1.0.4",
     "@types/react": "18.2.37",
     "@types/react-dom": "18.2.15",
-    "@vitejs/plugin-react": "^4.0.2",
+    "@vitejs/plugin-react": "^4.2.1",
     "svgexport": "^0.4.2",
     "vite-plugin-monaco-editor": "^1.1.0",
     "webextension-polyfill": "^0.10.0"

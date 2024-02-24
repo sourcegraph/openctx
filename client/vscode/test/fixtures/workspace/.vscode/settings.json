@@ -1,12 +1,11 @@
 {
   "openctx.enable": true,
   "openctx.debug": true,
-  "cody.autocomplete.experimental.graphContext": "openctx",
   "openctx.providers": {
     // "https://sourcegraph.test:3443/.api/openctx": true,
-    // "../../../../../../provider/hello-world/dist/index.js": true,
-    "https://openctx.org/npm/@openctx/provider-hello-world": true,
-    "https://openctx.org/npm/@openctx/provider-links": {
+    // "https://openctx.org/npm/@openctx/provider-hello-world": true,
+    "../../../../../../provider/hello-world/dist/index.js": true,
+     "../../../../../../provider/links/dist/index.js": {
       "links": [
         {
           "title": "Telemetry",

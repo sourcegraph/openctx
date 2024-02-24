@@ -4,7 +4,7 @@ export const content: ContentPages = {
     routePath: '/docs',
     fsPath: '../../content/docs',
     listContentPagePaths: () =>
-        Object.keys(import.meta.glob('../../content/docs/**/*.mdx', { as: 'url' })),
+        Object.keys(import.meta.glob('../../content/docs/**/*.mdx', { query: '?url' })),
     importContentPages: () => import.meta.glob('../../content/docs/**/*.mdx'),
     importContentPage: slug => [
         import(`../../content/docs/${slug}.mdx`),

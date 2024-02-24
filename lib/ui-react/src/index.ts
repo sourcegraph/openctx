@@ -1,2 +1,3 @@
+export { Chip } from './chip/Chip'
+export { ChipList } from './chip/ChipList'
 export { IndentationWrapper } from './indentationWrapper/IndentationWrapper'
-export { ItemChip, ItemChipList } from './itemChip/ItemChip'

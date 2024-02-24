@@ -1,0 +1,35 @@
+{
+  "name": "@openctx/ui-common",
+  "version": "0.0.1",
+  "description": "OpenCtx common UI library",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "lib/ui-common"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "dist/**/*.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest",
+    "prepublishOnly": "tsc --build --clean && pnpm run build"
+  },
+  "dependencies": {
+    "@openctx/schema": "workspace:*",
+    "marked": "^12.0.0",
+    "sanitize-html": "^2.12.1",
+    "xss": "^1.0.14"
+  },
+  "devDependencies": {
+    "@types/sanitize-html": "^2.11.0"
+  }
+}

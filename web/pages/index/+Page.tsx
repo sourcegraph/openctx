@@ -36,7 +36,7 @@ export const Page: FunctionComponent = () => (
         <FakeEditorWindow className="mb-4 mt-2" />
         <p className="mb-16 text-center text-sm italic text-muted-foreground">
             (Don't worry. It doesn't actually blink yellow in your editor, and you can easily hide the
-            annotations when you don't want them.)
+            items when you don't want them.)
         </p>
     </>
 )

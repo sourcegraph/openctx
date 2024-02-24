@@ -1,10 +1,10 @@
-import type { Annotation, Item } from '@openctx/client'
+import type { Item } from '@openctx/client'
 import * as vscode from 'vscode'
 import type { Controller } from '../controller'
 
-const COMMAND_ID = 'openctx.showFileAnnotations'
+const COMMAND_ID = 'openctx.showFileItems'
 
-export function createShowFileAnnotationsList(controller: Controller): vscode.Disposable {
+export function createShowFileItemsList(controller: Controller): vscode.Disposable {
     const disposables: vscode.Disposable[] = []
 
     disposables.push(vscode.commands.registerCommand(COMMAND_ID, () => showQuickPick(controller)))
@@ -13,8 +13,8 @@ export function createShowFileAnnotationsList(controller: Controller): vscode.Di
 }
 
 interface QuickPickItem extends vscode.QuickPickItem {
-    item?: Item
-    firstRange?: vscode.Range
+    // TODO(sqs): support groups
+    item: Item<vscode.Range> | null
 }
 
 async function showQuickPick(controller: Controller): Promise<void> {
@@ -38,15 +38,17 @@ async function showQuickPick(controller: Controller): Promise<void> {
     quickPick.matchOnDetail = true
     quickPick.show()
 
-    const subscription = controller.observeAnnotations(editor.document).subscribe(
-        anns => {
+    const subscription = controller.observeItems(editor.document).subscribe(
+        items => {
             quickPick.items =
-                anns && anns.length > 0 ? toQuickPickItems(anns) : [{ label: 'No OpenCtx annotations' }]
+                items && items.length > 0
+                    ? toQuickPickItems(items)
+                    : [{ label: 'No OpenCtx items', item: null }]
             quickPick.busy = false
         },
         error => {
             console.error(error)
-            vscode.window.showErrorMessage('Error loading OpenCtx annotations')
+            vscode.window.showErrorMessage('Error loading OpenCtx items')
             disposeAll()
         },
         () => disposeAll()
@@ -55,15 +57,15 @@ async function showQuickPick(controller: Controller): Promise<void> {
 
     disposables.push(
         quickPick.onDidChangeActive(activeItems => {
-            const activeItem = activeItems[0]
-            if (activeItem?.firstRange) {
+            const activeItem = activeItems.at(0)
+            if (activeItem?.item?.range) {
                 editor.revealRange(
-                    activeItem.firstRange,
+                    activeItem.item.range,
                     vscode.TextEditorRevealType.InCenterIfOutsideViewport
                 )
                 editor.selection = new vscode.Selection(
-                    activeItem.firstRange.start,
-                    activeItem.firstRange.end
+                    activeItem.item.range.start,
+                    activeItem.item.range.end
                 )
             }
         })
@@ -78,6 +80,7 @@ async function showQuickPick(controller: Controller): Promise<void> {
             if (selectedItem.item?.url) {
                 vscode.commands.executeCommand('vscode.open', selectedItem.item?.url)
             }
+            quickPick.hide()
             disposeAll()
         })
     )
@@ -99,18 +102,25 @@ async function showQuickPick(controller: Controller): Promise<void> {
     )
 }
 
-function toQuickPickItems(anns: Annotation<vscode.Range>[]): QuickPickItem[] {
-    const items: (QuickPickItem & Required<Pick<QuickPickItem, 'item' | 'firstRange'>>)[] = []
-    for (const ann of anns) {
-        items.push({
-            label: ann.item.title,
-            detail: ann.item.detail,
-            buttons: ann.item.url
-                ? [{ tooltip: `Open ${ann.item.url}`, iconPath: new vscode.ThemeIcon('link-external') }]
+type RequiredNotNull<T> = {
+    [P in keyof T]-?: NonNullable<T[P]>
+}
+
+function toQuickPickItems(items: Item<vscode.Range>[]): QuickPickItem[] {
+    const qpItems: (QuickPickItem & RequiredNotNull<Pick<QuickPickItem, 'item'>>)[] = []
+    for (const item of items) {
+        qpItems.push({
+            label: item.title,
+            detail: item.ui?.hover?.text,
+            buttons: item.url
+                ? [{ tooltip: `Open ${item.url}`, iconPath: new vscode.ThemeIcon('link-external') }]
                 : undefined,
-            item: ann.item,
-            firstRange: ann.range,
+            item,
         })
     }
-    return items.sort((a, b) => a.firstRange.start.compareTo(b.firstRange.start))
+    return qpItems.sort((a, b) =>
+        (a.item.range ?? ZERO_RANGE).start.compareTo((b.item.range ?? ZERO_RANGE).start)
+    )
 }
+
+const ZERO_RANGE = new vscode.Range(0, 0, 0, 0)
