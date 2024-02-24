@@ -76,4 +76,7 @@ In the other extension's package directory, run:
 
 ```shell
 pnpm link /path/to/openctx/lib/client
+pnpm link /path/to/openctx/lib/schema
+pnpm link /path/to/openctx/lib/protocol
+# ... any other packages needed ...
 ```
