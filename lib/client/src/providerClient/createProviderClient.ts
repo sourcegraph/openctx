@@ -1,7 +1,7 @@
 import type { AnnotationsParams, AnnotationsResult, ProviderSettings } from '@openctx/protocol'
 import { scopedLogger } from '../logger'
 import { matchSelectors } from './selector'
-import { createTransport, type ProviderTransportOptions } from './transport/createTransport'
+import { type ProviderTransportOptions, createTransport } from './transport/createTransport'
 
 /**
  * A {@link ProviderClient} communicates with a single OpenCtx provider. It is stateless and

@@ -1,9 +1,9 @@
 import {
-    useEffect,
-    useState,
     type ComponentType,
     type FunctionComponent,
     type ReactElement,
+    useEffect,
+    useState,
 } from 'react'
 
 export const ClientOnlySync: FunctionComponent<{

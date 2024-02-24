@@ -1,5 +1,6 @@
 import '../shared/polyfills'
 // ^^ import polyfills first
+
 import { createClient } from '@openctx/client'
 import type { Provider } from '@openctx/provider'
 import helloWorldProvider from '@openctx/provider-hello-world'

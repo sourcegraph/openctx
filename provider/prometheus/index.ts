@@ -1,5 +1,4 @@
 import {
-    matchGlob,
     type AnnotationsParams,
     type AnnotationsResult,
     type CapabilitiesParams,
@@ -7,6 +6,7 @@ import {
     type Position,
     type Provider,
     type Range,
+    matchGlob,
 } from '@openctx/provider'
 
 /** Settings for the Prometheus OpenCtx provider. */

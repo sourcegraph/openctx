@@ -1,4 +1,4 @@
-import { createClient, type ClientConfiguration } from '@openctx/client'
+import { type ClientConfiguration, createClient } from '@openctx/client'
 import { createExtension, makeRange } from '@openctx/monaco-editor-extension'
 import providerHelloWorldUrl from '@openctx/provider-hello-world?url'
 import * as monaco from 'monaco-editor'

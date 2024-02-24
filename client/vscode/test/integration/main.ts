@@ -1,5 +1,5 @@
-import { runTests } from '@vscode/test-electron'
 import * as path from 'path'
+import { runTests } from '@vscode/test-electron'
 
 async function main(): Promise<void> {
     // When run, this script's filename is `client/vscode/dist/tsc/test/integration/main.js`, so

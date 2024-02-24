@@ -2,7 +2,7 @@ import { defaultKeymap } from '@codemirror/commands'
 import { javascript } from '@codemirror/lang-javascript'
 import { EditorState, type Extension } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
-import { createClient, type ClientConfiguration } from '@openctx/client'
+import { type ClientConfiguration, createClient } from '@openctx/client'
 import providerHelloWorldUrl from '@openctx/provider-hello-world?url'
 import { openCtxData, showOpenCtxDecorations } from '../src'
 

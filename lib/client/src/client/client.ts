@@ -3,6 +3,9 @@ import type { Provider } from '@openctx/provider'
 import type { Range } from '@openctx/schema'
 import { LRUCache } from 'lru-cache'
 import {
+    type Observable,
+    type ObservableInput,
+    type Unsubscribable,
     catchError,
     combineLatest,
     distinctUntilChanged,
@@ -12,18 +15,15 @@ import {
     mergeMap,
     of,
     shareReplay,
-    type Observable,
-    type ObservableInput,
-    type Unsubscribable,
 } from 'rxjs'
-import { observeAnnotations, type Annotation, type ObservableProviderClient } from '../api'
+import { type Annotation, type ObservableProviderClient, observeAnnotations } from '../api'
 import {
-    configurationFromUserInput,
     type Configuration,
     type ConfigurationUserInput,
+    configurationFromUserInput,
 } from '../configuration'
 import type { Logger } from '../logger'
-import { createProviderClient, type ProviderClient } from '../providerClient/createProviderClient'
+import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient'
 
 /**
  * Hooks for the OpenCtx {@link Client} to access information about the environment, such as

@@ -6,9 +6,9 @@ import CodeMirror, { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { useObservableState } from 'observable-hooks'
 import type React from 'react'
 import { useMemo, useState } from 'react'
-import { catchError, NEVER, of, tap } from 'rxjs'
-import { mergeCodeMirrorProps } from './codemirror'
+import { NEVER, catchError, of, tap } from 'rxjs'
 import { EditorHeader } from './EditorHeader'
+import { mergeCodeMirrorProps } from './codemirror'
 
 let promptedForAuthInfo = false // don't prompt too many times
 

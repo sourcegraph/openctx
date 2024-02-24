@@ -1,10 +1,10 @@
 import type { Annotation, AnnotationsParams, Item } from '@openctx/client'
 import { createItemChipList } from '@openctx/ui-standalone'
-import { combineLatest, debounceTime, EMPTY, map, mergeMap, Observable, startWith, tap } from 'rxjs'
+import { EMPTY, Observable, combineLatest, debounceTime, map, mergeMap, startWith, tap } from 'rxjs'
 import { toLineRangeStrings } from '../../shared/util/toLineRangeStrings'
 import { DEBUG, debugTap } from '../debug'
 import { withDOMElement } from '../detectElements'
-import { annotationsByLine, LINE_CHIPS_CLASSNAME, styledItemChipListParams } from '../openCtxUtil'
+import { LINE_CHIPS_CLASSNAME, annotationsByLine, styledItemChipListParams } from '../openCtxUtil'
 
 /**
  * Inject OpenCtx features into the GitHub code view.

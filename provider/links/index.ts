@@ -1,11 +1,11 @@
 import {
-    matchGlob,
     type AnnotationsParams,
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
     type Provider,
     type Range,
+    matchGlob,
 } from '@openctx/provider'
 
 /** Settings for the `links` OpenCtx provider. */

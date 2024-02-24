@@ -2,6 +2,7 @@ import type { Annotation, AnnotationsParams } from '@openctx/client'
 import { createItemChipList } from '@openctx/ui-standalone'
 import {
     EMPTY,
+    type Observable,
     combineLatest,
     filter,
     fromEvent,
@@ -9,7 +10,6 @@ import {
     mergeMap,
     startWith,
     tap,
-    type Observable,
 } from 'rxjs'
 import { DEBUG, debugTap } from '../debug'
 import { withDOMElements } from '../detectElements'

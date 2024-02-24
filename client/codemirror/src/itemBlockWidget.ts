@@ -1,8 +1,8 @@
-import { RangeSetBuilder, type EditorState, type Extension } from '@codemirror/state'
-import { Decoration, EditorView, WidgetType, type DecorationSet } from '@codemirror/view'
+import { type EditorState, type Extension, RangeSetBuilder } from '@codemirror/state'
+import { Decoration, type DecorationSet, EditorView, WidgetType } from '@codemirror/view'
 import type { Annotation, Item } from '@openctx/client'
 import deepEqual from 'deep-equal'
-import { openCtxDataFacet, type OpenCtxDecorationsConfig } from './extension'
+import { type OpenCtxDecorationsConfig, openCtxDataFacet } from './extension'
 
 class BlockWidget extends WidgetType {
     private container: HTMLElement | null = null

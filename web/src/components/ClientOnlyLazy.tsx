@@ -1,11 +1,11 @@
 import {
+    type ComponentType,
+    type FunctionComponent,
+    type ReactNode,
     Suspense,
     lazy,
     useEffect,
     useState,
-    type ComponentType,
-    type FunctionComponent,
-    type ReactNode,
 } from 'react'
 
 export const ClientOnlyLazy: FunctionComponent<{

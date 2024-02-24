@@ -1,10 +1,10 @@
 import { MDXProvider } from '@mdx-js/react'
 import clsx from 'clsx'
 import { ExternalLinkIcon } from 'lucide-react'
-import { StrictMode, type FunctionComponent, type ReactNode } from 'react'
+import { type FunctionComponent, type ReactNode, StrictMode } from 'react'
 import { usePageContext } from 'vike-react/usePageContext'
-import { MDX_COMPONENTS } from '../components/content/MdxComponents.tsx'
 import { Link } from '../components/Link.tsx'
+import { MDX_COMPONENTS } from '../components/content/MdxComponents.tsx'
 import {
     NavigationMenu,
     NavigationMenuItem,

@@ -3,7 +3,7 @@ import type { Range } from '@openctx/schema'
 import { of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
-import { observeAnnotations, type Annotation, type ProviderClientWithSettings } from './api'
+import { type Annotation, type ProviderClientWithSettings, observeAnnotations } from './api'
 
 const FIXTURE_PARAMS: AnnotationsParams = {
     file: 'file:///f',

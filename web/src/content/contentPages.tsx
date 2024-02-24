@@ -1,5 +1,5 @@
 import { MDXProvider } from '@mdx-js/react'
-import { useEffect, useState, type ComponentType } from 'react'
+import { type ComponentType, useEffect, useState } from 'react'
 import { renderToString } from 'react-dom/server'
 import { render } from 'vike/abort'
 import type { OnBeforePrerenderStartSync, OnBeforeRenderAsync, PageContext } from 'vike/types'
