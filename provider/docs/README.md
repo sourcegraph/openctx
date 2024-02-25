@@ -58,6 +58,7 @@ export interface Settings {
 
 ```
 pnpm -C provider/docs run -s create-archive web '{"entryPage": "https://vitejs.dev/guide", "prefix": "https://vitejs.dev/guide", "ignore":[]}' > ~/tmp/octx-provider-docs/vite-docs-web-corpus.json
+pnpm -C provider/docs run -s create-index < ~/tmp/octx-provider-docs/vite-docs-web-corpus.json > ~/tmp/octx-provider-docs/vite-docs-web-index.json
 
 ######### OLD below
 

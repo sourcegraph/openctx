@@ -6,7 +6,7 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
         '../../../../provider/docs/src/provider/provider.ts': {
             index: new URL(
                 // 'tmp-octx-provider-docs/sourcegraph-docs-old-web.index.json',
-                'tmp-octx-provider-docs/vite-docs-web.index.json',
+                'tmp-octx-provider-docs/vite-docs-web-index.json',
                 import.meta.url
             ).toString(),
         } satisfies import('@openctx/provider-docs').Settings,
@@ -48,11 +48,12 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
     const providerModules = import.meta.glob(
         '../../../../provider/{*/index.ts,docs/src/provider/provider.ts}',
         {
-            as: 'url',
+            query: '?url',
+            import: 'default',
         }
     )
     for (const [path, url] of Object.entries(providerModules)) {
-        const providerUri = new URL(await url(), import.meta.url).toString()
+        const providerUri = new URL((await url()) as string, import.meta.url).toString()
         const settings = providerSettings[path] ?? false // TODO(sqs): back to true
         delete providerSettings[path]
         providerSettings[providerUri] = settings

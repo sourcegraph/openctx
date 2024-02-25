@@ -5,7 +5,7 @@
     "../../../../../../provider/docs/dist/provider.cjs": {
       // "index": "http://localhost:5900/@fs/home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
       // "index": "file:///home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
-      "index": "file:///home/sqs/tmp/openctx-provider-docs/sourcegraph-docs-old-web.index.json",
+      "index": "file:///Users/sqs/tmp/octx-provider-docs/vite-docs-web-index.json",
     },
     "../../../../../../provider/hello-world/dist/index.js": true,
   },

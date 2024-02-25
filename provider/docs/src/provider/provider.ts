@@ -1,5 +1,3 @@
-/* eslint-disable import/no-default-export */
-import { readFile } from 'node:fs/promises'
 import {
     type CapabilitiesResult,
     type ItemsParams,
@@ -57,6 +55,9 @@ export default multiplex<Settings>(async settings => {
                                 group: '📘 Docs',
                                 presentationHints: ['show-at-top-of-file', 'prefer-link-over-detail'],
                             },
+                            ai: {
+                                content: doc.content?.textContent || sr.excerpt,
+                            },
                             range: {
                                 start: positionCalculator(contentChunk.range.start),
                                 end: positionCalculator(contentChunk.range.end),
@@ -94,6 +95,7 @@ export default multiplex<Settings>(async settings => {
 async function fetchIndex(urlStr: string): Promise<CorpusIndex> {
     const url = new URL(urlStr)
     if (url.protocol === 'file:') {
+        const { readFile } = await import('node:fs/promises')
         return fromJSON(JSON.parse(await readFile(url.pathname, 'utf-8')))
     }
 
