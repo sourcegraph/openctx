@@ -34,17 +34,9 @@
     "test:unit": "vitest",
     "vscode:prepublish": "pnpm -s run build"
   },
-  "categories": [
-    "Programming Languages",
-    "Linters",
-    "Snippets",
-    "Education"
-  ],
+  "categories": ["Programming Languages", "Linters", "Snippets", "Education"],
   "preview": true,
-  "keywords": [
-    "openctx",
-    "metadata"
-  ],
+  "keywords": ["openctx", "metadata"],
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
@@ -59,9 +51,7 @@
   },
   "main": "dist/extension.node.js",
   "browser": "dist/extension.web.js",
-  "activationEvents": [
-    "onStartupFinished"
-  ],
+  "activationEvents": ["onStartupFinished"],
   "contributes": {
     "configuration": {
       "type": "object",
@@ -80,10 +70,7 @@
           "propertyNames": {
             "description": "The OpenCtx provider's URL (or relative file path).",
             "type": "string",
-            "format": [
-              "uri",
-              "uri-reference"
-            ]
+            "format": ["uri", "uri-reference"]
           },
           "additionalProperties": {
             "oneOf": [
@@ -179,9 +166,7 @@
     "untrustedWorkspaces": {
       "supported": "limited",
       "description": "OpenCtx only uses providers (configured in `openctx.providers`) from trusted workspaces because providers may execute arbitrary code.",
-      "restrictedConfigurations": [
-        "openctx.providers"
-      ]
+      "restrictedConfigurations": ["openctx.providers"]
     },
     "virtualWorkspaces": true
   },
