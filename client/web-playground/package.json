@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@openctx/web-playground",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "OpenCtx web playground",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org",
