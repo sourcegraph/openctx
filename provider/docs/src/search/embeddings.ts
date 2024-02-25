@@ -1,13 +1,12 @@
 import { cos_sim, dot, env, magnitude, pipeline } from '@xenova/transformers'
 import * as onnxWeb from 'onnxruntime-web'
-import { type CorpusIndex } from '../corpus/index/corpusIndex.ts'
+import type { CorpusIndex } from '../corpus/index/corpusIndex.ts'
 import { isWebWindowRuntime, useWebWorker } from '../env.ts'
-import { type Logger } from '../logger.ts'
+import type { Logger } from '../logger.ts'
 import { embedTextOnWorker } from '../worker/webWorkerClient.ts'
 import { withoutCodeStopwords } from './terms.ts'
-import { type Query, type SearchResult } from './types.ts'
+import type { Query, SearchResult } from './types.ts'
 
-// eslint-disable-next-line @typescript-eslint/prefer-optional-chain
 if (typeof process !== 'undefined' && process.env.VITEST) {
     // Workaround (from
     // https://github.com/microsoft/onnxruntime/issues/16622#issuecomment-1626413333) for when
@@ -39,7 +38,9 @@ if (isWebWindowRuntime) {
     // Running on Web.
     //
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    env.backends.onnx.wasm.wasmPaths = import.meta.resolve('../../node_modules/@xenova/transformers/dist/')
+    env.backends.onnx.wasm.wasmPaths = import.meta.resolve(
+        '../../node_modules/@xenova/transformers/dist/'
+    )
 } else if (typeof __dirname !== 'undefined') {
     // TODO(sqs): seems to be triggered when running in vscode
     env.backends.onnx.wasm.wasmPaths = __dirname + '/../node_modules/@xenova/transformers/dist/'
@@ -48,7 +49,10 @@ if (isWebWindowRuntime) {
 
 env.allowLocalModels = false
 
-export async function embeddingsSearch(index: CorpusIndex, query: Query): Promise<Omit<SearchResult, 'scores'>[]> {
+export async function embeddingsSearch(
+    index: CorpusIndex,
+    query: Query
+): Promise<Omit<SearchResult, 'scores'>[]> {
     const textToEmbed = [query.meta?.activeFilename && `// ${query.meta?.activeFilename}`, query.text]
         .filter((s): s is string => Boolean(s))
         .join('\n')
@@ -62,7 +66,10 @@ export async function embeddingsSearch(index: CorpusIndex, query: Query): Promis
             chunks.map((chunk, i) => {
                 const score = cosSim(chunk.embeddings)
                 return score >= MIN_SCORE
-                    ? ({ doc: docID, chunk: i, score, excerpt: chunk.text } satisfies Omit<SearchResult, 'scores'>)
+                    ? ({ doc: docID, chunk: i, score, excerpt: chunk.text } satisfies Omit<
+                          SearchResult,
+                          'scores'
+                      >)
                     : null
             })
         )

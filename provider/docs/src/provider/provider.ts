@@ -1,14 +1,14 @@
 /* eslint-disable import/no-default-export */
 import { readFile } from 'node:fs/promises'
 import {
-    createFilePositionCalculator,
+    type CapabilitiesResult,
     type ItemsParams,
     type ItemsResult,
-    type CapabilitiesResult,
+    createFilePositionCalculator,
 } from '@openctx/provider'
 import { createClient } from '../client/client.ts'
 import { chunk } from '../corpus/doc/chunks.ts'
-import { fromJSON, type CorpusIndex } from '../corpus/index/corpusIndex.ts'
+import { type CorpusIndex, fromJSON } from '../corpus/index/corpusIndex.ts'
 import { multiplex } from './multiplex.ts'
 
 /** Settings for the docs OpenCtx provider. */
@@ -32,7 +32,10 @@ export default multiplex<Settings>(async settings => {
         async items(params: ItemsParams): Promise<ItemsResult> {
             const result: ItemsResult = []
             const positionCalculator = createFilePositionCalculator(params.content)
-            const contentChunks = chunk(params.content, { isMarkdown: params.file.endsWith('.md'), isTargetDoc: true })
+            const contentChunks = chunk(params.content, {
+                isMarkdown: params.file.endsWith('.md'),
+                isTargetDoc: true,
+            })
             await Promise.all(
                 contentChunks.map(async contentChunk => {
                     const searchResults = await client.search({
@@ -50,8 +53,7 @@ export default multiplex<Settings>(async settings => {
                             title: doc.content?.title || doc.doc?.url || 'Untitled',
                             url: doc.doc?.url,
                             ui: {
-                                detail: truncate(doc.content?.textContent || sr.excerpt, 200),
-                                format: 'plaintext',
+                                hover: { text: truncate(doc.content?.textContent || sr.excerpt, 200) },
                                 group: '📘 Docs',
                                 presentationHints: ['show-at-top-of-file', 'prefer-link-over-detail'],
                             },

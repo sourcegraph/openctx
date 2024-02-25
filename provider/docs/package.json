@@ -9,12 +9,9 @@
     "directory": "provider/docs"
   },
   "type": "module",
-  "main": "dist/provider.js",
-  "files": [
-    "dist",
-    "!**/*.test.*",
-    "README.md"
-  ],
+  "main": "dist/provider.cjs",
+  "types": "dist/src/provider/provider.d.ts",
+  "files": ["dist", "!**/*.test.*", "README.md"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build && esbuild src/provider/provider.ts --bundle --outfile=dist/provider.cjs --platform=node --format=cjs --sourcemap --define:self=global --loader:.node=file --alias:sharp=/dev/null --define:import.meta.url=import_meta_url --inject:./polyfill1.js",
@@ -30,7 +27,7 @@
     "buffer": "^6.0.3",
     "jsdom": "^23.2.0",
     "lru-cache": "^10.1.0",
-    "onnxruntime-web": "^1.16.3"
+    "onnxruntime-web": "1.16"
   },
   "devDependencies": {
     "@types/jsdom": "^21.1.6",
