@@ -51,7 +51,7 @@ export interface Hover {
      */
     markdown?: string
     /**
-     * The contents of the hover as plain text.
+     * The contents of the hover as plain text, used when rendered Markdown or HTML can't be displayed.
      */
     text?: string
 }
