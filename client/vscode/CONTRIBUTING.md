@@ -80,3 +80,9 @@ pnpm link /path/to/openctx/lib/schema
 pnpm link /path/to/openctx/lib/protocol
 # ... any other packages needed ...
 ```
+
+To develop on both extensions at the same time (without needing to create and install `.vsix` packages each time you change the extension that is not the main one in the extension development host):
+
+1. Set the VS Code `openctx.dev.skipOwnActivation` setting to `true`.
+1. Run `pnpm -C client/vscode run watch:build:dev:desktop` to keep the OpenCtx extension's `dist/extension.node.js` up to date.
+1. In the other extension's code, import the OpenCtx extension's `dist/extension.node.js` file and call its `activate` function.
