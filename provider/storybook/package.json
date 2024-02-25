@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-storybook",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Add Storybook links and image previews to your code (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
