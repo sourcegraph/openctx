@@ -23,6 +23,7 @@
     { "path": "client/vscode/dev" },
     { "path": "client/vscode/test/integration" },
     { "path": "client/web-playground" },
+    { "path": "provider/docs" },
     { "path": "provider/hello-world" },
     { "path": "provider/links" },
     { "path": "provider/prometheus" },
