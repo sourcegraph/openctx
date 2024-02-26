@@ -38,26 +38,3 @@ export const MultipleChips: Story = {
         items: FIXTURE_ITEMS satisfies Item[],
     },
 }
-
-export const Grouped: Story = {
-    args: {
-        items: [
-            {
-                title: '📘 Docs: Page 1',
-                url: 'https://example.com/1',
-                ui: { hover: { text: 'Detail 1' }, group: 'Docs' },
-            },
-            {
-                title: '📘 Docs: Page 2',
-                url: 'https://example.com/2',
-                ui: { group: 'Docs' },
-            },
-            {
-                title: '📘 Docs: Page 3',
-                url: 'https://example.com/3',
-                ui: { group: 'Docs' },
-            },
-            FIXTURE_ITEMS[1],
-        ] satisfies Item[],
-    },
-}

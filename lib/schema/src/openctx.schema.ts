@@ -1,10 +1,9 @@
 /**
  * A hint about how to best present an item to the human in the client's user interface.
  *
- * - `show-at-top-of-file`: Group all items with the same `ui.group` value together and display them at the top of the file instead of at their given file range.
  * - `prefer-link-over-detail`: Prefer to show the item as a link over showing the detail text, if the client does not cleanly support doing both.
  */
-export type PresentationHint = 'show-at-top-of-file' | 'prefer-link-over-detail'
+export type PresentationHint = 'prefer-link-over-detail'
 
 /**
  * Metadata about code
@@ -33,10 +32,6 @@ export interface Item {
  */
 export interface UserInterface {
     hover?: Hover
-    /**
-     * If set, this item is grouped together with all other items with the same `group` value.
-     */
-    group?: string
     /**
      * Hints about the best way to present this item. Different clients interpret hints differently because they have different user interfaces.
      */

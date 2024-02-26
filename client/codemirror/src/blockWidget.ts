@@ -50,9 +50,7 @@ function computeDecorations(
     const itemsByLine: { line: number; items: Item[] }[] = []
     for (const item of prepareItemsForPresentation(items)) {
         let cur = itemsByLine.at(-1)
-        const startLine = item.ui?.presentationHints?.includes('show-at-top-of-file')
-            ? 0
-            : item.range?.start.line ?? 0
+        const startLine = item.range?.start.line ?? 0
         if (!cur || cur.line !== startLine) {
             cur = { line: startLine, items: [] }
             itemsByLine.push(cur)

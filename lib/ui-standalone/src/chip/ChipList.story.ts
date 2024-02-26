@@ -40,27 +40,3 @@ export const MultipleChips: StoryObj = {
             items: FIXTURE_ITEMS,
         }),
 }
-
-export const Grouped: StoryObj = {
-    render: () =>
-        createChipList({
-            items: [
-                {
-                    title: '📘 Docs: Page 1',
-                    url: 'https://example.com/1',
-                    ui: { hover: { text: 'Detail 1' }, group: 'Docs' },
-                },
-                {
-                    title: '📘 Docs: Page 2',
-                    url: 'https://example.com/2',
-                    ui: { group: 'Docs' },
-                },
-                {
-                    title: '📘 Docs: Page 3',
-                    url: 'https://example.com/3',
-                    ui: { group: 'Docs' },
-                },
-                FIXTURE_ITEMS[1],
-            ],
-        }),
-}

@@ -13,7 +13,6 @@ export function createShowFileItemsList(controller: Controller): vscode.Disposab
 }
 
 interface QuickPickItem extends vscode.QuickPickItem {
-    // TODO(sqs): support groups
     item: Item<vscode.Range> | null
 }
 
