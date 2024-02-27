@@ -6,7 +6,7 @@ import { describe, expect, test } from 'vitest'
 import { type Item, type ProviderClientWithSettings, observeItems } from './api'
 
 const FIXTURE_PARAMS: ItemsParams = {
-    file: 'file:///f',
+    uri: 'file:///f',
     content: 'A',
 }
 

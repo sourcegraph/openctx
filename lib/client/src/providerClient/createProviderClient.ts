@@ -50,7 +50,7 @@ export function createProviderClient(
             if (!capable) {
                 logger?.(
                     `skipping items for ${JSON.stringify(
-                        params.file
+                        params.uri
                     )} because it did not match the provider's selector`
                 )
                 return null

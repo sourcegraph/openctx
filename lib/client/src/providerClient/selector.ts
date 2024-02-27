@@ -14,7 +14,7 @@ export function matchSelectors(selectors: Selector[] | undefined): (params: Item
     }
     const matchFuncs = selectors.map(matchSelector)
     return params => {
-        const filePath = trimLeadingSlash(new URL(params.file).pathname)
+        const filePath = trimLeadingSlash(new URL(params.uri).pathname)
         return matchFuncs.some(matchFunc => matchFunc(filePath, params.content))
     }
 }

@@ -15,7 +15,7 @@ const CODEMIRROR_PROPS: React.ComponentProps<typeof SettingsEditor>['codeMirrorP
 const _Playground: FunctionComponent<{ className?: string }> = ({ className }) => {
     const [settings, setSettings] = useState<string>(INITIAL_SETTINGS)
 
-    const [fileContent, setFileContent] = useState<string>(INITIAL_FILE.fileContent)
+    const [fileContent, setFileContent] = useState<string>(INITIAL_FILE.resourceContent)
 
     return (
         <div
@@ -25,7 +25,7 @@ const _Playground: FunctionComponent<{ className?: string }> = ({ className }) =
             )}
         >
             <AnnotatedEditor
-                fileUri={INITIAL_FILE.fileUri}
+                resourceUri={INITIAL_FILE.resourceUri}
                 value={fileContent}
                 onChange={setFileContent}
                 settings={settings}

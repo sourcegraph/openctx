@@ -81,7 +81,7 @@ const links: Provider<Settings> = {
         const lines = params.content.split(/\r?\n/)
         const items: ItemsResult = []
         for (const { title, url, description, type, matchPath, pattern } of compiledPatterns || []) {
-            if (!matchPath(new URL(params.file).pathname)) {
+            if (!matchPath(new URL(params.uri).pathname)) {
                 continue
             }
 

@@ -52,7 +52,7 @@ export const DemoApp: FunctionComponent = () => {
                     }}
                 />
                 <AnnotatedEditor
-                    fileUri={`file:///${fileId}`}
+                    resourceUri={`file:///${fileId}`}
                     value={fileContent}
                     onChange={setFileContent}
                     settings={settings}

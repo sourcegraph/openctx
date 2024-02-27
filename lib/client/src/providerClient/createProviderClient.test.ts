@@ -14,7 +14,7 @@ describe('createProviderClient', () => {
 
         // File URI that satisfies the provider's selector.
         expect(
-            await pc.items({ file: 'file:///foo', content: 'A\nB\nC\nD' }, settings)
+            await pc.items({ uri: 'file:///foo', content: 'A\nB\nC\nD' }, settings)
         ).toStrictEqual<ItemsResult | null>([
             {
                 title: 'ABC',
@@ -24,7 +24,7 @@ describe('createProviderClient', () => {
 
         // File URI that does NOT satisfy the provider's selector.
         expect(
-            await pc.items({ file: 'file:///xxx', content: 'A' }, settings)
+            await pc.items({ uri: 'file:///xxx', content: 'A' }, settings)
         ).toStrictEqual<ItemsResult | null>(null)
     })
 
@@ -32,7 +32,7 @@ describe('createProviderClient', () => {
         test('top-level throw', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('topLevelThrow.js'), { logger })
-            await expect(pc.items({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow(
+            await expect(pc.items({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow(
                 'topLevelThrow'
             )
             expect(logger.mock.lastCall?.[0]).toContain('Error: topLevelThrow')
@@ -41,7 +41,7 @@ describe('createProviderClient', () => {
         test('throw in capabilities', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('capabilitiesThrow.js'), { logger })
-            await expect(pc.items({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow(
+            await expect(pc.items({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow(
                 'capabilitiesThrow'
             )
             expect(logger.mock.lastCall?.[0]).toContain('Error: capabilitiesThrow')
@@ -50,7 +50,7 @@ describe('createProviderClient', () => {
         test('throw in items', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('itemsThrow.js'), { logger })
-            await expect(pc.items({ file: 'file:///f', content: 'A' }, {})).rejects.toThrow('itemsThrow')
+            await expect(pc.items({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow('itemsThrow')
             expect(logger.mock.lastCall?.[0]).toContain('Error: itemsThrow')
         })
     })
@@ -74,12 +74,12 @@ describe('createProviderClient', () => {
         expect(info.capabilitiesCalls).toBe(0)
         expect(info.itemsCalls).toBe(0)
 
-        await pc0.items({ file: 'file:///f0', content: 'A0' }, {})
+        await pc0.items({ uri: 'file:///f0', content: 'A0' }, {})
         expect(info.moduleLoads).toBe(1)
         expect(info.capabilitiesCalls).toBe(1)
         expect(info.itemsCalls).toBe(1)
 
-        await pc0.items({ file: 'file:///f1', content: 'A1' }, {})
+        await pc0.items({ uri: 'file:///f1', content: 'A1' }, {})
         expect(info.moduleLoads).toBe(1)
         expect(info.capabilitiesCalls).toBe(1)
         expect(info.itemsCalls).toBe(2)
@@ -90,7 +90,7 @@ describe('createProviderClient', () => {
         expect(info.capabilitiesCalls).toBe(1)
         expect(info.itemsCalls).toBe(2)
 
-        await pc1.items({ file: 'file:///f2', content: 'A2' }, {})
+        await pc1.items({ uri: 'file:///f2', content: 'A2' }, {})
         expect(info.moduleLoads).toBe(1)
         expect(info.capabilitiesCalls).toBe(2)
         expect(info.itemsCalls).toBe(3)

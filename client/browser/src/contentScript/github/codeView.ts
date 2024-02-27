@@ -48,7 +48,7 @@ export function injectOnGitHubCodeView(
             const fileUri = `github://github.com/${githubInitialPath}`
 
             return combineLatest([
-                itemsChanges({ content, file: fileUri }),
+                itemsChanges({ content, uri: fileUri }),
                 significantCodeViewChanges.pipe(
                     debounceTime(200),
                     startWith(undefined),

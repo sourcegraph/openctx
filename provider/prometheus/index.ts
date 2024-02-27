@@ -76,7 +76,7 @@ const prometheus: Provider<Settings> = {
 
         const items: ItemsResult = []
         for (const { matchPath, pattern, urlTemplate } of compiledPatterns || []) {
-            if (!matchPath(new URL(params.file).pathname)) {
+            if (!matchPath(new URL(params.uri).pathname)) {
                 continue
             }
 

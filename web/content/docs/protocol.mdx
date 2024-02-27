@@ -30,7 +30,7 @@ Providers must implement 2 API methods:
 
 ### Capabilities
 
-The capabilities request is sent by the client to the provider to retrieve information about the provider's capabilities and when it should be invoked. This avoids unnecessary invocations of the provider on files where it would not have any items.
+The capabilities request is sent by the client to the provider to retrieve information about the provider's capabilities and when it should be invoked. This avoids unnecessary invocations of the provider on resources where it would not have any items.
 
 **Request:** `{ method: "capabilities", params: CapabilitiesParams, settings?: object }`
 
@@ -45,34 +45,30 @@ interface CapabilitiesParams {
 ```typescript
 interface CapabilitiesResult {
   /**
-   * Selects the scope (repositories, files, and languages) in which this
-   * provider should be called.
+   * Selects the scope in which this provider should be called.
    *
    * If one or more selectors are given, all must be satisfied for the
-   * provider to be called. If undefined, the provider is called on all files.
+   * provider to be called. If undefined, the provider is called on all resources.
    * If empty, the provider is never invoked.
    */
   selector?: Selector[]
 }
 
 /**
- * Defines a scope in which a provider is called, as a subset of languages,
- * repositories, and/or files.
+ * Defines a scope in which a provider is called.
  *
  * To satisfy a selector, all of the selector's conditions must be met. For
- * example, if both `path` and `content` are specified, the file must satisfy
+ * example, if both `path` and `content` are specified, the resource must satisfy
  * both conditions.
  */
 interface Selector {
   /**
-   * A glob that must match the file path for the provider to be called. If the
-   * file's location is represented as a URI, the URI's scheme is stripped
-   * before being matched against this glob.
+   * A glob that must match the resource's hostname and path.
    */
   path?: string
 
   /**
-   * A literal string that must be present in the file's content for the
+   * A literal string that must be present in the resource's content for the
    * provider to be called.
    */
   contentContains?: string
@@ -81,16 +77,16 @@ interface Selector {
 
 ### Items
 
-The items request is sent by the client to the provider to fetch a list of items for a file.
+The items request is sent by the client to the provider to fetch a list of items for a resource.
 
 **Request:** `{ method: "items", params: ItemsParams, settings?: object }`
 
 ```typescript
 interface ItemsParams {
-  /** The file's URI (e.g., `file:///home/alice/foo.js`). **/
-  file: string
+  /** The resource's URI (e.g., `file:///home/alice/foo.js`). **/
+  uri: string
 
-  /** The file's content. **/
+  /** The resource's content. **/
   content: string
 }
 ```
@@ -101,7 +97,7 @@ interface ItemsParams {
 type ItemsResult = Item[]
 
 /**
- * An item describes information relevant to a file (or a range within a file).
+ * An item describes information relevant to a resource (or a range within a resource).
  */
 interface Item {
   /**
@@ -125,7 +121,7 @@ interface Item {
   ai?: AssistantInfo
 
   /**
-   * The range in the file that this item applies to. If not set, the item applies to the entire file.
+   * The range in the resource that this item applies to. If not set, the item applies to the entire resource.
    */
   range?: { start: Position; end: Position }
 }

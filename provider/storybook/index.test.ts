@@ -38,7 +38,7 @@ describe('storybook', () => {
             expect(
                 await storybook.items(
                     {
-                        file: 'file:///a/b.story.tsx',
+                        uri: 'file:///a/b.story.tsx',
                         content: `
 const config: Meta = {
     title: 'a/b',

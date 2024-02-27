@@ -23,7 +23,7 @@ describe('prometheus', () => {
         expect(
             prometheus.items(
                 {
-                    file: 'file:///a/b.go',
+                    uri: 'file:///a/b.go',
                     content: `
 // histogram is a Prometheus metric.
 var histogram = promauto.NewHistogram(prometheus.HistogramOpts{

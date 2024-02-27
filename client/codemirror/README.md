@@ -30,8 +30,8 @@ const client = createClient({
   logger: console.error,
 })
 
-// Fetch items for the file.
-const items = await client.items({ file: 'file:///foo.js', content: 'my file\nhello\nworld' })
+// Fetch items for the resource.
+const items = await client.items({ uri: 'file:///foo.js', content: 'my file\nhello\nworld' })
 ```
 
 Then register the extension with CodeMirror.

@@ -74,7 +74,7 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
 
                     // TODO(sqs): don't only get first value
                     const items = await client.items({
-                        file: model.uri.toString(),
+                        uri: model.uri.toString(),
                         content: model.getValue(),
                     })
 

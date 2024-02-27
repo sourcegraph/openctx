@@ -171,7 +171,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         params: ItemsParams,
         { emitPartial = true } = { emitPartial: true }
     ): Observable<Item<R>[]> => {
-        const configuration: Observable<Configuration> = from(env.configuration(params.file)).pipe(
+        const configuration: Observable<Configuration> = from(env.configuration(params.uri)).pipe(
             map(config => {
                 if (!config.enable) {
                     config = { ...config, providers: {} }
