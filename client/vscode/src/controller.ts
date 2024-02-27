@@ -1,4 +1,4 @@
-import { type Item, type Range, createClient } from '@openctx/client'
+import { type Annotation, type Item, type Range, createClient } from '@openctx/client'
 import { type Observable, catchError, combineLatest, from, map, mergeMap, of, tap } from 'rxjs'
 import * as vscode from 'vscode'
 import { type ExtensionApi, createApi } from './api'
@@ -13,9 +13,10 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util'
 import { createErrorWaiter } from './util/errorWaiter'
 
 export interface Controller {
-    observeItems(
+    observeItems(): Observable<Item[] | null>
+    observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
-    ): Observable<Item<vscode.Range>[] | null>
+    ): Observable<Annotation<vscode.Range>[] | null>
     onDidChangeProviders: vscode.Event<void>
 }
 
@@ -72,7 +73,43 @@ export function createController(
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeItems(doc: vscode.TextDocument): Observable<Item<vscode.Range>[] | null> {
+        // TODO(sqs): dedupe with observeAnns
+        observeItems(): Observable<Item[] | null> {
+            if (!errorWaiter.ok()) {
+                return of(null)
+            }
+
+            return client
+                .itemsChanges(
+                    {},
+                    {
+                        emitPartial: false, // TODO(sqs): make this not needed so codelens show up as soon as they're ready from a single provider
+                    }
+                )
+                .pipe(
+                    tap({
+                        next(): void {
+                            errorWaiter.gotError(false)
+                        },
+                        error(): void {
+                            // Show an error notification unless we've recently shown one (to avoid annoying
+                            // the user).
+                            const shouldNotify =
+                                errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
+                            if (shouldNotify) {
+                                showErrorNotification(outputChannel)
+                            }
+
+                            errorWaiter.gotError(true)
+                        },
+                    }),
+                    catchError(error => {
+                        outputChannel.appendLine(error)
+                        return of(null)
+                    })
+                )
+        },
+        observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
             if (ignoreDoc(doc)) {
                 return of(null)
             }
@@ -82,7 +119,7 @@ export function createController(
             }
 
             return client
-                .itemsChanges(
+                .annotationsChanges(
                     {
                         uri: doc.uri.toString(),
                         content: doc.getText(),

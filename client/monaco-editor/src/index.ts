@@ -1,4 +1,4 @@
-import type { Client, Item, Range } from '@openctx/client'
+import type { Annotation, Client, Range } from '@openctx/client'
 import * as monaco from 'monaco-editor'
 
 /**
@@ -73,13 +73,13 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
                     }
 
                     // TODO(sqs): don't only get first value
-                    const items = await client.items({
+                    const anns = await client.annotations({
                         uri: model.uri.toString(),
                         content: model.getValue(),
                     })
 
                     return {
-                        lenses: items.map(toCodeLens),
+                        lenses: anns.map(toCodeLens),
                         dispose: () => {},
                     }
                 },
@@ -96,18 +96,18 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
     }
 }
 
-function toCodeLens(item: Item<MonacoRange>): monaco.languages.CodeLens {
+function toCodeLens(ann: Annotation<MonacoRange>): monaco.languages.CodeLens {
     return {
         command: {
-            title: item.title,
-            tooltip: item.ui?.hover?.text,
-            ...(item.url
+            title: ann.item.title,
+            tooltip: ann.item.ui?.hover?.text,
+            ...(ann.item.url
                 ? {
                       id: OPEN_URL_COMMAND,
-                      arguments: [item.url],
+                      arguments: [ann.item.url],
                   }
                 : { id: 'noop' }),
         },
-        range: item.range ?? new MonacoRange(0, 0, 0, 0),
+        range: ann.range ?? new MonacoRange(0, 0, 0, 0),
     }
 }

@@ -1,4 +1,4 @@
-import { type ItemWithRichRange, prepareItemsForPresentation } from '@openctx/ui-common'
+import { type AnnotationWithRichRange, prepareAnnotationsForPresentation } from '@openctx/ui-common'
 import { type Observable, firstValueFrom, map } from 'rxjs'
 import * as vscode from 'vscode'
 import type { Controller } from '../../controller'
@@ -22,11 +22,11 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
         onDidChangeCodeLenses: changeCodeLenses.event,
         observeCodeLenses(doc: vscode.TextDocument): Observable<CodeLens[]> {
             return controller
-                .observeItems(doc)
+                .observeAnnotations(doc)
                 .pipe(
-                    map(items =>
-                        prepareItemsForPresentation<vscode.Range>(items ?? []).map(item =>
-                            itemCodeLens(doc, item, showHover)
+                    map(anns =>
+                        prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
+                            annotationCodeLens(doc, item, showHover)
                         )
                     )
                 )
@@ -44,20 +44,20 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
 }
 
 /** Create a code lens for a single item. */
-function itemCodeLens(
+function annotationCodeLens(
     doc: vscode.TextDocument,
-    item: ItemWithRichRange<vscode.Range>,
+    ann: AnnotationWithRichRange<vscode.Range>,
     showHover: ReturnType<typeof createShowHoverCommand>
 ): CodeLens {
-    const range = item.range ?? new vscode.Range(0, 0, 0, 0)
+    const range = ann.range ?? new vscode.Range(0, 0, 0, 0)
     return {
         range,
         command: {
-            title: item.title,
-            ...(item.ui?.hover && !item.ui.presentationHints?.includes('prefer-link-over-detail')
+            title: ann.item.title,
+            ...(ann.item.ui?.hover && !ann.presentationHints?.includes('prefer-link-over-detail')
                 ? showHover.createCommandArgs(doc.uri, range.start)
-                : item.url
-                  ? openWebBrowserCommandArgs(item.url)
+                : ann.item.url
+                  ? openWebBrowserCommandArgs(ann.item.url)
                   : { command: 'noop' }),
         },
         isResolved: true,

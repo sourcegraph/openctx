@@ -1,8 +1,8 @@
 import '../shared/polyfills'
 // ^^ import polyfills first
 
-import type { Item } from '@openctx/client'
-import type { ItemsParams } from '@openctx/provider'
+import type { Annotation } from '@openctx/client'
+import type { AnnotationsParams } from '@openctx/provider'
 import deepEqual from 'deep-equal'
 import { type Observable, combineLatest, distinctUntilChanged, mergeMap, throttleTime } from 'rxjs'
 import { background } from '../browser-extension/web-extension-api/runtime'
@@ -16,19 +16,21 @@ import { locationChanges } from './locationChanges'
  * A function called to inject OpenCtx features on a page. They should just return an empty
  * Observable if they are not intended for the current page.
  */
-type Injector = (location: URL, itemsChanges_: typeof itemsChanges) => Observable<void>
+type Injector = (location: URL, annotationsChanges_: typeof annotationsChanges) => Observable<void>
 
 const INJECTORS: Injector[] = [injectOnGitHubCodeView, injectOnGitHubPullRequestFilesView]
 
 const subscription = locationChanges
     .pipe(
-        mergeMap(location => combineLatest(INJECTORS.map(injector => injector(location, itemsChanges))))
+        mergeMap(location =>
+            combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges)))
+        )
     )
     .subscribe()
 window.addEventListener('unload', () => subscription.unsubscribe())
 
-function itemsChanges(params: ItemsParams): Observable<Item[]> {
-    return background.itemsChanges(params).pipe(
+function annotationsChanges(params: AnnotationsParams): Observable<Annotation[]> {
+    return background.annotationsChanges(params).pipe(
         distinctUntilChanged((a, b) => deepEqual(a, b)),
         throttleTime(200, undefined, { leading: true, trailing: true }),
         debugTap(items => {

@@ -46,7 +46,9 @@ describe('createProviderClient', () => {
         test('throw in capabilities', async () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('capabilitiesThrow.js'), { logger })
-            await expect(pc.annotations({}, {})).rejects.toThrow('capabilitiesThrow')
+            await expect(pc.annotations({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow(
+                'capabilitiesThrow'
+            )
             expect(logger.mock.lastCall?.[0]).toContain('Error: capabilitiesThrow')
         })
 

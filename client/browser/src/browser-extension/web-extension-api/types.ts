@@ -21,7 +21,7 @@ export type ManagedStorageItems = Record<string, never>
 /**
  * Functions in the background page that can be invoked from content scripts.
  */
-export interface BackgroundApi extends Pick<Client<Range>, 'itemsChanges'> {}
+export interface BackgroundApi extends Pick<Client<Range>, 'annotationsChanges'> {}
 
 /**
  * Shape of the handler object in the background worker.

@@ -1,16 +1,16 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation } from '@openctx/schema'
 import { renderHoverToHTML } from '@openctx/ui-common'
 import { createBaseChip } from './BaseChip'
 
 /**
- * A single OpenCtx item, displayed as a "chip".
+ * A single OpenCtx annotation, displayed as a "chip".
  */
 export function createChip({
-    item,
+    annotation: { item },
     className,
     popoverClassName,
 }: {
-    item: Item
+    annotation: Annotation
     className?: string
     popoverClassName?: string
 }): HTMLElement {

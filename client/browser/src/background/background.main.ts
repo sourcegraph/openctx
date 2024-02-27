@@ -43,7 +43,7 @@ function main(): void {
 
     subscriptions.add(
         addMessageListenersForBackgroundApi({
-            itemsChanges: (...args) => client.itemsChanges(...args),
+            annotationsChanges: (...args) => client.annotationsChanges(...args),
         })
     )
 

@@ -1,16 +1,16 @@
-import type { Item } from '@openctx/client'
+import type { Annotation } from '@openctx/client'
 import type { createChipList } from '@openctx/ui-standalone'
 
-export function itemsByLine(items: Item[]): { line: number; items: Item[] }[] {
-    const byLine: { line: number; items: Item[] }[] = []
-    for (const item of items) {
+export function annsByLine(anns: Annotation[]): { line: number; anns: Annotation[] }[] {
+    const byLine: { line: number; anns: Annotation[] }[] = []
+    for (const ann of anns) {
         let cur = byLine.at(-1)
-        const startLine = item.range?.start.line ?? 0
+        const startLine = ann.range?.start.line ?? 0
         if (!cur || cur.line !== startLine) {
-            cur = { line: startLine, items: [] }
+            cur = { line: startLine, anns: [] }
             byLine.push(cur)
         }
-        cur.items.push(item)
+        cur.anns.push(ann)
     }
     return byLine
 }
