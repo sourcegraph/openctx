@@ -1,4 +1,10 @@
-import type { ItemsParams, ItemsResult, ProviderSettings } from '@openctx/protocol'
+import type {
+    AnnotationsParams,
+    AnnotationsResult,
+    ItemsParams,
+    ItemsResult,
+    ProviderSettings,
+} from '@openctx/protocol'
 import { scopedLogger } from '../logger'
 import { matchSelectors } from './selector'
 import { type ProviderTransportOptions, createTransport } from './transport/createTransport'
@@ -8,12 +14,15 @@ import { type ProviderTransportOptions, createTransport } from './transport/crea
  * wraps a {@link ProviderTransport}.
  */
 export interface ProviderClient {
+    /** Get items from the provider. */
+    items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null>
+
     /**
-     * Get items from the provider, respecting the provider's capabilities. For example, if
-     * the document is not matched by the provider's selectors, then no items will be
+     * Get annotations from the provider, respecting the provider's capabilities. For example, if
+     * the resource is not matched by the provider's selectors, then no annotations will be
      * returned.
      */
-    items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null>
+    annotations(params: AnnotationsParams, settings: ProviderSettings): Promise<AnnotationsResult | null>
 }
 
 export interface ProviderClientOptions
@@ -35,7 +44,18 @@ export function createProviderClient(
 
     return {
         async items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null> {
-            let match: (params: ItemsParams) => boolean | undefined
+            try {
+                return await transport.items(params, settings)
+            } catch (error) {
+                logger?.(`failed to get items: ${error}`)
+                return Promise.reject(error)
+            }
+        },
+        async annotations(
+            params: AnnotationsParams,
+            settings: ProviderSettings
+        ): Promise<AnnotationsResult | null> {
+            let match: (params: AnnotationsParams) => boolean | undefined
             try {
                 logger?.('checking provider capabilities')
                 const capabilities = await transport.capabilities({}, settings)
@@ -56,9 +76,9 @@ export function createProviderClient(
                 return null
             }
             try {
-                return await transport.items(params, settings)
+                return await transport.annotations(params, settings)
             } catch (error) {
-                logger?.(`failed to get items: ${error}`)
+                logger?.(`failed to get annotations: ${error}`)
                 return Promise.reject(error)
             }
         },

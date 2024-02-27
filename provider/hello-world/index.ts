@@ -1,9 +1,9 @@
 import type {
+    Annotation,
+    AnnotationsParams,
+    AnnotationsResult,
     CapabilitiesParams,
     CapabilitiesResult,
-    Item,
-    ItemsParams,
-    ItemsResult,
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
@@ -17,27 +17,30 @@ const helloWorld: Provider = {
         return {}
     },
 
-    items(params: ItemsParams, settings: ProviderSettings): ItemsResult {
+    annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
         const lines = params.content.split('\n')
-        const items: Item[] = []
+        const anns: Annotation[] = []
         for (const [i, line] of lines.entries()) {
             if (i % 10 !== 0) {
                 continue
             }
-            items.push({
-                title: '✨ Hello, world!',
-                url: 'https://openctx.org',
-                ui: {
-                    hover: { text: 'From OpenCtx' },
-                },
+            anns.push({
+                uri: params.uri,
                 range: {
                     start: { line: i, character: 0 },
                     end: { line: i, character: line.length },
                 },
+                item: {
+                    title: '✨ Hello, world!',
+                    url: 'https://openctx.org',
+                    ui: {
+                        hover: { text: 'From OpenCtx' },
+                    },
+                },
             })
         }
 
-        return items
+        return anns
     },
 }
 

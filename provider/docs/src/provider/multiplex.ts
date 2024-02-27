@@ -1,10 +1,12 @@
-import { type Provider } from '@openctx/provider'
+import type { Provider } from '@openctx/provider'
 import { LRUCache } from 'lru-cache'
 
 /**
  * @template S The settings type.
  */
-export function multiplex<S extends {}>(createProvider: (settings: S) => Promise<Provider<S>>): Provider<S> {
+export function multiplex<S extends {}>(
+    createProvider: (settings: S) => Promise<Provider<S>>
+): Provider<S> {
     const providerCache = new LRUCache<string, Promise<Provider<S>>>({ max: 10 })
 
     function getProvider(settings: S): Promise<Provider<S>> {
@@ -18,7 +20,10 @@ export function multiplex<S extends {}>(createProvider: (settings: S) => Promise
     }
 
     return {
-        capabilities: (params, settings) => getProvider(settings).then(p => p.capabilities(params, settings)),
-        items: (params, settings) => getProvider(settings).then(p => p.items(params, settings)),
+        capabilities: (params, settings) =>
+            getProvider(settings).then(p => p.capabilities(params, settings)),
+        items: (params, settings) => getProvider(settings).then(p => p.items?.(params, settings) ?? []),
+        annotations: (params, settings) =>
+            getProvider(settings).then(p => p.annotations?.(params, settings) ?? []),
     }
 }

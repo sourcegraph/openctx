@@ -1,8 +1,8 @@
 import {
+    type AnnotationsParams,
+    type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
-    type ItemsParams,
-    type ItemsResult,
     type Position,
     type Provider,
     type Range,
@@ -60,7 +60,7 @@ const prometheus: Provider<Settings> = {
         return { selector: settings.metricRegistrationPatterns?.map(({ path }) => ({ path })) || [] }
     },
 
-    items(params: ItemsParams, settings: Settings): ItemsResult {
+    annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
         const compiledPatterns:
             | (Pick<MetricRegistrationPattern, 'urlTemplate'> & {
                   pattern: RegExp
@@ -74,7 +74,7 @@ const prometheus: Provider<Settings> = {
 
         const positionCalculator = createFilePositionCalculator(params.content)
 
-        const items: ItemsResult = []
+        const anns: AnnotationsResult = []
         for (const { matchPath, pattern, urlTemplate } of compiledPatterns || []) {
             if (!matchPath(new URL(params.uri).pathname)) {
                 continue
@@ -82,14 +82,17 @@ const prometheus: Provider<Settings> = {
 
             const ranges = matchResults(pattern, params.content, positionCalculator)
             for (const { range, metricName } of ranges) {
-                items.push({
-                    title: `📟 Prometheus metric: ${metricName}`,
-                    url: urlTemplate.replaceAll('$1', metricName),
+                anns.push({
+                    uri: params.uri,
                     range,
+                    item: {
+                        title: `📟 Prometheus metric: ${metricName}`,
+                        url: urlTemplate.replaceAll('$1', metricName),
+                    },
                 })
             }
         }
-        return items
+        return anns
     },
 }
 

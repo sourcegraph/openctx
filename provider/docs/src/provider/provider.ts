@@ -1,11 +1,5 @@
-import {
-    type CapabilitiesResult,
-    type ItemsParams,
-    type ItemsResult,
-    createFilePositionCalculator,
-} from '@openctx/provider'
+import type { CapabilitiesResult, ItemsParams, ItemsResult } from '@openctx/provider'
 import { createClient } from '../client/client.ts'
-import { chunk } from '../corpus/doc/chunks.ts'
 import { type CorpusIndex, fromJSON } from '../corpus/index/corpusIndex.ts'
 import { multiplex } from './multiplex.ts'
 
@@ -28,50 +22,36 @@ export default multiplex<Settings>(async settings => {
         },
 
         async items(params: ItemsParams): Promise<ItemsResult> {
-            const result: ItemsResult = []
-            const positionCalculator = createFilePositionCalculator(params.content)
-            const contentChunks = chunk(params.content, {
-                isMarkdown: params.uri.endsWith('.md'),
-                isTargetDoc: true,
+            const searchResults = await client.search({
+                text: '', // TODO(sqs): get all
             })
-            await Promise.all(
-                contentChunks.map(async contentChunk => {
-                    const searchResults = await client.search({
-                        text: contentChunk.text,
-                        meta: { activeFilename: params.file },
-                    })
-                    for (const [i, sr] of searchResults.entries()) {
-                        const MAX_RESULTS = 5
-                        if (i >= MAX_RESULTS) {
-                            break
-                        }
 
-                        const doc = client.doc(sr.doc)
-                        result.push({
-                            title: doc.content?.title || doc.doc?.url || 'Untitled',
-                            url: doc.doc?.url,
-                            ui: {
-                                hover: { text: truncate(doc.content?.textContent || sr.excerpt, 200) },
-                                presentationHints: ['prefer-link-over-detail'],
-                            },
-                            ai: {
-                                content: doc.content?.textContent || sr.excerpt,
-                            },
-                            range: {
-                                start: positionCalculator(contentChunk.range.start),
-                                end: positionCalculator(contentChunk.range.end),
-                            },
-                        })
-                    }
+            const items: ItemsResult = []
+            for (const [i, sr] of searchResults.entries()) {
+                const MAX_RESULTS = 5
+                if (i >= MAX_RESULTS) {
+                    break
+                }
+
+                const doc = client.doc(sr.doc)
+                items.push({
+                    title: doc.content?.title || doc.doc?.url || 'Untitled',
+                    url: doc.doc?.url,
+                    ui: {
+                        hover: { text: truncate(doc.content?.textContent || sr.excerpt, 200) },
+                    },
+                    ai: {
+                        content: doc.content?.textContent || sr.excerpt,
+                    },
                 })
-            )
+            }
 
-            if (result.length >= 2) {
+            if (items.length >= 2) {
                 // Trim common suffix (which is often the name of the doc site, like " - My Doc
                 // Site").
-                const suffix = longestCommonSuffix(result.map(r => r.title))
+                const suffix = longestCommonSuffix(items.map(r => r.title))
                 if (suffix) {
-                    for (const r of result) {
+                    for (const r of items) {
                         // Don't trim suffix if it would result in an empty or very short string.
                         if (r.title.length >= suffix.length + 10) {
                             r.title = r.title.slice(0, -1 * suffix.length)
@@ -82,11 +62,11 @@ export default multiplex<Settings>(async settings => {
 
             // Truncate titles. Do this after trimming common suffixes, or else no common suffix
             // will be found if any titles were truncated.
-            for (const r of result) {
+            for (const r of items) {
                 r.title = truncate(r.title, 50)
             }
 
-            return result
+            return items
         },
     }
 })

@@ -1,8 +1,8 @@
 import type {
+    AnnotationsParams,
+    AnnotationsResult,
     CapabilitiesParams,
     CapabilitiesResult,
-    ItemsParams,
-    ItemsResult,
     Provider,
     Range,
 } from '@openctx/provider'
@@ -42,11 +42,11 @@ const storybook: Provider<Settings> = {
         }
     },
 
-    async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
-        const items: ItemsResult = []
+    async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
+        const anns: AnnotationsResult = []
 
         if (!settings.storybookUrl) {
-            return items
+            return anns
         }
 
         const contentLines = params.content.split(/\r?\n/)
@@ -64,13 +64,16 @@ const storybook: Provider<Settings> = {
                     const storyName = getStoryNameAlias(story, params.content)
                     const storyURL = chromaticStoryURL(component, storyName, settings)
                     const imagePreviewMarkdown = await getImagePreviewMarkdown(storyURL)
-                    items.push({
-                        title: `🖼️ Storybook: ${component}/${storyName}`,
-                        url: storyURL,
-                        ui: imagePreviewMarkdown
-                            ? { hover: { markdown: imagePreviewMarkdown } }
-                            : undefined,
+                    anns.push({
+                        uri: params.uri,
                         range: ranges[i],
+                        item: {
+                            title: `🖼️ Storybook: ${component}/${storyName}`,
+                            url: storyURL,
+                            ui: imagePreviewMarkdown
+                                ? { hover: { markdown: imagePreviewMarkdown } }
+                                : undefined,
+                        },
                     })
                 }
             }
@@ -86,19 +89,22 @@ const storybook: Provider<Settings> = {
                     const story = 'Default'
                     const storyURL = chromaticStoryURL(storyTitle, story, settings)
                     const imagePreviewMarkdown = await getImagePreviewMarkdown(storyURL)
-                    items.push({
-                        title: `🖼️ Storybook: ${storyTitle}`,
-                        url: storyURL,
-                        ui: imagePreviewMarkdown
-                            ? { hover: { markdown: imagePreviewMarkdown } }
-                            : undefined,
+                    anns.push({
+                        uri: params.uri,
                         range: ranges[i],
+                        item: {
+                            title: `🖼️ Storybook: ${storyTitle}`,
+                            url: storyURL,
+                            ui: imagePreviewMarkdown
+                                ? { hover: { markdown: imagePreviewMarkdown } }
+                                : undefined,
+                        },
                     })
                 }
             }
         }
 
-        return items
+        return anns
     },
 }
 

@@ -79,6 +79,6 @@ export function createHttpTransport(
 
     return {
         capabilities: async params => send<CapabilitiesResult>({ method: 'capabilities', params }),
-        items: async params => send<ItemsResult>({ method: 'items', params }),
+        annotations: async params => send<ItemsResult>({ method: 'items', params }),
     }
 }
