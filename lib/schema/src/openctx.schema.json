@@ -4,8 +4,14 @@
     "title": "Schema",
     "description": "Metadata about code",
     "allowComments": true,
-    "type": "object",
-    "oneOf": [{ "$ref": "#/definitions/Item" }, { "$ref": "#/definitions/Annotation" }],
+    "oneOf": [
+        {
+            "$ref": "#/definitions/Item"
+        },
+        {
+            "$ref": "#/definitions/Annotation"
+        }
+    ],
     "definitions": {
         "Item": {
             "description": "An item contains contextual information relevant to a resource (or a range within a resource).",
@@ -81,7 +87,6 @@
                     "$ref": "#/definitions/Range"
                 },
                 "item": {
-                    "description": "The item to attach to the range in the document.",
                     "$ref": "#/definitions/Item"
                 },
                 "presentationHints": {

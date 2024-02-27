@@ -14,7 +14,7 @@
   "files": ["dist", "src"],
   "sideEffects": false,
   "scripts": {
-    "generate": "node --no-warnings=ExperimentalWarning --loader ts-node/esm/transpile-only ../schema/dev/generateJsonSchemaTypes.ts src/openctx-protocol.schema.json \"import { Item } from '@openctx/schema'\" > src/openctx-protocol.schema.ts && pnpm -w exec biome check --apply-unsafe \"$PNPM_SCRIPT_SRC_DIR/src/openctx-protocol.schema.ts\"",
+    "generate": "node --no-warnings=ExperimentalWarning --loader ts-node/esm/transpile-only ../schema/dev/generateJsonSchemaTypes.ts src/openctx-protocol.schema.json \"import type { Annotation, Item } from '@openctx/schema'\" > src/openctx-protocol.schema.ts && pnpm -w exec biome check --apply-unsafe \"$PNPM_SCRIPT_SRC_DIR/src/openctx-protocol.schema.ts\"",
     "build": "pnpm run --silent generate && tsc --build",
     "test": "vitest",
     "prepublishOnly": "tsc --build --clean && pnpm run build"
@@ -23,6 +23,6 @@
     "@openctx/schema": "workspace:*"
   },
   "devDependencies": {
-    "json-schema-to-typescript": "^13.1.1"
+    "json-schema-to-typescript": "^13.1.2"
   }
 }

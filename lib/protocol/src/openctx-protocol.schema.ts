@@ -1,4 +1,4 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation, Item } from '@openctx/schema'
 /**
  * OpenCtx client/provider protocol
  */

@@ -61,7 +61,7 @@ export interface Annotation {
      */
     uri: string
     range?: Range
-    item: Item1
+    item: Item
     /**
      * Hints about the best way to present this annotation. Different clients interpret hints differently because they have different user interfaces.
      */
@@ -77,19 +77,4 @@ export interface Range {
 export interface Position {
     line: number
     character: number
-}
-/**
- * An item contains contextual information relevant to a resource (or a range within a resource).
- */
-export interface Item1 {
-    /**
-     * A descriptive title.
-     */
-    title: string
-    /**
-     * An external URL with more information.
-     */
-    url?: string
-    ui?: UserInterface
-    ai?: AssistantInfo
 }

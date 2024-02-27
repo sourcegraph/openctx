@@ -11,7 +11,10 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "sideEffects": false,
   "scripts": {
     "generate": "node --no-warnings=ExperimentalWarning --loader ts-node/esm/transpile-only dev/generateJsonSchemaTypes.ts src/openctx.schema.json > src/openctx.schema.ts && pnpm -w exec biome check --apply-unsafe \"$PNPM_SCRIPT_SRC_DIR/src/openctx.schema.ts\"",
@@ -20,6 +23,6 @@
     "prepublishOnly": "tsc --build --clean && pnpm run build"
   },
   "devDependencies": {
-    "json-schema-to-typescript": "^13.1.1"
+    "json-schema-to-typescript": "^13.1.2"
   }
 }
