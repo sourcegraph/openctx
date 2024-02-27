@@ -31,7 +31,7 @@ export default multiplex<Settings>(async settings => {
             const result: ItemsResult = []
             const positionCalculator = createFilePositionCalculator(params.content)
             const contentChunks = chunk(params.content, {
-                isMarkdown: params.file.endsWith('.md'),
+                isMarkdown: params.uri.endsWith('.md'),
                 isTargetDoc: true,
             })
             await Promise.all(
@@ -52,8 +52,7 @@ export default multiplex<Settings>(async settings => {
                             url: doc.doc?.url,
                             ui: {
                                 hover: { text: truncate(doc.content?.textContent || sr.excerpt, 200) },
-                                group: '📘 Vite Docs',
-                                presentationHints: ['show-at-top-of-file', 'prefer-link-over-detail'],
+                                presentationHints: ['prefer-link-over-detail'],
                             },
                             ai: {
                                 content: doc.content?.textContent || sr.excerpt,
