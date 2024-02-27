@@ -50,7 +50,7 @@ const storybook: Provider<Settings> = {
         }
 
         const contentLines = params.content.split(/\r?\n/)
-        const fileKind = basename(params.file).includes('.story.') ? 'story-file' : 'component-file'
+        const fileKind = basename(params.uri).includes('.story.') ? 'story-file' : 'component-file'
 
         if (fileKind === 'story-file') {
             // Story file.
@@ -81,7 +81,7 @@ const storybook: Provider<Settings> = {
                 contentLines
             )
             for (const [i, component] of matches.entries()) {
-                const storyTitle = getStoryComponentTitleForReactComponent(params.file, component)
+                const storyTitle = getStoryComponentTitleForReactComponent(params.uri, component)
                 if (storyTitle) {
                     const story = 'Default'
                     const storyURL = chromaticStoryURL(storyTitle, story, settings)

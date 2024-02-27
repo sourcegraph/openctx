@@ -13,7 +13,7 @@ import { mergeCodeMirrorProps } from './codemirror'
 let promptedForAuthInfo = false // don't prompt too many times
 
 export const AnnotatedEditor: React.FunctionComponent<{
-    fileUri: string
+    resourceUri: string
     value: string
     onChange: (value: string) => void
     settings: string
@@ -24,7 +24,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
     headerValidClassName?: string
     headerInvalidClassName?: string
 }> = ({
-    fileUri,
+    resourceUri,
     value,
     onChange,
     settings,
@@ -76,7 +76,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
         useMemo(
             () =>
                 value
-                    ? client.itemsChanges({ file: fileUri, content: value }).pipe(
+                    ? client.itemsChanges({ uri: resourceUri, content: value }).pipe(
                           tap({
                               next: () => setError(undefined),
                               error: error => setError(error.message ?? `${error}`),
@@ -84,7 +84,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
                           catchError(() => of([]))
                       )
                     : NEVER,
-            [client, value, fileUri]
+            [client, value, resourceUri]
         ),
         []
     )

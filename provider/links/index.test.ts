@@ -32,7 +32,7 @@ describe('links', () => {
         expect(
             links.items(
                 {
-                    file: 'file:///a/b.ts',
+                    uri: 'file:///a/b.ts',
                     content: '0foo0\nbar\nbaz\n1foo1',
                 },
                 SETTINGS
@@ -71,7 +71,7 @@ describe('links', () => {
         }
         expect(
             links.items(
-                { file: 'file:///a/b.ts', content: 'log.Print(foo, b/a+r)' },
+                { uri: 'file:///a/b.ts', content: 'log.Print(foo, b/a+r)' },
                 settingsWithCaptureGroups
             )
         ).toEqual<ItemsResult>([

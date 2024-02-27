@@ -3,7 +3,7 @@ import { describe, expect, test } from 'vitest'
 import { matchSelectors } from './selector'
 
 const FIXTURE_PARAMS: ItemsParams = {
-    file: 'file:///dir1/dir2/file.txt',
+    uri: 'file:///dir1/dir2/file.txt',
     content: 'foo bar',
 }
 

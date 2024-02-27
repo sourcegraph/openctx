@@ -16,7 +16,7 @@
     },
     "definitions": {
         "Item": {
-            "description": "An item contains contextual information relevant to a file (or a range within a file).",
+            "description": "An item contains contextual information relevant to a resource (or a range within a resource).",
             "type": "object",
             "additionalProperties": false,
             "required": ["title"],
@@ -39,7 +39,7 @@
                     "$ref": "#/definitions/AssistantInfo"
                 },
                 "range": {
-                    "description": "The range in the file that this item applies to. If not set, the item applies to the entire file.",
+                    "description": "The range in the resource that this item applies to. If not set, the item applies to the entire resource.",
                     "$ref": "#/definitions/Range"
                 }
             }

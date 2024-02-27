@@ -36,36 +36,36 @@ export interface ResponseError {
 }
 export interface CapabilitiesResult {
     /**
-     * Selects the scope (repositories, files, and languages) in which this provider should be called.
+     * Selects the scope in which this provider should be called.
      *
-     * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all files.
+     * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.
      */
     selector?: Selector[]
 }
 /**
- * Defines a scope in which a provider is called, as a subset of languages, repositories, and/or files.
+ * Defines a scope in which a provider is called.
  *
- * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the file must satisfy both conditions.
+ * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
  */
 export interface Selector {
     /**
-     * A glob that must match the file path. If the file's location is represented as a URI, the URI's scheme is stripped before being matched against this glob.
+     * A glob that must match the resource's hostname and path.
      *
-     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any files under a directory. Leading slashes are stripped from the path before being matched against the glob.
+     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.
      */
     path?: string
     /**
-     * A literal string that must be present in the file's content.
+     * A literal string that must be present in the resource's content.
      */
     contentContains?: string
 }
 export interface ItemsParams {
     /**
-     * The file's URI.
+     * The resource's URI.
      */
-    file: string
+    uri: string
     /**
-     * The file's content.
+     * The resource's content.
      */
     content: string
 }

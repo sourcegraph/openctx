@@ -3,8 +3,8 @@ import providerPrometheusUrl from '@openctx/provider-prometheus?url'
 import providerStorybookUrl from '@openctx/provider-storybook?url'
 
 export const INITIAL_FILE = {
-    fileUri: 'file:///dir/SignInPage.story.tsx',
-    fileContent: `
+    resourceUri: 'file:///dir/SignInPage.story.tsx',
+    resourceContent: `
 import { SignInPage, type SignInPageProps } from './SignInPage'
 import styles from "./Story.module.css"
 

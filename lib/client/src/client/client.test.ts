@@ -12,7 +12,7 @@ function testdataFileUri(file: string): string {
 }
 
 const FIXTURE_PARAMS: ItemsParams = {
-    file: 'file:///f',
+    uri: 'file:///f',
     content: 'A',
 }
 

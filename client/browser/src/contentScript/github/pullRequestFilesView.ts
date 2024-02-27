@@ -48,7 +48,7 @@ export function injectOnGitHubPullRequestFilesView(
                 diffData.files
                     .flatMap(file => [file.oldFile, file.newFile])
                     .map(file =>
-                        itemsChanges({ content: file.content, file: `github://${file.path}` }).pipe(
+                        itemsChanges({ content: file.content, uri: `github://${file.path}` }).pipe(
                             tap(items => {
                                 try {
                                     redraw(file, items)

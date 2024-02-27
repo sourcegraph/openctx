@@ -95,20 +95,20 @@
             "additionalProperties": false,
             "properties": {
                 "selector": {
-                    "description": "Selects the scope (repositories, files, and languages) in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all files.",
+                    "description": "Selects the scope in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.",
                     "type": "array",
                     "items": {
                         "title": "Selector",
-                        "description": "Defines a scope in which a provider is called, as a subset of languages, repositories, and/or files.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the file must satisfy both conditions.",
+                        "description": "Defines a scope in which a provider is called.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.",
                         "type": "object",
                         "additionalProperties": false,
                         "properties": {
                             "path": {
-                                "description": "A glob that must match the file path. If the file's location is represented as a URI, the URI's scheme is stripped before being matched against this glob.\n\nUse `**/` before the glob to match in any parent directory. Use `/**` after the glob to match any files under a directory. Leading slashes are stripped from the path before being matched against the glob.",
+                                "description": "A glob that must match the resource's hostname and path.\n\nUse `**/` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.",
                                 "type": "string"
                             },
                             "contentContains": {
-                                "description": "A literal string that must be present in the file's content.",
+                                "description": "A literal string that must be present in the resource's content.",
                                 "type": "string"
                             }
                         }
@@ -119,14 +119,15 @@
         "ItemsParams": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["file", "content"],
+            "required": ["uri", "content"],
             "properties": {
-                "file": {
-                    "description": "The file's URI.",
-                    "type": "string"
+                "uri": {
+                    "description": "The resource's URI.",
+                    "type": "string",
+                    "format": "uri"
                 },
                 "content": {
-                    "description": "The file's content.",
+                    "description": "The resource's content.",
                     "type": "string"
                 }
             }

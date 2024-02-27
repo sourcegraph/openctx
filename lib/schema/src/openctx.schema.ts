@@ -12,7 +12,7 @@ export interface Schema {
     items?: Item[]
 }
 /**
- * An item contains contextual information relevant to a file (or a range within a file).
+ * An item contains contextual information relevant to a resource (or a range within a resource).
  */
 export interface Item {
     /**
@@ -60,7 +60,7 @@ export interface AssistantInfo {
     content?: string
 }
 /**
- * The range in the file that this item applies to. If not set, the item applies to the entire file.
+ * The range in the resource that this item applies to. If not set, the item applies to the entire resource.
  */
 export interface Range {
     start: Position

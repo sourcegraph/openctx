@@ -52,7 +52,7 @@ export const FakeEditorWindow: FunctionComponent<{ className?: string }> = ({ cl
     >
         <header className="flex flex-wrap justify-between gap-4 rounded-t-lg border-b border-[hsla(276,50%,27%,0.7)] bg-[hsla(276,72%,6%,1)] p-2 text-sm">
             <span className="flex items-start gap-2 font-mono font-semibold leading-tight text-white">
-                <FileCodeIcon size={16} /> {INITIAL_FILE.fileUri.replace(/^.*\//, '')}
+                <FileCodeIcon size={16} /> {INITIAL_FILE.resourceUri.replace(/^.*\//, '')}
             </span>
             <Link href="/playground" className="flex items-center gap-1 pr-2 text-gray-400">
                 Try in playground <ArrowRightIcon size={16} />
@@ -60,8 +60,8 @@ export const FakeEditorWindow: FunctionComponent<{ className?: string }> = ({ cl
         </header>
         <div className="overflow-hidden rounded-b-lg">
             <AnnotatedEditor
-                fileUri={INITIAL_FILE.fileUri}
-                value={INITIAL_FILE.fileContent}
+                resourceUri={INITIAL_FILE.resourceUri}
+                value={INITIAL_FILE.resourceContent}
                 onChange={noop}
                 settings={INITIAL_SETTINGS}
                 simple={true}

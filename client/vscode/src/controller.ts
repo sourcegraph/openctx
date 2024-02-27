@@ -84,7 +84,7 @@ export function createController(
             return client
                 .itemsChanges(
                     {
-                        file: doc.uri.toString(),
+                        uri: doc.uri.toString(),
                         content: doc.getText(),
                     },
                     {
