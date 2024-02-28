@@ -29,11 +29,11 @@ function fixtureAnn(label: string): Annotation {
     }
 }
 
-describe('observeItems', () => {
-    const testScheduler = (): TestScheduler =>
-        new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
+const testScheduler = (): TestScheduler =>
+    new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
-    const OPTS: Parameters<typeof observeItems>[2] = {}
+describe('observeItems', () => {
+    const OPTS: Parameters<typeof observeItems>[2] = { emitPartial: false }
 
     test('simple', () => {
         testScheduler().run(({ cold, expectObservable }) => {
@@ -42,10 +42,7 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('a')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                         ],
@@ -78,17 +75,11 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('a')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('b')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -107,7 +98,6 @@ describe('observeItems', () => {
                     items: () => {
                         throw new Error('erroringProvider')
                     },
-                    annotations: () => [],
                 },
                 settings: {},
             }
@@ -117,10 +107,7 @@ describe('observeItems', () => {
                         a: [
                             erroringProvider,
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('b')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -129,10 +116,7 @@ describe('observeItems', () => {
 
                         c: [
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('b')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -154,26 +138,17 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a-b', {
                         a: [
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('a')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                         ],
                         b: [
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('a')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                             {
-                                providerClient: {
-                                    items: () => of([fixtureItem('b')]),
-                                    annotations: () => [],
-                                },
+                                providerClient: { items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -191,9 +166,6 @@ describe('observeItems', () => {
 
 // TODO(sqs): dedupe with items test
 describe('observeAnnotations', () => {
-    const testScheduler = (): TestScheduler =>
-        new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
-
     const OPTS: Parameters<typeof observeAnnotations>[2] = { makeRange: r => r, emitPartial: false }
 
     test('simple', () => {
@@ -203,10 +175,7 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: {
-                                    items: () => [],
-                                    annotations: () => of([fixtureAnn('a')]),
-                                },
+                                providerClient: { annotations: () => of([fixtureAnn('a')]) },
                                 settings: {},
                             },
                         ],
@@ -239,17 +208,11 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: {
-                                    items: () => [],
-                                    annotations: () => of([fixtureAnn('a')]),
-                                },
+                                providerClient: { annotations: () => of([fixtureAnn('a')]) },
                                 settings: {},
                             },
                             {
-                                providerClient: {
-                                    items: () => [],
-                                    annotations: () => of([fixtureAnn('b')]),
-                                },
+                                providerClient: { annotations: () => of([fixtureAnn('b')]) },
                                 settings: {},
                             },
                         ],
@@ -265,7 +228,6 @@ describe('observeAnnotations', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
                 providerClient: {
-                    items: () => [],
                     annotations: () => {
                         throw new Error('erroringProvider')
                     },
@@ -279,7 +241,6 @@ describe('observeAnnotations', () => {
                             erroringProvider,
                             {
                                 providerClient: {
-                                    items: () => [],
                                     annotations: () => of([fixtureAnn('b')]),
                                 },
                                 settings: {},
@@ -291,7 +252,6 @@ describe('observeAnnotations', () => {
                         c: [
                             {
                                 providerClient: {
-                                    items: () => [],
                                     annotations: () => of([fixtureAnn('b')]),
                                 },
                                 settings: {},
@@ -316,7 +276,6 @@ describe('observeAnnotations', () => {
                         a: [
                             {
                                 providerClient: {
-                                    items: () => [],
                                     annotations: () => of([fixtureAnn('a')]),
                                 },
                                 settings: {},
@@ -325,14 +284,12 @@ describe('observeAnnotations', () => {
                         b: [
                             {
                                 providerClient: {
-                                    items: () => [],
                                     annotations: () => of([fixtureAnn('a')]),
                                 },
                                 settings: {},
                             },
                             {
                                 providerClient: {
-                                    items: () => [],
                                     annotations: () => of([fixtureAnn('b')]),
                                 },
                                 settings: {},

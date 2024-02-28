@@ -34,9 +34,9 @@ export interface Annotation<R extends Range = Range> extends Omit<AnnotationWith
  * just {@link Promise} values. This makes it easier to test {@link observeItems}.
  */
 export type ObservableProviderClient = {
-    [M in keyof ProviderClient]: (
-        ...args: Parameters<ProviderClient[M]>
-    ) => ObservableInput<Awaited<ReturnType<ProviderClient[M]>>>
+    [M in keyof ProviderClient]?: (
+        ...args: Parameters<Required<ProviderClient>[M]>
+    ) => ObservableInput<Awaited<ReturnType<Required<ProviderClient>[M]>>>
 }
 
 export interface ProviderClientWithSettings {
@@ -67,15 +67,17 @@ export function observeItems(
         mergeMap(providerClients =>
             providerClients && providerClients.length > 0
                 ? combineLatest(
-                      providerClients.map(({ providerClient, settings }) =>
-                          defer(() => from(providerClient.items(params, settings))).pipe(
-                              emitPartial ? startWith(null) : tap(),
-                              catchError(error => {
-                                  logger?.(`failed to get items: ${error}`)
-                                  console.error(error)
-                                  return of(null)
-                              })
-                          )
+                      providerClients.map(({ providerClient: { items }, settings }) =>
+                          items
+                              ? defer(() => from(items(params, settings))).pipe(
+                                      emitPartial ? startWith(null) : tap(),
+                                      catchError(error => {
+                                          logger?.(`failed to get items: ${error}`)
+                                          console.error(error)
+                                          return of(null)
+                                      })
+                                  )
+                              : of(null)
                       )
                   )
                 : of([])
@@ -101,15 +103,17 @@ export function observeAnnotations<R extends Range>(
         mergeMap(providerClients =>
             providerClients && providerClients.length > 0
                 ? combineLatest(
-                      providerClients.map(({ providerClient, settings }) =>
-                          defer(() => from(providerClient.annotations(params, settings))).pipe(
-                              emitPartial ? startWith(null) : tap(),
-                              catchError(error => {
-                                  logger?.(`failed to get annotations: ${error}`)
-                                  console.error(error)
-                                  return of(null)
-                              })
-                          )
+                      providerClients.map(({ providerClient: { annotations }, settings }) =>
+                          annotations
+                              ? defer(() => from(annotations(params, settings))).pipe(
+                                      emitPartial ? startWith(null) : tap(),
+                                      catchError(error => {
+                                          logger?.(`failed to get annotations: ${error}`)
+                                          console.error(error)
+                                          return of(null)
+                                      })
+                                  )
+                              : of(null)
                       )
                   )
                 : of([])
