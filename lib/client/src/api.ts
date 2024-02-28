@@ -128,4 +128,4 @@ export function observeAnnotations<R extends Range>(
     )
 }
 
-const LOG_VERBOSE = true
+const LOG_VERBOSE = false

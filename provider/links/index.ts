@@ -3,6 +3,8 @@ import {
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
+    type ItemsParams,
+    type ItemsResult,
     type Provider,
     type Range,
     matchGlob,
@@ -64,6 +66,20 @@ interface LinkPattern {
 const links: Provider<Settings> = {
     capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
         return { selector: settings.links?.map(({ path }) => ({ path })) || [] }
+    },
+
+    items(params: ItemsParams, settings: Settings): ItemsResult {
+        return (
+            settings.links
+                ?.filter(({ pattern }) => !pattern)
+                .map(({ title, url, description, type }) => ({
+                    title,
+                    url,
+                    ui: {
+                        hover: description ? { text: description } : undefined,
+                    },
+                })) ?? []
+        )
     },
 
     annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {

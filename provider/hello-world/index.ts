@@ -4,6 +4,8 @@ import type {
     AnnotationsResult,
     CapabilitiesParams,
     CapabilitiesResult,
+    ItemsParams,
+    ItemsResult,
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
@@ -15,6 +17,18 @@ import type {
 const helloWorld: Provider = {
     capabilities(params: CapabilitiesParams, settings: ProviderSettings): CapabilitiesResult {
         return {}
+    },
+
+    items(params: ItemsParams, settings: ProviderSettings): ItemsResult {
+        return [
+            {
+                title: '✨ Hello, world!',
+                url: 'https://openctx.org',
+                ui: {
+                    hover: { text: 'From OpenCtx' },
+                },
+            },
+        ]
     },
 
     annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
