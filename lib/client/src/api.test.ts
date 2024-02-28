@@ -194,7 +194,7 @@ describe('observeAnnotations', () => {
     const testScheduler = (): TestScheduler =>
         new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
-    const OPTS: Parameters<typeof observeAnnotations>[2] = { makeRange: r => r }
+    const OPTS: Parameters<typeof observeAnnotations>[2] = { makeRange: r => r, emitPartial: false }
 
     test('simple', () => {
         testScheduler().run(({ cold, expectObservable }) => {

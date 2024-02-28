@@ -1,5 +1,15 @@
 import { type Annotation, type Item, type Range, createClient } from '@openctx/client'
-import { type Observable, catchError, combineLatest, from, map, mergeMap, of, tap } from 'rxjs'
+import {
+    type Observable,
+    type TapObserver,
+    catchError,
+    combineLatest,
+    from,
+    map,
+    mergeMap,
+    of,
+    tap,
+} from 'rxjs'
 import * as vscode from 'vscode'
 import { type ExtensionApi, createApi } from './api'
 import { getAuthInfo } from './authInfo'
@@ -69,6 +79,26 @@ export function createController(
                 : undefined,
     })
 
+    const errorTapObserver: Partial<TapObserver<any>> = {
+        next(): void {
+            errorWaiter.gotError(false)
+        },
+        error(): void {
+            // Show an error notification unless we've recently shown one (to avoid annoying
+            // the user).
+            const shouldNotify = errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
+            if (shouldNotify) {
+                showErrorNotification(outputChannel)
+            }
+
+            errorWaiter.gotError(true)
+        },
+    }
+    const errorCatcher = (error: any): Observable<null> => {
+        outputChannel.appendLine(error)
+        return of(null)
+    }
+
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
@@ -86,28 +116,7 @@ export function createController(
                         emitPartial: false, // TODO(sqs): make this not needed so codelens show up as soon as they're ready from a single provider
                     }
                 )
-                .pipe(
-                    tap({
-                        next(): void {
-                            errorWaiter.gotError(false)
-                        },
-                        error(): void {
-                            // Show an error notification unless we've recently shown one (to avoid annoying
-                            // the user).
-                            const shouldNotify =
-                                errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
-                            if (shouldNotify) {
-                                showErrorNotification(outputChannel)
-                            }
-
-                            errorWaiter.gotError(true)
-                        },
-                    }),
-                    catchError(error => {
-                        outputChannel.appendLine(error)
-                        return of(null)
-                    })
-                )
+                .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
         observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
             if (ignoreDoc(doc)) {
@@ -128,28 +137,7 @@ export function createController(
                         emitPartial: false, // TODO(sqs): make this not needed so codelens show up as soon as they're ready from a single provider
                     }
                 )
-                .pipe(
-                    tap({
-                        next(): void {
-                            errorWaiter.gotError(false)
-                        },
-                        error(): void {
-                            // Show an error notification unless we've recently shown one (to avoid annoying
-                            // the user).
-                            const shouldNotify =
-                                errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
-                            if (shouldNotify) {
-                                showErrorNotification(outputChannel)
-                            }
-
-                            errorWaiter.gotError(true)
-                        },
-                    }),
-                    catchError(error => {
-                        outputChannel.appendLine(error)
-                        return of(null)
-                    })
-                )
+                .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
         onDidChangeProviders: configOrSecretsChanged.event,
     }

@@ -1,4 +1,4 @@
-import type { AnnotationsParams, ItemsParams, ProviderSettings } from '@openctx/protocol'
+import type { AnnotationsParams, ItemsParams } from '@openctx/protocol'
 import type { Provider } from '@openctx/provider'
 import type { Item, Range } from '@openctx/schema'
 import { LRUCache } from 'lru-cache'
@@ -16,12 +16,15 @@ import {
     of,
     shareReplay,
 } from 'rxjs'
-import { type Annotation, type ObservableProviderClient, observeAnnotations, observeItems } from '../api'
 import {
-    type Configuration,
-    type ConfigurationUserInput,
-    configurationFromUserInput,
-} from '../configuration'
+    type Annotation,
+    type ObservableProviderClient,
+    type ObserveOptions,
+    type ProviderClientWithSettings,
+    observeAnnotations,
+    observeItems,
+} from '../api'
+import { type ConfigurationUserInput, configurationFromUserInput } from '../configuration'
 import type { Logger } from '../logger'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient'
 
@@ -117,22 +120,10 @@ export interface Client<R extends Range> {
     /**
      * Observe OpenCtx items from the configured providers.
      *
-     * The returned observable streams items as they are received from the providers and
-     * continues passing along any updates until unsubscribed.
+     * The returned observable streams items as they are received from the providers and continues
+     * passing along any updates until unsubscribed.
      */
-    itemsChanges(
-        params: ItemsParams,
-        options?: {
-            /**
-             * Emit partial results immediately. If `false`, wait for all providers to return an initial
-             * result before emitting. If the caller is consuming the result as a Promise (with only one
-             * value), this should be `false`.
-             *
-             * @default true
-             */
-            emitPartial?: boolean
-        }
-    ): Observable<Item[]>
+    itemsChanges(params: ItemsParams): Observable<Item[]>
 
     /**
      * Get the annotations returned by the configured providers for the given resource.
@@ -150,19 +141,7 @@ export interface Client<R extends Range> {
      * The returned observable streams annotations as they are received from the providers and
      * continues passing along any updates until unsubscribed.
      */
-    annotationsChanges(
-        params: AnnotationsParams,
-        options?: {
-            /**
-             * Emit partial results immediately. If `false`, wait for all providers to return an initial
-             * result before emitting. If the caller is consuming the result as a Promise (with only one
-             * value), this should be `false`.
-             *
-             * @default true
-             */
-            emitPartial?: boolean
-        }
-    ): Observable<Annotation<R>[]>
+    annotationsChanges(params: AnnotationsParams): Observable<Annotation<R>[]>
 
     /**
      * Dispose of the client and release all resources.
@@ -197,130 +176,72 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
             .catch(() => {})
     }
 
-    // TODO(sqs): dedupe with annotationsChanges
-    const itemsChanges: Client<R>['itemsChanges'] = (
-        params: ItemsParams,
-        { emitPartial = true } = { emitPartial: true }
-    ): Observable<Item[]> => {
-        const configuration: Observable<Configuration> = from(env.configuration(params.uri)).pipe(
-            map(config => {
-                if (!config.enable) {
-                    config = { ...config, providers: {} }
-                }
-                return configurationFromUserInput(config)
-            })
-        )
-
-        interface ProviderClientWithSettings {
-            providerClient: ObservableProviderClient
-            settings: ProviderSettings
-        }
-        const providerClientsWithSettings: Observable<ProviderClientWithSettings[]> = configuration.pipe(
-            mergeMap(configuration =>
-                configuration.providers.length > 0
-                    ? combineLatest(
-                          configuration.providers.map(({ providerUri, settings }) =>
-                              (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
-                                  map(authInfo => ({
-                                      providerClient: env.__mock__?.getProviderClient
-                                          ? env.__mock__.getProviderClient()
-                                          : providerCache.getOrCreate(
-                                                  { providerUri, authInfo: authInfo ?? undefined },
-                                                  {
-                                                      logger,
-                                                      dynamicImportFromUri: env.dynamicImportFromUri,
-                                                      dynamicImportFromSource:
-                                                          env.dynamicImportFromSource,
-                                                  }
-                                              ),
-                                      settings,
-                                  })),
-                                  catchError(error => {
-                                      logger(
-                                          `Error creating provider client for ${providerUri}: ${error}`
-                                      )
-                                      return of(null)
-                                  })
+    function providerClientsWithSettings(
+        ...args: Parameters<typeof env.configuration>
+    ): Observable<ProviderClientWithSettings[]> {
+        return from(env.configuration(...args))
+            .pipe(
+                map(config => {
+                    if (!config.enable) {
+                        config = { ...config, providers: {} }
+                    }
+                    return configurationFromUserInput(config)
+                })
+            )
+            .pipe(
+                mergeMap(configuration =>
+                    configuration.providers.length > 0
+                        ? combineLatest(
+                              configuration.providers.map(({ providerUri, settings }) =>
+                                  (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
+                                      map(authInfo => ({
+                                          providerClient: env.__mock__?.getProviderClient
+                                              ? env.__mock__.getProviderClient()
+                                              : providerCache.getOrCreate(
+                                                      { providerUri, authInfo: authInfo ?? undefined },
+                                                      {
+                                                          logger,
+                                                          dynamicImportFromUri: env.dynamicImportFromUri,
+                                                          dynamicImportFromSource:
+                                                              env.dynamicImportFromSource,
+                                                      }
+                                                  ),
+                                          settings,
+                                      })),
+                                      catchError(error => {
+                                          logger(
+                                              `Error creating provider client for ${providerUri}: ${error}`
+                                          )
+                                          return of(null)
+                                      })
+                                  )
                               )
                           )
-                      )
-                    : of([])
-            ),
+                        : of([])
+                ),
 
-            // Filter out null clients.
-            map(providerClients =>
-                providerClients.filter(
-                    (providerClient): providerClient is ProviderClientWithSettings =>
-                        providerClient !== null
+                // Filter out null clients.
+                map(providerClients =>
+                    providerClients.filter(
+                        (providerClient): providerClient is ProviderClientWithSettings =>
+                            providerClient !== null
+                    )
                 )
             )
-        )
+    }
 
-        return observeItems(providerClientsWithSettings, params, {
+    const itemsChanges = (params: ItemsParams, { emitPartial }: ObserveOptions): Observable<Item[]> => {
+        return observeItems(providerClientsWithSettings(undefined), params, {
             logger: env.logger,
             emitPartial,
         })
     }
 
-    const annotationsChanges: Client<R>['annotationsChanges'] = (
+    const annotationsChanges = (
         params: AnnotationsParams,
-        { emitPartial = true } = { emitPartial: true }
+        { emitPartial }: ObserveOptions
     ): Observable<Annotation<R>[]> => {
-        const configuration: Observable<Configuration> = from(env.configuration(params.uri)).pipe(
-            map(config => {
-                if (!config.enable) {
-                    config = { ...config, providers: {} }
-                }
-                return configurationFromUserInput(config)
-            })
-        )
-
-        interface ProviderClientWithSettings {
-            providerClient: ObservableProviderClient
-            settings: ProviderSettings
-        }
-        const providerClientsWithSettings: Observable<ProviderClientWithSettings[]> = configuration.pipe(
-            mergeMap(configuration =>
-                configuration.providers.length > 0
-                    ? combineLatest(
-                          configuration.providers.map(({ providerUri, settings }) =>
-                              (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
-                                  map(authInfo => ({
-                                      providerClient: env.__mock__?.getProviderClient
-                                          ? env.__mock__.getProviderClient()
-                                          : providerCache.getOrCreate(
-                                                  { providerUri, authInfo: authInfo ?? undefined },
-                                                  {
-                                                      logger,
-                                                      dynamicImportFromUri: env.dynamicImportFromUri,
-                                                      dynamicImportFromSource:
-                                                          env.dynamicImportFromSource,
-                                                  }
-                                              ),
-                                      settings,
-                                  })),
-                                  catchError(error => {
-                                      logger(
-                                          `Error creating provider client for ${providerUri}: ${error}`
-                                      )
-                                      return of(null)
-                                  })
-                              )
-                          )
-                      )
-                    : of([])
-            ),
-
-            // Filter out null clients.
-            map(providerClients =>
-                providerClients.filter(
-                    (providerClient): providerClient is ProviderClientWithSettings =>
-                        providerClient !== null
-                )
-            )
-        )
-
-        return observeAnnotations(providerClientsWithSettings, params, {
+        return observeAnnotations(providerClientsWithSettings(params.uri), params, {
             logger: env.logger,
             makeRange: env.makeRange,
             emitPartial,
@@ -331,11 +252,11 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         items(params) {
             return firstValueFrom(itemsChanges(params, { emitPartial: false }))
         },
-        itemsChanges,
+        itemsChanges: params => itemsChanges(params, { emitPartial: true }),
         annotations(params) {
             return firstValueFrom(annotationsChanges(params, { emitPartial: false }))
         },
-        annotationsChanges,
+        annotationsChanges: params => annotationsChanges(params, { emitPartial: true }),
         dispose() {
             for (const sub of subscriptions) {
                 sub.unsubscribe()

@@ -44,6 +44,15 @@ export interface ProviderClientWithSettings {
     settings: ProviderSettings
 }
 
+export interface ObserveOptions {
+    /**
+     * Emit partial results immediately. If `false`, wait for all providers to return an initial
+     * result before emitting. If the caller is consuming the result as a Promise (with only one
+     * value), this should be `false`.
+     */
+    emitPartial: boolean
+}
+
 /**
  * Observes OpenCtx items from the configured providers.
  *
@@ -52,7 +61,7 @@ export interface ProviderClientWithSettings {
 export function observeItems(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: ItemsParams,
-    { emitPartial, logger }: Pick<ClientEnv<never>, 'logger'> & { emitPartial?: boolean }
+    { emitPartial, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
 ): Observable<Item[]> {
     return providerClients.pipe(
         mergeMap(providerClients =>
@@ -86,11 +95,7 @@ export function observeItems(
 export function observeAnnotations<R extends Range>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: AnnotationsParams,
-    {
-        emitPartial,
-        logger,
-        makeRange,
-    }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & { emitPartial?: boolean }
+    { emitPartial, logger, makeRange }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & ObserveOptions
 ): Observable<Annotation<R>[]> {
     return providerClients.pipe(
         mergeMap(providerClients =>
