@@ -103,7 +103,6 @@ export function createController(
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        // TODO(sqs): dedupe with observeAnns
         observeItems(): Observable<Item[] | null> {
             if (!errorWaiter.ok()) {
                 return of(null)
