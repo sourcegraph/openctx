@@ -27,7 +27,6 @@ export interface Controller {
     observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
     ): Observable<Annotation<vscode.Range>[] | null>
-    onDidChangeProviders: vscode.Event<void>
 }
 
 export function createController(
@@ -108,14 +107,7 @@ export function createController(
                 return of(null)
             }
 
-            return client
-                .itemsChanges(
-                    {},
-                    {
-                        emitPartial: false, // TODO(sqs): make this not needed so codelens show up as soon as they're ready from a single provider
-                    }
-                )
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
+            return client.itemsChanges({}).pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
         observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
             if (ignoreDoc(doc)) {
@@ -127,18 +119,12 @@ export function createController(
             }
 
             return client
-                .annotationsChanges(
-                    {
-                        uri: doc.uri.toString(),
-                        content: doc.getText(),
-                    },
-                    {
-                        emitPartial: false, // TODO(sqs): make this not needed so codelens show up as soon as they're ready from a single provider
-                    }
-                )
+                .annotationsChanges({
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                })
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        onDidChangeProviders: configOrSecretsChanged.event,
     }
 
     // The UI feature providers (code lens and hover) should stay registered even if the global

@@ -22,7 +22,7 @@ vi.mock(
             } as any,
             // biome-ignore lint/complexity/useArrowFunction: mock vscode
             EventEmitter: function (): any {
-                return { event: null }
+                return { fire: vi.fn(), event: null }
             } as any,
             Uri: URI,
             commands: {
@@ -30,6 +30,9 @@ vi.mock(
             },
             window: {
                 createQuickPick: vi.fn(() => ({ onDidAccept: () => {} })),
+            },
+            workspace: {
+                onDidCloseTextDocument: vi.fn(),
             },
         }) satisfies RecursivePartial<typeof vscode>
 )
@@ -58,7 +61,7 @@ describe('createCodeLensProvider', () => {
     const testScheduler = (): TestScheduler =>
         new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
-    test('simple', () => {
+    test('simple', async () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
@@ -76,6 +79,54 @@ describe('createCodeLensProvider', () => {
                 ],
             } satisfies Record<string, vscode.CodeLens[] | null>)
         })
+        expect(
+            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken)
+        ).toStrictEqual([
+            {
+                isResolved: true,
+                range: createRange(0, 0, 0, 1),
+                command: { title: 'A', command: 'noop' },
+            },
+        ])
+    })
+
+    test('multiple emissions', async () => {
+        const { controller, provider } = createTestProvider()
+        const doc = mockTextDocument()
+        testScheduler().run(({ cold, expectObservable }): void => {
+            controller.observeAnnotations.mockImplementation(doc => {
+                expect(doc).toBe(doc)
+                return cold<Annotation<vscode.Range>[] | null>('ab', {
+                    a: [fixtureAnn('a')],
+                    b: [fixtureAnn('b')],
+                })
+            })
+            expectObservable(provider.observeCodeLenses(doc)).toBe('ab', {
+                a: [
+                    {
+                        isResolved: true,
+                        range: createRange(0, 0, 0, 1),
+                        command: { title: 'A', command: 'noop' },
+                    },
+                ],
+                b: [
+                    {
+                        isResolved: true,
+                        range: createRange(0, 0, 0, 1),
+                        command: { title: 'B', command: 'noop' },
+                    },
+                ],
+            } satisfies Record<string, vscode.CodeLens[] | null>)
+        })
+        expect(
+            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken)
+        ).toStrictEqual([
+            {
+                isResolved: true,
+                range: createRange(0, 0, 0, 1),
+                command: { title: 'B', command: 'noop' },
+            },
+        ])
     })
 
     test('detail hover', () => {
