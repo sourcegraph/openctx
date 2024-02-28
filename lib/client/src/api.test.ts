@@ -164,7 +164,6 @@ describe('observeItems', () => {
     })
 })
 
-// TODO(sqs): dedupe with items test
 describe('observeAnnotations', () => {
     const OPTS: Parameters<typeof observeAnnotations>[2] = { makeRange: r => r, emitPartial: false }
 
