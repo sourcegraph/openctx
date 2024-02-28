@@ -51,8 +51,8 @@ export function createController(
     disposables.push(errorWaiter)
 
     const client = createClient<vscode.Range>({
-        configuration: file => {
-            const scope = file ? vscode.Uri.parse(file) : undefined
+        configuration: resource => {
+            const scope = resource ? vscode.Uri.parse(resource) : undefined
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
                 map(() => getClientConfiguration(scope))
             )

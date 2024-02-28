@@ -33,16 +33,17 @@ import { type ProviderClient, createProviderClient } from '../providerClient/cre
  */
 export interface ClientEnv<R extends Range> {
     /**
-     * The configuration (set by the user in the client application) that applies to a file,
-     * typically the file that is being annotated with OpenCtx information.
+     * The configuration (set by the user in the client application) that applies to a resource,
+     * typically the document in an editor that is being annotated with OpenCtx information.
      *
-     * The configuration depends on the current file because some editors support per-file
+     * The configuration depends on the current document because some editors support per-document
      * configuration, such as VS Code: global user settings, workspace settings, workspace folder
      * settings, language-specific settings, etc.
      *
-     * @param file URI of the active file, or `undefined` if there is no active file.
+     * @param resource URI of the active resource (such as the currently open document in an
+     * editor), or `undefined` if there is none.
      */
-    configuration(file?: string): ObservableInput<ConfigurationUserInput>
+    configuration(resource?: string): ObservableInput<ConfigurationUserInput>
 
     /**
      * The authentication info for the provider.
