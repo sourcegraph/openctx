@@ -28,7 +28,7 @@ export interface Annotation<R extends Range = Range> extends Omit<AnnotationWith
  * just {@link Promise} values. This makes it easier to test {@link observeItems}.
  */
 export type ObservableProviderClient = {
-    [M in keyof ProviderClient]?: (
+    [M in keyof ProviderClient]: (
         ...args: Parameters<Required<ProviderClient>[M]>
     ) => ObservableInput<Awaited<ReturnType<Required<ProviderClient>[M]>>>
 }
@@ -88,8 +88,7 @@ export function observeItems(
 ): Observable<Item[]> {
     return observeProviderCall(
         providerClients,
-        ({ providerClient, settings }) =>
-            providerClient.items ? from(providerClient.items(params, settings)) : of(null),
+        ({ providerClient, settings }) => from(providerClient.items(params, settings)),
         { logger, emitPartial }
     )
 }
@@ -105,30 +104,26 @@ export function observeAnnotations<R extends Range>(
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) =>
-            providerClient.annotations
-                ? from(providerClient.annotations(params, settings)).pipe(
-                      map(anns =>
-                          anns
-                              ? anns
-                                      .map(ann => ({
-                                          ...ann,
-                                          range: ann.range ? makeRange(ann.range) : undefined,
-                                      }))
-                                      .sort((a, b) => {
-                                          const lineCmp =
-                                              (a.range?.start.line ?? 0) - (b.range?.start.line ?? 0)
-                                          if (lineCmp !== 0) {
-                                              return lineCmp
-                                          }
-                                          return (
-                                              (a.range?.start.character ?? 0) -
-                                              (b.range?.start.character ?? 0)
-                                          )
-                                      })
-                              : null
-                      )
-                  )
-                : of(null),
+            from(providerClient.annotations(params, settings)).pipe(
+                map(anns =>
+                    anns
+                        ? anns
+                              .map(ann => ({
+                                  ...ann,
+                                  range: ann.range ? makeRange(ann.range) : undefined,
+                              }))
+                              .sort((a, b) => {
+                                  const lineCmp = (a.range?.start.line ?? 0) - (b.range?.start.line ?? 0)
+                                  if (lineCmp !== 0) {
+                                      return lineCmp
+                                  }
+                                  return (
+                                      (a.range?.start.character ?? 0) - (b.range?.start.character ?? 0)
+                                  )
+                              })
+                        : null
+                )
+            ),
         { logger, emitPartial }
     )
 }

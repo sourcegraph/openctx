@@ -15,17 +15,14 @@ import { type ProviderTransportOptions, createTransport } from './transport/crea
  */
 export interface ProviderClient {
     /** Get items from the provider. */
-    items?(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null>
+    items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null>
 
     /**
      * Get annotations from the provider, respecting the provider's capabilities. For example, if
      * the resource is not matched by the provider's selectors, then no annotations will be
      * returned.
      */
-    annotations?(
-        params: AnnotationsParams,
-        settings: ProviderSettings
-    ): Promise<AnnotationsResult | null>
+    annotations(params: AnnotationsParams, settings: ProviderSettings): Promise<AnnotationsResult | null>
 }
 
 export interface ProviderClientOptions

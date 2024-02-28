@@ -9,6 +9,7 @@ import {
     observeAnnotations,
     observeItems,
 } from './api'
+import type { ProviderClient } from './providerClient/createProviderClient'
 
 const FIXTURE_ITEMS_PARAMS: ItemsParams = {}
 
@@ -32,6 +33,15 @@ function fixtureAnn(label: string): Annotation {
 const testScheduler = (): TestScheduler =>
     new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
+const DUMMY_CLIENT: ProviderClient = {
+    annotations() {
+        throw new Error('noop')
+    },
+    items() {
+        throw new Error('noop')
+    },
+}
+
 describe('observeItems', () => {
     const OPTS: Parameters<typeof observeItems>[2] = { emitPartial: false }
 
@@ -42,7 +52,7 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: { items: () => of([fixtureItem('a')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                         ],
@@ -75,11 +85,11 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: { items: () => of([fixtureItem('a')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                             {
-                                providerClient: { items: () => of([fixtureItem('b')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -95,6 +105,7 @@ describe('observeItems', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
                 providerClient: {
+                    ...DUMMY_CLIENT,
                     items: () => {
                         throw new Error('erroringProvider')
                     },
@@ -107,7 +118,7 @@ describe('observeItems', () => {
                         a: [
                             erroringProvider,
                             {
-                                providerClient: { items: () => of([fixtureItem('b')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -116,7 +127,7 @@ describe('observeItems', () => {
 
                         c: [
                             {
-                                providerClient: { items: () => of([fixtureItem('b')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -138,17 +149,17 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a-b', {
                         a: [
                             {
-                                providerClient: { items: () => of([fixtureItem('a')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                         ],
                         b: [
                             {
-                                providerClient: { items: () => of([fixtureItem('a')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
                                 settings: {},
                             },
                             {
-                                providerClient: { items: () => of([fixtureItem('b')]) },
+                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
                                 settings: {},
                             },
                         ],
@@ -174,7 +185,10 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: { annotations: () => of([fixtureAnn('a')]) },
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    annotations: () => of([fixtureAnn('a')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -207,11 +221,17 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: { annotations: () => of([fixtureAnn('a')]) },
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    annotations: () => of([fixtureAnn('a')]),
+                                },
                                 settings: {},
                             },
                             {
-                                providerClient: { annotations: () => of([fixtureAnn('b')]) },
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    annotations: () => of([fixtureAnn('b')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -227,6 +247,7 @@ describe('observeAnnotations', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
                 providerClient: {
+                    ...DUMMY_CLIENT,
                     annotations: () => {
                         throw new Error('erroringProvider')
                     },
@@ -240,6 +261,7 @@ describe('observeAnnotations', () => {
                             erroringProvider,
                             {
                                 providerClient: {
+                                    ...DUMMY_CLIENT,
                                     annotations: () => of([fixtureAnn('b')]),
                                 },
                                 settings: {},
@@ -251,6 +273,7 @@ describe('observeAnnotations', () => {
                         c: [
                             {
                                 providerClient: {
+                                    ...DUMMY_CLIENT,
                                     annotations: () => of([fixtureAnn('b')]),
                                 },
                                 settings: {},
@@ -275,6 +298,7 @@ describe('observeAnnotations', () => {
                         a: [
                             {
                                 providerClient: {
+                                    ...DUMMY_CLIENT,
                                     annotations: () => of([fixtureAnn('a')]),
                                 },
                                 settings: {},
@@ -283,12 +307,14 @@ describe('observeAnnotations', () => {
                         b: [
                             {
                                 providerClient: {
+                                    ...DUMMY_CLIENT,
                                     annotations: () => of([fixtureAnn('a')]),
                                 },
                                 settings: {},
                             },
                             {
                                 providerClient: {
+                                    ...DUMMY_CLIENT,
                                     annotations: () => of([fixtureAnn('b')]),
                                 },
                                 settings: {},
