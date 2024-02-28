@@ -249,9 +249,11 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     }
 
     return {
-        items: params => firstValueFrom(itemsChanges(params, { emitPartial: false })),
+        items: params =>
+            firstValueFrom(itemsChanges(params, { emitPartial: false }), { defaultValue: [] }),
         itemsChanges: params => itemsChanges(params, { emitPartial: true }),
-        annotations: params => firstValueFrom(annotationsChanges(params, { emitPartial: false })),
+        annotations: params =>
+            firstValueFrom(annotationsChanges(params, { emitPartial: false }), { defaultValue: [] }),
         annotationsChanges: params => annotationsChanges(params, { emitPartial: true }),
         dispose() {
             for (const sub of subscriptions) {

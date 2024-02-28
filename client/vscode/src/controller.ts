@@ -24,9 +24,14 @@ import { createErrorWaiter } from './util/errorWaiter'
 
 export interface Controller {
     observeItems(): Observable<Item[] | null>
+    items(): Promise<Item[] | null>
+
     observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
     ): Observable<Annotation<vscode.Range>[] | null>
+    annotations(
+        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
+    ): Promise<Annotation<vscode.Range>[] | null>
 }
 
 export function createController(
@@ -62,7 +67,10 @@ export function createController(
 
     const client = createClient<vscode.Range>({
         configuration: resource => {
-            const scope = resource ? vscode.Uri.parse(resource) : undefined
+            // TODO(sqs): support multi-root somehow. this currently only takes config from the 1st root.
+            const scope = resource
+                ? vscode.Uri.parse(resource)
+                : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
                 map(() => getClientConfiguration(scope))
             )
@@ -106,24 +114,34 @@ export function createController(
             if (!errorWaiter.ok()) {
                 return of(null)
             }
-
             return client.itemsChanges({}).pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
-            if (ignoreDoc(doc)) {
-                return of(null)
-            }
-
+        async items(): Promise<Item[] | null> {
             if (!errorWaiter.ok()) {
+                return null
+            }
+            return client.items({})
+        },
+
+        observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
+            if (ignoreDoc(doc) || !errorWaiter.ok()) {
                 return of(null)
             }
-
             return client
                 .annotationsChanges({
                     uri: doc.uri.toString(),
                     content: doc.getText(),
                 })
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
+        },
+        async annotations(doc: vscode.TextDocument): Promise<Annotation<vscode.Range>[] | null> {
+            if (ignoreDoc(doc) || !errorWaiter.ok()) {
+                return null
+            }
+            return client.annotations({
+                uri: doc.uri.toString(),
+                content: doc.getText(),
+            })
         },
     }
 

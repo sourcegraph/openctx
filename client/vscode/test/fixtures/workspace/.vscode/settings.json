@@ -1,6 +1,8 @@
 {
   "openctx.enable": true,
   "openctx.debug": true,
+  "cody.debug.enable": true,
+  "cody.debug.verbose": true,
   "openctx.providers": {
     "../../../../../../provider/docs/dist/provider.cjs": {
       // "index": "http://localhost:5900/@fs/home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
