@@ -22,26 +22,23 @@ export default multiplex<Settings>(async settings => {
         },
 
         async items(params: ItemsParams): Promise<ItemsResult> {
-            const searchResults = await client.search({
-                text: '', // TODO(sqs): get all
-            })
-
             const items: ItemsResult = []
-            for (const [i, sr] of searchResults.entries()) {
+            for (const [i, doc] of client.docs.entries()) {
                 const MAX_RESULTS = 5
                 if (i >= MAX_RESULTS) {
                     break
                 }
 
-                const doc = client.doc(sr.doc)
                 items.push({
                     title: doc.content?.title || doc.doc?.url || 'Untitled',
                     url: doc.doc?.url,
                     ui: {
-                        hover: { text: truncate(doc.content?.textContent || sr.excerpt, 200) },
+                        hover: doc.content?.textContent
+                            ? { text: truncate(doc.content?.textContent, 200) }
+                            : undefined,
                     },
                     ai: {
-                        content: doc.content?.textContent || sr.excerpt,
+                        content: doc.content?.textContent,
                     },
                 })
             }

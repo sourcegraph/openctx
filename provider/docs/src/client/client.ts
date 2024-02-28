@@ -1,7 +1,7 @@
-import { type DocID } from '../corpus/doc/doc.ts'
-import { type CorpusIndex, type IndexedDoc } from '../corpus/index/corpusIndex.ts'
-import { type Logger } from '../logger.ts'
-import { type Query, type SearchResult } from '../search/types.ts'
+import type { DocID } from '../corpus/doc/doc.ts'
+import type { CorpusIndex, IndexedDoc } from '../corpus/index/corpusIndex.ts'
+import type { Logger } from '../logger.ts'
+import type { Query, SearchResult } from '../search/types.ts'
 import { search } from './search.ts'
 
 /**
@@ -13,6 +13,9 @@ export interface Client {
 
     /** Get a document by docID. An exception is thrown if no such document exists. */
     doc(id: DocID): IndexedDoc
+
+    /** All documents. */
+    docs: readonly IndexedDoc[]
 }
 
 export interface ClientOptions {
@@ -27,6 +30,9 @@ export interface ClientOptions {
  */
 export function createClient(index: CorpusIndex, options: ClientOptions = {}): Client {
     return {
+        search(query) {
+            return search(index, query, { logger: options.logger })
+        },
         doc(id) {
             const doc = index.docs.find(d => d.doc.id === id)
             if (!doc) {
@@ -34,8 +40,6 @@ export function createClient(index: CorpusIndex, options: ClientOptions = {}): C
             }
             return doc
         },
-        search(query) {
-            return search(index, query, { logger: options.logger })
-        },
+        docs: index.docs,
     }
 }

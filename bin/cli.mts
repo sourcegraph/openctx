@@ -49,8 +49,8 @@ if (process.env.OUTPUT_JSON) {
         if (item.ui) {
             console.log(`   - hover.text: ${item.ui.hover?.text}`)
         }
-        if (item.ai) {
-            console.log(`   - ai.content: ${item.ai.content}`)
+        if (item.ai?.content) {
+            console.log(`   - ai.content: (${item.ai.content.length} characters)`)
         }
     }
 }

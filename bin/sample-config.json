@@ -13,9 +13,7 @@
                     "path": "**"
                 }
             ]
-        }
-    },
-    "x": {
+        },
         "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/docs/dist/provider.cjs": {
             "index": "file:///Users/sqs/tmp/octx-provider-docs/vite-docs-web-index.json"
         }
