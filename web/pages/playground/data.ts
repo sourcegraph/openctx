@@ -48,7 +48,7 @@ function providerBundleUrl(packageName: string, importUrl: string): string {
 
 const settings = {
     'openctx.providers': {
-        [providerBundleUrl('@openctx/provider-links@0.0.6', providerLinksUrl)]: {
+        [providerBundleUrl('@openctx/provider-links@0.0.7', providerLinksUrl)]: {
             links: [
                 {
                     title: 'Telemetry',
@@ -73,7 +73,7 @@ const settings = {
                 },
             ],
         } satisfies import('@openctx/provider-links').Settings,
-        [providerBundleUrl('@openctx/provider-prometheus@0.0.4', providerPrometheusUrl)]: {
+        [providerBundleUrl('@openctx/provider-prometheus@0.0.5', providerPrometheusUrl)]: {
             metricRegistrationPatterns: [
                 {
                     path: '**/*.ts?(x)',
@@ -83,7 +83,7 @@ const settings = {
                 },
             ],
         } satisfies import('@openctx/provider-prometheus').Settings,
-        [providerBundleUrl('@openctx/provider-storybook@0.0.4', providerStorybookUrl)]: {
+        [providerBundleUrl('@openctx/provider-storybook@0.0.5', providerStorybookUrl)]: {
             storybookUrl:
                 'https://daeeaa811098f52f15a110dbaf76b6c416191c3b--5f0f381c0e50750022dc6bf7.chromatic.com/', // this is a public URL because our storybooks are public
         } satisfies import('@openctx/provider-storybook').Settings,

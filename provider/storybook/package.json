@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-storybook",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Add Storybook links and image previews to your code (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -11,12 +11,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "index.ts",
-    "!**/*.test.*",
-    "README.md"
-  ],
+  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
