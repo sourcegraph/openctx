@@ -46,7 +46,7 @@ const googleDocs: Provider<Settings> = {
             includeItemsFromAllDrives: true,
             supportsAllDrives: true,
             fields: 'files(id, name)',
-            pageSize: 10,
+            pageSize: 5,
         })
 
         const items: Item[] = []
@@ -54,12 +54,13 @@ const googleDocs: Provider<Settings> = {
             (files.data.files ?? []).map(async file => {
                 const doc = await docsAPI.documents.get({
                     documentId: file.id!,
-                    fields: 'title,body',
+                    fields: 'documentId,title,body',
                 })
                 const body = doc.data.body
                 items.push({
                     title: `📝 ${file.name!}`,
-                    url: file.webViewLink!,
+                    // TODO(sqs): un-hardcode
+                    url: `https://docs.google.com/document/d/${doc.data.documentId}/edit`,
                     ai: {
                         content: body ? convertGoogleDocsBodyToText(body) : undefined,
                     },
