@@ -23,12 +23,7 @@ export default multiplex<Settings>(async settings => {
 
         async items(params: ItemsParams): Promise<ItemsResult> {
             const items: ItemsResult = []
-            for (const [i, doc] of client.docs.entries()) {
-                const MAX_RESULTS = 5
-                if (i >= MAX_RESULTS) {
-                    break
-                }
-
+            for (const doc of client.docs) {
                 items.push({
                     title: doc.content?.title || doc.doc?.url || 'Untitled',
                     url: doc.doc?.url,

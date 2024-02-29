@@ -46,11 +46,18 @@ if (process.env.OUTPUT_JSON) {
 } else {
     for (const [i, item] of items.entries()) {
         console.log(`#${i + 1} ${item.title}${item.url ? ` — ${item.url}` : ''}`)
-        if (item.ui) {
-            console.log(`   - hover.text: ${item.ui.hover?.text}`)
+        if (item.ui?.hover?.text) {
+            console.log(`   - hover.text: ${truncate(item.ui.hover?.text.trim(), 100)}`)
         }
         if (item.ai?.content) {
             console.log(`   - ai.content: (${item.ai.content.length} characters)`)
         }
     }
+}
+
+function truncate(text: string, maxLength: number): string {
+    if (text.length > maxLength) {
+        return text.slice(0, maxLength) + '...'
+    }
+    return text
 }

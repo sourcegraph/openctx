@@ -1,7 +1,7 @@
 import { parseDOM } from '../../../dom.ts'
-import { type Logger } from '../../../logger.ts'
-import { type Doc } from '../../doc/doc.ts'
-import { createCorpusArchive, type CorpusArchive } from '../corpusArchive.ts'
+import type { Logger } from '../../../logger.ts'
+import type { Doc } from '../../doc/doc.ts'
+import { type CorpusArchive, createCorpusArchive } from '../corpusArchive.ts'
 import { createCrawlQueue } from './crawlQueue.ts'
 
 export interface WebCorpusArchiveOptions {
@@ -46,6 +46,7 @@ export async function createWebCorpusArchive({
         const documents: Doc[] = []
 
         let url: URL | undefined
+        // biome-ignore lint/suspicious/noAssignInExpressions:
         while ((url = nextURL())) {
             logger?.(`Crawling URL: ${url.href}`)
 
@@ -70,7 +71,9 @@ export async function createWebCorpusArchive({
             const html = await resp.text()
             const dom = await parseDOM(html, resp.url)
 
-            const canonicalURLStr = dom.querySelector<HTMLLinkElement>("head > link[rel='canonical']")?.href
+            const canonicalURLStr = dom.querySelector<HTMLLinkElement>(
+                "head > link[rel='canonical']"
+            )?.href
             if (canonicalURLStr && canonicalURLStr !== url.href) {
                 const canonicalURL = parseURL(canonicalURLStr)
                 if (canonicalURL) {
@@ -129,7 +132,9 @@ export function urlHasPrefix(url: URL, prefix: URL): boolean {
         url.protocol === prefix.protocol &&
         url.host === prefix.host &&
         (url.pathname === prefix.pathname ||
-            url.pathname.startsWith(prefix.pathname.endsWith('/') ? prefix.pathname : prefix.pathname + '/') ||
+            url.pathname.startsWith(
+                prefix.pathname.endsWith('/') ? prefix.pathname : prefix.pathname + '/'
+            ) ||
             (prefix.pathname.endsWith('/') && url.pathname === prefix.pathname.slice(0, -1)))
     )
 }
