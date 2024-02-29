@@ -6,14 +6,15 @@ const args = process.argv.slice(2)
 
 const configStr = process.env.OPENCTX_CONFIG
 const subcommand = args[0]
+const query = args[1]
 
-const USAGE = `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(process.argv[1])} items`
+const USAGE = `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(process.argv[1])} items [query]`
 if (subcommand !== 'items') {
     console.error('Error: only the "items" subcommand is supported')
     console.error(USAGE)
     process.exit(1)
 }
-if (args.length !== 1) {
+if (args.length !== 1 && args.length !== 2) {
     console.error('Error: invalid arguments')
     console.error(USAGE)
     process.exit(1)
@@ -39,7 +40,7 @@ const client = createClient({
     makeRange: r => r,
 })
 
-const items = await client.items({})
+const items = await client.items({ query })
 
 if (process.env.OUTPUT_JSON) {
     console.log(JSON.stringify(items, null, 2))
@@ -47,7 +48,9 @@ if (process.env.OUTPUT_JSON) {
     for (const [i, item] of items.entries()) {
         console.log(`#${i + 1} ${item.title}${item.url ? ` — ${item.url}` : ''}`)
         if (item.ui?.hover?.text) {
-            console.log(`   - hover.text: ${truncate(item.ui.hover?.text.trim(), 100)}`)
+            console.log(
+                `   - hover.text: ${truncate(item.ui.hover?.text.trim().replace(/(\s|\n)+/g, ' '), 100)}`
+            )
         }
         if (item.ai?.content) {
             console.log(`   - ai.content: (${item.ai.content.length} characters)`)

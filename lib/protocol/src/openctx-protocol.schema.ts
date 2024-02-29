@@ -14,7 +14,6 @@ export type Protocol =
     | AnnotationsParams
     | AnnotationsResult
 export type CapabilitiesParams = Record<string, never>
-export type ItemsParams = Record<string, never>
 export type ItemsResult = Item[]
 export type AnnotationsResult = Annotation[]
 
@@ -62,6 +61,12 @@ export interface Selector {
      * A literal string that must be present in the resource's content.
      */
     contentContains?: string
+}
+export interface ItemsParams {
+    /**
+     * A search query that is interpreted by providers to filter the items in the result set.
+     */
+    query?: string
 }
 export interface AnnotationsParams {
     /**

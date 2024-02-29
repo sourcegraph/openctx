@@ -1,4 +1,4 @@
-import { type Annotation, type Item, type Range, createClient } from '@openctx/client'
+import { type Annotation, type Item, type ItemsParams, type Range, createClient } from '@openctx/client'
 import {
     type Observable,
     type TapObserver,
@@ -23,8 +23,8 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util'
 import { createErrorWaiter } from './util/errorWaiter'
 
 export interface Controller {
-    observeItems(): Observable<Item[] | null>
-    items(): Promise<Item[] | null>
+    observeItems(params: ItemsParams): Observable<Item[] | null>
+    items(params: ItemsParams): Promise<Item[] | null>
 
     observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
@@ -110,17 +110,17 @@ export function createController(
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeItems(): Observable<Item[] | null> {
+        observeItems(params: ItemsParams): Observable<Item[] | null> {
             if (!errorWaiter.ok()) {
                 return of(null)
             }
-            return client.itemsChanges({}).pipe(tap(errorTapObserver), catchError(errorCatcher))
+            return client.itemsChanges(params).pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async items(): Promise<Item[] | null> {
+        async items(params: ItemsParams): Promise<Item[] | null> {
             if (!errorWaiter.ok()) {
                 return null
             }
-            return client.items({})
+            return client.items(params)
         },
 
         observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {

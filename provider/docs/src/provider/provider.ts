@@ -1,6 +1,8 @@
 import type { CapabilitiesResult, ItemsParams, ItemsResult } from '@openctx/provider'
 import { createClient } from '../client/client.ts'
-import { type CorpusIndex, fromJSON } from '../corpus/index/corpusIndex.ts'
+import type { DocID } from '../corpus/doc/doc.ts'
+import { type CorpusIndex, type IndexedDoc, fromJSON } from '../corpus/index/corpusIndex.ts'
+import type { SearchResult } from '../search/types.ts'
 import { multiplex } from './multiplex.ts'
 
 /** Settings for the docs OpenCtx provider. */
@@ -22,8 +24,18 @@ export default multiplex<Settings>(async settings => {
         },
 
         async items(params: ItemsParams): Promise<ItemsResult> {
+            const query = params.query?.trim()
+            const results = query ? await client.search({ text: query }) : client.docs
+
             const items: ItemsResult = []
-            for (const doc of client.docs) {
+            const seenDocIDs = new Set<DocID>()
+            for (const result of results) {
+                const doc = isSearchResult(result) ? client.doc(result.doc) : result
+                if (seenDocIDs.has(doc.doc.id)) {
+                    continue
+                }
+                seenDocIDs.add(doc.doc.id)
+
                 items.push({
                     title: doc.content?.title || doc.doc?.url || 'Untitled',
                     url: doc.doc?.url,
@@ -62,6 +74,10 @@ export default multiplex<Settings>(async settings => {
         },
     }
 })
+
+function isSearchResult(value: SearchResult | IndexedDoc): value is SearchResult {
+    return 'doc' in value && typeof value.doc === 'number'
+}
 
 async function fetchIndex(urlStr: string): Promise<CorpusIndex> {
     const url = new URL(urlStr)

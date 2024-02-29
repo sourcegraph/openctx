@@ -126,8 +126,12 @@
             "type": "object",
             "additionalProperties": false,
             "required": [],
-            "properties": {},
-            "tsType": "Record<string, never>"
+            "properties": {
+                "query": {
+                    "description": "A search query that is interpreted by providers to filter the items in the result set.",
+                    "type": "string"
+                }
+            }
         },
         "ItemsResult": {
             "type": "array",
