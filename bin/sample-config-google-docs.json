@@ -1,0 +1,7 @@
+{
+    "enable": true,
+    "debug": false,
+    "providers": {
+        "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/google-docs/dist/index.js": true
+    }
+}
