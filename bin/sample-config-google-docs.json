@@ -2,6 +2,9 @@
     "enable": true,
     "debug": false,
     "providers": {
-        "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/google-docs/dist/index.js": true
+        "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/google-docs/dist/index.js": {
+            "googleOAuthClientFile": "/Users/sqs/Downloads/client_secret_1234.json",
+            "googleOAuthCredentialsFile": "/Users/sqs/.octx-google-docs-credentials.json"
+        }
     }
 }

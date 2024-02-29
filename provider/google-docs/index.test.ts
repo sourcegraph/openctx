@@ -3,9 +3,7 @@ import { describe, expect, test } from 'vitest'
 import googleDocs, { type Settings } from './index'
 
 describe('googleDocs', () => {
-    const SETTINGS: Settings = {
-        apiKey: 'k',
-    }
+    const SETTINGS: Settings = {}
 
     test('items', () => {
         expect(googleDocs.items?.({ query: 'foo' }, SETTINGS)).toEqual<AnnotationsResult>([

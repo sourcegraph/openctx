@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "openctx": "esbuild --log-level=error --platform=node --bundle --outdir=dist --format=esm --out-extension:.js=.mjs cli.mts && node --no-warnings=ExperimentalWarning --es-module-specifier-resolution=node --loader ts-node/esm/transpile-only  dist/cli.mjs"
+    "openctx": "esbuild --log-level=error --platform=node --bundle --outdir=dist --format=esm --out-extension:.js=.mjs cli.mts && node --no-warnings=ExperimentalWarning --es-module-specifier-resolution=node --loader ts-node/esm/transpile-only dist/cli.mjs"
   },
   "dependencies": {
     "@openctx/client": "workspace:*",
