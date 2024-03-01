@@ -23,7 +23,7 @@ export function getAuthenticatedClient(): Promise<OAuth2Client> {
                     if (req.url!.indexOf('/oauth2callback') > -1) {
                         const qs = new url.URL(req.url!, serverURL).searchParams
                         const code = qs.get('code')
-                        res.end('Authentication successful! Please return to the console.')
+                        res.end('Authentication successful. Please return to the console.')
                         server.destroy()
 
                         const r = await oauthClient.getToken(code!)
