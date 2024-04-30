@@ -1,131 +1,131 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "openctx.schema.json#",
-    "title": "Schema",
-    "description": "Metadata about code",
-    "allowComments": true,
-    "oneOf": [
-        {
-            "$ref": "#/definitions/Item"
-        },
-        {
-            "$ref": "#/definitions/Annotation"
-        }
-    ],
-    "definitions": {
-        "Item": {
-            "description": "An item contains contextual information relevant to a resource (or a range within a resource).",
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["title"],
-            "properties": {
-                "title": {
-                    "description": "A descriptive title.",
-                    "type": "string"
-                },
-                "url": {
-                    "description": "An external URL with more information.",
-                    "type": "string",
-                    "format": "uri"
-                },
-                "ui": {
-                    "description": "The human user interface of the item, with information for human consumption.",
-                    "$ref": "#/definitions/UserInterface"
-                },
-                "ai": {
-                    "description": "Information from the item intended for consumption by AI, not humans.",
-                    "$ref": "#/definitions/AssistantInfo"
-                }
-            }
-        },
-        "UserInterface": {
-            "description": "The human user interface of an item, with information for human consumption.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "hover": {
-                    "title": "Hover",
-                    "description": "Additional information for the human, shown in a tooltip-like widget when they interact with the item.",
-                    "type": "object",
-                    "properties": {
-                        "markdown": {
-                            "description": "The contents of the hover as Markdown, preferred over the text when rendered Markdown or HTML can be displayed.",
-                            "type": "string"
-                        },
-                        "text": {
-                            "description": "The contents of the hover as plain text, used when rendered Markdown or HTML can't be displayed.",
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "AssistantInfo": {
-            "description": "Information from an item intended for consumption by AI, not humans.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "content": {
-                    "description": "Text content for AI to consume.",
-                    "type": "string"
-                }
-            }
-        },
-        "Annotation": {
-            "description": "An annotation attaches an Item to a range in a document.",
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["uri", "item"],
-            "properties": {
-                "uri": {
-                    "description": "The URI of the document.",
-                    "type": "string",
-                    "format": "uri"
-                },
-                "range": {
-                    "description": "The range in the resource that this item applies to. If not set, the item applies to the entire resource.",
-                    "$ref": "#/definitions/Range"
-                },
-                "item": {
-                    "$ref": "#/definitions/Item"
-                },
-                "presentationHints": {
-                    "description": "Hints about the best way to present this annotation. Different clients interpret hints differently because they have different user interfaces.",
-                    "type": "array",
-                    "items": {
-                        "title": "PresentationHint",
-                        "description": "A hint about how to best present an annotation to the human in the client's user interface.\n\n- `prefer-link-over-detail`: Prefer to show the item as a link over showing the detail text, if the client does not cleanly support doing both.",
-                        "type": "string",
-                        "enum": ["prefer-link-over-detail"]
-                    }
-                }
-            }
-        },
-        "Range": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["start", "end"],
-            "properties": {
-                "start": {
-                    "$ref": "#/definitions/Position"
-                },
-                "end": {
-                    "$ref": "#/definitions/Position"
-                }
-            }
-        },
-        "Position": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["line", "character"],
-            "properties": {
-                "line": {
-                    "type": "integer"
-                },
-                "character": {
-                    "type": "integer"
-                }
-            }
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "openctx.schema.json#",
+  "title": "Schema",
+  "description": "Metadata about code",
+  "allowComments": true,
+  "oneOf": [
+    {
+      "$ref": "#/definitions/Item"
+    },
+    {
+      "$ref": "#/definitions/Annotation"
     }
+  ],
+  "definitions": {
+    "Item": {
+      "description": "An item contains contextual information relevant to a resource (or a range within a resource).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title"],
+      "properties": {
+        "title": {
+          "description": "A descriptive title.",
+          "type": "string"
+        },
+        "url": {
+          "description": "An external URL with more information.",
+          "type": "string",
+          "format": "uri"
+        },
+        "ui": {
+          "description": "The human user interface of the item, with information for human consumption.",
+          "$ref": "#/definitions/UserInterface"
+        },
+        "ai": {
+          "description": "Information from the item intended for consumption by AI, not humans.",
+          "$ref": "#/definitions/AssistantInfo"
+        }
+      }
+    },
+    "UserInterface": {
+      "description": "The human user interface of an item, with information for human consumption.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hover": {
+          "title": "Hover",
+          "description": "Additional information for the human, shown in a tooltip-like widget when they interact with the item.",
+          "type": "object",
+          "properties": {
+            "markdown": {
+              "description": "The contents of the hover as Markdown, preferred over the text when rendered Markdown or HTML can be displayed.",
+              "type": "string"
+            },
+            "text": {
+              "description": "The contents of the hover as plain text, used when rendered Markdown or HTML can't be displayed.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "AssistantInfo": {
+      "description": "Information from an item intended for consumption by AI, not humans.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "description": "Text content for AI to consume.",
+          "type": "string"
+        }
+      }
+    },
+    "Annotation": {
+      "description": "An annotation attaches an Item to a range in a document.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "item"],
+      "properties": {
+        "uri": {
+          "description": "The URI of the document.",
+          "type": "string",
+          "format": "uri"
+        },
+        "range": {
+          "description": "The range in the resource that this item applies to. If not set, the item applies to the entire resource.",
+          "$ref": "#/definitions/Range"
+        },
+        "item": {
+          "$ref": "#/definitions/Item"
+        },
+        "presentationHints": {
+          "description": "Hints about the best way to present this annotation. Different clients interpret hints differently because they have different user interfaces.",
+          "type": "array",
+          "items": {
+            "title": "PresentationHint",
+            "description": "A hint about how to best present an annotation to the human in the client's user interface.\n\n- `prefer-link-over-detail`: Prefer to show the item as a link over showing the detail text, if the client does not cleanly support doing both.",
+            "type": "string",
+            "enum": ["prefer-link-over-detail"]
+          }
+        }
+      }
+    },
+    "Range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "properties": {
+        "start": {
+          "$ref": "#/definitions/Position"
+        },
+        "end": {
+          "$ref": "#/definitions/Position"
+        }
+      }
+    },
+    "Position": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line", "character"],
+      "properties": {
+        "line": {
+          "type": "integer"
+        },
+        "character": {
+          "type": "integer"
+        }
+      }
+    }
+  }
 }

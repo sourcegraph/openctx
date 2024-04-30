@@ -1,167 +1,167 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "openctx-protocol.schema.json#",
-    "title": "Protocol",
-    "description": "OpenCtx client/provider protocol",
-    "allowComments": true,
-    "oneOf": [
-        {
-            "$ref": "#/definitions/RequestMessage"
-        },
-        {
-            "$ref": "#/definitions/ResponseMessage"
-        },
-        {
-            "$ref": "#/definitions/ResponseError"
-        },
-        {
-            "$ref": "#/definitions/ProviderSettings"
-        },
-        {
-            "$ref": "#/definitions/CapabilitiesParams"
-        },
-        {
-            "$ref": "#/definitions/CapabilitiesResult"
-        },
-        {
-            "$ref": "#/definitions/ItemsParams"
-        },
-        {
-            "$ref": "#/definitions/ItemsResult"
-        },
-        {
-            "$ref": "#/definitions/AnnotationsParams"
-        },
-        {
-            "$ref": "#/definitions/AnnotationsResult"
-        }
-    ],
-    "definitions": {
-        "RequestMessage": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["method"],
-            "properties": {
-                "method": {
-                    "type": "string"
-                },
-                "params": {
-                    "type": ["object", "array"],
-                    "tsType": "unknown"
-                },
-                "settings": {
-                    "$ref": "#/definitions/ProviderSettings"
-                }
-            }
-        },
-        "ProviderSettings": {
-            "description": "User settings sent by the client to the provider.",
-            "type": "object",
-            "additionalProperties": true
-        },
-        "ResponseMessage": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "result": {
-                    "type": ["object", "array"],
-                    "tsType": "unknown"
-                },
-                "error": {
-                    "$ref": "#/definitions/ResponseError"
-                }
-            }
-        },
-        "ResponseError": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["code", "message"],
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": ["object", "array"],
-                    "tsType": "unknown"
-                }
-            }
-        },
-        "CapabilitiesParams": {
-            "type": "object",
-            "additionalProperties": false,
-            "$comment": "(empty for now)",
-            "properties": {},
-            "tsType": "Record<string, never>"
-        },
-        "CapabilitiesResult": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-                "selector": {
-                    "description": "Selects the scope in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.",
-                    "type": "array",
-                    "items": {
-                        "title": "Selector",
-                        "description": "Defines a scope in which a provider is called.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.",
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "path": {
-                                "description": "A glob that must match the resource's hostname and path.\n\nUse `**/` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.",
-                                "type": "string"
-                            },
-                            "contentContains": {
-                                "description": "A literal string that must be present in the resource's content.",
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "ItemsParams": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [],
-            "properties": {
-                "query": {
-                    "description": "A search query that is interpreted by providers to filter the items in the result set.",
-                    "type": "string"
-                }
-            }
-        },
-        "ItemsResult": {
-            "type": "array",
-            "items": {
-                "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
-            },
-            "tsType": "Item[]"
-        },
-        "AnnotationsParams": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": ["uri", "content"],
-            "properties": {
-                "uri": {
-                    "description": "The resource's URI.",
-                    "type": "string",
-                    "format": "uri"
-                },
-                "content": {
-                    "description": "The resource's content.",
-                    "type": "string"
-                }
-            }
-        },
-        "AnnotationsResult": {
-            "type": "array",
-            "items": {
-                "$ref": "../../schema/src/openctx.schema.json#/definitions/Annotation"
-            },
-            "tsType": "Annotation[]"
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "openctx-protocol.schema.json#",
+  "title": "Protocol",
+  "description": "OpenCtx client/provider protocol",
+  "allowComments": true,
+  "oneOf": [
+    {
+      "$ref": "#/definitions/RequestMessage"
+    },
+    {
+      "$ref": "#/definitions/ResponseMessage"
+    },
+    {
+      "$ref": "#/definitions/ResponseError"
+    },
+    {
+      "$ref": "#/definitions/ProviderSettings"
+    },
+    {
+      "$ref": "#/definitions/CapabilitiesParams"
+    },
+    {
+      "$ref": "#/definitions/CapabilitiesResult"
+    },
+    {
+      "$ref": "#/definitions/ItemsParams"
+    },
+    {
+      "$ref": "#/definitions/ItemsResult"
+    },
+    {
+      "$ref": "#/definitions/AnnotationsParams"
+    },
+    {
+      "$ref": "#/definitions/AnnotationsResult"
     }
+  ],
+  "definitions": {
+    "RequestMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method"],
+      "properties": {
+        "method": {
+          "type": "string"
+        },
+        "params": {
+          "type": ["object", "array"],
+          "tsType": "unknown"
+        },
+        "settings": {
+          "$ref": "#/definitions/ProviderSettings"
+        }
+      }
+    },
+    "ProviderSettings": {
+      "description": "User settings sent by the client to the provider.",
+      "type": "object",
+      "additionalProperties": true
+    },
+    "ResponseMessage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "result": {
+          "type": ["object", "array"],
+          "tsType": "unknown"
+        },
+        "error": {
+          "$ref": "#/definitions/ResponseError"
+        }
+      }
+    },
+    "ResponseError": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        },
+        "data": {
+          "type": ["object", "array"],
+          "tsType": "unknown"
+        }
+      }
+    },
+    "CapabilitiesParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "$comment": "(empty for now)",
+      "properties": {},
+      "tsType": "Record<string, never>"
+    },
+    "CapabilitiesResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "selector": {
+          "description": "Selects the scope in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.",
+          "type": "array",
+          "items": {
+            "title": "Selector",
+            "description": "Defines a scope in which a provider is called.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "description": "A glob that must match the resource's hostname and path.\n\nUse `**/` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.",
+                "type": "string"
+              },
+              "contentContains": {
+                "description": "A literal string that must be present in the resource's content.",
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "ItemsParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "query": {
+          "description": "A search query that is interpreted by providers to filter the items in the result set.",
+          "type": "string"
+        }
+      }
+    },
+    "ItemsResult": {
+      "type": "array",
+      "items": {
+        "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
+      },
+      "tsType": "Item[]"
+    },
+    "AnnotationsParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "content"],
+      "properties": {
+        "uri": {
+          "description": "The resource's URI.",
+          "type": "string",
+          "format": "uri"
+        },
+        "content": {
+          "description": "The resource's content.",
+          "type": "string"
+        }
+      }
+    },
+    "AnnotationsResult": {
+      "type": "array",
+      "items": {
+        "$ref": "../../schema/src/openctx.schema.json#/definitions/Annotation"
+      },
+      "tsType": "Annotation[]"
+    }
+  }
 }

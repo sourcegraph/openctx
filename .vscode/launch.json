@@ -1,79 +1,79 @@
 {
-    "version": "0.1.0",
-    "configurations": [
-        {
-            "name": "Launch VS Code Extension (Desktop)",
-            "type": "extensionHost",
-            "request": "launch",
-            "runtimeExecutable": "${execPath}",
-            "preLaunchTask": "Build VS Code Extension (Desktop)",
-            "args": ["--extensionDevelopmentPath=${workspaceRoot}/client/vscode"],
-            "sourceMaps": true,
-            "outFiles": ["${workspaceRoot}/client/vscode/dist/**/*.js"],
-            "internalConsoleOptions": "openOnSessionStart",
-            "env": {
-                "NODE_ENV": "development",
-                "NODE_TLS_REJECT_UNAUTHORIZED": "0"
-                // Enable the Node debug protocol for the TypeScript server:
-                // "TSS_DEBUG": "5859"
-            }
-        },
-        {
-            "name": "Launch VS Code Extension (Desktop; Separate Instance)",
-            "type": "extensionHost",
-            "request": "launch",
-            "runtimeExecutable": "${execPath}",
-            "preLaunchTask": "Build VS Code Extension (Desktop)",
-            "args": [
-                "--user-data-dir=/tmp/vscode-openctx-extension-dev-host",
-                "--profile-temp",
-                "--extensionDevelopmentPath=${workspaceRoot}/client/vscode"
-            ],
-            "sourceMaps": true,
-            "outFiles": ["${workspaceRoot}/client/vscode/dist/**/*.js"],
-            "env": {
-                "NODE_ENV": "development"
-            }
-        },
-        {
-            "name": "Launch VS Code Extension (Web, in Browser)",
-            "type": "node",
-            "request": "launch",
-            "preLaunchTask": "Build VS Code Extension (Web)",
-            "runtimeExecutable": "pnpm",
-            "runtimeArgs": [
-                "-C",
-                "${workspaceFolder}/client/vscode",
-                "run",
-                "--silent",
-                "_dev:vscode-test-web"
-            ],
-            "outFiles": ["${workspaceFolder}/client/vscode/dist/**/*.js"]
-        },
-        {
-            "name": "Launch VS Code Extension (Web Extension Host)",
-            "type": "extensionHost",
-            "debugWebWorkerHost": true,
-            "request": "launch",
-            "preLaunchTask": "Build VS Code Extension (Web)",
-            "outFiles": ["${workspaceFolder}/client/vscode/dist/**/*.js"],
-            "args": [
-                "--extensionDevelopmentPath=${workspaceRoot}/client/vscode",
-                "--extensionDevelopmentKind=web"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Debug Current File with Vitest",
-            "autoAttachChildProcesses": true,
-            "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
-            "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
-            // ${relativeFile} will guarantee the "current" file, but fileBaseNameNoExtension
-            // can be convenient because running with a file like "graph-section-observer.ts"
-            // (the implementation, not the test) will run the correct tests.
-            "args": ["run", "${fileBasenameNoExtension}"],
-            "smartStep": true
-        }
-    ]
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "name": "Launch VS Code Extension (Desktop)",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "preLaunchTask": "Build VS Code Extension (Desktop)",
+      "args": ["--extensionDevelopmentPath=${workspaceRoot}/client/vscode"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceRoot}/client/vscode/dist/**/*.js"],
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "NODE_ENV": "development",
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+        // Enable the Node debug protocol for the TypeScript server:
+        // "TSS_DEBUG": "5859"
+      }
+    },
+    {
+      "name": "Launch VS Code Extension (Desktop; Separate Instance)",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "preLaunchTask": "Build VS Code Extension (Desktop)",
+      "args": [
+        "--user-data-dir=/tmp/vscode-openctx-extension-dev-host",
+        "--profile-temp",
+        "--extensionDevelopmentPath=${workspaceRoot}/client/vscode"
+      ],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceRoot}/client/vscode/dist/**/*.js"],
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Launch VS Code Extension (Web, in Browser)",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "Build VS Code Extension (Web)",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "-C",
+        "${workspaceFolder}/client/vscode",
+        "run",
+        "--silent",
+        "_dev:vscode-test-web"
+      ],
+      "outFiles": ["${workspaceFolder}/client/vscode/dist/**/*.js"]
+    },
+    {
+      "name": "Launch VS Code Extension (Web Extension Host)",
+      "type": "extensionHost",
+      "debugWebWorkerHost": true,
+      "request": "launch",
+      "preLaunchTask": "Build VS Code Extension (Web)",
+      "outFiles": ["${workspaceFolder}/client/vscode/dist/**/*.js"],
+      "args": [
+        "--extensionDevelopmentPath=${workspaceRoot}/client/vscode",
+        "--extensionDevelopmentKind=web"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Current File with Vitest",
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "program": "${workspaceFolder}/node_modules/vitest/vitest.mjs",
+      // ${relativeFile} will guarantee the "current" file, but fileBaseNameNoExtension
+      // can be convenient because running with a file like "graph-section-observer.ts"
+      // (the implementation, not the test) will run the correct tests.
+      "args": ["run", "${fileBasenameNoExtension}"],
+      "smartStep": true
+    }
+  ]
 }

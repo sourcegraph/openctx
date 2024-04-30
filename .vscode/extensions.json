@@ -1,12 +1,12 @@
 {
-    "recommendations": [
-        "sourcegraph.openctx",
-        "sourcegraph.cody-ai",
-        "ecmel.vscode-html-css",
-        "biomejs.biome",
-        "stylelint.vscode-stylelint",
-        "tamasfe.even-better-toml",
-        "unifiedjs.vscode-mdx",
-        "bradlc.vscode-tailwindcss"
-    ]
+  "recommendations": [
+    "sourcegraph.openctx",
+    "sourcegraph.cody-ai",
+    "ecmel.vscode-html-css",
+    "biomejs.biome",
+    "stylelint.vscode-stylelint",
+    "tamasfe.even-better-toml",
+    "unifiedjs.vscode-mdx",
+    "bradlc.vscode-tailwindcss"
+  ]
 }

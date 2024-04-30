@@ -1,19 +1,19 @@
 {
-    "extends": "@sourcegraph/tsconfig",
-    "compilerOptions": {
-        "target": "ESNext",
-        "module": "ESNext",
-        "strict": true,
-        "lib": ["ESNext"],
-        "sourceMap": true,
-        "declaration": true,
-        "declarationMap": true,
-        "skipLibCheck": true,
-        "skipDefaultLibCheck": true,
-        "noErrorTruncation": true,
-        "resolveJsonModule": true,
-        "composite": true,
-        "isolatedModules": true,
-        "outDir": "dist"
-    }
+  "extends": "@sourcegraph/tsconfig",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "strict": true,
+    "lib": ["ESNext"],
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "noErrorTruncation": true,
+    "resolveJsonModule": true,
+    "composite": true,
+    "isolatedModules": true,
+    "outDir": "dist"
+  }
 }

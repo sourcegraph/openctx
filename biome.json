@@ -1,67 +1,67 @@
 {
-    "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-    "organizeImports": {
-        "enabled": true
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "organizeImports": {
+    "enabled": true
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "nursery": {
+        "useExportType": "error",
+        "useImportType": "error",
+        "useGroupedTypeImport": "error",
+        "noUnusedImports": "error",
+        "noUnusedPrivateClassMembers": "error",
+        "noInvalidUseBeforeDeclaration": "error",
+        "noUselessTernary": "error",
+        "noDuplicateJsonKeys": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "off"
+      },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off",
+        "useTemplate": "off"
+      }
     },
-    "linter": {
-        "enabled": true,
-        "rules": {
-            "recommended": true,
-            "nursery": {
-                "useExportType": "error",
-                "useImportType": "error",
-                "useGroupedTypeImport": "error",
-                "noUnusedImports": "error",
-                "noUnusedPrivateClassMembers": "error",
-                "noInvalidUseBeforeDeclaration": "error",
-                "noUselessTernary": "error",
-                "noDuplicateJsonKeys": "error"
-            },
-            "suspicious": {
-                "noExplicitAny": "off"
-            },
-            "style": {
-                "noNonNullAssertion": "off",
-                "noParameterAssign": "off",
-                "useTemplate": "off"
-            }
-        },
-        "ignore": ["client/browser/src/types/webextension-polyfill/index.d.ts"]
-    },
+    "ignore": ["client/browser/src/types/webextension-polyfill/index.d.ts"]
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 4,
+    "lineWidth": 105
+  },
+  "javascript": {
     "formatter": {
-        "indentStyle": "space",
-        "indentWidth": 4,
-        "lineWidth": 105
+      "semicolons": "asNeeded",
+      "quoteStyle": "single",
+      "arrowParentheses": "asNeeded",
+      "trailingComma": "es5"
+    }
+  },
+  "files": {
+    "ignore": ["node_modules/", "out/", "dist/", "testdata/", ".vscode-test/", ".vscode-test-web/"]
+  },
+  "overrides": [
+    {
+      "include": [".vscode/*.json"],
+      "json": {
+        "parser": {
+          "allowComments": true,
+          "allowTrailingCommas": true
+        }
+      }
     },
-    "javascript": {
+    {
+      "include": ["*.json"],
+      "json": {
         "formatter": {
-            "semicolons": "asNeeded",
-            "quoteStyle": "single",
-            "arrowParentheses": "asNeeded",
-            "trailingComma": "es5"
+          "indentWidth": 2,
+          "indentStyle": "space"
         }
-    },
-    "files": {
-        "ignore": ["node_modules/", "out/", "dist/", "testdata/", ".vscode-test/", ".vscode-test-web/"]
-    },
-    "overrides": [
-        {
-            "include": [".vscode/*.json"],
-            "json": {
-                "parser": {
-                    "allowComments": true,
-                    "allowTrailingCommas": true
-                }
-            }
-        },
-        {
-            "include": ["package.json"],
-            "json": {
-                "formatter": {
-                    "indentWidth": 2,
-                    "indentStyle": "space"
-                }
-            }
-        }
-    ]
+      }
+    }
+  ]
 }

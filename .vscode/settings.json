@@ -1,38 +1,38 @@
 {
-    "search.exclude": {
-        "**/node_modules": true,
-        "**/dist": true
-    },
-    "files.exclude": {
-        "**/dist": true,
-        "**/.vscode-test": true,
-        "**/.vscode-test-web": true,
-        "coverage/": true,
-        "pnpm-lock.yaml": true,
-        ".stylelintcache": true
-    },
-    "editor.formatOnSave": true,
-    "npm.packageManager": "pnpm",
-    "npm.runSilent": true,
-    "typescript.preferences.quoteStyle": "single",
-    "typescript.preferences.importModuleSpecifier": "relative",
-    "typescript.format.semicolons": "remove",
-    "typescript.tsc.autoDetect": "off",
-    "typescript.tsdk": "node_modules/typescript/lib",
-    "typescript.preferences.importModuleSpecifierEnding": "auto",
-    "task.allowAutomaticTasks": "on",
-    "biome.enabled": true,
-    "editor.defaultFormatter": "biomejs.biome",
-    "css.lint.unknownAtRules": "ignore",
-    "editor.codeActionsOnSave": {
-        "source.fixAll": "explicit",
-        "source.organizeImports": "never",
-        "source.organizeImports.biome": "explicit"
-    },
-    "[mdx][markdown]": {
-        "editor.insertSpaces": true
-    },
-    "openctx.providers": {
-        // "https://sourcegraph.test:3443/.api/openctx": true
-    }
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true
+  },
+  "files.exclude": {
+    "**/dist": true,
+    "**/.vscode-test": true,
+    "**/.vscode-test-web": true,
+    "coverage/": true,
+    "pnpm-lock.yaml": true,
+    ".stylelintcache": true
+  },
+  "editor.formatOnSave": true,
+  "npm.packageManager": "pnpm",
+  "npm.runSilent": true,
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.semicolons": "remove",
+  "typescript.tsc.autoDetect": "off",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifierEnding": "auto",
+  "task.allowAutomaticTasks": "on",
+  "biome.enabled": true,
+  "editor.defaultFormatter": "biomejs.biome",
+  "css.lint.unknownAtRules": "ignore",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "never",
+    "source.organizeImports.biome": "explicit"
+  },
+  "[mdx][markdown]": {
+    "editor.insertSpaces": true
+  },
+  "openctx.providers": {
+    // "https://sourcegraph.test:3443/.api/openctx": true
+  }
 }
