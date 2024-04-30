@@ -36,6 +36,7 @@ try {
 
 const client = createClient({
     configuration: () => of(config),
+    providerBaseUri: import.meta.url,
     logger: message => console.error('# ' + message),
     makeRange: r => r,
 })

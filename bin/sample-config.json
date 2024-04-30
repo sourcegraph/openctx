@@ -1,9 +1,9 @@
 {
   "enable": true,
-  "debug": false,
+  "debug": true,
   "providers": {
-    "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/hello-world/dist/index.js": true,
-    "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/links/dist/index.js": {
+    "../../provider/hello-world/dist/index.js": true,
+    "../../provider/links/dist/index.js": {
       "links": [
         {
           "title": "My link",

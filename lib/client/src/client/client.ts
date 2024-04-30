@@ -49,6 +49,11 @@ export interface ClientEnv<R extends Range> {
     configuration(resource?: string): ObservableInput<ConfigurationUserInput>
 
     /**
+     * The base URI to use when resolving configured provider URIs.
+     */
+    providerBaseUri?: string
+
+    /**
      * The authentication info for the provider.
      *
      * @param provider The provider URI.
@@ -200,6 +205,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                               : providerCache.getOrCreate(
                                                       { providerUri, authInfo: authInfo ?? undefined },
                                                       {
+                                                          providerBaseUri: env.providerBaseUri,
                                                           logger,
                                                           dynamicImportFromUri: env.dynamicImportFromUri,
                                                           dynamicImportFromSource:
@@ -271,7 +277,10 @@ interface ProviderCacheKey {
 function createProviderPool(): {
     getOrCreate: (
         key: ProviderCacheKey,
-        env: Pick<ClientEnv<any>, 'logger' | 'dynamicImportFromUri' | 'dynamicImportFromSource'>
+        env: Pick<
+            ClientEnv<any>,
+            'providerBaseUri' | 'logger' | 'dynamicImportFromUri' | 'dynamicImportFromSource'
+        >
     ) => ProviderClient
 } {
     function cacheKey(key: ProviderCacheKey): string {
@@ -292,6 +301,7 @@ function createProviderPool(): {
             }
 
             const c = createProviderClient(key.providerUri, {
+                providerBaseUri: env.providerBaseUri,
                 authInfo: key.authInfo,
                 logger: env.logger,
                 dynamicImportFromUri: env.dynamicImportFromUri,
