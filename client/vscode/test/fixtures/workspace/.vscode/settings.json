@@ -1,7 +1,21 @@
 {
   "openctx.enable": true,
   "openctx.debug": true,
+  "cody.debug.enable": true,
+  "cody.debug.verbose": true,
   "openctx.providers": {
+    //"../../../../../../provider/docs/dist/provider.cjs": {
+    //  // "index": "http://localhost:5900/@fs/home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
+    //  // "index": "file:///home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
+    //  "index": "file:///Users/sqs/tmp/octx-provider-docs/sourcegraph-handbook-web-index.json",
+    //},
+    //"../../../../../../provider/hello-world/dist/index.js": true,
+    "../../../../../../provider/google-docs/dist/index.js": {
+      "googleOAuthClientFile": "/Users/sqs/Downloads/client_secret_1234.json",
+      "googleOAuthCredentialsFile": "/Users/sqs/.octx-google-docs-credentials.json"
+    }
+  },
+  "openctx.providers2": {
     // "https://sourcegraph.test:3443/.api/openctx": true,
     // "https://openctx.org/npm/@openctx/provider-hello-world": true,
     "../../../../../../provider/hello-world/dist/index.js": true,

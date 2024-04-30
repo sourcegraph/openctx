@@ -1,0 +1,32 @@
+{
+  "name": "@openctx/provider-google-docs",
+  "version": "0.0.1",
+  "description": "Google Docs context for code AI and editors (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/google-docs"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest",
+    "google-auth": "node --no-warnings=ExperimentalWarning --es-module-specifier-resolution=node --loader ts-node/esm/transpile-only auth.ts"
+  },
+  "dependencies": {
+    "@googleapis/docs": "^3.0.0",
+    "@googleapis/drive": "^8.7.0",
+    "@openctx/provider": "workspace:*",
+    "google-auth-library": "^9.6.3",
+    "open": "^10.0.4",
+    "server-destroy": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/server-destroy": "^1.0.3"
+  }
+}
