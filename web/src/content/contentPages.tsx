@@ -38,7 +38,7 @@ export interface ContentPages {
     fsPath: string
 
     /**
-     * @example () => Object.keys(import.meta.glob('../../../content/docs/*.mdx', { as: 'url' }))
+     * @example () => Object.keys(import.meta.glob('../../../content/docs/*.mdx', { query: '?url' }))
      */
     listContentPagePaths(): string[]
 

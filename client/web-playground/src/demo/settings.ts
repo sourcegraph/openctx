@@ -38,9 +38,9 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
         } satisfies import('@openctx/provider-storybook').Settings,
     }
 
-    const providerModules = import.meta.glob('../../../../provider/*/index.ts', { as: 'url' })
+    const providerModules = import.meta.glob('../../../../provider/*/index.ts', { query: '?url' })
     for (const [path, url] of Object.entries(providerModules)) {
-        const providerUri = new URL(await url(), import.meta.url).toString()
+        const providerUri = new URL((await url()) as string, import.meta.url).toString()
         const settings = providerSettings[path] ?? true
         delete providerSettings[path]
         providerSettings[providerUri] = settings
