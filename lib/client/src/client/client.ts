@@ -1,6 +1,6 @@
-import type { ItemsParams, ProviderSettings } from '@openctx/protocol'
+import type { AnnotationsParams, ItemsParams } from '@openctx/protocol'
 import type { Provider } from '@openctx/provider'
-import type { Range } from '@openctx/schema'
+import type { Item, Range } from '@openctx/schema'
 import { LRUCache } from 'lru-cache'
 import {
     type Observable,
@@ -16,12 +16,15 @@ import {
     of,
     shareReplay,
 } from 'rxjs'
-import { type Item, type ObservableProviderClient, observeItems } from '../api'
 import {
-    type Configuration,
-    type ConfigurationUserInput,
-    configurationFromUserInput,
-} from '../configuration'
+    type Annotation,
+    type ObservableProviderClient,
+    type ObserveOptions,
+    type ProviderClientWithSettings,
+    observeAnnotations,
+    observeItems,
+} from '../api'
+import { type ConfigurationUserInput, configurationFromUserInput } from '../configuration'
 import type { Logger } from '../logger'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient'
 
@@ -105,35 +108,40 @@ export interface AuthInfo {
  */
 export interface Client<R extends Range> {
     /**
-     * Get the items returned by the configured providers for the given file.
+     * Get the items returned by the configured providers.
      *
-     * It is called `firstItems` because it only returns the first items returned by
-     * each provider. It does not continue to listen for changes, as
-     * {@link Client.itemsChanges} does. Using {@link Client.items} is simpler and
-     * does not require use of observables (with a library like RxJS), but it means that the client
-     * needs to manually poll for updated items if freshness is important.
+     * It does not continue to listen for changes, as {@link Client.itemsChanges} does. Using
+     * {@link Client.items} is simpler and does not require use of observables (with a library like
+     * RxJS), but it means that the client needs to manually poll for updated items if freshness is
+     * important.
      */
-    items(params: ItemsParams): Promise<Item<R>[]>
+    items(params: ItemsParams): Promise<Item[]>
 
     /**
-     * Observe OpenCtx items from the configured providers for the given file.
+     * Observe OpenCtx items from the configured providers.
      *
-     * The returned observable streams items as they are received from the providers and
+     * The returned observable streams items as they are received from the providers and continues
+     * passing along any updates until unsubscribed.
+     */
+    itemsChanges(params: ItemsParams): Observable<Item[]>
+
+    /**
+     * Get the annotations returned by the configured providers for the given resource.
+     *
+     * It does not continue to listen for changes, as {@link Client.annotationsChanges} does. Using
+     * {@link Client.annotations} is simpler and does not require use of observables (with a library
+     * like RxJS), but it means that the client needs to manually poll for updated annotations if
+     * freshness is important.
+     */
+    annotations(params: AnnotationsParams): Promise<Annotation<R>[]>
+
+    /**
+     * Observe OpenCtx annotations from the configured providers for the given resource.
+     *
+     * The returned observable streams annotations as they are received from the providers and
      * continues passing along any updates until unsubscribed.
      */
-    itemsChanges(
-        params: ItemsParams,
-        options?: {
-            /**
-             * Emit partial results immediately. If `false`, wait for all providers to return an initial
-             * result before emitting. If the caller is consuming the result as a Promise (with only one
-             * value), this should be `false`.
-             *
-             * @default true
-             */
-            emitPartial?: boolean
-        }
-    ): Observable<Item<R>[]>
+    annotationsChanges(params: AnnotationsParams): Observable<Annotation<R>[]>
 
     /**
      * Dispose of the client and release all resources.
@@ -168,65 +176,72 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
             .catch(() => {})
     }
 
-    const itemsChanges: Client<R>['itemsChanges'] = (
-        params: ItemsParams,
-        { emitPartial = true } = { emitPartial: true }
-    ): Observable<Item<R>[]> => {
-        const configuration: Observable<Configuration> = from(env.configuration(params.uri)).pipe(
-            map(config => {
-                if (!config.enable) {
-                    config = { ...config, providers: {} }
-                }
-                return configurationFromUserInput(config)
-            })
-        )
-
-        interface ProviderClientWithSettings {
-            providerClient: ObservableProviderClient
-            settings: ProviderSettings
-        }
-        const providerClientsWithSettings: Observable<ProviderClientWithSettings[]> = configuration.pipe(
-            mergeMap(configuration =>
-                configuration.providers.length > 0
-                    ? combineLatest(
-                          configuration.providers.map(({ providerUri, settings }) =>
-                              (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
-                                  map(authInfo => ({
-                                      providerClient: env.__mock__?.getProviderClient
-                                          ? env.__mock__.getProviderClient()
-                                          : providerCache.getOrCreate(
-                                                  { providerUri, authInfo: authInfo ?? undefined },
-                                                  {
-                                                      logger,
-                                                      dynamicImportFromUri: env.dynamicImportFromUri,
-                                                      dynamicImportFromSource:
-                                                          env.dynamicImportFromSource,
-                                                  }
-                                              ),
-                                      settings,
-                                  })),
-                                  catchError(error => {
-                                      logger(
-                                          `Error creating provider client for ${providerUri}: ${error}`
-                                      )
-                                      return of(null)
-                                  })
+    function providerClientsWithSettings(
+        ...args: Parameters<typeof env.configuration>
+    ): Observable<ProviderClientWithSettings[]> {
+        return from(env.configuration(...args))
+            .pipe(
+                map(config => {
+                    if (!config.enable) {
+                        config = { ...config, providers: {} }
+                    }
+                    return configurationFromUserInput(config)
+                })
+            )
+            .pipe(
+                mergeMap(configuration =>
+                    configuration.providers.length > 0
+                        ? combineLatest(
+                              configuration.providers.map(({ providerUri, settings }) =>
+                                  (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
+                                      map(authInfo => ({
+                                          providerClient: env.__mock__?.getProviderClient
+                                              ? env.__mock__.getProviderClient()
+                                              : providerCache.getOrCreate(
+                                                      { providerUri, authInfo: authInfo ?? undefined },
+                                                      {
+                                                          logger,
+                                                          dynamicImportFromUri: env.dynamicImportFromUri,
+                                                          dynamicImportFromSource:
+                                                              env.dynamicImportFromSource,
+                                                      }
+                                                  ),
+                                          settings,
+                                      })),
+                                      catchError(error => {
+                                          logger(
+                                              `Error creating provider client for ${providerUri}: ${error}`
+                                          )
+                                          return of(null)
+                                      })
+                                  )
                               )
                           )
-                      )
-                    : of([])
-            ),
+                        : of([])
+                ),
 
-            // Filter out null clients.
-            map(providerClients =>
-                providerClients.filter(
-                    (providerClient): providerClient is ProviderClientWithSettings =>
-                        providerClient !== null
+                // Filter out null clients.
+                map(providerClients =>
+                    providerClients.filter(
+                        (providerClient): providerClient is ProviderClientWithSettings =>
+                            providerClient !== null
+                    )
                 )
             )
-        )
+    }
 
-        return observeItems(providerClientsWithSettings, params, {
+    const itemsChanges = (params: ItemsParams, { emitPartial }: ObserveOptions): Observable<Item[]> => {
+        return observeItems(providerClientsWithSettings(undefined), params, {
+            logger: env.logger,
+            emitPartial,
+        })
+    }
+
+    const annotationsChanges = (
+        params: AnnotationsParams,
+        { emitPartial }: ObserveOptions
+    ): Observable<Annotation<R>[]> => {
+        return observeAnnotations(providerClientsWithSettings(params.uri), params, {
             logger: env.logger,
             makeRange: env.makeRange,
             emitPartial,
@@ -234,10 +249,12 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     }
 
     return {
-        items(params) {
-            return firstValueFrom(itemsChanges(params, { emitPartial: false }))
-        },
-        itemsChanges,
+        items: params =>
+            firstValueFrom(itemsChanges(params, { emitPartial: false }), { defaultValue: [] }),
+        itemsChanges: params => itemsChanges(params, { emitPartial: true }),
+        annotations: params =>
+            firstValueFrom(annotationsChanges(params, { emitPartial: false }), { defaultValue: [] }),
+        annotationsChanges: params => annotationsChanges(params, { emitPartial: true }),
         dispose() {
             for (const sub of subscriptions) {
                 sub.unsubscribe()
@@ -292,5 +309,5 @@ function createProviderPool(): {
  * @internal
  */
 interface ClientMocks {
-    getProviderClient: () => ObservableProviderClient
+    getProviderClient: () => Partial<ObservableProviderClient>
 }

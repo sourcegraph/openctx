@@ -1,24 +1,24 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation } from '@openctx/schema'
 import clsx from 'clsx'
 import type { FunctionComponent } from 'react'
 import { Chip } from './Chip'
 import styles from './ChipList.module.css'
 
 /**
- * A list of OpenCtx items (displayed as "chips").
+ * A list of OpenCtx annotations (displayed as "chips").
  */
 export const ChipList: FunctionComponent<{
-    items: Item[]
+    annotations: Annotation[]
     className?: string
     chipClassName?: string
     popoverClassName?: string
-}> = ({ items, className, chipClassName, popoverClassName }) => {
+}> = ({ annotations, className, chipClassName, popoverClassName }) => {
     return (
         <div className={clsx(styles.list, className)}>
-            {items.map((item, i) => (
+            {annotations.map((ann, i) => (
                 <Chip
-                    key={`u:${item.url ?? i}`}
-                    item={item}
+                    key={`u:${ann.item.url ?? i}`}
+                    annotation={ann}
                     className={chipClassName}
                     popoverClassName={popoverClassName}
                 />

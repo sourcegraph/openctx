@@ -1,8 +1,8 @@
-import { Provider } from '@openctx/provider'
+import type { Provider } from '@openctx/provider'
 
 const provider: Provider = {
     capabilities: () => ({ selector: [{ path: 'foo' }] }),
-    items: () => [],
+    annotations: () => [],
 }
 
 export default provider

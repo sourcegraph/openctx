@@ -1,9 +1,9 @@
-import type { CapabilitiesResult, ItemsResult } from '@openctx/protocol'
+import type { AnnotationsResult, CapabilitiesResult, ItemsResult } from '@openctx/protocol'
 import { LRUCache } from 'lru-cache'
 import type { ProviderTransport } from './createTransport'
 
 export function cachedTransport(provider: ProviderTransport): ProviderTransport {
-    const cache = new LRUCache<string, CapabilitiesResult | ItemsResult>({
+    const cache = new LRUCache<string, CapabilitiesResult | ItemsResult | AnnotationsResult>({
         max: 20,
         ttl: 1000 * 60 * 5, // 5 minutes
     })
@@ -32,6 +32,10 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
             ),
         items: (...args) =>
             cachedMethodCall('items', args, (params, settings) => provider.items(params, settings)),
+        annotations: (...args) =>
+            cachedMethodCall('annotations', args, (params, settings) =>
+                provider.annotations(params, settings)
+            ),
         dispose: () => {
             cache.clear()
             provider.dispose?.()

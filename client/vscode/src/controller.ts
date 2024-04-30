@@ -1,5 +1,15 @@
-import { type Item, type Range, createClient } from '@openctx/client'
-import { type Observable, catchError, combineLatest, from, map, mergeMap, of, tap } from 'rxjs'
+import { type Annotation, type Item, type ItemsParams, type Range, createClient } from '@openctx/client'
+import {
+    type Observable,
+    type TapObserver,
+    catchError,
+    combineLatest,
+    from,
+    map,
+    mergeMap,
+    of,
+    tap,
+} from 'rxjs'
 import * as vscode from 'vscode'
 import { type ExtensionApi, createApi } from './api'
 import { getAuthInfo } from './authInfo'
@@ -13,10 +23,15 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util'
 import { createErrorWaiter } from './util/errorWaiter'
 
 export interface Controller {
-    observeItems(
+    observeItems(params: ItemsParams): Observable<Item[] | null>
+    items(params: ItemsParams): Promise<Item[] | null>
+
+    observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
-    ): Observable<Item<vscode.Range>[] | null>
-    onDidChangeProviders: vscode.Event<void>
+    ): Observable<Annotation<vscode.Range>[] | null>
+    annotations(
+        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
+    ): Promise<Annotation<vscode.Range>[] | null>
 }
 
 export function createController(
@@ -52,7 +67,10 @@ export function createController(
 
     const client = createClient<vscode.Range>({
         configuration: resource => {
-            const scope = resource ? vscode.Uri.parse(resource) : undefined
+            // TODO(sqs): support multi-root somehow. this currently only takes config from the 1st root.
+            const scope = resource
+                ? vscode.Uri.parse(resource)
+                : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
                 map(() => getClientConfiguration(scope))
             )
@@ -68,53 +86,63 @@ export function createController(
                 : undefined,
     })
 
+    const errorTapObserver: Partial<TapObserver<any>> = {
+        next(): void {
+            errorWaiter.gotError(false)
+        },
+        error(): void {
+            // Show an error notification unless we've recently shown one (to avoid annoying
+            // the user).
+            const shouldNotify = errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
+            if (shouldNotify) {
+                showErrorNotification(outputChannel)
+            }
+
+            errorWaiter.gotError(true)
+        },
+    }
+    const errorCatcher = (error: any): Observable<null> => {
+        outputChannel.appendLine(error)
+        return of(null)
+    }
+
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeItems(doc: vscode.TextDocument): Observable<Item<vscode.Range>[] | null> {
-            if (ignoreDoc(doc)) {
-                return of(null)
-            }
-
+        observeItems(params: ItemsParams): Observable<Item[] | null> {
             if (!errorWaiter.ok()) {
                 return of(null)
             }
-
-            return client
-                .itemsChanges(
-                    {
-                        uri: doc.uri.toString(),
-                        content: doc.getText(),
-                    },
-                    {
-                        emitPartial: false, // TODO(sqs): make this not needed so codelens show up as soon as they're ready from a single provider
-                    }
-                )
-                .pipe(
-                    tap({
-                        next(): void {
-                            errorWaiter.gotError(false)
-                        },
-                        error(): void {
-                            // Show an error notification unless we've recently shown one (to avoid annoying
-                            // the user).
-                            const shouldNotify =
-                                errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
-                            if (shouldNotify) {
-                                showErrorNotification(outputChannel)
-                            }
-
-                            errorWaiter.gotError(true)
-                        },
-                    }),
-                    catchError(error => {
-                        outputChannel.appendLine(error)
-                        return of(null)
-                    })
-                )
+            return client.itemsChanges(params).pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        onDidChangeProviders: configOrSecretsChanged.event,
+        async items(params: ItemsParams): Promise<Item[] | null> {
+            if (!errorWaiter.ok()) {
+                return null
+            }
+            return client.items(params)
+        },
+
+        observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
+            if (ignoreDoc(doc) || !errorWaiter.ok()) {
+                return of(null)
+            }
+            return client
+                .annotationsChanges({
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                })
+                .pipe(tap(errorTapObserver), catchError(errorCatcher))
+        },
+        async annotations(doc: vscode.TextDocument): Promise<Annotation<vscode.Range>[] | null> {
+            if (ignoreDoc(doc) || !errorWaiter.ok()) {
+                return null
+            }
+            return client.annotations({
+                uri: doc.uri.toString(),
+                content: doc.getText(),
+            })
+        },
     }
 
     // The UI feature providers (code lens and hover) should stay registered even if the global

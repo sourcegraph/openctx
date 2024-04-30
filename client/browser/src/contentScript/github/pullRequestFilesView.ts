@@ -1,4 +1,4 @@
-import type { Item, ItemsParams } from '@openctx/client'
+import type { Annotation, AnnotationsParams } from '@openctx/client'
 import { createChipList } from '@openctx/ui-standalone'
 import {
     EMPTY,
@@ -13,7 +13,7 @@ import {
 } from 'rxjs'
 import { DEBUG, debugTap } from '../debug'
 import { withDOMElements } from '../detectElements'
-import { LINE_CHIPS_CLASSNAME, itemsByLine, styledChipListParams } from '../openCtxUtil'
+import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openCtxUtil'
 
 /**
  * Inject OpenCtx features into the GitHub pull request files view.
@@ -26,7 +26,7 @@ import { LINE_CHIPS_CLASSNAME, itemsByLine, styledChipListParams } from '../open
  */
 export function injectOnGitHubPullRequestFilesView(
     location: URL,
-    itemsChanges: (params: ItemsParams) => Observable<Item[]>
+    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>
 ): Observable<void> {
     // All GitHub PR file view URLs contain `/pull/` and `/files` in the path.
     if (!location.pathname.includes('/pull/') && !location.pathname.endsWith('/files')) {
@@ -48,10 +48,10 @@ export function injectOnGitHubPullRequestFilesView(
                 diffData.files
                     .flatMap(file => [file.oldFile, file.newFile])
                     .map(file =>
-                        itemsChanges({ content: file.content, uri: `github://${file.path}` }).pipe(
-                            tap(items => {
+                        annotationsChanges({ content: file.content, uri: `github://${file.path}` }).pipe(
+                            tap(anns => {
                                 try {
-                                    redraw(file, items)
+                                    redraw(file, anns)
                                 } catch (error) {
                                     console.error(error)
                                 }
@@ -76,12 +76,12 @@ function getChipListElementsAtEndOfLine(lineEl: HTMLElement): HTMLElement[] {
     )
 }
 
-function redraw(file: DiffViewFileVersionData, items: Item[]): void {
+function redraw(file: DiffViewFileVersionData, anns: Annotation[]): void {
     // TODO(sqs): use line numbers as though they were in the original file, not just the displayed
     // excerpt from the diff.
 
     const lineEls = file.tableEl.querySelectorAll<HTMLElement>(file.codeSelector)
-    for (const { line, items: lineItems } of itemsByLine(items)) {
+    for (const { line, anns: lineItems } of annsByLine(anns)) {
         const lineEl = lineEls[line]
         if (!lineEl) {
             console.error(`could not find lineEl for line ${line} (lineEls.length == ${lineEls.length})`)
@@ -94,7 +94,7 @@ function redraw(file: DiffViewFileVersionData, items: Item[]): void {
 
         const chipList = createChipList(
             styledChipListParams({
-                items: lineItems,
+                annotations: lineItems,
             })
         )
         lineEl.append(chipList)

@@ -1,4 +1,4 @@
-import type { Item } from '@openctx/client'
+import type { Annotation, Item } from '@openctx/client'
 import { TestScheduler } from 'rxjs/testing'
 import { type MockedObject, describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
@@ -22,7 +22,7 @@ vi.mock(
             } as any,
             // biome-ignore lint/complexity/useArrowFunction: mock vscode
             EventEmitter: function (): any {
-                return { event: null }
+                return { fire: vi.fn(), event: null }
             } as any,
             Uri: URI,
             commands: {
@@ -31,14 +31,22 @@ vi.mock(
             window: {
                 createQuickPick: vi.fn(() => ({ onDidAccept: () => {} })),
             },
+            workspace: {
+                onDidCloseTextDocument: vi.fn(),
+            },
         }) satisfies RecursivePartial<typeof vscode>
 )
 
-function fixtureResult(label: string): Item<vscode.Range> {
+function fixtureAnn(label: string): Annotation<vscode.Range> {
     return {
-        title: label.toUpperCase(),
+        uri: 'file:///f',
         range: createRange(0, 0, 0, 1),
+        item: fixtureItem(label),
     }
+}
+
+function fixtureItem(label: string): Item {
+    return { title: label.toUpperCase() }
 }
 
 function createTestProvider(): {
@@ -53,13 +61,13 @@ describe('createCodeLensProvider', () => {
     const testScheduler = (): TestScheduler =>
         new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
-    test('simple', () => {
+    test('simple', async () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeItems.mockImplementation(doc => {
+            controller.observeAnnotations.mockImplementation(doc => {
                 expect(doc).toBe(doc)
-                return cold<Item<vscode.Range>[] | null>('a', { a: [fixtureResult('a')] })
+                return cold<Annotation<vscode.Range>[] | null>('a', { a: [fixtureAnn('a')] })
             })
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
                 a: [
@@ -71,15 +79,63 @@ describe('createCodeLensProvider', () => {
                 ],
             } satisfies Record<string, vscode.CodeLens[] | null>)
         })
+        expect(
+            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken)
+        ).toStrictEqual([
+            {
+                isResolved: true,
+                range: createRange(0, 0, 0, 1),
+                command: { title: 'A', command: 'noop' },
+            },
+        ])
+    })
+
+    test('multiple emissions', async () => {
+        const { controller, provider } = createTestProvider()
+        const doc = mockTextDocument()
+        testScheduler().run(({ cold, expectObservable }): void => {
+            controller.observeAnnotations.mockImplementation(doc => {
+                expect(doc).toBe(doc)
+                return cold<Annotation<vscode.Range>[] | null>('ab', {
+                    a: [fixtureAnn('a')],
+                    b: [fixtureAnn('b')],
+                })
+            })
+            expectObservable(provider.observeCodeLenses(doc)).toBe('ab', {
+                a: [
+                    {
+                        isResolved: true,
+                        range: createRange(0, 0, 0, 1),
+                        command: { title: 'A', command: 'noop' },
+                    },
+                ],
+                b: [
+                    {
+                        isResolved: true,
+                        range: createRange(0, 0, 0, 1),
+                        command: { title: 'B', command: 'noop' },
+                    },
+                ],
+            } satisfies Record<string, vscode.CodeLens[] | null>)
+        })
+        expect(
+            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken)
+        ).toStrictEqual([
+            {
+                isResolved: true,
+                range: createRange(0, 0, 0, 1),
+                command: { title: 'B', command: 'noop' },
+            },
+        ])
     })
 
     test('detail hover', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeItems.mockImplementation(doc =>
-                cold<Item<vscode.Range>[] | null>('a', {
-                    a: [{ title: 'A', ui: { hover: { text: 'D' } } }],
+            controller.observeAnnotations.mockImplementation(doc =>
+                cold<Annotation<vscode.Range>[] | null>('a', {
+                    a: [{ uri: 'file:///f', item: { title: 'A', ui: { hover: { text: 'D' } } } }],
                 })
             )
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
@@ -102,16 +158,19 @@ describe('createCodeLensProvider', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeItems.mockImplementation(doc =>
-                cold<Item<vscode.Range>[] | null>('a', {
+            controller.observeAnnotations.mockImplementation(doc =>
+                cold<Annotation<vscode.Range>[] | null>('a', {
                     a: [
                         {
-                            title: 'A',
-                            url: 'https://example.com',
-                            ui: {
-                                hover: { text: 'D' },
-                                presentationHints: ['prefer-link-over-detail'],
+                            uri: 'file:///f',
+                            item: {
+                                title: 'A',
+                                url: 'https://example.com',
+                                ui: {
+                                    hover: { text: 'D' },
+                                },
                             },
+                            presentationHints: ['prefer-link-over-detail'],
                         },
                     ],
                 })

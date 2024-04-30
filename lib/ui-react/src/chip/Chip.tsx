@@ -1,16 +1,16 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation } from '@openctx/schema'
 import { renderHoverToHTML } from '@openctx/ui-common'
 import type { FunctionComponent } from 'react'
 import { BaseChip } from './BaseChip'
 
 /**
- * A single OpenCtx item, displayed as a "chip".
+ * A single OpenCtx annotation, displayed as a "chip".
  */
 export const Chip: FunctionComponent<{
-    item: Item
+    annotation: Annotation
     className?: string
     popoverClassName?: string
-}> = ({ item, className, popoverClassName }) => {
+}> = ({ annotation: { item }, className, popoverClassName }) => {
     const renderedHover = renderHoverToHTML(item.ui?.hover)
     return (
         <BaseChip

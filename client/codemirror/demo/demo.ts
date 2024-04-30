@@ -28,18 +28,18 @@ const CONTENT = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     .map(n => `console.log("Hello, world #${n}");`)
     .join('\n')
 
-const items = await client.items({ uri: 'file:///foo.js', content: CONTENT })
+const anns = await client.annotations({ uri: 'file:///foo.js', content: CONTENT })
 
 const octxExtension: Extension = [
-    openCtxData(items),
+    openCtxData(anns),
     showOpenCtxDecorations({
         visibility: true,
-        createDecoration(container, { items }) {
+        createDecoration(container, { anns }) {
             const div = document.createElement('div')
             div.style.display = 'flex'
             div.style.gap = '1rem'
 
-            for (const item of items) {
+            for (const { item } of anns) {
                 const el = document.createElement(item.url ? 'a' : 'span')
                 el.innerText = item.title
                 el.title = item.ui?.hover?.text ?? ''

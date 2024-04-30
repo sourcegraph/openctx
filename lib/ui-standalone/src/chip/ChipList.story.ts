@@ -1,13 +1,15 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation } from '@openctx/schema'
 import type { Meta, StoryObj } from '@storybook/html'
 import { createChipList } from './ChipList'
 
-const FIXTURE_ITEMS: Item[] = [
+const FIXTURE_ANNS: Annotation[] = [
     {
-        title: '📘 Docs: CSS in client/web',
+        uri: 'file:///f',
+        item: { title: '📘 Docs: CSS in client/web' },
     },
     {
-        title: '📟 http_request_queue (metric)',
+        uri: 'file:///f',
+        item: { title: '📟 http_request_queue (metric)' },
     },
 ]
 
@@ -30,13 +32,13 @@ export default meta
 export const SingleChip: StoryObj = {
     render: () =>
         createChipList({
-            items: FIXTURE_ITEMS.slice(0, 1),
+            annotations: FIXTURE_ANNS.slice(0, 1),
         }),
 }
 
 export const MultipleChips: StoryObj = {
     render: () =>
         createChipList({
-            items: FIXTURE_ITEMS,
+            annotations: FIXTURE_ANNS,
         }),
 }

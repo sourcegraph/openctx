@@ -28,6 +28,12 @@
         },
         {
             "$ref": "#/definitions/ItemsResult"
+        },
+        {
+            "$ref": "#/definitions/AnnotationsParams"
+        },
+        {
+            "$ref": "#/definitions/AnnotationsResult"
         }
     ],
     "definitions": {
@@ -119,6 +125,24 @@
         "ItemsParams": {
             "type": "object",
             "additionalProperties": false,
+            "required": [],
+            "properties": {
+                "query": {
+                    "description": "A search query that is interpreted by providers to filter the items in the result set.",
+                    "type": "string"
+                }
+            }
+        },
+        "ItemsResult": {
+            "type": "array",
+            "items": {
+                "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
+            },
+            "tsType": "Item[]"
+        },
+        "AnnotationsParams": {
+            "type": "object",
+            "additionalProperties": false,
             "required": ["uri", "content"],
             "properties": {
                 "uri": {
@@ -132,12 +156,12 @@
                 }
             }
         },
-        "ItemsResult": {
+        "AnnotationsResult": {
             "type": "array",
             "items": {
-                "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
+                "$ref": "../../schema/src/openctx.schema.json#/definitions/Annotation"
             },
-            "tsType": "Item[]"
+            "tsType": "Annotation[]"
         }
     }
 }

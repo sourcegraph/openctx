@@ -1,10 +1,10 @@
-import type { Item, ItemsParams } from '@openctx/client'
+import type { Annotation, AnnotationsParams } from '@openctx/client'
 import { createChipList } from '@openctx/ui-standalone'
 import { EMPTY, Observable, combineLatest, debounceTime, map, mergeMap, startWith, tap } from 'rxjs'
 import { toLineRangeStrings } from '../../shared/util/toLineRangeStrings'
 import { DEBUG, debugTap } from '../debug'
 import { withDOMElement } from '../detectElements'
-import { LINE_CHIPS_CLASSNAME, itemsByLine, styledChipListParams } from '../openCtxUtil'
+import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openCtxUtil'
 
 /**
  * Inject OpenCtx features into the GitHub code view.
@@ -16,7 +16,7 @@ import { LINE_CHIPS_CLASSNAME, itemsByLine, styledChipListParams } from '../open
  */
 export function injectOnGitHubCodeView(
     location: URL,
-    itemsChanges: (params: ItemsParams) => Observable<Item[]>
+    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>
 ): Observable<void> {
     // All GitHub code view URLs contain `/blob/` in the path. (But not all URLs with `/blob/` are code
     // views, so we still need to check for the presence of DOM elements below. For example, there
@@ -48,7 +48,7 @@ export function injectOnGitHubCodeView(
             const fileUri = `github://github.com/${githubInitialPath}`
 
             return combineLatest([
-                itemsChanges({ content, uri: fileUri }),
+                annotationsChanges({ content, uri: fileUri }),
                 significantCodeViewChanges.pipe(
                     debounceTime(200),
                     startWith(undefined),
@@ -60,12 +60,12 @@ export function injectOnGitHubCodeView(
                     })
                 ),
             ]).pipe(
-                tap(([items]) => {
+                tap(([anns]) => {
                     if (DEBUG) {
                         console.count('redraw')
                         console.time('redraw')
                     }
-                    redraw(items)
+                    redraw(anns)
                     if (DEBUG) {
                         console.timeEnd('redraw')
                     }
@@ -76,7 +76,7 @@ export function injectOnGitHubCodeView(
     )
 }
 
-function redraw(items: Item[]): void {
+function redraw(anns: Annotation[]): void {
     // TODO(sqs): optimize this by only redrawing changed chips
 
     const oldChips = document.querySelectorAll(`.${LINE_CHIPS_CLASSNAME}`)
@@ -84,7 +84,7 @@ function redraw(items: Item[]): void {
         oldChip.remove()
     }
 
-    const byLine = itemsByLine(items)
+    const byLine = annsByLine(anns)
 
     // TODO(sqs): switch instead to looping over byLine so we only do work on lines that have
     // items on them.
@@ -100,9 +100,9 @@ function redraw(items: Item[]): void {
         }
         const line = parseInt(lineNumberStr, 10) - 1
 
-        const lineItems = byLine.find(i => i.line === line)?.items
-        if (lineItems !== undefined) {
-            addChipsToCodeRow(line, lineItems)
+        const lineAnns = byLine.find(i => i.line === line)?.anns
+        if (lineAnns !== undefined) {
+            addChipsToCodeRow(line, lineAnns)
 
             try {
                 // Need to set z-index or else the chips won't be hoverable or clickable because the
@@ -117,12 +117,12 @@ function redraw(items: Item[]): void {
         }
     }
 
-    function addChipsToCodeRow(line: number, items: Item[]): void {
+    function addChipsToCodeRow(line: number, anns: Annotation[]): void {
         const lineEl = document.querySelector(`.react-file-line[data-line-number="${line + 1}"]`)
         if (lineEl) {
             const chipList = createChipList(
                 styledChipListParams({
-                    items,
+                    annotations: anns,
                 })
             )
             lineEl.append(chipList)

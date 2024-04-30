@@ -4,16 +4,14 @@
     "title": "Schema",
     "description": "Metadata about code",
     "allowComments": true,
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-        "items": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/Item"
-            }
+    "oneOf": [
+        {
+            "$ref": "#/definitions/Item"
+        },
+        {
+            "$ref": "#/definitions/Annotation"
         }
-    },
+    ],
     "definitions": {
         "Item": {
             "description": "An item contains contextual information relevant to a resource (or a range within a resource).",
@@ -37,10 +35,6 @@
                 "ai": {
                     "description": "Information from the item intended for consumption by AI, not humans.",
                     "$ref": "#/definitions/AssistantInfo"
-                },
-                "range": {
-                    "description": "The range in the resource that this item applies to. If not set, the item applies to the entire resource.",
-                    "$ref": "#/definitions/Range"
                 }
             }
         },
@@ -63,16 +57,6 @@
                             "type": "string"
                         }
                     }
-                },
-                "presentationHints": {
-                    "description": "Hints about the best way to present this item. Different clients interpret hints differently because they have different user interfaces.",
-                    "type": "array",
-                    "items": {
-                        "title": "PresentationHint",
-                        "description": "A hint about how to best present an item to the human in the client's user interface.\n\n- `prefer-link-over-detail`: Prefer to show the item as a link over showing the detail text, if the client does not cleanly support doing both.",
-                        "type": "string",
-                        "enum": ["prefer-link-over-detail"]
-                    }
                 }
             }
         },
@@ -84,6 +68,36 @@
                 "content": {
                     "description": "Text content for AI to consume.",
                     "type": "string"
+                }
+            }
+        },
+        "Annotation": {
+            "description": "An annotation attaches an Item to a range in a document.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["uri", "item"],
+            "properties": {
+                "uri": {
+                    "description": "The URI of the document.",
+                    "type": "string",
+                    "format": "uri"
+                },
+                "range": {
+                    "description": "The range in the resource that this item applies to. If not set, the item applies to the entire resource.",
+                    "$ref": "#/definitions/Range"
+                },
+                "item": {
+                    "$ref": "#/definitions/Item"
+                },
+                "presentationHints": {
+                    "description": "Hints about the best way to present this annotation. Different clients interpret hints differently because they have different user interfaces.",
+                    "type": "array",
+                    "items": {
+                        "title": "PresentationHint",
+                        "description": "A hint about how to best present an annotation to the human in the client's user interface.\n\n- `prefer-link-over-detail`: Prefer to show the item as a link over showing the detail text, if the client does not cleanly support doing both.",
+                        "type": "string",
+                        "enum": ["prefer-link-over-detail"]
+                    }
                 }
             }
         },

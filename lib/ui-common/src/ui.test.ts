@@ -1,39 +1,45 @@
 import { describe, expect, test } from 'vitest'
-import { prepareItemsForPresentation } from './ui'
+import { prepareAnnotationsForPresentation } from './ui'
 
-describe('prepareItemsForPresentation', () => {
+describe('prepareAnnotationsForPresentation', () => {
     test('sorts', () => {
         expect(
-            prepareItemsForPresentation([
+            prepareAnnotationsForPresentation([
                 {
-                    title: '📟 http_request_reqs (metric 1)',
+                    uri: 'file:///f',
                     range: {
                         start: { line: 3, character: 4 },
                         end: { line: 5, character: 6 },
                     },
+                    item: { title: '1' },
                 },
                 {
-                    title: '📟 http_request_queue (metric 2)',
+                    uri: 'file:///f',
+
                     range: {
                         start: { line: 2, character: 4 },
                         end: { line: 2, character: 6 },
                     },
+                    item: { title: '2' },
                 },
             ])
-        ).toEqual<ReturnType<typeof prepareItemsForPresentation>>([
+        ).toEqual<ReturnType<typeof prepareAnnotationsForPresentation>>([
             {
-                title: '📟 http_request_queue (metric 2)',
+                uri: 'file:///f',
+
                 range: {
                     start: { line: 2, character: 4 },
                     end: { line: 2, character: 6 },
                 },
+                item: { title: '2' },
             },
             {
-                title: '📟 http_request_reqs (metric 1)',
+                uri: 'file:///f',
                 range: {
                     start: { line: 3, character: 4 },
                     end: { line: 5, character: 6 },
                 },
+                item: { title: '1' },
             },
         ])
     })

@@ -15,8 +15,8 @@ export type ProviderTransport = {
     // Make the Provider methods all async (i.e., so they return only `Promise<T>` not `T |
     // Promise<T>`).
     [K in Exclude<keyof Provider, 'dispose'>]: (
-        ...args: Parameters<Provider[K]>
-    ) => Promise<Awaited<ReturnType<Provider[K]>>>
+        ...args: Parameters<NonNullable<Provider[K]>>
+    ) => Promise<Awaited<ReturnType<NonNullable<Provider[K]>>>>
 } & { dispose?(): void }
 
 export interface ProviderTransportOptions

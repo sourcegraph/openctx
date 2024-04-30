@@ -4,7 +4,9 @@ import type { Controller } from './controller'
 export function createMockController(): MockedObject<Controller> {
     return {
         observeItems: vi.fn(),
-        onDidChangeProviders: vi.fn(),
+        items: vi.fn(),
+        observeAnnotations: vi.fn(),
+        annotations: vi.fn(),
     }
 }
 

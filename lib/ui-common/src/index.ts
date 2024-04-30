@@ -1,2 +1,5 @@
 export { renderHoverToHTML } from './hover'
-export { prepareItemsForPresentation, type ItemWithRichRange } from './ui'
+export {
+    prepareAnnotationsForPresentation,
+    type AnnotationWithRichRange,
+} from './ui'

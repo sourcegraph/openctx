@@ -1,18 +1,18 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation } from '@openctx/schema'
 import clsx from 'clsx'
 import { createChip } from './Chip'
 import styles from './ChipList.module.css'
 
 /**
- * A list of OpenCtx chips.
+ * A list of OpenCtx annotations (displayed as "chips").
  */
 export function createChipList({
-    items,
+    annotations,
     className,
     chipClassName,
     popoverClassName,
 }: {
-    items: Item[]
+    annotations: Annotation[]
     className?: string
     chipClassName?: string
     popoverClassName?: string
@@ -20,8 +20,8 @@ export function createChipList({
     const el = document.createElement('div')
     el.className = clsx(styles.list, className)
 
-    for (const item of items) {
-        el.append(createChip({ item, className: chipClassName, popoverClassName }))
+    for (const ann of annotations) {
+        el.append(createChip({ annotation: ann, className: chipClassName, popoverClassName }))
     }
 
     return el

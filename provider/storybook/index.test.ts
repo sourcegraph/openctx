@@ -1,4 +1,4 @@
-import type { ItemsResult } from '@openctx/provider'
+import type { AnnotationsResult } from '@openctx/provider'
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 import storybook, { __test__, type Settings } from './index'
@@ -17,7 +17,7 @@ describe('storybook', () => {
     afterEach(() => fetchMocker.resetMocks())
     afterAll(() => fetchMocker.disableMocks())
 
-    describe('items', () => {
+    describe('annotations', () => {
         test('story file', async () => {
             __test__.suppressConsoleLog = true
             __test__.skipRewriteForOEmbed = true
@@ -36,7 +36,7 @@ describe('storybook', () => {
                 ['404 Not Found', { status: 404 }]
             )
             expect(
-                await storybook.items(
+                await storybook.annotations?.(
                     {
                         uri: 'file:///a/b.story.tsx',
                         content: `
@@ -51,27 +51,33 @@ export const Bar: Story = {}
                     },
                     SETTINGS
                 )
-            ).toEqual<ItemsResult>([
+            ).toEqual<AnnotationsResult>([
                 {
-                    title: '🖼️ Storybook: a/b/Foo',
-                    url: 'https://main--abc123.chromatic.com/?path=%2Fstory%2Fa-b--foo',
-                    ui: {
-                        hover: {
-                            markdown:
-                                '<img src="https://example.com/thumbnail.png" alt="chromatic-oembed-image" width="400" height="300" />',
-                        },
-                    },
+                    uri: 'file:///a/b.story.tsx',
                     range: {
                         start: { line: 5, character: 13 },
                         end: { line: 5, character: 16 },
                     },
+                    item: {
+                        title: '🖼️ Storybook: a/b/Foo',
+                        url: 'https://main--abc123.chromatic.com/?path=%2Fstory%2Fa-b--foo',
+                        ui: {
+                            hover: {
+                                markdown:
+                                    '<img src="https://example.com/thumbnail.png" alt="chromatic-oembed-image" width="400" height="300" />',
+                            },
+                        },
+                    },
                 },
                 {
-                    title: '🖼️ Storybook: a/b/Bar',
-                    url: 'https://main--abc123.chromatic.com/?path=%2Fstory%2Fa-b--bar',
+                    uri: 'file:///a/b.story.tsx',
                     range: {
                         start: { line: 7, character: 13 },
                         end: { line: 7, character: 16 },
+                    },
+                    item: {
+                        title: '🖼️ Storybook: a/b/Bar',
+                        url: 'https://main--abc123.chromatic.com/?path=%2Fstory%2Fa-b--bar',
                     },
                 },
             ])

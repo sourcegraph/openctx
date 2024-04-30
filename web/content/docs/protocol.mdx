@@ -23,14 +23,15 @@ A provider is specified by a URL that responds to HTTP POST requests.
 
 Providers are stateless.
 
-Providers must implement 2 API methods:
+Providers implement the following API methods:
 
-- [Capabilities](#capabilities)
-- [Items](#items)
+- [Capabilities](#capabilities): determine the provider's capabilities (required)
+- [Items](#items): search for documents and other content from the provider
+- [Annotations](#annotations): get annotations for a code file
 
 ### Capabilities
 
-The capabilities request is sent by the client to the provider to retrieve information about the provider's capabilities and when it should be invoked. This avoids unnecessary invocations of the provider on resources where it would not have any items.
+The capabilities request is sent by the client to the provider to retrieve information about the provider's capabilities and when it should be invoked. This avoids unnecessary invocations of the provider on resources where it would not have any results.
 
 **Request:** `{ method: "capabilities", params: CapabilitiesParams, settings?: object }`
 
@@ -119,17 +120,12 @@ interface Item {
    * Information from the item intended for consumption by AI, not humans.
    */
   ai?: AssistantInfo
-
-  /**
-   * The range in the resource that this item applies to. If not set, the item applies to the entire resource.
-   */
-  range?: { start: Position; end: Position }
 }
 
 /**
  * The human user interface of the item, with information for human consumption.
  */
-export interface UserInterface {
+interface UserInterface {
   /**
    * Additional information for the human, shown in a tooltip-like widget when they interact with the item.
    */
@@ -139,7 +135,7 @@ export interface UserInterface {
 /**
  * Information from the item intended for consumption by AI, not humans.
  */
-export interface AssistantInfo {
+interface AssistantInfo {
   /**
    * Text content for AI to consume.
    */
@@ -154,3 +150,42 @@ interface Position {
   character: number
 }
 ```
+
+### Annotations
+
+The annotations request is sent by the client to the provider to fetch a list of annotations for a resource (such as a code file).
+
+**Request:** `{ method: "annotations", params: AnnotationsParams, settings?: object }`
+
+```typescript
+interface AnnotationsParams {
+  /** The resource's URI (e.g., `file:///home/alice/foo.js`). **/
+  uri: string
+
+  /** The resource's content. **/
+  content: string
+}
+```
+
+**Response:** `{ result: AnnotationsResult }` or `{ error: { code, integer, data? } }`
+
+```typescript
+type AnnotationsResult = Annotation[]
+
+/**
+ * An annotation attaches an Item to a range in a document.
+ */
+interface Annotation {
+  /** The URI of the document. */
+  uri: string
+
+  /**
+   * The range in the resource that this item applies to. If not set, the item applies to the entire resource.
+   */
+  range?: { start: Position; end: Position }
+
+  /** The item containing the content to annotate at the range. */
+  item: Item
+}
+```
+

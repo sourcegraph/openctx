@@ -1,4 +1,4 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation, Item } from '@openctx/schema'
 /**
  * OpenCtx client/provider protocol
  */
@@ -11,8 +11,11 @@ export type Protocol =
     | CapabilitiesResult
     | ItemsParams
     | ItemsResult
+    | AnnotationsParams
+    | AnnotationsResult
 export type CapabilitiesParams = Record<string, never>
 export type ItemsResult = Item[]
+export type AnnotationsResult = Annotation[]
 
 export interface RequestMessage {
     method: string
@@ -60,6 +63,12 @@ export interface Selector {
     contentContains?: string
 }
 export interface ItemsParams {
+    /**
+     * A search query that is interpreted by providers to filter the items in the result set.
+     */
+    query?: string
+}
+export interface AnnotationsParams {
     /**
      * The resource's URI.
      */

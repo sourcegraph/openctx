@@ -1,4 +1,4 @@
-import type { Item } from '@openctx/schema'
+import type { Annotation } from '@openctx/schema'
 import type { Meta, StoryObj } from '@storybook/html'
 import { createChip } from './Chip'
 
@@ -18,26 +18,41 @@ const meta: Meta = {
 
 export default meta
 
-const FIXTURE_ITEM: Item = {
-    title: '📘 Docs: CSS in client/web',
+const FIXTURE_ANN: Annotation = {
+    uri: 'file:///f',
+    item: {
+        title: '📘 Docs: CSS in client/web',
+    },
 }
 
-export const Text: StoryObj = { render: () => createChip({ item: { ...FIXTURE_ITEM } }) }
+export const Text: StoryObj = { render: () => createChip({ annotation: { ...FIXTURE_ANN } }) }
 
 export const Link: StoryObj = {
-    render: () => createChip({ item: { ...FIXTURE_ITEM, url: 'https://example.com' } }),
+    render: () =>
+        createChip({
+            annotation: { ...FIXTURE_ANN, item: { ...FIXTURE_ANN.item, url: 'https://example.com' } },
+        }),
 }
 
 export const Detail: StoryObj = {
-    render: () => createChip({ item: { ...FIXTURE_ITEM, ui: { hover: { text: 'View doc page' } } } }),
+    render: () =>
+        createChip({
+            annotation: {
+                ...FIXTURE_ANN,
+                item: { ...FIXTURE_ANN.item, ui: { hover: { text: 'View doc page' } } },
+            },
+        }),
 }
 
 export const Markdown: StoryObj = {
     render: () =>
         createChip({
-            item: {
-                ...FIXTURE_ITEM,
-                ui: { hover: { markdown: 'Status: **active**', text: 'Status: active' } },
+            annotation: {
+                ...FIXTURE_ANN,
+                item: {
+                    ...FIXTURE_ANN.item,
+                    ui: { hover: { markdown: 'Status: **active**', text: 'Status: active' } },
+                },
             },
         }),
 }
@@ -45,12 +60,15 @@ export const Markdown: StoryObj = {
 export const Image: StoryObj = {
     render: () =>
         createChip({
-            item: {
-                ...FIXTURE_ITEM,
-                ui: {
-                    hover: {
-                        markdown:
-                            '<img src="https://lh3.googleusercontent.com/d_S5gxu_S1P6NR1gXeMthZeBzkrQMHdI5uvXrpn3nfJuXpCjlqhLQKH_hbOxTHxFhp5WugVOEcl4WDrv9rmKBDOMExhKU5KmmLFQVg" alt="Google logo" width=512 height=300 />',
+            annotation: {
+                ...FIXTURE_ANN,
+                item: {
+                    ...FIXTURE_ANN.item,
+                    ui: {
+                        hover: {
+                            markdown:
+                                '<img src="https://lh3.googleusercontent.com/d_S5gxu_S1P6NR1gXeMthZeBzkrQMHdI5uvXrpn3nfJuXpCjlqhLQKH_hbOxTHxFhp5WugVOEcl4WDrv9rmKBDOMExhKU5KmmLFQVg" alt="Google logo" width=512 height=300 />',
+                        },
                     },
                 },
             },

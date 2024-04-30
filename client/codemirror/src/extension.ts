@@ -1,6 +1,6 @@
 import { type Extension, Facet } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import type { Item } from '@openctx/client'
+import type { Annotation } from '@openctx/client'
 import { openCtxWidgets } from './blockWidget'
 
 export interface OpenCtxDecorationsConfig {
@@ -12,7 +12,7 @@ export interface OpenCtxDecorationsConfig {
              */
             indent: string | undefined
 
-            items: Item[]
+            anns: Annotation[]
         }
     ) => { destroy?: () => void }
 
@@ -29,14 +29,14 @@ export function showOpenCtxDecorations(config: OpenCtxDecorationsConfig): Extens
 /**
  * Provide OpenCtx data.
  */
-export function openCtxData(data: Item[] | undefined): Extension {
+export function openCtxData(data: Annotation[] | undefined): Extension {
     return data ? openCtxDataFacet.of(data) : []
 }
 
 /**
  * Facet for OpenCtx data.
  */
-export const openCtxDataFacet = Facet.define<Item[], Item[]>({
+export const openCtxDataFacet = Facet.define<Annotation[], Annotation[]>({
     combine(values) {
         return values.flat()
     },

@@ -1,7 +1,7 @@
 import { type EditorState, type Extension, RangeSetBuilder } from '@codemirror/state'
 import { Decoration, type DecorationSet, EditorView, WidgetType } from '@codemirror/view'
-import type { Item } from '@openctx/client'
-import { prepareItemsForPresentation } from '@openctx/ui-common'
+import type { Annotation } from '@openctx/client'
+import { prepareAnnotationsForPresentation } from '@openctx/ui-common'
 import deepEqual from 'deep-equal'
 import { type OpenCtxDecorationsConfig, openCtxDataFacet } from './extension'
 
@@ -10,7 +10,7 @@ class BlockWidget extends WidgetType {
     private decoration: ReturnType<OpenCtxDecorationsConfig['createDecoration']> | undefined
 
     constructor(
-        private readonly items: Item[],
+        private readonly anns: Annotation[],
         private readonly indent: string | undefined,
         private readonly config: OpenCtxDecorationsConfig
     ) {
@@ -18,7 +18,7 @@ class BlockWidget extends WidgetType {
     }
 
     public eq(other: BlockWidget): boolean {
-        return this.config.visibility === other.config.visibility && deepEqual(this.items, other.items)
+        return this.config.visibility === other.config.visibility && deepEqual(this.anns, other.anns)
     }
 
     public toDOM(): HTMLElement {
@@ -26,7 +26,7 @@ class BlockWidget extends WidgetType {
             this.container = document.createElement('div')
             this.decoration = this.config.createDecoration(this.container, {
                 indent: this.indent,
-                items: this.items,
+                anns: this.anns,
             })
         }
         return this.container
@@ -42,30 +42,30 @@ class BlockWidget extends WidgetType {
 
 function computeDecorations(
     state: EditorState,
-    items: Item[],
+    anns: Annotation[],
     config: OpenCtxDecorationsConfig
 ): DecorationSet {
     const builder = new RangeSetBuilder<Decoration>()
 
-    const itemsByLine: { line: number; items: Item[] }[] = []
-    for (const item of prepareItemsForPresentation(items)) {
-        let cur = itemsByLine.at(-1)
-        const startLine = item.range?.start.line ?? 0
+    const annsByLine: { line: number; anns: Annotation[] }[] = []
+    for (const ann of prepareAnnotationsForPresentation(anns)) {
+        let cur = annsByLine.at(-1)
+        const startLine = ann.range?.start.line ?? 0
         if (!cur || cur.line !== startLine) {
-            cur = { line: startLine, items: [] }
-            itemsByLine.push(cur)
+            cur = { line: startLine, anns: [] }
+            annsByLine.push(cur)
         }
-        cur.items.push(item)
+        cur.anns.push(ann)
     }
 
-    for (const { line: lineNum, items } of itemsByLine) {
+    for (const { line: lineNum, anns } of annsByLine) {
         const line = state.doc.line(lineNum + 1)
         const indent = line.text.match(/^\s*/)?.[0]
         builder.add(
             line.from,
             line.from,
             Decoration.widget({
-                widget: new BlockWidget(items, indent, config),
+                widget: new BlockWidget(anns, indent, config),
             })
         )
     }

@@ -5,17 +5,31 @@ export const info = {
 
 # Creating a provider
 
-An OpenCtx provider is just an HTTP server that implements the [provider API](protocol.mdx#provider-api) and is available at any URL.
+Providers can be implemented:
+
+- as an HTTP endpoint
+- as a JavaScript file (with a `default` export)
+
+## HTTP providers
+
+An OpenCtx provider can be implemented as an HTTP server that implements the [provider API](protocol.mdx#provider-api) and is available at any URL.
+
+## JavaScript providers
 
 For convenience, you can also just bundle and publish a `.js` file that implements the simple `@openctx/provider` TypeScript API (as a default export):
 
 ```typescript
-import type { ItemsParams, ItemsResult, CapabilitiesParams, CapabilitiesResult, Provider } from '@openctx/provider'
+import type {
+  AnnotationsParams, AnnotationsResult,
+  CapabilitiesParams, CapabilitiesResult,
+  ItemsParams, ItemsResult, Provider,
+} from '@openctx/provider'
 
 export default {
   capabilities(params: CapabilitiesParams): Promise<CapabilitiesResult> { /* ... */ }
   items(params: ItemsParams): Promise<ItemsResult> { /* ... */ }
+  annotations(params: AnnotationsParams): Promise<AnnotationsResult> { /*... */ }
 } satisfies Provider
 ```
 
-Then use the URL (`file://` or `https://`) to that `.js` file. This way, you don't need to deploy a public HTTP server for the provider. See the [playground](/playground) for examples.
+Then use the URL (`file://` or `https://`) to that `.js` file. This way, you don't need to deploy a public HTTP server for the provider. See the [playground](/playground) for live examples.

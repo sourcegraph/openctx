@@ -9,7 +9,7 @@ import { compile as compileJSONSchema } from 'json-schema-to-typescript'
 
 async function generateSchema(schemaPath: string, preamble?: string): Promise<void> {
     const schema = await readFile(schemaPath, 'utf8')
-    const types = await compileJSONSchema(JSON.parse(schema), 'settings.schema', {
+    const types = await compileJSONSchema(JSON.parse(schema), '', {
         bannerComment: '', // no lint disable lines
         cwd: path.dirname(schemaPath),
         additionalProperties: false,

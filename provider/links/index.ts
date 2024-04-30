@@ -1,4 +1,6 @@
 import {
+    type AnnotationsParams,
+    type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
     type ItemsParams,
@@ -67,6 +69,20 @@ const links: Provider<Settings> = {
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
+        return (
+            settings.links
+                ?.filter(({ pattern }) => !pattern)
+                .map(({ title, url, description, type }) => ({
+                    title,
+                    url,
+                    ui: {
+                        hover: description ? { text: description } : undefined,
+                    },
+                })) ?? []
+        )
+    },
+
+    annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
         const compiledPatterns:
             | (Pick<LinkPattern, 'title' | 'url' | 'description' | 'type'> & {
                   pattern?: RegExp
@@ -79,7 +95,7 @@ const links: Provider<Settings> = {
         }))
 
         const lines = params.content.split(/\r?\n/)
-        const items: ItemsResult = []
+        const anns: AnnotationsResult = []
         for (const { title, url, description, type, matchPath, pattern } of compiledPatterns || []) {
             if (!matchPath(new URL(params.uri).pathname)) {
                 continue
@@ -87,23 +103,26 @@ const links: Provider<Settings> = {
 
             const ranges = matchResults(pattern, lines)
             for (const { range, groups } of ranges) {
-                items.push({
-                    title: `${type === 'docs' ? '📘 Docs: ' : ''}${interpolate(title, groups)}`,
-                    url: interpolate(url, groups),
-                    ui: description
-                        ? {
-                              hover: {
-                                  markdown: interpolate(description, groups),
-                                  text: interpolate(description, groups),
-                              },
-                          }
-                        : undefined,
+                anns.push({
+                    uri: params.uri,
                     range,
+                    item: {
+                        title: `${type === 'docs' ? '📘 Docs: ' : ''}${interpolate(title, groups)}`,
+                        url: interpolate(url, groups),
+                        ui: description
+                            ? {
+                                  hover: {
+                                      markdown: interpolate(description, groups),
+                                      text: interpolate(description, groups),
+                                  },
+                              }
+                            : undefined,
+                    },
                 })
             }
         }
 
-        return items
+        return anns
     },
 }
 

@@ -1,5 +1,5 @@
-import { type ItemWithRichRange, prepareItemsForPresentation } from '@openctx/ui-common'
-import { type Observable, firstValueFrom, map } from 'rxjs'
+import { type AnnotationWithRichRange, prepareAnnotationsForPresentation } from '@openctx/ui-common'
+import { type Observable, type Subscription, firstValueFrom, map, shareReplay } from 'rxjs'
 import * as vscode from 'vscode'
 import type { Controller } from '../../controller'
 
@@ -16,22 +16,55 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
     const changeCodeLenses = new vscode.EventEmitter<void>()
     disposables.push(changeCodeLenses)
 
-    disposables.push(controller.onDidChangeProviders(() => changeCodeLenses.fire()))
+    const codeLensByDoc = new Map<
+        string /* uri */,
+        { observable: Observable<CodeLens[]>; subscription: Subscription }
+    >()
+    disposables.push(
+        vscode.workspace.onDidCloseTextDocument(doc => {
+            const entry = codeLensByDoc.get(doc.uri.toString())
+            if (entry) {
+                entry.subscription.unsubscribe()
+                codeLensByDoc.delete(doc.uri.toString())
+            }
+        })
+    )
+    disposables.push({
+        dispose: () => {
+            for (const [, { subscription }] of codeLensByDoc) {
+                subscription.unsubscribe()
+            }
+            codeLensByDoc.clear()
+        },
+    })
 
     const provider = {
         onDidChangeCodeLenses: changeCodeLenses.event,
         observeCodeLenses(doc: vscode.TextDocument): Observable<CodeLens[]> {
-            return controller
-                .observeItems(doc)
-                .pipe(
-                    map(items =>
-                        prepareItemsForPresentation<vscode.Range>(items ?? []).map(item =>
-                            itemCodeLens(doc, item, showHover)
-                        )
+            const entry = codeLensByDoc.get(doc.uri.toString())
+            if (entry) {
+                return entry.observable
+            }
+
+            const observable = controller.observeAnnotations(doc).pipe(
+                map(anns =>
+                    prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
+                        annotationCodeLens(doc, item, showHover)
                     )
-                )
+                ),
+                shareReplay({ bufferSize: 1, refCount: true })
+            )
+            const subscription = observable.subscribe({
+                next: () => changeCodeLenses.fire(),
+                error: () => changeCodeLenses.fire(),
+                complete: () => changeCodeLenses.fire(),
+            })
+
+            codeLensByDoc.set(doc.uri.toString(), { observable, subscription })
+
+            return observable
         },
-        async provideCodeLenses(doc: vscode.TextDocument): Promise<CodeLens[]> {
+        provideCodeLenses(doc: vscode.TextDocument): Promise<CodeLens[]> {
             return firstValueFrom(provider.observeCodeLenses(doc), { defaultValue: [] })
         },
         dispose() {
@@ -44,20 +77,20 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
 }
 
 /** Create a code lens for a single item. */
-function itemCodeLens(
+function annotationCodeLens(
     doc: vscode.TextDocument,
-    item: ItemWithRichRange<vscode.Range>,
+    ann: AnnotationWithRichRange<vscode.Range>,
     showHover: ReturnType<typeof createShowHoverCommand>
 ): CodeLens {
-    const range = item.range ?? new vscode.Range(0, 0, 0, 0)
+    const range = ann.range ?? new vscode.Range(0, 0, 0, 0)
     return {
         range,
         command: {
-            title: item.title,
-            ...(item.ui?.hover && !item.ui.presentationHints?.includes('prefer-link-over-detail')
+            title: ann.item.title,
+            ...(ann.item.ui?.hover && !ann.presentationHints?.includes('prefer-link-over-detail')
                 ? showHover.createCommandArgs(doc.uri, range.start)
-                : item.url
-                  ? openWebBrowserCommandArgs(item.url)
+                : ann.item.url
+                  ? openWebBrowserCommandArgs(ann.item.url)
                   : { command: 'noop' }),
         },
         isResolved: true,
