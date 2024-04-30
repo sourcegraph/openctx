@@ -21,6 +21,7 @@
     "typescript.tsdk": "node_modules/typescript/lib",
     "typescript.preferences.importModuleSpecifierEnding": "auto",
     "task.allowAutomaticTasks": "on",
+    "biome.enabled": true,
     "editor.defaultFormatter": "biomejs.biome",
     "css.lint.unknownAtRules": "ignore",
     "editor.codeActionsOnSave": {
