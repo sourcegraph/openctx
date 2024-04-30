@@ -26,26 +26,9 @@
                 "useTemplate": "off"
             }
         },
-        "ignore": [
-            "node_modules/",
-            "out/",
-            "dist/",
-            "testdata/",
-            ".vscode-test/",
-            ".vscode-test-web/",
-            "client/browser/src/types/webextension-polyfill/index.d.ts"
-        ]
+        "ignore": ["client/browser/src/types/webextension-polyfill/index.d.ts"]
     },
     "formatter": {
-        "ignore": [
-            "node_modules/",
-            "out/",
-            "dist/",
-            "testdata/",
-            ".vscode-test/",
-            ".vscode-test-web/",
-            "package.json"
-        ],
         "indentStyle": "space",
         "indentWidth": 4,
         "lineWidth": 105
@@ -57,6 +40,9 @@
             "arrowParentheses": "asNeeded",
             "trailingComma": "es5"
         }
+    },
+    "files": {
+        "ignore": ["node_modules/", "out/", "dist/", "testdata/", ".vscode-test/", ".vscode-test-web/"]
     },
     "overrides": [
         {
