@@ -20,7 +20,10 @@ export type ProviderTransport = {
 } & { dispose?(): void }
 
 export interface ProviderTransportOptions
-    extends Pick<ClientEnv<any>, 'dynamicImportFromUri' | 'dynamicImportFromSource'> {
+    extends Pick<
+        ClientEnv<any>,
+        'providerBaseUri' | 'dynamicImportFromUri' | 'dynamicImportFromSource'
+    > {
     authInfo?: AuthInfo
     cache?: boolean
     logger?: Logger
@@ -36,7 +39,7 @@ export function createTransport(
     options: ProviderTransportOptions
 ): ProviderTransport {
     function doResolveProvider(providerUri: string): ProviderTransport {
-        let url = new URL(providerUri)
+        let url = new URL(providerUri, options.providerBaseUri)
         if (
             url.protocol === 'file:' ||
             (runtimeSupportsImportFromUrl() && isRemoteJavaScriptFile(url))

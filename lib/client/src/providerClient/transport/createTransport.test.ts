@@ -41,6 +41,11 @@ describe('createTransport', () => {
             const provider = createTransport('file:///doesnotexist', {})
             await expect(() => provider.capabilities({}, {})).rejects.toMatch(/Failed to load/)
         })
+
+        test('providerBaseUri', () =>
+            expectProviderTransport(
+                createTransport('esmProvider.js', { providerBaseUri: testdataFileUri('') })
+            ))
     })
 
     describe('dynamicImport options', () => {
