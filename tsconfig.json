@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noEmit": true
   },
+  "include": [],
   "files": [],
   "exclude": ["**/dist", "**/testdata", "client/browser"],
   "references": [
