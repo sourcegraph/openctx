@@ -3,9 +3,10 @@ import {
     type AnnotationsResult,
     type CapabilitiesParams,
     type CapabilitiesResult,
-    type Position,
+    type PositionCalculator,
     type Provider,
     type Range,
+    createFilePositionCalculator,
     matchGlob,
 } from '@openctx/provider'
 
@@ -117,23 +118,4 @@ function matchResults(pattern: RegExp, content: string, pos: PositionCalculator)
         break // only add one match per line
     }
     return results
-}
-
-type PositionCalculator = (offset: number) => Position
-function createFilePositionCalculator(content: string): PositionCalculator {
-    const lines = content.split('\n')
-    return (offset: number) => {
-        let line = 0
-        let character = 0
-        while (line < lines.length && offset > 0) {
-            const lineLength = lines[line].length + 1 // +1 for the newline
-            if (lineLength > offset) {
-                character = offset
-                break
-            }
-            offset -= lineLength
-            line += 1
-        }
-        return { line, character }
-    }
 }

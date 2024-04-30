@@ -6,5 +6,7 @@ export type * from '@openctx/protocol'
 export type * from '@openctx/schema'
 export type { Provider } from './provider'
 
+export { createFilePositionCalculator, type PositionCalculator } from './helpers/position'
+
 // For convenience, since many providers need globs.
 export { matchGlob }
