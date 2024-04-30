@@ -1,0 +1,18 @@
+{
+  "enable": true,
+  "debug": false,
+  "providers": {
+    "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/hello-world/dist/index.js": true,
+    "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/links/dist/index.js": {
+      "links": [
+        {
+          "title": "My link",
+          "url": "https://example.com",
+          "type": "docs",
+          "preview": true,
+          "path": "**"
+        }
+      ]
+    }
+  }
+}

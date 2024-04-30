@@ -6,6 +6,7 @@
   "files": [],
   "exclude": ["**/dist", "**/testdata", "client/browser"],
   "references": [
+    { "path": "bin" },
     { "path": "lib/client" },
     { "path": "lib/protocol" },
     { "path": "lib/provider" },
