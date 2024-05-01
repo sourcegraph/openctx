@@ -6,10 +6,13 @@ OpenCtx for VS Code uses `major.EVEN_NUMBER.patch` for release versions and `maj
 
 ## (Unreleased)
 
+## 0.2.5
+
+- The extension has been updated to use the latest OpenCtx API for providers.
+
 ## 0.2.3
 
 - The editor title bar now has an OpenCtx icon that opens a quickpick list of all annotations in the file.
-- The editor title bar now has an OpenCtx icon that opens a quickpick list of all items in the file.
 
 ## 0.2.0
 
