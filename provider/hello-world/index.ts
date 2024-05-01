@@ -27,6 +27,9 @@ const helloWorld: Provider = {
                 ui: {
                     hover: { text: 'From OpenCtx' },
                 },
+                ai: {
+                    content: 'Hello, world!',
+                },
             },
         ]
     },
