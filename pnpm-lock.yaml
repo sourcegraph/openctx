@@ -13,9 +13,6 @@ importers:
       '@biomejs/biome':
         specifier: 1.5.3
         version: 1.5.3
-      '@sourcegraph/tsconfig':
-        specifier: ^4.0.1
-        version: 4.0.1
       '@storybook/addon-essentials':
         specifier: ^7.6.7
         version: 7.6.17(react-dom@18.2.0)(react@18.2.0)
@@ -4137,10 +4134,6 @@ packages:
 
   /@sinclair/typebox@0.27.8:
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
-    dev: true
-
-  /@sourcegraph/tsconfig@4.0.1:
-    resolution: {integrity: sha512-G/xsejsR84G5dj3kHJ7svKBo9E5tWl96rUHKP94Y2UDtA7BzUhAYbieM+b9ZUpIRt66h3+MlYbG5HK4UI2zDzw==}
     dev: true
 
   /@storybook/addon-actions@7.6.17:
