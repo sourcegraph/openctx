@@ -84,11 +84,10 @@ The items request is sent by the client to the provider to fetch a list of items
 
 ```typescript
 interface ItemsParams {
-  /** The resource's URI (e.g., `file:///home/alice/foo.js`). **/
-  uri: string
-
-  /** The resource's content. **/
-  content: string
+  /**
+   * A search query that is interpreted by providers to filter the items in the result set.
+   */
+  query?: string
 }
 ```
 
