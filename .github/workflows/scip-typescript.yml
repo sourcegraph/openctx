@@ -5,6 +5,7 @@ on:
       - '**.ts'
       - '**.tsx'
       - '**.js'
+      - '.github/workflows/scip-typescript.yml'
 
 jobs:
   scip-typescript:
