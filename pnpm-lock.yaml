@@ -526,6 +526,22 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2(vitest@1.3.1)
 
+  provider/vscode-symbols:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+      fuzzysort:
+        specifier: 2.0.4
+        version: 2.0.4
+    devDependencies:
+      '@types/vscode':
+        specifier: ^1.85.0
+        version: 1.85.0
+      esbuild:
+        specifier: ^0.19.11
+        version: 0.19.12
+
   web:
     dependencies:
       '@code-hike/mdx':
@@ -7693,6 +7709,10 @@ packages:
 
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
+    dev: false
+
+  /fuzzysort@2.0.4:
+    resolution: {integrity: sha512-Api1mJL+Ad7W7vnDZnWq5pGaXJjyencT+iKGia2PlHUcSsSzWwIQ3S1isiMpwpavjYtGd2FzhUIhnnhOULZgDw==}
     dev: false
 
   /gaxios@6.5.0:
