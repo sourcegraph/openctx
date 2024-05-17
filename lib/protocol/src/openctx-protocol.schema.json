@@ -174,7 +174,7 @@
       "description": "TODO: move this to openctx.schema.json and figure out why it is not getting imported in the protocol-schema.ts",
       "type": "object",
       "additionalProperties": false,
-      "required": ["title", "url"],
+      "required": ["title", "uri"],
       "properties": {
         "title": {
           "description": "A descriptive title.",

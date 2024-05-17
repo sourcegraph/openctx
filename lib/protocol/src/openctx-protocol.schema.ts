@@ -87,7 +87,7 @@ export interface Mention {
     /**
      * A URI for the mention item.
      */
-    uri?: string
+    uri: string
     data?: {
         [k: string]: unknown | undefined
     }
