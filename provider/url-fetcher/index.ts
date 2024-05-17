@@ -1,50 +1,31 @@
 import type {
-    AnnotationsParams,
-    AnnotationsResult,
     CapabilitiesParams,
     CapabilitiesResult,
-    Item,
     ItemsParams,
     ItemsResult,
     Provider,
-    ProviderSettings,
 } from '@openctx/provider'
 
-interface ItemsParamsProposed extends ItemsParams {
-    candidate?: Item
-}
+type UrlFetcherSettings = { [key: string]: any }
 
-interface ProviderProposed<S extends {} = ProviderSettings> extends Provider {
-    candidateItems?(params: ItemsParamsProposed, settings: S): ItemsResult | Promise<ItemsResult>
-    items?(params: ItemsParamsProposed, settings: S): ItemsResult | Promise<ItemsResult>
-}
-
-const urlFetcher: ProviderProposed = {
-    capabilities(params: CapabilitiesParams, settings: ProviderSettings): CapabilitiesResult {
+/**
+ * An OpenCtx provider that fetches the content of a URL and provides it as an item.
+ */
+const urlFetcher: Provider<UrlFetcherSettings> = {
+    capabilities(params: CapabilitiesParams, settings: UrlFetcherSettings): CapabilitiesResult {
         return {
             // empty since we don't provide any annotations.
             selector: [],
         }
     },
 
-    async candidateItems(params: ItemsParamsProposed): Promise<ItemsResult> {
-        return fetchItem(params, 1000)
-    },
-
-    async items(params: ItemsParamsProposed, settings: ProviderSettings): Promise<ItemsResult> {
+    async items(params: ItemsParams, settings: UrlFetcherSettings): Promise<ItemsResult> {
         return fetchItem(params)
-    },
-
-    annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
-        return []
     },
 }
 
-async function fetchItem(params: ItemsParamsProposed, timeoutMs?: number): Promise<ItemsResult> {
-    if (params.candidate?.ai?.content) {
-        return [params.candidate]
-    }
-    const url = params.candidate?.url ?? params.query
+async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<ItemsResult> {
+    const url = params.query
     if (!url) {
         return []
     }
