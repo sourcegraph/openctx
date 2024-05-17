@@ -1,8 +1,6 @@
 import type {
     AnnotationsParams,
     AnnotationsResult,
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
@@ -19,10 +17,7 @@ export interface Provider<S extends {} = ProviderSettings> {
     /**
      * Reports the capabilities of the provider.
      */
-    capabilities(
-        params: CapabilitiesParams,
-        settings: S
-    ): CapabilitiesResult | Promise<CapabilitiesResult>
+    meta(params: MetaParams, settings: S): MetaResult | Promise<MetaResult>
 
     mentions?(params: MentionsParams, settings: S): MentionsResult | Promise<MentionsResult>
 

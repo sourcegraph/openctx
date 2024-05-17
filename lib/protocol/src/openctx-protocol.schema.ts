@@ -41,23 +41,21 @@ export interface ResponseError {
     message: string
     data?: unknown
 }
-export interface CapabilitiesResult {
+export interface MetaResult {
     /**
-     * Selects the scope in which this provider should be called.
+     * The name of the provider.
+     */
+    name: string
+    /**
+     * A description of the provider.
+     */
+    description?: string
+    /**
+     * Selects the scope in which this provider's annotations should be called.
      *
      * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.
      */
-    selector?: Selector[]
-    meta: {
-        /**
-         * The name of the provider.
-         */
-        name: string
-        /**
-         * A description of the provider.
-         */
-        description?: string
-    }
+    annotationsSelector?: Selector[]
 }
 /**
  * Defines a scope in which a provider is called.
