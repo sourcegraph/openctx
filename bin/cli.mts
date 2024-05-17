@@ -16,13 +16,20 @@ function usageFatal(message: string): never {
     process.exit(1)
 }
 
+async function subcommandCapabilities(client: Client<Range>, args: string[]): Promise<void> {
+    const [provideUri] = args
+    const capabilities = await client.capabilities({}, provideUri)
+
+    console.log(JSON.stringify(capabilities))
+}
+
 async function subcommandMentions(client: Client<Range>, args: string[]): Promise<void> {
     if (args.length !== 1) {
         usageFatal('Error: the "mentions" subcommand expects one argument "query"')
     }
-    const [query] = args
+    const [query, providerUri] = args
 
-    const mentions = await client.mentions({ query })
+    const mentions = await client.mentions({ query }, providerUri)
 
     if (process.env.OUTPUT_JSON) {
         console.log(JSON.stringify(mentions, null, 2))
@@ -37,17 +44,17 @@ async function subcommandMentions(client: Client<Range>, args: string[]): Promis
 }
 
 async function subcommandItems(client: Client<Range>, args: string[]): Promise<void> {
-    if (args.length !== 1) {
+    if (args.length === 0) {
         usageFatal('Error: the "items" subcommand expects one argument "query"')
     }
-    const [message, mentionJSON] = args
+    const [message, providerUri, mentionJSON] = args
 
     let mention: Mention | undefined
     if (mentionJSON) {
         mention = JSON.parse(mentionJSON)
     }
 
-    const items = await client.items({ message, mention })
+    const items = await client.items({ message, mention }, providerUri)
 
     if (process.env.OUTPUT_JSON) {
         console.log(JSON.stringify(items, null, 2))
@@ -98,11 +105,14 @@ const client = createClient({
 const subcommand = process.argv[2]
 const args = process.argv.slice(3)
 switch (subcommand) {
-    case 'items':
-        await subcommandItems(client, args)
+    case 'capabilities':
+        await subcommandCapabilities(client, args)
         break
     case 'mentions':
         await subcommandMentions(client, args)
+        break
+    case 'items':
+        await subcommandItems(client, args)
         break
     default:
         usageFatal('Error: only the "capabilities" or "items" subcommand is supported')

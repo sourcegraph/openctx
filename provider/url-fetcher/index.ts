@@ -52,7 +52,7 @@ async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<Items
         return []
     }
     try {
-        const content = await fetchContentForURLContextItem(url.toString(), timeoutSignal(timeoutMs))
+        const content = await fetchContentForURLContextItem(url, timeoutSignal(timeoutMs))
 
         if (content === null) {
             return []
@@ -76,7 +76,7 @@ async function fetchContentForURLContextItem(
     signal?: AbortSignal
 ): Promise<string | null> {
     const url = new URL(urlStr)
-    if (url.protocol !== 'http' && url.protocol !== 'https') {
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
         return null
     }
     if (!/(localhost|\.\w{2,})$/.test(url.hostname)) {
