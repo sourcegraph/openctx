@@ -95,33 +95,6 @@ execFileSync(
     }
 )
 
-// Add the esbuild wasm file.
-execFileSync('mkdir', ['-p', 'extension/node_modules/esbuild-wasm'], { stdio: 'inherit' })
-execFileSync(
-    'cp',
-    [
-        'node_modules/esbuild-wasm/esbuild.wasm',
-        'node_modules/esbuild-wasm/package.json',
-        'extension/node_modules/esbuild-wasm/',
-    ],
-    {
-        stdio: 'inherit',
-    }
-)
-execFileSync(
-    'zip',
-    [
-        '-ur',
-        'dist/openctx.vsix',
-        'extension/node_modules/esbuild-wasm/esbuild.wasm',
-        'extension/node_modules/esbuild-wasm/package.json',
-    ],
-    {
-        stdio: 'inherit',
-    }
-)
-execFileSync('rm', ['-rf', 'extension/node_modules/esbuild-wasm/'], { stdio: 'inherit' })
-
 // Publish the extension.
 console.error(`Publishing ${releaseType} release at version ${version}...`)
 if (dryRun) {

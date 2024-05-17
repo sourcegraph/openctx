@@ -3,7 +3,7 @@ import type { AuthInfo, ClientEnv } from '../../client/client.js'
 import type { Logger } from '../../logger.js'
 import { cachedTransport } from './cache.js'
 import { createHttpTransport } from './http.js'
-import { createLocalModuleFileTransport, createRemoteModuleFileTransport } from './module.js'
+import { createModuleTransport } from './module.js'
 
 /**
  * A provider transport is a low-level TypeScript wrapper around the provider protocol. It is a
@@ -20,17 +20,14 @@ export type ProviderTransport = {
 } & { dispose?(): void }
 
 export interface ProviderTransportOptions
-    extends Pick<
-        ClientEnv<any>,
-        'providerBaseUri' | 'dynamicImportFromUri' | 'dynamicImportFromSource'
-    > {
+    extends Pick<ClientEnv<any>, 'providerBaseUri' | 'importProvider'> {
     authInfo?: AuthInfo
     cache?: boolean
     logger?: Logger
 }
 
 /**
- * Create a transport that communicates with a provider URI using the provider API.
+ * Create a transport that communicates with a provider using the provider API.
  *
  * @internal
  */
@@ -40,25 +37,17 @@ export function createTransport(
 ): ProviderTransport {
     function doResolveProvider(providerUri: string): ProviderTransport {
         let url = new URL(providerUri, options.providerBaseUri)
-        if (
-            url.protocol === 'file:' ||
-            (runtimeSupportsImportFromUrl() && isRemoteJavaScriptFile(url))
-        ) {
-            if (isHttpsPlusJs(url)) {
-                url = removePlusJs(url)
-            }
-            return createLocalModuleFileTransport(url.toString(), options)
-        }
-        if (isRemoteJavaScriptFile(url)) {
-            if (isHttpsPlusJs(url)) {
-                url = removePlusJs(url)
-            }
-            return createRemoteModuleFileTransport(url.toString(), options)
-        }
-        if (isHttpOrHttps(url)) {
+
+        if (isHttpOrHttps(url) && !isRemoteJavaScriptFile(url)) {
+            // Provider is an HTTP endpoint.
             return createHttpTransport(providerUri, options)
         }
-        throw new Error(`Unsupported OpenCtx provider URI: ${providerUri}`)
+
+        // Provider is a JavaScript module.
+        if (isHttpsPlusJs(url)) {
+            url = removePlusJs(url)
+        }
+        return createModuleTransport(url.toString(), options)
     }
 
     let provider = doResolveProvider(providerUri)
@@ -97,14 +86,4 @@ function removePlusJs(url: URL): URL {
  */
 function isWellKnownNpmUrl(url: URL): boolean {
     return url.protocol === 'https:' && url.host === 'openctx.org' && url.pathname.startsWith('/npm/')
-}
-
-function runtimeSupportsImportFromUrl(): boolean {
-    // `import('https://...')` is not supported natively in Node.js; see
-    // https://nodejs.org/api/esm.html#urls.
-    //
-    // TODO(sqs): this is hacky and not correct in general
-    //
-    // @ts-ignore
-    return typeof window !== 'undefined'
 }

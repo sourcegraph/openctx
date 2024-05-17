@@ -37,7 +37,7 @@ function main(): void {
         configuration: () => configurationChanges,
         logger: console.error,
         makeRange: r => r,
-        dynamicImportFromUri: uri => Promise.resolve({ default: getBuiltinProvider(uri) }),
+        importProvider: uri => Promise.resolve({ default: getBuiltinProvider(uri) }),
     })
     subscriptions.add(() => client.dispose())
 

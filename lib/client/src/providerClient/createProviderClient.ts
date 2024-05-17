@@ -38,7 +38,7 @@ export interface ProviderClient {
 export interface ProviderClientOptions
     extends Pick<
         ProviderTransportOptions,
-        'providerBaseUri' | 'authInfo' | 'logger' | 'dynamicImportFromUri' | 'dynamicImportFromSource'
+        'providerBaseUri' | 'authInfo' | 'logger' | 'importProvider'
     > {}
 
 /**

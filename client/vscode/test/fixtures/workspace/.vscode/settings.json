@@ -5,7 +5,7 @@
     // "https://sourcegraph.test:3443/.api/openctx": true,
     // "https://openctx.org/npm/@openctx/provider-hello-world": true,
     "../../../../../../provider/hello-world/dist/index.js": true,
-     "../../../../../../provider/links/dist/index.js": {
+    "../../../../../../provider/links/dist/index.js": {
       "links": [
         {
           "title": "Telemetry",

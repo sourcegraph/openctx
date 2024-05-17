@@ -1,92 +1,47 @@
 import type { Provider } from '@openctx/provider'
 import type { ProviderTransport, ProviderTransportOptions } from './createTransport.js'
 
-export function createRemoteModuleFileTransport(
+export function createModuleTransport(
     providerUri: string,
-    {
-        dynamicImportFromUri,
-        dynamicImportFromSource,
-    }: Pick<ProviderTransportOptions, 'dynamicImportFromUri' | 'dynamicImportFromSource'>
+    { importProvider }: Pick<ProviderTransportOptions, 'importProvider'>
 ): ProviderTransport {
     return lazyProvider(
-        dynamicImportFromUri
-            ? dynamicImportFromUri(providerUri).then(mod => providerFromModule(mod))
-            : fetch(providerUri).then(async resp => {
-                  if (!resp.ok) {
-                      throw new Error(
-                          `OpenCtx remote provider module URL ${providerUri} responded with HTTP error ${resp.status} ${resp.statusText}`
-                      )
-                  }
-                  const contentType = resp.headers.get('Content-Type')?.trim()?.replace(/;.*$/, '')
-                  if (
-                      !contentType ||
-                      (contentType !== 'text/javascript' &&
-                          contentType !== 'application/javascript' &&
-                          contentType !== 'text/plain')
-                  ) {
-                      throw new Error(
-                          `OpenCtx remote provider module URL ${providerUri} reported invalid Content-Type ${JSON.stringify(
-                              contentType
-                          )} (expected "text/javascript" or "text/plain")`
-                      )
-                  }
-
-                  const moduleSource = await resp.text()
-                  try {
-                      const mod = await importModuleFromString(
-                          providerUri,
-                          moduleSource,
-                          dynamicImportFromSource
-                      )
-                      return providerFromModule(mod)
-                  } catch (error) {
-                      console.log(error)
-                      throw error
-                  }
-              })
+        (importProvider ? importProvider(providerUri) : import(/* @vite-ignore */ providerUri)).then(
+            mod => providerFromModule(mod)
+        )
     )
 }
 
-export function createLocalModuleFileTransport(
-    moduleUrl: string,
-    { dynamicImportFromUri }: Pick<ProviderTransportOptions, 'dynamicImportFromUri'>
-): ProviderTransport {
-    return lazyProvider(
-        (dynamicImportFromUri
-            ? dynamicImportFromUri(moduleUrl)
-            : import(/* @vite-ignore */ moduleUrl)
-        ).then(providerFromModule)
-    )
+export async function fetchProviderSource(providerUri: string): Promise<string> {
+    const resp = await fetch(providerUri)
+
+    if (!resp.ok) {
+        throw new Error(
+            `OpenCtx remote provider module URL ${providerUri} responded with HTTP error ${resp.status} ${resp.statusText}`
+        )
+    }
+    const contentType = resp.headers.get('Content-Type')?.trim()?.replace(/;.*$/, '')
+    if (
+        !contentType ||
+        (contentType !== 'text/javascript' &&
+            contentType !== 'application/javascript' &&
+            contentType !== 'text/plain')
+    ) {
+        throw new Error(
+            `OpenCtx remote provider module URL ${providerUri} reported invalid Content-Type ${JSON.stringify(
+                contentType
+            )} (expected "text/javascript" or "text/plain")`
+        )
+    }
+
+    const moduleSource = await resp.text()
+    return moduleSource
 }
 
 interface ProviderModule {
     // It is easy for module authors to misconfigure their bundler and emit a doubly nested
     // `default` export, so we handle that case gracefully.
     default: Provider | { default: Provider }
-}
-
-async function importModuleFromString(
-    uri: string,
-    source: string,
-    dynamicImportFromSource: ProviderTransportOptions['dynamicImportFromSource']
-): Promise<ProviderModule> {
-    if (dynamicImportFromSource) {
-        return (await dynamicImportFromSource(uri, source)).exports
-    }
-
-    // Note: Used by VS Code Web.
-    const url = `data:text/javascript;charset=utf-8;base64,${base64Encode(source)}`
-    return import(/* @vite-ignore */ url)
-}
-
-/**
- * See https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem for why we need
- * something other than just `btoa` for base64 encoding.
- */
-function base64Encode(text: string): string {
-    const bytes = new TextEncoder().encode(text)
-    const binString = String.fromCodePoint(...bytes)
-    return btoa(binString)
 }
 
 function providerFromModule(providerModule: ProviderModule): Provider {

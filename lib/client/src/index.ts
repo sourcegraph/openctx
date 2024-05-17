@@ -5,3 +5,4 @@ export { observeItems, type Annotation, type EachWithProviderUri } from './api.j
 export { createClient, type AuthInfo, type Client, type ClientEnv } from './client/client.js'
 export { type ConfigurationUserInput as ClientConfiguration } from './configuration.js'
 export type { Logger } from './logger.js'
+export { fetchProviderSource } from './providerClient/transport/module.js'
