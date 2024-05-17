@@ -1,0 +1,28 @@
+{
+  "name": "@openctx/vscode-lib",
+  "version": "0.0.1",
+  "description": "OpenCtx library for VS Code extensions",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "client/vscode-lib"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["README.md", "dist", "!**/*.test.*"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@openctx/client": "workspace:*",
+    "@openctx/ui-common": "workspace:*",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "vscode-uri": "^3.0.8"
+  }
+}

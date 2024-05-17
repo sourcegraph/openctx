@@ -1,26 +1,34 @@
-import { type Annotation, type Item, type ItemsParams, type Range, createClient } from '@openctx/client'
+import {
+    type Annotation,
+    type AuthInfo,
+    type Client,
+    type ClientEnv,
+    type Item,
+    type ItemsParams,
+    type Range,
+    createClient,
+} from '@openctx/client'
 import {
     type Observable,
     type TapObserver,
     catchError,
     combineLatest,
     from,
+    isObservable,
     map,
     mergeMap,
     of,
     tap,
 } from 'rxjs'
 import * as vscode from 'vscode'
-import { type ExtensionApi, createApi } from './api'
-import { getAuthInfo } from './authInfo'
 import { getClientConfiguration } from './configuration'
-import { dynamicImportFromSource } from './dynamicImport'
+import { type ExtensionApiForTesting, createApiForTesting } from './testing'
 import { createCodeLensProvider } from './ui/editor/codeLens'
 import { createHoverProvider } from './ui/editor/hover'
 import { createShowFileItemsList } from './ui/fileItemsList'
 import { createStatusBarItem } from './ui/statusBarItem'
-import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util'
 import { createErrorWaiter } from './util/errorWaiter'
+import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable'
 
 export interface Controller {
     observeItems(params: ItemsParams): Observable<Item[] | null>
@@ -32,18 +40,34 @@ export interface Controller {
     annotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
     ): Promise<Annotation<vscode.Range>[] | null>
+
+    client: Client<vscode.Range>
 }
 
-export function createController(
-    secrets: Observable<vscode.SecretStorage>,
+export function createController({
+    secrets: secretsInput,
+    outputChannel,
+    getAuthInfo,
+    dynamicImportFromSource,
+    features,
+}: {
+    secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
     outputChannel: vscode.OutputChannel
-): {
-    api: ExtensionApi
+    getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
+    dynamicImportFromSource?: ClientEnv<any>['dynamicImportFromSource']
+    features: { annotations?: boolean; statusBar?: boolean }
+}): {
+    controller: Controller
+    apiForTesting: ExtensionApiForTesting
     disposable: vscode.Disposable
 } {
     const disposables: vscode.Disposable[] = []
 
     const globalConfigurationChanges = observeWorkspaceConfigurationChanges('openctx')
+
+    const secrets: Observable<vscode.SecretStorage> = isObservable(secretsInput)
+        ? secretsInput
+        : of(secretsInput)
 
     // Watch for changes that could possibly affect configuration. This is overbroad because it does
     // not specify a config scope.
@@ -58,8 +82,8 @@ export function createController(
     })
     disposables.push(toggleEnableCommand)
 
-    const statusBarItem = createStatusBarItem()
-    disposables.push(statusBarItem)
+    const statusBarItem = features.statusBar ? createStatusBarItem() : null
+    if (statusBarItem) disposables.push(statusBarItem)
 
     // Pause for 10 seconds if we get 5 errors in a row.
     const errorWaiter = createErrorWaiter(10 * 1000, 5)
@@ -75,7 +99,9 @@ export function createController(
                 map(() => getClientConfiguration(scope))
             )
         },
-        authInfo: provider => secrets.pipe(mergeMap(secrets => from(getAuthInfo(secrets, provider)))),
+        authInfo: getAuthInfo
+            ? provider => secrets.pipe(mergeMap(secrets => from(getAuthInfo(secrets, provider))))
+            : undefined,
         makeRange,
         logger: message => outputChannel.appendLine(message),
 
@@ -143,26 +169,31 @@ export function createController(
                 content: doc.getText(),
             })
         },
+
+        client,
     }
 
-    // The UI feature providers (code lens and hover) should stay registered even if the global
-    // `openctx.enable` value is `false` because it might be overridden to `true` at another
-    // level of configuration. If the UI feature providers are invoked in a file where they're
-    // disabled, the provider will quickly return no results.
-    const codeLensProvider = createCodeLensProvider(controller)
-    const hoverProvider = createHoverProvider(controller)
-    const quickPickCommand = createShowFileItemsList(controller)
-    disposables.push(
-        codeLensProvider,
-        hoverProvider,
-        quickPickCommand,
-        vscode.languages.registerCodeLensProvider({ scheme: '*' }, codeLensProvider),
-        vscode.languages.registerHoverProvider({ scheme: '*' }, hoverProvider)
-    )
+    if (features.annotations) {
+        // The UI feature providers (code lens and hover) should stay registered even if the global
+        // `openctx.enable` value is `false` because it might be overridden to `true` at another
+        // level of configuration. If the UI feature providers are invoked in a file where they're
+        // disabled, the provider will quickly return no results.
+        const codeLensProvider = createCodeLensProvider(controller)
+        const hoverProvider = createHoverProvider(controller)
+        const quickPickCommand = createShowFileItemsList(controller)
+        disposables.push(
+            codeLensProvider,
+            hoverProvider,
+            quickPickCommand,
+            vscode.languages.registerCodeLensProvider({ scheme: '*' }, codeLensProvider),
+            vscode.languages.registerHoverProvider({ scheme: '*' }, hoverProvider)
+        )
+    }
 
     return {
+        controller,
+        apiForTesting: createApiForTesting(controller),
         disposable: vscode.Disposable.from(...disposables),
-        api: createApi(controller),
     }
 }
 
@@ -173,7 +204,7 @@ function ignoreDoc(doc: vscode.TextDocument): boolean {
     return doc.uri.scheme === 'output' || doc.lineCount > 5000
 }
 
-export function makeRange(range: Range): vscode.Range {
+function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
 }
 

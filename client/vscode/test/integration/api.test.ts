@@ -1,15 +1,29 @@
 import * as assert from 'assert'
+import type { Item } from '@openctx/client'
+import type { ExtensionApiForTesting } from '@openctx/vscode-lib'
 import * as vscode from 'vscode'
-import type { ExtensionApi } from '../../src/api'
 
 suite('API', () => {
     test('get exported extension API', async () => {
         // Wait for the extension to become ready.
-        const ext = vscode.extensions.getExtension<ExtensionApi>('sourcegraph.openctx')
+        const ext = vscode.extensions.getExtension<ExtensionApiForTesting>('sourcegraph.openctx')
         assert.ok(ext, 'extension not found')
 
         const api = await ext.activate()
 
-        assert.ok(api.apiVersion(1))
+        assert.deepEqual(await api.getItems({}), [
+            {
+                ai: {
+                    content: 'Hello, world!',
+                },
+                title: '✨ Hello, world!',
+                ui: {
+                    hover: {
+                        text: 'From OpenCtx',
+                    },
+                },
+                url: 'https://openctx.org',
+            },
+        ] satisfies Item[])
     })
 })

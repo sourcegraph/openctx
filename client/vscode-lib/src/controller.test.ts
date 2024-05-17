@@ -7,6 +7,13 @@ export function createMockController(): MockedObject<Controller> {
         items: vi.fn(),
         observeAnnotations: vi.fn(),
         annotations: vi.fn(),
+        client: {
+            itemsChanges: vi.fn(),
+            items: vi.fn(),
+            annotationsChanges: vi.fn(),
+            annotations: vi.fn(),
+            dispose: vi.fn(),
+        },
     }
 }
 

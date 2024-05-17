@@ -36,6 +36,10 @@ _Status: experimental_
     },
     ```
 
+### For extension authors
+
+Use [`@openctx/vscode-lib`](https://www.npmjs.com/package/@openctx/vscode-lib) to incorporate OpenCtx functionality into your own VS Code extension.
+
 ## Development
 
 - [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/client/vscode)

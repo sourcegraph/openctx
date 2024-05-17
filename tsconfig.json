@@ -21,6 +21,7 @@
     { "path": "client/codemirror/demo" },
     { "path": "client/monaco-editor" },
     { "path": "client/monaco-editor/demo" },
+    { "path": "client/vscode-lib" },
     { "path": "client/vscode" },
     { "path": "client/vscode/dev" },
     { "path": "client/vscode/test/integration" },
