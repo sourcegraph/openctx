@@ -60,7 +60,7 @@ export function createProviderClient(
             try {
                 return await transport.capabilities(params, settings)
             } catch (error) {
-                logger?.(`failed to get item kinds: ${error}`)
+                logger?.(`failed to get capabilities: ${error}`)
                 return Promise.reject(error)
             }
         },
