@@ -1,8 +1,7 @@
 # URL Fetcher context provider for OpenCtx
 
-TODO DONOTMERGE
 
-This is a sample context provider for [OpenCtx](https://openctx.org) that annotates every file with `✨ Hello, world!` every 10 lines or so.
+This is a context provider for [OpenCtx](https://openctx.org) that fetches URLs for use as context items.
 
 ## Usage
 
@@ -11,13 +10,8 @@ Add the following to your settings in any OpenCtx client:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-hello-world": true
+    "https://openctx.org/npm/@openctx/url-fetcher": true
 },
-```
-
-## Configuration
-
-This sample provider is not configurable.
 
 ## Development
 
