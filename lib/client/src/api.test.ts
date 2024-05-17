@@ -9,8 +9,8 @@ import {
     type ProviderClientWithSettings,
     observeAnnotations,
     observeItems,
-} from './api'
-import type { ProviderClient } from './providerClient/createProviderClient'
+} from './api.js'
+import type { ProviderClient } from './providerClient/createProviderClient.js'
 
 const FIXTURE_ITEMS_PARAMS: ItemsParams = {}
 

@@ -1,7 +1,7 @@
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react'
 import { type Plugin, defineConfig } from 'vite'
-import manifest from './manifest.config'
+import manifest from './manifest.config.js'
 
 const viteManifestHackIssue846: Plugin & { renderCrxManifest: (manifest: any, bundle: any) => void } = {
     // TODO(sqs): Workaround from

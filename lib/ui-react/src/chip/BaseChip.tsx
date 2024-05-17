@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { type FunctionComponent, type ReactElement, useCallback, useRef, useState } from 'react'
 import styles from './BaseChip.module.css'
-import { Popover } from './Popover'
+import { Popover } from './Popover.js'
 
 export const BaseChip: FunctionComponent<{
     title: string

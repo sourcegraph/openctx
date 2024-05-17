@@ -1,5 +1,5 @@
 import type { Provider } from '@openctx/provider'
-import type { ProviderTransport, ProviderTransportOptions } from './createTransport'
+import type { ProviderTransport, ProviderTransportOptions } from './createTransport.js'
 
 export function createRemoteModuleFileTransport(
     providerUri: string,

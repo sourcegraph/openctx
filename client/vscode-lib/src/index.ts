@@ -1,2 +1,2 @@
-export type { ExtensionApiForTesting } from './testing'
-export { createController } from './controller'
+export type { ExtensionApiForTesting } from './testing.js'
+export { createController } from './controller.js'

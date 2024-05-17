@@ -5,7 +5,7 @@ import providerStorybookUrl from '@openctx/provider-storybook?url'
 export const INITIAL_FILE = {
     resourceUri: 'file:///dir/SignInPage.story.tsx',
     resourceContent: `
-import { SignInPage, type SignInPageProps } from './SignInPage'
+import { SignInPage, type SignInPageProps } from './SignInPage.js'
 import styles from "./Story.module.css"
 
 const config: Meta = {

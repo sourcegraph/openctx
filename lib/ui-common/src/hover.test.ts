@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { renderHoverToHTML } from './hover'
+import { renderHoverToHTML } from './hover.js'
 
 describe('renderHoverToHTML', () => {
     test('returns null when hover is undefined', () => {

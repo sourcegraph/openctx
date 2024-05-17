@@ -8,8 +8,8 @@ import {
     useRef,
     useState,
 } from 'react'
-import { storage } from '../browser-extension/web-extension-api/storage'
-import { configurationStringChanges } from '../configuration'
+import { storage } from '../browser-extension/web-extension-api/storage.js'
+import { configurationStringChanges } from '../configuration.js'
 import styles from './OptionsPage.module.css'
 
 export const OptionsPage: FunctionComponent = () => {

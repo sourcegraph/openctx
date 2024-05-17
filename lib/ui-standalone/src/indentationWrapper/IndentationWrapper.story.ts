@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/html'
-import { createIndentationWrapper } from './IndentationWrapper'
+import { createIndentationWrapper } from './IndentationWrapper.js'
 
 const meta: Meta = {
     title: 'IndentationWrapper',

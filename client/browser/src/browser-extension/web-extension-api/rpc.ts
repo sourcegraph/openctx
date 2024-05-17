@@ -1,6 +1,6 @@
 import { Observable, Subscription, type Unsubscribable } from 'rxjs'
-import { isBackground } from '../../shared/env'
-import type { BackgroundApi } from './types'
+import { isBackground } from '../../shared/env.js'
+import type { BackgroundApi } from './types.js'
 
 interface RequestMessage {
     /**

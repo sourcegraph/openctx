@@ -2,7 +2,7 @@ import type { ClientConfiguration } from '@openctx/client'
 import { describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
 import { URI as vscodeUri } from 'vscode-uri'
-import { getClientConfiguration } from './configuration'
+import { getClientConfiguration } from './configuration.js'
 
 vi.mock('vscode', () => ({
     workspace: {

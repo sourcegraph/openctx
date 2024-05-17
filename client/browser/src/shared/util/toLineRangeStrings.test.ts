@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { toLineRangeStrings } from './toLineRangeStrings'
+import { toLineRangeStrings } from './toLineRangeStrings.js'
 
 describe('toLineRangeStrings', () => {
     test('empty', () => expect(toLineRangeStrings([])).toEqual([]))

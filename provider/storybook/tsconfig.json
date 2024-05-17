@@ -1,10 +1,13 @@
 {
   "extends": "../../.config/tsconfig.base.json",
   "compilerOptions": {
-    "module": "ESNext",
     "rootDir": ".",
     "outDir": "dist",
     "lib": ["ESNext"],
+    "paths": {
+      // Workaround for https://github.com/IanVS/vitest-fetch-mock/issues/10.
+      "vitest-fetch-mock": ["./node_modules/vitest-fetch-mock/types/index.d.ts"]
+    }
   },
   "include": ["*.ts"],
   "exclude": ["dist", "vitest.config.ts"],

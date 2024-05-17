@@ -8,8 +8,8 @@ import linksProvider from '@openctx/provider-links'
 import prometheusProvider from '@openctx/provider-prometheus'
 import storybookProvider from '@openctx/provider-storybook'
 import { Subscription } from 'rxjs'
-import { addMessageListenersForBackgroundApi } from '../browser-extension/web-extension-api/rpc'
-import { configurationChanges } from '../configuration'
+import { addMessageListenersForBackgroundApi } from '../browser-extension/web-extension-api/rpc.js'
+import { configurationChanges } from '../configuration.js'
 
 const BUILTIN_PROVIDER_MODULES: Record<string, Provider<any>> = {
     'https://openctx.org/npm/@openctx/provider-hello-world': helloWorldProvider,

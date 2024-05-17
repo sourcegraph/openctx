@@ -6,6 +6,10 @@
     "jsx": "react-jsx",
     "lib": ["ESNext", "DOM"],
     "types": ["vite/client"],
+
+    // Workaround from https://github.com/uiwjs/react-codemirror/issues/610#issuecomment-1846152091:
+    "module": "ESNext",
+    "moduleResolution": "Bundler"
   },
   "include": ["src", "vite.config.ts"],
   "exclude": ["dist"],

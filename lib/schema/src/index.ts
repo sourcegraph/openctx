@@ -1,1 +1,1 @@
-export type * from './openctx.schema'
+export type * from './openctx.schema.js'

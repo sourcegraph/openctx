@@ -21,14 +21,14 @@ import {
     tap,
 } from 'rxjs'
 import * as vscode from 'vscode'
-import { getClientConfiguration } from './configuration'
-import { type ExtensionApiForTesting, createApiForTesting } from './testing'
-import { createCodeLensProvider } from './ui/editor/codeLens'
-import { createHoverProvider } from './ui/editor/hover'
-import { createShowFileItemsList } from './ui/fileItemsList'
-import { createStatusBarItem } from './ui/statusBarItem'
-import { createErrorWaiter } from './util/errorWaiter'
-import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable'
+import { getClientConfiguration } from './configuration.js'
+import { type ExtensionApiForTesting, createApiForTesting } from './testing.js'
+import { createCodeLensProvider } from './ui/editor/codeLens.js'
+import { createHoverProvider } from './ui/editor/hover.js'
+import { createShowFileItemsList } from './ui/fileItemsList.js'
+import { createStatusBarItem } from './ui/statusBarItem.js'
+import { createErrorWaiter } from './util/errorWaiter.js'
+import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
 
 export type VSCodeClient = Client<vscode.Range>
 

@@ -22,8 +22,8 @@ import {
     startWith,
     tap,
 } from 'rxjs'
-import type { ClientEnv } from './client/client'
-import type { ProviderClient } from './providerClient/createProviderClient'
+import type { ClientEnv } from './client/client.js'
+import type { ProviderClient } from './providerClient/createProviderClient.js'
 
 /**
  * An OpenCtx annotation.

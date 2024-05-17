@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import styles from './BaseChip.module.css'
-import { getPopoverDimensions } from './popover'
+import { getPopoverDimensions } from './popover.js'
 
 export function createBaseChip({
     title,

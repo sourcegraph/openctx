@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import type { ReactNode } from 'react'
-import { IndentationWrapper } from './IndentationWrapper'
+import { IndentationWrapper } from './IndentationWrapper.js'
 
 const meta: Meta<typeof IndentationWrapper> = {
     title: 'IndentationWrapper',

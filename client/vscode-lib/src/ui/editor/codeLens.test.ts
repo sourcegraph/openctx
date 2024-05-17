@@ -3,10 +3,10 @@ import { TestScheduler } from 'rxjs/testing'
 import { type MockedObject, describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
 import { URI } from 'vscode-uri'
-import type { Controller } from '../../controller'
-import { createMockController } from '../../controller.test'
-import { createPosition, createRange, mockTextDocument } from '../../util/vscode.test'
-import { createCodeLensProvider } from './codeLens'
+import type { Controller } from '../../controller.js'
+import { createMockController } from '../../controller.test.js'
+import { createPosition, createRange, mockTextDocument } from '../../util/vscode.test.js'
+import { createCodeLensProvider } from './codeLens.js'
 
 type RecursivePartial<T> = {
     [P in keyof T]?: RecursivePartial<T[P]>

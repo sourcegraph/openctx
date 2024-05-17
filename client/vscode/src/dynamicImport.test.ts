@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { esmToCommonJS } from './dynamicImport'
+import { esmToCommonJS } from './dynamicImport.js'
 
 vi.mock('vscode', () => ({
     env: { uiKind: 1 },

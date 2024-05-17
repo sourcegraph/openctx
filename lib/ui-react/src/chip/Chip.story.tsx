@@ -1,6 +1,6 @@
 import type { Annotation } from '@openctx/schema'
 import type { Meta, StoryObj } from '@storybook/react'
-import { Chip } from './Chip'
+import { Chip } from './Chip.js'
 
 const FIXTURE_ANN: Annotation = {
     uri: 'file:///f',

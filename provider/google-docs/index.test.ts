@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import googleDocs, { type Settings } from './index'
+import googleDocs, { type Settings } from './index.js'
 
 describe('googleDocs', () => {
     const SETTINGS: Settings = {}

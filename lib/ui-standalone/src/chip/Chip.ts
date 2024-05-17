@@ -1,6 +1,6 @@
 import type { Annotation } from '@openctx/schema'
 import { renderHoverToHTML } from '@openctx/ui-common'
-import { createBaseChip } from './BaseChip'
+import { createBaseChip } from './BaseChip.js'
 
 /**
  * A single OpenCtx annotation, displayed as a "chip".

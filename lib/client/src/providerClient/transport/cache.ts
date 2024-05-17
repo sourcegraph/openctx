@@ -1,6 +1,6 @@
 import type { AnnotationsResult, CapabilitiesResult, ItemsResult } from '@openctx/protocol'
 import { LRUCache } from 'lru-cache'
-import type { ProviderTransport } from './createTransport'
+import type { ProviderTransport } from './createTransport.js'
 
 export function cachedTransport(provider: ProviderTransport): ProviderTransport {
     const cache = new LRUCache<string, CapabilitiesResult | ItemsResult | AnnotationsResult>({
@@ -14,7 +14,7 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
             ...args: Parameters<ProviderTransport[M]>
         ) => Promise<Awaited<ReturnType<ProviderTransport[M]>>>
     ): Promise<Awaited<ReturnType<ProviderTransport[M]>>> {
-        const fullKey = `${method}:${JSON.stringify(args)}`
+        const fullKey = `${String(method)}:${JSON.stringify(args)}`
         const entry = cache.get(fullKey) as Awaited<ReturnType<ProviderTransport[M]>> | undefined
         if (entry) {
             return Promise.resolve(entry)

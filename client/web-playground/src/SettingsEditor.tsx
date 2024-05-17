@@ -3,8 +3,8 @@ import { linter } from '@codemirror/lint'
 import CodeMirror, { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import type React from 'react'
 import { useMemo } from 'react'
-import { EditorHeader } from './EditorHeader'
-import { mergeCodeMirrorProps } from './codemirror'
+import { EditorHeader } from './EditorHeader.js'
+import { mergeCodeMirrorProps } from './codemirror.js'
 
 export const SettingsEditor: React.FunctionComponent<{
     className?: string

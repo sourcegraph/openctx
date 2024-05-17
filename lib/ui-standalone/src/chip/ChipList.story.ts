@@ -1,6 +1,6 @@
 import type { Annotation } from '@openctx/schema'
 import type { Meta, StoryObj } from '@storybook/html'
-import { createChipList } from './ChipList'
+import { createChipList } from './ChipList.js'
 
 const FIXTURE_ANNS: Annotation[] = [
     {

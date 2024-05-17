@@ -4,9 +4,9 @@ import matchGlob from 'picomatch/lib/picomatch.js'
 
 export type * from '@openctx/protocol'
 export type * from '@openctx/schema'
-export type { Provider } from './provider'
+export type { Provider } from './provider.js'
 
-export { createFilePositionCalculator, type PositionCalculator } from './helpers/position'
+export { createFilePositionCalculator, type PositionCalculator } from './helpers/position.js'
 
 // For convenience, since many providers need globs.
 export { matchGlob }

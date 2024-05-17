@@ -9,9 +9,9 @@ import type {
     MentionsResult,
     ProviderSettings,
 } from '@openctx/protocol'
-import { scopedLogger } from '../logger'
-import { matchSelectors } from './selector'
-import { type ProviderTransportOptions, createTransport } from './transport/createTransport'
+import { scopedLogger } from '../logger.js'
+import { matchSelectors } from './selector.js'
+import { type ProviderTransportOptions, createTransport } from './transport/createTransport.js'
 
 /**
  * A {@link ProviderClient} communicates with a single OpenCtx provider. It is stateless and

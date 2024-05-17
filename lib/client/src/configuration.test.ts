@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { type Configuration, configurationFromUserInput } from './configuration'
+import { type Configuration, configurationFromUserInput } from './configuration.js'
 
 describe('configurationFromUserInput', () => {
     test('empty', () =>

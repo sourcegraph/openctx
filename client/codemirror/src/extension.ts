@@ -1,7 +1,7 @@
 import { type Extension, Facet } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import type { Annotation } from '@openctx/client'
-import { openCtxWidgets } from './blockWidget'
+import { openCtxWidgets } from './blockWidget.js'
 
 export interface OpenCtxDecorationsConfig {
     createDecoration: (

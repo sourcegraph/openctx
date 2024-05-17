@@ -1,14 +1,13 @@
 import { javascript } from '@codemirror/lang-javascript'
-import { createClient } from '@openctx/client'
-import type { ConfigurationUserInput } from '@openctx/client/src/configuration'
+import { type ClientConfiguration, createClient } from '@openctx/client'
 import { useOpenCtxExtension } from '@openctx/codemirror-extension'
 import CodeMirror, { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { useObservableState } from 'observable-hooks'
 import type React from 'react'
 import { useMemo, useState } from 'react'
 import { NEVER, catchError, of, tap } from 'rxjs'
-import { EditorHeader } from './EditorHeader'
-import { mergeCodeMirrorProps } from './codemirror'
+import { EditorHeader } from './EditorHeader.js'
+import { mergeCodeMirrorProps } from './codemirror.js'
 
 let promptedForAuthInfo = false // don't prompt too many times
 
@@ -43,7 +42,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
                         enable: true,
                         providers: JSON.parse(settings)[
                             'openctx.providers'
-                        ] as ConfigurationUserInput['providers'],
+                        ] as ClientConfiguration['providers'],
                     }),
                 authInfo: async provider => {
                     const hostname = new URL(provider).hostname

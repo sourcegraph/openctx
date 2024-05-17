@@ -1,5 +1,5 @@
 import type { FunctionComponent } from 'react'
-import { eventLogger } from './eventLogger'
+import { eventLogger } from './eventLogger.js'
 
 export const Label: FunctionComponent<{ title: string }> = ({ title }) => {
     eventLogger.log('Label', { title })

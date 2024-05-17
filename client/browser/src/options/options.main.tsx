@@ -3,7 +3,7 @@ import '../shared/polyfills'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { OptionsPage } from './OptionsPage'
+import { OptionsPage } from './OptionsPage.js'
 
 const root = document.createElement('div')
 root.id = 'root'

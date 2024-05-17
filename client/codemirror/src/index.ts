@@ -1,2 +1,2 @@
-export { openCtxData, showOpenCtxDecorations } from './extension'
-export { useOpenCtxExtension } from './useOpenCtxExtension'
+export { openCtxData, showOpenCtxDecorations } from './extension.js'
+export { useOpenCtxExtension } from './useOpenCtxExtension.js'

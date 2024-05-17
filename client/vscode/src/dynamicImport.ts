@@ -10,7 +10,7 @@
 // When VS Code supports dynamic import()s for extensions, we can remove this.
 
 import type { Provider } from '@openctx/client'
-import * as esbuild from 'esbuild-wasm/esm/browser'
+import * as esbuild from 'esbuild-wasm/esm/browser.js'
 import { readFile } from 'fs/promises'
 import * as vscode from 'vscode'
 

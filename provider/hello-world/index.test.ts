@@ -1,6 +1,6 @@
 import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
-import helloWorld from './index'
+import helloWorld from './index.js'
 
 describe('helloWorld', () => {
     test('capabilities', () =>

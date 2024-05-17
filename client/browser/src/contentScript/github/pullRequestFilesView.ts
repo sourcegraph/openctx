@@ -11,9 +11,9 @@ import {
     startWith,
     tap,
 } from 'rxjs'
-import { DEBUG, debugTap } from '../debug'
-import { withDOMElements } from '../detectElements'
-import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openCtxUtil'
+import { DEBUG, debugTap } from '../debug.js'
+import { withDOMElements } from '../detectElements.js'
+import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openCtxUtil.js'
 
 /**
  * Inject OpenCtx features into the GitHub pull request files view.
