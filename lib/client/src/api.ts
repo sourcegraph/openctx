@@ -114,7 +114,7 @@ export function observeCapabilities(
     return observeProviderCall<CapabilitiesResult>(
         providerClients,
         ({ providerClient, settings }) =>
-            from(providerClient.capabilities(params, settings)).pipe(map(result => [result] || null)),
+            from(providerClient.capabilities(params, settings)).pipe(map(result => [result])),
         { logger, emitPartial }
     )
 }
