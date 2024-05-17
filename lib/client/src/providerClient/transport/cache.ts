@@ -30,6 +30,10 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
             cachedMethodCall('capabilities', args, (params, settings) =>
                 provider.capabilities(params, settings)
             ),
+        mentions: (...args) =>
+            cachedMethodCall('mentions', args, (params, settings) =>
+                provider.mentions(params, settings)
+            ),
         items: (...args) =>
             cachedMethodCall('items', args, (params, settings) => provider.items(params, settings)),
         annotations: (...args) =>

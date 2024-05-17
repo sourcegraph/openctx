@@ -24,6 +24,15 @@
       "$ref": "#/definitions/CapabilitiesResult"
     },
     {
+      "$ref": "#/definitions/Mention"
+    },
+    {
+      "$ref": "#/definitions/MentionsParams"
+    },
+    {
+      "$ref": "#/definitions/MentionsResult"
+    },
+    {
       "$ref": "#/definitions/ItemsParams"
     },
     {
@@ -99,6 +108,7 @@
     "CapabilitiesResult": {
       "type": "object",
       "additionalProperties": false,
+      "required": ["meta"],
       "properties": {
         "selector": {
           "description": "Selects the scope in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.",
@@ -119,10 +129,70 @@
               }
             }
           }
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "description": "The name of the provider.",
+              "type": "string"
+            },
+            "description": {
+              "description": "A description of the provider.",
+              "type": "string"
+            }
+          }
         }
       }
     },
     "ItemsParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "message": {
+          "description": "A message that is interpreted by providers to return relevant items.",
+          "type": "string"
+        },
+        "mention": {
+          "type": "object",
+          "description": "A mention interpreted by providers to return items for the specified mention.",
+          "tsType": "Mention"
+        }
+      }
+    },
+    "ItemsResult": {
+      "type": "array",
+      "items": {
+        "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
+      },
+      "tsType": "Item[]"
+    },
+    "Mention": {
+      "description": "A mention contains presentation information relevant to a resource.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "uri"],
+      "properties": {
+        "title": {
+          "description": "A descriptive title.",
+          "type": "string"
+        },
+        "uri": {
+          "description": "A URI for the mention item.",
+          "type": "string",
+          "format": "uri"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": []
+        }
+      }
+    },
+    "MentionsParams": {
       "type": "object",
       "additionalProperties": false,
       "required": [],
@@ -133,12 +203,12 @@
         }
       }
     },
-    "ItemsResult": {
+    "MentionsResult": {
       "type": "array",
       "items": {
-        "$ref": "../../schema/src/openctx.schema.json#/definitions/Item"
+        "$ref": "#/definitions/Mention"
       },
-      "tsType": "Item[]"
+      "tsType": "Mention[]"
     },
     "AnnotationsParams": {
       "type": "object",

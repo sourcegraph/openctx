@@ -100,6 +100,7 @@ function providerFromModule(providerModule: ProviderModule): Provider {
 function lazyProvider(provider: Promise<Provider>): ProviderTransport {
     return {
         capabilities: async (params, settings) => (await provider).capabilities(params, settings),
+        mentions: async (params, settings) => (await provider).mentions?.(params, settings) ?? [],
         items: async (params, settings) => (await provider).items?.(params, settings) ?? [],
         annotations: async (params, settings) => (await provider).annotations?.(params, settings) ?? [],
         dispose: () => {

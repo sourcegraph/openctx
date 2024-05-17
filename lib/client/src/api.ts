@@ -1,5 +1,14 @@
-import type { AnnotationsParams, ItemsParams, ProviderSettings } from '@openctx/protocol'
-import type { Annotation as AnnotationWithPlainRange, Item, Range } from '@openctx/schema'
+import type {
+    AnnotationsParams,
+    CapabilitiesParams,
+    CapabilitiesResult,
+    ItemsParams,
+    ItemsResult,
+    MentionsParams,
+    MentionsResult,
+    ProviderSettings,
+} from '@openctx/protocol'
+import type { Annotation as AnnotationWithPlainRange, Range } from '@openctx/schema'
 import {
     type Observable,
     type ObservableInput,
@@ -34,6 +43,7 @@ export type ObservableProviderClient = {
 }
 
 export interface ProviderClientWithSettings {
+    uri: string
     providerClient: ObservableProviderClient | ProviderClient
     settings: ProviderSettings
 }
@@ -47,34 +57,80 @@ export interface ObserveOptions {
     emitPartial: boolean
 }
 
+/**
+ * This type is used internally by the OpenCtx client to assign a provider URI to each item.
+ */
+export type EachWithProviderUri<T extends unknown[]> = ((T extends readonly (infer ElementType)[]
+    ? ElementType
+    : never) & {
+    providerUri: string
+})[]
+
 function observeProviderCall<R>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     fn: (provider: ProviderClientWithSettings) => Observable<R[] | null>,
     { emitPartial, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
-): Observable<R[]> {
+): Observable<EachWithProviderUri<R[]>> {
     return providerClients.pipe(
         mergeMap(providerClients =>
             providerClients && providerClients.length > 0
                 ? combineLatest(
-                      providerClients.map(({ providerClient, settings }) =>
-                          defer(() => fn({ providerClient, settings })).pipe(
-                              emitPartial ? startWith(null) : tap(),
-                              catchError(error => {
-                                  logger?.(`failed to call provider: ${error}`)
-                                  console.error(error)
-                                  return of(null)
-                              })
-                          )
+                      providerClients.map(({ uri, providerClient, settings }) =>
+                          defer(() => fn({ uri, providerClient, settings }))
+                              .pipe(
+                                  emitPartial ? startWith(null) : tap(),
+                                  catchError(error => {
+                                      logger?.(`failed to call provider: ${error}`)
+                                      console.error(error)
+                                      return of(null)
+                                  })
+                              )
+                              .pipe(
+                                  map(items =>
+                                      (items || []).map(item => ({ ...item, providerUri: uri }))
+                                  )
+                              )
                       )
                   )
                 : of([])
         ),
-        map(result => result.filter((v): v is R[] => v !== null).flat()),
+        map(result => result.filter((v): v is EachWithProviderUri<R[]> => v !== null).flat()),
         tap(items => {
             if (LOG_VERBOSE) {
                 logger?.(`got ${items.length} results: ${JSON.stringify(items)}`)
             }
         })
+    )
+}
+
+/**
+ * Observes OpenCtx items kinds from the configured providers.
+ */
+export function observeCapabilities(
+    providerClients: Observable<ProviderClientWithSettings[]>,
+    params: CapabilitiesParams,
+    { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+): Observable<EachWithProviderUri<CapabilitiesResult[]>> {
+    return observeProviderCall<CapabilitiesResult>(
+        providerClients,
+        ({ providerClient, settings }) =>
+            from(providerClient.capabilities(params, settings)).pipe(map(result => [result] || null)),
+        { logger, emitPartial }
+    )
+}
+
+/**
+ * Observes OpenCtx candidate items from the configured providers.
+ */
+export function observeMentions(
+    providerClients: Observable<ProviderClientWithSettings[]>,
+    params: MentionsParams,
+    { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+): Observable<EachWithProviderUri<MentionsResult>> {
+    return observeProviderCall(
+        providerClients,
+        ({ providerClient, settings }) => from(providerClient.mentions(params, settings)),
+        { logger, emitPartial }
     )
 }
 
@@ -85,7 +141,7 @@ export function observeItems(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: ItemsParams,
     { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
-): Observable<Item[]> {
+): Observable<EachWithProviderUri<ItemsResult>> {
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) => from(providerClient.items(params, settings)),
@@ -100,7 +156,7 @@ export function observeAnnotations<R extends Range>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: AnnotationsParams,
     { logger, makeRange, emitPartial }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & ObserveOptions
-): Observable<Annotation<R>[]> {
+): Observable<EachWithProviderUri<Annotation<R>[]>> {
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) =>

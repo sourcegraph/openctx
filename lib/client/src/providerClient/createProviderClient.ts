@@ -1,8 +1,12 @@
 import type {
     AnnotationsParams,
     AnnotationsResult,
+    CapabilitiesParams,
+    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
+    MentionsParams,
+    MentionsResult,
     ProviderSettings,
 } from '@openctx/protocol'
 import { scopedLogger } from '../logger'
@@ -14,6 +18,12 @@ import { type ProviderTransportOptions, createTransport } from './transport/crea
  * wraps a {@link ProviderTransport}.
  */
 export interface ProviderClient {
+    /** Get capabilities from the provider. */
+    capabilities(params: MentionsParams, settings: ProviderSettings): Promise<CapabilitiesResult>
+
+    /** Get candidate items from the provider. */
+    mentions(params: MentionsParams, settings: ProviderSettings): Promise<MentionsResult | null>
+
     /** Get items from the provider. */
     items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null>
 
@@ -43,6 +53,28 @@ export function createProviderClient(
     const transport = createTransport(providerUri, { ...options, cache: true, logger })
 
     return {
+        async capabilities(
+            params: CapabilitiesParams,
+            settings: ProviderSettings
+        ): Promise<CapabilitiesResult> {
+            try {
+                return await transport.capabilities(params, settings)
+            } catch (error) {
+                logger?.(`failed to get capabilities: ${error}`)
+                return Promise.reject(error)
+            }
+        },
+        async mentions(
+            params: MentionsParams,
+            settings: ProviderSettings
+        ): Promise<MentionsResult | null> {
+            try {
+                return await transport.mentions(params, settings)
+            } catch (error) {
+                logger?.(`failed to get mentions: ${error}`)
+                return Promise.reject(error)
+            }
+        },
         async items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null> {
             try {
                 return await transport.items(params, settings)

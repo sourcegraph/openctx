@@ -34,5 +34,8 @@
   },
   "openctx.providers": {
     // "https://sourcegraph.test:3443/.api/openctx": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome"
   }
 }

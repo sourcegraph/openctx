@@ -1,20 +1,62 @@
 import path from 'path'
-import { type Client, type ClientConfiguration, type Range, createClient } from '@openctx/client'
+import {
+    type Client,
+    type ClientConfiguration,
+    type Mention,
+    type Range,
+    createClient,
+} from '@openctx/client'
 import { of } from 'rxjs'
 
 function usageFatal(message: string): never {
     console.error(message)
-    console.error(`\nUsage: OPENCTX_CONFIG=<config> ${path.basename(process.argv[1])} items [query]`)
+    console.error(
+        `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(
+            process.argv[1]
+        )} capabilities|mentions|items [args...]`
+    )
     process.exit(1)
 }
 
-async function subcommandItems(client: Client<Range>, args: string[]): Promise<void> {
+async function subcommandCapabilities(client: Client<Range>, args: string[]): Promise<void> {
+    const [provideUri] = args
+    const capabilities = await client.capabilities({}, provideUri)
+
+    console.log(JSON.stringify(capabilities))
+}
+
+async function subcommandMentions(client: Client<Range>, args: string[]): Promise<void> {
     if (args.length !== 1) {
+        usageFatal('Error: the "mentions" subcommand expects one argument "query"')
+    }
+    const [query, providerUri] = args
+
+    const mentions = await client.mentions({ query }, providerUri)
+
+    if (process.env.OUTPUT_JSON) {
+        console.log(JSON.stringify(mentions, null, 2))
+    } else {
+        for (const [i, item] of mentions.entries()) {
+            console.log(`#${i + 1} ${item.title}${item.uri ? ` — ${item.uri}` : ''}`)
+            if (item.data) {
+                console.log(JSON.stringify(item.data, null, 2))
+            }
+        }
+    }
+}
+
+async function subcommandItems(client: Client<Range>, args: string[]): Promise<void> {
+    if (args.length === 0) {
         usageFatal('Error: the "items" subcommand expects one argument "query"')
     }
-    const [query] = args
+    const [message, providerUri, mentionJSON] = args
 
-    const items = await client.items({ query })
+    let mention: Mention | undefined
+    if (mentionJSON) {
+        mention = JSON.parse(mentionJSON)
+    }
+
+    const items = await client.items({ message, mention }, providerUri)
 
     if (process.env.OUTPUT_JSON) {
         console.log(JSON.stringify(items, null, 2))
@@ -65,6 +107,12 @@ const client = createClient({
 const subcommand = process.argv[2]
 const args = process.argv.slice(3)
 switch (subcommand) {
+    case 'capabilities':
+        await subcommandCapabilities(client, args)
+        break
+    case 'mentions':
+        await subcommandMentions(client, args)
+        break
     case 'items':
         await subcommandItems(client, args)
         break

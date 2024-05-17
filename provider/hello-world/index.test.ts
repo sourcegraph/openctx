@@ -4,7 +4,9 @@ import helloWorld from './index'
 
 describe('helloWorld', () => {
     test('capabilities', () =>
-        expect(helloWorld.capabilities({}, {})).toStrictEqual<CapabilitiesResult>({}))
+        expect(helloWorld.capabilities({}, {})).toStrictEqual<CapabilitiesResult>({
+            meta: { name: '✨ Hello World!' },
+        }))
 
     test('annotations', () =>
         expect(

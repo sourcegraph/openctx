@@ -1,4 +1,4 @@
-import type { Annotation, Item } from '@openctx/client'
+import type { Annotation, EachWithProviderUri, Item } from '@openctx/client'
 import { TestScheduler } from 'rxjs/testing'
 import { type MockedObject, describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
@@ -37,11 +37,12 @@ vi.mock(
         }) satisfies RecursivePartial<typeof vscode>
 )
 
-function fixtureAnn(label: string): Annotation<vscode.Range> {
+function fixtureAnn(label: string): EachWithProviderUri<Annotation<vscode.Range>[]>[0] {
     return {
         uri: 'file:///f',
         range: createRange(0, 0, 0, 1),
         item: fixtureItem(label),
+        providerUri: 'foo',
     }
 }
 
@@ -65,10 +66,14 @@ describe('createCodeLensProvider', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeAnnotations.mockImplementation(doc => {
-                expect(doc).toBe(doc)
-                return cold<Annotation<vscode.Range>[] | null>('a', { a: [fixtureAnn('a')] })
-            })
+            controller.observeAnnotations.mockImplementation(
+                (doc: Pick<vscode.TextDocument, 'uri' | 'getText'>) => {
+                    expect(doc).toBe(doc)
+                    return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
+                        a: [fixtureAnn('a')],
+                    })
+                }
+            )
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
                 a: [
                     {
@@ -96,7 +101,7 @@ describe('createCodeLensProvider', () => {
         testScheduler().run(({ cold, expectObservable }): void => {
             controller.observeAnnotations.mockImplementation(doc => {
                 expect(doc).toBe(doc)
-                return cold<Annotation<vscode.Range>[] | null>('ab', {
+                return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('ab', {
                     a: [fixtureAnn('a')],
                     b: [fixtureAnn('b')],
                 })
@@ -134,8 +139,14 @@ describe('createCodeLensProvider', () => {
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
             controller.observeAnnotations.mockImplementation(doc =>
-                cold<Annotation<vscode.Range>[] | null>('a', {
-                    a: [{ uri: 'file:///f', item: { title: 'A', ui: { hover: { text: 'D' } } } }],
+                cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
+                    a: [
+                        {
+                            providerUri: 'foo',
+                            uri: 'file:///f',
+                            item: { title: 'A', ui: { hover: { text: 'D' } } },
+                        },
+                    ],
                 })
             )
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
@@ -159,9 +170,10 @@ describe('createCodeLensProvider', () => {
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
             controller.observeAnnotations.mockImplementation(doc =>
-                cold<Annotation<vscode.Range>[] | null>('a', {
+                cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
                     a: [
                         {
+                            providerUri: 'foo',
                             uri: 'file:///f',
                             item: {
                                 title: 'A',
