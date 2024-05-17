@@ -15,6 +15,6 @@ Add the following to your settings in any OpenCtx client:
 
 ## Development
 
-- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/hello-world)
-- [Docs](https://openctx.org/docs/providers/hello-world)
+- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/url-fetcher)
+- [Docs](https://openctx.org/docs/providers/url-fetcher)
 - License: Apache 2.0
