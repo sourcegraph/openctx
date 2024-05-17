@@ -23,7 +23,8 @@ const buildOptions: Record<BuildTarget, esbuild.BuildOptions> = {
     desktop: {
         ...commonBuildOptions,
         platform: 'node',
-        outfile: 'dist/extension.node.js',
+        outfile: 'dist/extension.node.cjs',
+        outExtension: { '.js': '.cjs' },
         define: { ...commonBuildOptions.define, 'process.env.DESKTOP_BUILD': 'true' },
     },
     web: {

@@ -1,7 +1,7 @@
 import type { Annotation } from '@openctx/client'
 import { firstValueFrom, map } from 'rxjs'
 import * as vscode from 'vscode'
-import type { Controller } from '../../controller'
+import type { Controller } from '../../controller.js'
 
 export function createHoverProvider(controller: Controller): vscode.HoverProvider & vscode.Disposable {
     return {

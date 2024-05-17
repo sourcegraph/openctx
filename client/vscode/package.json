@@ -30,7 +30,7 @@
     "release": "node --experimental-specifier-resolution=node --loader ts-node/esm dev/release.mts",
     "release:dry-run": "RELEASE_DRY_RUN=1 pnpm run -s release",
     "test": "pnpm run -s test:unit && pnpm run -s test:integration",
-    "test:integration": "tsc --build ./test/integration && pnpm run -s build:dev:desktop && node --inspect -r ts-node/register dist/tsc/test/integration/main.js",
+    "test:integration": "tsc --build ./test/integration && pnpm run -s build:dev:desktop && node --inspect dist/tsc/test/integration/main.cjs",
     "test:unit": "vitest",
     "vscode:prepublish": "pnpm -s run build"
   },
@@ -49,7 +49,8 @@
   "engines": {
     "vscode": "^1.85.0"
   },
-  "main": "dist/extension.node.js",
+  "type": "module",
+  "main": "dist/extension.node.cjs",
   "browser": "dist/extension.web.js",
   "activationEvents": ["onStartupFinished"],
   "contributes": {

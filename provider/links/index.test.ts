@@ -1,6 +1,6 @@
 import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
-import links, { type Settings } from './index'
+import links, { type Settings } from './index.js'
 
 describe('links', () => {
     const SETTINGS: Settings = {

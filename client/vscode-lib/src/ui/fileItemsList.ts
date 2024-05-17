@@ -1,6 +1,6 @@
 import type { Annotation } from '@openctx/client'
 import * as vscode from 'vscode'
-import type { Controller } from '../controller'
+import type { Controller } from '../controller.js'
 
 const COMMAND_ID = 'openctx.showFileItems'
 

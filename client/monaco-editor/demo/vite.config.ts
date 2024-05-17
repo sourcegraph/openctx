@@ -1,12 +1,8 @@
-/// <reference types="vitest" />
 import { defineConfig } from 'vite'
-import monacoEditorPlugin_ from 'vite-plugin-monaco-editor'
-
-// Hack because the plugin function's export is incorrect.
-const monacoEditorPlugin: typeof monacoEditorPlugin_ = (monacoEditorPlugin_ as any).default
+import monacoEditorPlugin from 'vite-plugin-monaco-editor'
 
 export default defineConfig(({ mode }) => ({
-    plugins: [monacoEditorPlugin({})],
+    plugins: [monacoEditorPlugin.default({})],
     resolve: {
         alias:
             mode === 'development'

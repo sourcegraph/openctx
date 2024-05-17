@@ -1,6 +1,6 @@
 import { type BehaviorSubject, type NextObserver, Observable } from 'rxjs'
-import { observeStorageKey, storage } from './storage'
-import type { LocalStorageItems } from './types'
+import { observeStorageKey, storage } from './storage.js'
+import type { LocalStorageItems } from './types.js'
 
 /**
  * An RxJS subject that is backed by an extension storage item.

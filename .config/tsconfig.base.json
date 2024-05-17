@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
@@ -27,6 +27,6 @@
     "resolveJsonModule": true,
     "composite": true,
     "isolatedModules": true,
-    "outDir": "dist"
+    "outDir": "dist",
   }
 }

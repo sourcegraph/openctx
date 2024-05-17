@@ -1,7 +1,7 @@
 import type { AnnotationsResult, ItemsResult, ProviderSettings } from '@openctx/protocol'
 import { describe, expect, test, vi } from 'vitest'
-import type { Logger } from '../logger'
-import { createProviderClient } from './createProviderClient'
+import type { Logger } from '../logger.js'
+import { createProviderClient } from './createProviderClient.js'
 
 function testdataFileUri(file: string): string {
     return `file://${__dirname}/testdata/${file}`

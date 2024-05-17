@@ -20,19 +20,21 @@ async function main(): Promise<void> {
         'tsc',
         'test',
         'integration',
-        'index'
+        'index.cjs'
     )
 
     // Download VS Code, unzip it, and run the integration test.
-    await runTests({
-        version: '1.88.1',
-        extensionDevelopmentPath,
-        extensionTestsPath,
-        launchArgs: [
-            testWorkspacePath,
-            '--disable-extensions', // disable other extensions
-        ],
-    })
+    process.exit(
+        await runTests({
+            version: '1.88.1',
+            extensionDevelopmentPath,
+            extensionTestsPath,
+            launchArgs: [
+                testWorkspacePath,
+                '--disable-extensions', // disable other extensions
+            ],
+        })
+    )
 }
 main().catch(error => {
     console.error('Failed to run tests:', error)

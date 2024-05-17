@@ -34,10 +34,10 @@ import {
     observeCapabilities,
     observeItems,
     observeMentions,
-} from '../api'
-import { type ConfigurationUserInput, configurationFromUserInput } from '../configuration'
-import type { Logger } from '../logger'
-import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient'
+} from '../api.js'
+import { type ConfigurationUserInput, configurationFromUserInput } from '../configuration.js'
+import type { Logger } from '../logger.js'
+import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
 
 /**
  * Hooks for the OpenCtx {@link Client} to access information about the environment, such as

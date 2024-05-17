@@ -3,9 +3,9 @@ import type { Item, Range } from '@openctx/schema'
 import { firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
-import type { Annotation, EachWithProviderUri } from '../api'
-import type { ConfigurationUserInput } from '../configuration'
-import { type Client, type ClientEnv, createClient } from './client'
+import type { Annotation, EachWithProviderUri } from '../api.js'
+import type { ConfigurationUserInput } from '../configuration.js'
+import { type Client, type ClientEnv, createClient } from './client.js'
 
 function testdataFileUri(file: string): string {
     return `file://${__dirname}/testdata/${file}`

@@ -1,7 +1,7 @@
 import type { Annotation } from '@openctx/schema'
 import clsx from 'clsx'
 import type { FunctionComponent } from 'react'
-import { Chip } from './Chip'
+import { Chip } from './Chip.js'
 import styles from './ChipList.module.css'
 
 /**

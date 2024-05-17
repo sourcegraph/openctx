@@ -2,7 +2,7 @@ import type { AnnotationsParams, Selector } from '@openctx/protocol'
 //
 // Import from a subpackage because the main module calls `os.platform()`, which doesn't work on
 // non-Node engines.
-import match from 'picomatch/lib/picomatch'
+import match from 'picomatch/lib/picomatch.js'
 
 /**
  * Creates a function that matches the request parameters against the selector. See {@link Selector}

@@ -3,7 +3,7 @@ import type { Annotation } from '@openctx/client'
 import { ChipList, IndentationWrapper } from '@openctx/ui-react'
 import { useMemo } from 'react'
 import { createRoot } from 'react-dom/client'
-import { openCtxData, showOpenCtxDecorations } from './extension'
+import { openCtxData, showOpenCtxDecorations } from './extension.js'
 
 export function useOpenCtxExtension({
     visibility,

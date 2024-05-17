@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { prepareAnnotationsForPresentation } from './ui'
+import { prepareAnnotationsForPresentation } from './ui.js'
 
 describe('prepareAnnotationsForPresentation', () => {
     test('sorts', () => {

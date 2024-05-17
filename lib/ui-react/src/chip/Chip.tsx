@@ -1,7 +1,7 @@
 import type { Annotation } from '@openctx/schema'
 import { renderHoverToHTML } from '@openctx/ui-common'
 import type { FunctionComponent } from 'react'
-import { BaseChip } from './BaseChip'
+import { BaseChip } from './BaseChip.js'
 
 /**
  * A single OpenCtx annotation, displayed as a "chip".

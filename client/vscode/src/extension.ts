@@ -1,7 +1,7 @@
 import { type ExtensionApiForTesting, createController } from '@openctx/vscode-lib'
 import * as vscode from 'vscode'
-import { getAuthInfo, secretsChanges } from './authInfo'
-import { dynamicImportFromSource } from './dynamicImport'
+import { getAuthInfo, secretsChanges } from './authInfo.js'
+import { dynamicImportFromSource } from './dynamicImport.js'
 
 /**
  * Start the extension, watching all relevant configuration and secrets for changes.

@@ -5,12 +5,12 @@ import type { Annotation } from '@openctx/client'
 import type { AnnotationsParams } from '@openctx/provider'
 import deepEqual from 'deep-equal'
 import { type Observable, combineLatest, distinctUntilChanged, mergeMap, throttleTime } from 'rxjs'
-import { background } from '../browser-extension/web-extension-api/runtime'
+import { background } from '../browser-extension/web-extension-api/runtime.js'
 import './contentScript.main.css'
-import { debugTap } from './debug'
-import { injectOnGitHubCodeView } from './github/codeView'
-import { injectOnGitHubPullRequestFilesView } from './github/pullRequestFilesView'
-import { locationChanges } from './locationChanges'
+import { debugTap } from './debug.js'
+import { injectOnGitHubCodeView } from './github/codeView.js'
+import { injectOnGitHubPullRequestFilesView } from './github/pullRequestFilesView.js'
+import { locationChanges } from './locationChanges.js'
 
 /**
  * A function called to inject OpenCtx features on a page. They should just return an empty

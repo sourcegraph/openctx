@@ -1,6 +1,6 @@
 import type { Item } from '@openctx/schema'
 import type { Meta, StoryObj } from '@storybook/react'
-import { ChipList } from './ChipList'
+import { ChipList } from './ChipList.js'
 
 const FIXTURE_ITEMS: Item[] = [
     {

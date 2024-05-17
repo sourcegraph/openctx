@@ -3,7 +3,7 @@ import { Decoration, type DecorationSet, EditorView, WidgetType } from '@codemir
 import type { Annotation } from '@openctx/client'
 import { prepareAnnotationsForPresentation } from '@openctx/ui-common'
 import deepEqual from 'deep-equal'
-import { type OpenCtxDecorationsConfig, openCtxDataFacet } from './extension'
+import { type OpenCtxDecorationsConfig, openCtxDataFacet } from './extension.js'
 
 class BlockWidget extends WidgetType {
     private container: HTMLElement | null = null

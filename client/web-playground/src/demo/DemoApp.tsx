@@ -1,8 +1,8 @@
 import { type FunctionComponent, useEffect, useState } from 'react'
-import { AnnotatedEditor } from '../AnnotatedEditor'
-import { SettingsEditor } from '../SettingsEditor'
+import { AnnotatedEditor } from '../AnnotatedEditor.js'
+import { SettingsEditor } from '../SettingsEditor.js'
 import styles from './DemoApp.module.css'
-import { getDefaultSettings } from './settings'
+import { getDefaultSettings } from './settings.js'
 
 const SAMPLE_FILES = [
     'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/client/web/src/auth/SignInPage.story.tsx',

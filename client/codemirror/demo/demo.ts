@@ -4,7 +4,7 @@ import { EditorState, type Extension } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { type ClientConfiguration, createClient } from '@openctx/client'
 import providerHelloWorldUrl from '@openctx/provider-hello-world?url'
-import { openCtxData, showOpenCtxDecorations } from '../src'
+import { openCtxData, showOpenCtxDecorations } from '../src/index.js'
 
 const container = document.createElement('div')
 container.id = 'container'

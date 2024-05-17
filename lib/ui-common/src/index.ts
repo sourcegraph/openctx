@@ -1,5 +1,5 @@
-export { renderHoverToHTML } from './hover'
+export { renderHoverToHTML } from './hover.js'
 export {
     prepareAnnotationsForPresentation,
     type AnnotationWithRichRange,
-} from './ui'
+} from './ui.js'

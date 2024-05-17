@@ -1,1 +1,1 @@
-export type * from './openctx-protocol.schema'
+export type * from './openctx-protocol.schema.js'

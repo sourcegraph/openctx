@@ -1,5 +1,5 @@
 import { type MockedObject, describe, expect, test, vi } from 'vitest'
-import type { Controller } from './controller'
+import type { Controller } from './controller.js'
 
 export function createMockController(): MockedObject<Controller> {
     return {

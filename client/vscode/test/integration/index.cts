@@ -12,7 +12,7 @@ export async function run(): Promise<void> {
 
     const testsRoot = __dirname
 
-    const files = globSync('**/**.test.js', { cwd: testsRoot })
+    const files = globSync('**/**.test.cjs', { cwd: testsRoot })
 
     // Add files to the test suite
     for (const file of files) {

@@ -1,6 +1,6 @@
 import type { Annotation } from '@openctx/schema'
 import clsx from 'clsx'
-import { createChip } from './Chip'
+import { createChip } from './Chip.js'
 import styles from './ChipList.module.css'
 
 /**

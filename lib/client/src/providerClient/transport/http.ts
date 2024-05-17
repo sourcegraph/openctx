@@ -6,8 +6,8 @@ import type {
     RequestMessage,
     ResponseMessage,
 } from '@openctx/protocol'
-import { scopedLogger } from '../../logger'
-import type { ProviderTransport, ProviderTransportOptions } from './createTransport'
+import { scopedLogger } from '../../logger.js'
+import type { ProviderTransport, ProviderTransportOptions } from './createTransport.js'
 
 export function createHttpTransport(
     providerUri: string,

@@ -1,9 +1,9 @@
-import type { Provider } from '@openctx/provider/src/provider'
-import type { AuthInfo, ClientEnv } from '../../client/client'
-import type { Logger } from '../../logger'
-import { cachedTransport } from './cache'
-import { createHttpTransport } from './http'
-import { createLocalModuleFileTransport, createRemoteModuleFileTransport } from './module'
+import type { Provider } from '@openctx/provider'
+import type { AuthInfo, ClientEnv } from '../../client/client.js'
+import type { Logger } from '../../logger.js'
+import { cachedTransport } from './cache.js'
+import { createHttpTransport } from './http.js'
+import { createLocalModuleFileTransport, createRemoteModuleFileTransport } from './module.js'
 
 /**
  * A provider transport is a low-level TypeScript wrapper around the provider protocol. It is a

@@ -1,5 +1,5 @@
 import { Observable, distinctUntilChanged } from 'rxjs'
-import { debugTap } from './debug'
+import { debugTap } from './debug.js'
 
 /**
  * An Observable that emits when the page's URL changes.

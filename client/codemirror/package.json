@@ -8,6 +8,7 @@
     "url": "https://github.com/sourcegraph/openctx",
     "directory": "client/codemirror"
   },
+  "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["README.md", "dist", "!**/*.test.*"],

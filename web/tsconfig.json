@@ -6,6 +6,7 @@
     "types": ["vite/client"],
 
     /* Bundler mode */
+    "module": "preserve",
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,

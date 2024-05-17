@@ -1,6 +1,6 @@
 import type { Annotation, Item, ItemsParams } from '@openctx/client'
 import type * as vscode from 'vscode'
-import type { Controller } from './controller'
+import type { Controller } from './controller.js'
 
 /**
  * The API exposed for this VS Code extension's tests.

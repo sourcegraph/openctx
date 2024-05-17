@@ -1,7 +1,7 @@
 import { type AnnotationWithRichRange, prepareAnnotationsForPresentation } from '@openctx/ui-common'
 import { type Observable, type Subscription, firstValueFrom, map, shareReplay } from 'rxjs'
 import * as vscode from 'vscode'
-import type { Controller } from '../../controller'
+import type { Controller } from '../../controller.js'
 
 interface CodeLens extends vscode.CodeLens {}
 
