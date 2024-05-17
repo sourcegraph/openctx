@@ -173,6 +173,7 @@
   "dependencies": {
     "@openctx/client": "workspace:*",
     "@openctx/ui-common": "workspace:*",
+    "@openctx/vscode-lib": "workspace:*",
     "esbuild-wasm": "^0.19.11",
     "path-browserify": "^1.0.1",
     "rxjs": "^7.8.1"
