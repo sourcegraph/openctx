@@ -71,7 +71,7 @@ export function createProviderClient(
             try {
                 return await transport.mentions(params, settings)
             } catch (error) {
-                logger?.(`failed to get candidate items: ${error}`)
+                logger?.(`failed to get mentions: ${error}`)
                 return Promise.reject(error)
             }
         },
