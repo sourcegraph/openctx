@@ -5,6 +5,7 @@ import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
 import {
     type Annotation,
+    type EachWithProviderUri,
     type ProviderClientWithSettings,
     observeAnnotations,
     observeItems,
@@ -18,15 +19,20 @@ const FIXTURE_ANNOTATIONS_PARAMS: AnnotationsParams = {
     content: 'A',
 }
 
-function fixtureItem(label: string): Item {
+function fixtureItemWithoutProviderUri(label: string): Item {
     return { title: label.toUpperCase() }
 }
 
-function fixtureAnn(label: string): Annotation {
+function fixtureItem(label: string, providerUri: string): Item & { providerUri: string } {
+    return { ...fixtureItemWithoutProviderUri(label), providerUri }
+}
+
+function fixtureAnn(label: string, providerUri: string): EachWithProviderUri<Annotation[]>[0] {
     return {
+        providerUri,
         uri: FIXTURE_ANNOTATIONS_PARAMS.uri,
         range: { start: { line: 0, character: 0 }, end: { line: 0, character: 1 } },
-        item: fixtureItem(label),
+        item: fixtureItemWithoutProviderUri(label),
     }
 }
 
@@ -38,6 +44,12 @@ const DUMMY_CLIENT: ProviderClient = {
         throw new Error('noop')
     },
     items() {
+        throw new Error('noop')
+    },
+    mentions() {
+        throw new Error('noop')
+    },
+    capabilities() {
         throw new Error('noop')
     },
 }
@@ -52,7 +64,11 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
+                                uri: 'a',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('a', 'a')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -60,7 +76,7 @@ describe('observeItems', () => {
                     FIXTURE_ITEMS_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureItem('a')] } satisfies Record<string, Item[]>)
+            ).toBe('a', { a: [fixtureItem('a', 'a')] } satisfies Record<string, Item[]>)
         })
     })
 
@@ -85,11 +101,19 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
+                                uri: 'a',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('a', 'a')]),
+                                },
                                 settings: {},
                             },
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
+                                uri: 'b',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('b', 'b')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -97,13 +121,16 @@ describe('observeItems', () => {
                     FIXTURE_ITEMS_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureItem('a'), fixtureItem('b')] } satisfies Record<string, Item[]>)
+            ).toBe('a', {
+                a: [fixtureItem('a', 'a'), fixtureItem('b', 'b')],
+            } satisfies Record<string, Item[]>)
         })
     })
 
     test('provider error', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
+                uri: 'a',
                 providerClient: {
                     ...DUMMY_CLIENT,
                     items: () => {
@@ -118,7 +145,11 @@ describe('observeItems', () => {
                         a: [
                             erroringProvider,
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
+                                uri: 'a',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('b', 'a')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -127,7 +158,11 @@ describe('observeItems', () => {
 
                         c: [
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
+                                uri: 'c',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('b', 'c')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -135,10 +170,11 @@ describe('observeItems', () => {
                     FIXTURE_ITEMS_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureItem('b')], b: [], c: [fixtureItem('b')] } satisfies Record<
-                string,
-                Item[]
-            >)
+            ).toBe('a', {
+                a: [fixtureItem('b', 'a')],
+                b: [],
+                c: [fixtureItem('b', 'c')],
+            } satisfies Record<string, Item[]>)
         })
     })
 
@@ -149,17 +185,29 @@ describe('observeItems', () => {
                     cold<ProviderClientWithSettings[]>('a-b', {
                         a: [
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
+                                uri: 'a',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('a', 'a')]),
+                                },
                                 settings: {},
                             },
                         ],
                         b: [
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('a')]) },
+                                uri: 'a',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('a', 'a')]),
+                                },
                                 settings: {},
                             },
                             {
-                                providerClient: { ...DUMMY_CLIENT, items: () => of([fixtureItem('b')]) },
+                                uri: 'b',
+                                providerClient: {
+                                    ...DUMMY_CLIENT,
+                                    items: () => of([fixtureItem('b', 'b')]),
+                                },
                                 settings: {},
                             },
                         ],
@@ -168,8 +216,8 @@ describe('observeItems', () => {
                     OPTS
                 )
             ).toBe('a-b', {
-                a: [fixtureItem('a')],
-                b: [fixtureItem('a'), fixtureItem('b')],
+                a: [fixtureItem('a', 'a')],
+                b: [fixtureItem('a', 'a'), fixtureItem('b', 'b')],
             } satisfies Record<string, Item[]>)
         })
     })
@@ -185,9 +233,10 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
+                                uri: 'a',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('a')]),
+                                    annotations: () => of([fixtureAnn('a', 'a')]),
                                 },
                                 settings: {},
                             },
@@ -196,7 +245,10 @@ describe('observeAnnotations', () => {
                     FIXTURE_ANNOTATIONS_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureAnn('a')] } satisfies Record<string, Annotation[]>)
+            ).toBe('a', { a: [fixtureAnn('a', 'a')] } satisfies Record<
+                string,
+                EachWithProviderUri<Annotation[]>
+            >)
         })
     })
 
@@ -221,16 +273,18 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a', {
                         a: [
                             {
+                                uri: 'a',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('a')]),
+                                    annotations: () => of([fixtureAnn('a', 'a')]),
                                 },
                                 settings: {},
                             },
                             {
+                                uri: 'b',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('b')]),
+                                    annotations: () => of([fixtureAnn('b', 'b')]),
                                 },
                                 settings: {},
                             },
@@ -239,13 +293,17 @@ describe('observeAnnotations', () => {
                     FIXTURE_ANNOTATIONS_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureAnn('a'), fixtureAnn('b')] } satisfies Record<string, Annotation[]>)
+            ).toBe('a', { a: [fixtureAnn('a', 'a'), fixtureAnn('b', 'b')] } satisfies Record<
+                string,
+                Annotation[]
+            >)
         })
     })
 
     test('provider error', () => {
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
+                uri: 'a',
                 providerClient: {
                     ...DUMMY_CLIENT,
                     annotations: () => {
@@ -260,9 +318,10 @@ describe('observeAnnotations', () => {
                         a: [
                             erroringProvider,
                             {
+                                uri: 'a',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('b')]),
+                                    annotations: () => of([fixtureAnn('b', 'a')]),
                                 },
                                 settings: {},
                             },
@@ -272,9 +331,10 @@ describe('observeAnnotations', () => {
 
                         c: [
                             {
+                                uri: 'c',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('b')]),
+                                    annotations: () => of([fixtureAnn('b', 'c')]),
                                 },
                                 settings: {},
                             },
@@ -283,10 +343,11 @@ describe('observeAnnotations', () => {
                     FIXTURE_ANNOTATIONS_PARAMS,
                     OPTS
                 )
-            ).toBe('a', { a: [fixtureAnn('b')], b: [], c: [fixtureAnn('b')] } satisfies Record<
-                string,
-                Annotation[]
-            >)
+            ).toBe('a', {
+                a: [fixtureAnn('b', 'a')],
+                b: [],
+                c: [fixtureAnn('b', 'c')],
+            } satisfies Record<string, Annotation[]>)
         })
     })
 
@@ -297,25 +358,29 @@ describe('observeAnnotations', () => {
                     cold<ProviderClientWithSettings[]>('a-b', {
                         a: [
                             {
+                                uri: 'a',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('a')]),
+                                    annotations: () => of([fixtureAnn('a', 'a')]),
                                 },
                                 settings: {},
                             },
                         ],
                         b: [
                             {
+                                uri: 'a',
+
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('a')]),
+                                    annotations: () => of([fixtureAnn('a', 'a')]),
                                 },
                                 settings: {},
                             },
                             {
+                                uri: 'b',
                                 providerClient: {
                                     ...DUMMY_CLIENT,
-                                    annotations: () => of([fixtureAnn('b')]),
+                                    annotations: () => of([fixtureAnn('b', 'b')]),
                                 },
                                 settings: {},
                             },
@@ -325,8 +390,8 @@ describe('observeAnnotations', () => {
                     OPTS
                 )
             ).toBe('a-b', {
-                a: [fixtureAnn('a')],
-                b: [fixtureAnn('a'), fixtureAnn('b')],
+                a: [fixtureAnn('a', 'a')],
+                b: [fixtureAnn('a', 'a'), fixtureAnn('b', 'b')],
             } satisfies Record<string, Annotation[]>)
         })
     })

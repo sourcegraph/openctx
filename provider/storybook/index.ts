@@ -32,13 +32,14 @@ export interface Settings {
 const storybook: Provider<Settings> = {
     capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
         if (!settings.storybookUrl) {
-            return {}
+            return { meta: { name: 'Storybook' } }
         }
         return {
             selector: [
                 { path: '**/*.story.(t|j)s?(x)' },
                 { path: '**/*.(t|j)s(x)', contentContains: 'react' },
             ],
+            meta: { name: 'Storybook' },
         }
     },
 

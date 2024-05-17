@@ -23,7 +23,7 @@ export type Settings = {
  */
 const googleDocs: Provider<Settings> = {
     capabilities(): CapabilitiesResult {
-        return {}
+        return { meta: { name: 'Google Docs' } }
     },
 
     async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
@@ -38,7 +38,7 @@ const googleDocs: Provider<Settings> = {
         const docsAPI = googleDocsAPI({ version: 'v1', auth: oauth2Client })
         const driveAPI = googleDriveAPI({ version: 'v3', auth: oauth2Client })
 
-        const quotedQuery = JSON.stringify(params.query)
+        const quotedQuery = JSON.stringify(params.message)
         const files = await driveAPI.files.list({
             q: `(name contains ${quotedQuery} or fullText contains ${quotedQuery}) and mimeType = 'application/vnd.google-apps.document'`,
             spaces: 'drive',

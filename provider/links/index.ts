@@ -65,7 +65,7 @@ interface LinkPattern {
  */
 const links: Provider<Settings> = {
     capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
-        return { selector: settings.links?.map(({ path }) => ({ path })) || [] }
+        return { selector: settings.links?.map(({ path }) => ({ path })) || [], meta: { name: 'Links' } }
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {

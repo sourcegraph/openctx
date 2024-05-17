@@ -3,7 +3,7 @@ import type { Item, Range } from '@openctx/schema'
 import { firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
-import type { Annotation } from '../api'
+import type { Annotation, EachWithProviderUri } from '../api'
 import type { ConfigurationUserInput } from '../configuration'
 import { type Client, type ClientEnv, createClient } from './client'
 
@@ -52,7 +52,9 @@ describe('Client', () => {
             })
 
             const items = await client.items(FIXTURE_ITEMS_PARAMS)
-            expect(items).toStrictEqual<typeof items>([{ title: 'A' }])
+            expect(items).toStrictEqual<typeof items>([
+                { title: 'A', providerUri: testdataFileUri('simple.js') },
+            ])
         })
 
         test('no providers', async () => {
@@ -74,10 +76,21 @@ describe('Client', () => {
                                 a: { enable: true, providers: { [testdataFileUri('simple.js')]: {} } },
                             }),
                         __mock__: {
-                            getProviderClient: () => ({ items: () => of([fixtureItem('a')]) }),
+                            getProviderClient: () => ({
+                                items: () =>
+                                    of([
+                                        {
+                                            ...fixtureItem('a'),
+                                            providerUri: testdataFileUri('simple.js'),
+                                        },
+                                    ]),
+                            }),
                         },
                     }).itemsChanges(FIXTURE_ITEMS_PARAMS)
-                ).toBe('(0a)', { '0': [], a: [fixtureItem('a')] } satisfies Record<string, Item[]>)
+                ).toBe('(0a)', {
+                    '0': [],
+                    a: [{ ...fixtureItem('a'), providerUri: testdataFileUri('simple.js') }],
+                } satisfies Record<string, EachWithProviderUri<Item[]>>)
             })
         })
     })
@@ -95,6 +108,7 @@ describe('Client', () => {
                     uri: FIXTURE_ANNOTATIONS_PARAMS.uri,
                     range: { start: { line: 1, character: 2 }, end: { line: 3, character: 4 } },
                     item: { title: 'A' },
+                    providerUri: testdataFileUri('simple.js'),
                 },
             ])
         })
@@ -121,7 +135,10 @@ describe('Client', () => {
                             getProviderClient: () => ({ annotations: () => of([fixtureAnn('a')]) }),
                         },
                     }).annotationsChanges(FIXTURE_ANNOTATIONS_PARAMS)
-                ).toBe('(0a)', { '0': [], a: [fixtureAnn('a')] } satisfies Record<string, Annotation[]>)
+                ).toBe('(0a)', {
+                    '0': [],
+                    a: [{ ...fixtureAnn('a'), providerUri: testdataFileUri('simple.js') }],
+                } satisfies Record<string, EachWithProviderUri<Annotation[]>>)
             })
         })
     })

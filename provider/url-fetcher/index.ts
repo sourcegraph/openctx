@@ -3,6 +3,8 @@ import type {
     CapabilitiesResult,
     ItemsParams,
     ItemsResult,
+    MentionsParams,
+    MentionsResult,
     Provider,
 } from '@openctx/provider'
 
@@ -16,7 +18,17 @@ const urlFetcher: Provider<UrlFetcherSettings> = {
         return {
             // empty since we don't provide any annotations.
             selector: [],
+            meta: { name: 'URLs' },
         }
+    },
+
+    async mentions(params: MentionsParams, settings: UrlFetcherSettings): Promise<MentionsResult> {
+        const [item] = await fetchItem({ message: params.query }, 2000)
+        if (!item) {
+            return []
+        }
+
+        return [{ title: item.title, uri: item.url, data: { content: item.ai?.content } }]
     },
 
     async items(params: ItemsParams, settings: UrlFetcherSettings): Promise<ItemsResult> {
@@ -25,7 +37,17 @@ const urlFetcher: Provider<UrlFetcherSettings> = {
 }
 
 async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<ItemsResult> {
-    const url = params.query
+    if (typeof params.mention?.data?.content === 'string') {
+        return [
+            {
+                ...params.mention,
+                ui: { hover: { text: `Fetched from ${params.mention.uri}` } },
+                ai: { content: params.mention.data.content },
+            },
+        ]
+    }
+
+    const url = params.message || params.mention?.uri
     if (!url) {
         return []
     }

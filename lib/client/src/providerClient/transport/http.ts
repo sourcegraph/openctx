@@ -2,6 +2,7 @@ import type {
     AnnotationsResult,
     CapabilitiesResult,
     ItemsResult,
+    MentionsResult,
     RequestMessage,
     ResponseMessage,
 } from '@openctx/protocol'
@@ -85,6 +86,7 @@ export function createHttpTransport(
 
     return {
         capabilities: async params => send<CapabilitiesResult>({ method: 'capabilities', params }),
+        mentions: async params => send<MentionsResult>({ method: 'mentions', params }),
         items: async params => send<ItemsResult>({ method: 'items', params }),
         annotations: async params => send<AnnotationsResult>({ method: 'annotations', params }),
     }

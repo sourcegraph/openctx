@@ -16,6 +16,7 @@ describe('prometheus', () => {
     test('capabilities', async () => {
         expect(await prometheus.capabilities({}, SETTINGS)).toStrictEqual<CapabilitiesResult>({
             selector: [{ path: '**/*.go' }],
+            meta: { name: 'Prometheus' },
         })
     })
 

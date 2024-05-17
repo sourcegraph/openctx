@@ -1,10 +1,10 @@
 import {
-    type Annotation,
     type AuthInfo,
+    type CapabilitiesParams,
     type Client,
     type ClientEnv,
-    type Item,
     type ItemsParams,
+    type MentionsParams,
     type Range,
     createClient,
 } from '@openctx/client'
@@ -30,16 +30,25 @@ import { createStatusBarItem } from './ui/statusBarItem'
 import { createErrorWaiter } from './util/errorWaiter'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable'
 
+export type VSCodeClient = Client<vscode.Range>
+
 export interface Controller {
-    observeItems(params: ItemsParams): Observable<Item[] | null>
-    items(params: ItemsParams): Promise<Item[] | null>
+    observeCapabilities: VSCodeClient['capabilitiesChanges']
+    capabilities: VSCodeClient['capabilities']
+
+    observeMentions: VSCodeClient['mentionsChanges']
+    mentions: VSCodeClient['mentions']
+
+    observeItems: VSCodeClient['itemsChanges']
+    items: VSCodeClient['items']
 
     observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
-    ): Observable<Annotation<vscode.Range>[] | null>
+    ): ReturnType<VSCodeClient['annotationsChanges']>
     annotations(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
-    ): Promise<Annotation<vscode.Range>[] | null>
+        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
+        providerUri?: string
+    ): ReturnType<VSCodeClient['annotations']>
 
     client: Client<vscode.Range>
 }
@@ -127,31 +136,57 @@ export function createController({
             errorWaiter.gotError(true)
         },
     }
-    const errorCatcher = (error: any): Observable<null> => {
+    const errorCatcher = <T = any>(error: any): Observable<T[]> => {
         outputChannel.appendLine(error)
-        return of(null)
+        return of([])
     }
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeItems(params: ItemsParams): Observable<Item[] | null> {
+        observeCapabilities(params: CapabilitiesParams) {
             if (!errorWaiter.ok()) {
-                return of(null)
+                return of([])
+            }
+            return client
+                .capabilitiesChanges(params)
+                .pipe(tap(errorTapObserver), catchError(errorCatcher))
+        },
+        async capabilities(params: CapabilitiesParams) {
+            if (!errorWaiter.ok()) {
+                return []
+            }
+            return client.capabilities(params)
+        },
+        observeMentions(params: MentionsParams) {
+            if (!errorWaiter.ok()) {
+                return of([])
+            }
+            return client.mentionsChanges(params).pipe(tap(errorTapObserver), catchError(errorCatcher))
+        },
+        async mentions(params: MentionsParams) {
+            if (!errorWaiter.ok()) {
+                return []
+            }
+            return client.mentions(params)
+        },
+        observeItems(params: ItemsParams) {
+            if (!errorWaiter.ok()) {
+                return of([])
             }
             return client.itemsChanges(params).pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async items(params: ItemsParams): Promise<Item[] | null> {
+        async items(params: ItemsParams) {
             if (!errorWaiter.ok()) {
-                return null
+                return []
             }
             return client.items(params)
         },
 
-        observeAnnotations(doc: vscode.TextDocument): Observable<Annotation<vscode.Range>[] | null> {
+        observeAnnotations(doc: vscode.TextDocument) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
-                return of(null)
+                return of([])
             }
             return client
                 .annotationsChanges({
@@ -160,14 +195,17 @@ export function createController({
                 })
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async annotations(doc: vscode.TextDocument): Promise<Annotation<vscode.Range>[] | null> {
+        async annotations(doc: vscode.TextDocument, providerUri?: string) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
-                return null
+                return []
             }
-            return client.annotations({
-                uri: doc.uri.toString(),
-                content: doc.getText(),
-            })
+            return client.annotations(
+                {
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                },
+                providerUri
+            )
         },
 
         client,

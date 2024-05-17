@@ -5,6 +5,8 @@ import type {
     CapabilitiesResult,
     ItemsParams,
     ItemsResult,
+    MentionsParams,
+    MentionsResult,
     ProviderSettings,
 } from '@openctx/protocol'
 
@@ -21,6 +23,8 @@ export interface Provider<S extends {} = ProviderSettings> {
         params: CapabilitiesParams,
         settings: S
     ): CapabilitiesResult | Promise<CapabilitiesResult>
+
+    mentions?(params: MentionsParams, settings: S): MentionsResult | Promise<MentionsResult>
 
     /**
      * Returns OpenCtx items.

@@ -8,6 +8,7 @@ import { type ProviderTransport, createTransport } from './createTransport'
 async function expectProviderTransport(provider: ProviderTransport) {
     expect(await provider.capabilities({}, {})).toEqual<CapabilitiesResult>({
         selector: [{ path: 'foo' }],
+        meta: { name: 'foo' },
     })
 }
 
@@ -55,13 +56,19 @@ describe('createTransport', () => {
                     expect(uri).toBe('file:///myProvider.js')
                     return Promise.resolve({
                         default: {
-                            capabilities: () => ({ selector: [{ path: 'asdf' }] }),
+                            capabilities: () => ({
+                                selector: [{ path: 'asdf' }],
+                                meta: { name: 'foo' },
+                            }),
                             items: () => [],
                         },
                     })
                 },
             })
-            expect(await provider.capabilities({}, {})).toEqual({ selector: [{ path: 'asdf' }] })
+            expect(await provider.capabilities({}, {})).toEqual({
+                selector: [{ path: 'asdf' }],
+                meta: { name: 'foo' },
+            })
         })
 
         test('dynamicImportFromUri remote', async () => {
@@ -70,13 +77,19 @@ describe('createTransport', () => {
                     expect(uri).toBe('http://example.com/myProvider.js')
                     return Promise.resolve({
                         default: {
-                            capabilities: () => ({ selector: [{ path: 'asdf' }] }),
+                            capabilities: () => ({
+                                selector: [{ path: 'asdf' }],
+                                meta: { name: 'foo' },
+                            }),
                             items: () => [],
                         },
                     })
                 },
             })
-            expect(await provider.capabilities({}, {})).toEqual({ selector: [{ path: 'asdf' }] })
+            expect(await provider.capabilities({}, {})).toEqual({
+                selector: [{ path: 'asdf' }],
+                meta: { name: 'foo' },
+            })
         })
 
         test('dynamicImportFromSource', async () => {
@@ -90,14 +103,20 @@ describe('createTransport', () => {
                     return Promise.resolve({
                         exports: {
                             default: {
-                                capabilities: () => ({ selector: [{ path: 'asdf' }] }),
+                                capabilities: () => ({
+                                    selector: [{ path: 'asdf' }],
+                                    meta: { name: 'foo' },
+                                }),
                                 items: () => [],
                             },
                         },
                     })
                 },
             })
-            expect(await provider.capabilities({}, {})).toEqual({ selector: [{ path: 'asdf' }] })
+            expect(await provider.capabilities({}, {})).toEqual({
+                selector: [{ path: 'asdf' }],
+                meta: { name: 'foo' },
+            })
         })
     })
 
@@ -143,7 +162,10 @@ describe('createTransport', () => {
         test('simple', async () => {
             fetchMocker.mockOnce(
                 JSON.stringify({
-                    result: { selector: [{ path: 'foo' }] } satisfies CapabilitiesResult,
+                    result: {
+                        selector: [{ path: 'foo' }],
+                        meta: { name: 'foo' },
+                    } satisfies CapabilitiesResult,
                 } satisfies ResponseMessage)
             )
             const provider = createTransport('https://example.com/openctx', {})

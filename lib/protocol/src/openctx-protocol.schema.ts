@@ -9,11 +9,15 @@ export type Protocol =
     | ProviderSettings
     | CapabilitiesParams
     | CapabilitiesResult
+    | Mention
+    | MentionsParams
+    | MentionsResult
     | ItemsParams
     | ItemsResult
     | AnnotationsParams
     | AnnotationsResult
 export type CapabilitiesParams = Record<string, never>
+export type MentionsResult = Mention[]
 export type ItemsResult = Item[]
 export type AnnotationsResult = Annotation[]
 
@@ -44,6 +48,16 @@ export interface CapabilitiesResult {
      * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.
      */
     selector?: Selector[]
+    meta: {
+        /**
+         * The name of the provider.
+         */
+        name: string
+        /**
+         * A description of the provider.
+         */
+        description?: string
+    }
 }
 /**
  * Defines a scope in which a provider is called.
@@ -62,11 +76,37 @@ export interface Selector {
      */
     contentContains?: string
 }
-export interface ItemsParams {
+/**
+ * TODO: move this to openctx.schema.json and figure out why it is not getting imported in the protocol-schema.ts
+ */
+export interface Mention {
+    /**
+     * A descriptive title.
+     */
+    title: string
+    /**
+     * A URI for the mention item.
+     */
+    uri?: string
+    data?: {
+        [k: string]: unknown | undefined
+    }
+}
+export interface MentionsParams {
     /**
      * A search query that is interpreted by providers to filter the items in the result set.
      */
     query?: string
+}
+export interface ItemsParams {
+    /**
+     * A search query that is interpreted by providers to filter the items in the result set.
+     */
+    message?: string
+    /**
+     * A mention interpreted by providers to return items for the specified mention.
+     */
+    mention?: Mention
 }
 export interface AnnotationsParams {
     /**
