@@ -11,7 +11,7 @@ import { of } from 'rxjs'
 function usageFatal(message: string): never {
     console.error(message)
     console.error(
-        `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(process.argv[1])} items [query] [mentionJSON]`
+        `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(process.argv[1])} capabilities|mentions|items [args...]`
     )
     process.exit(1)
 }
