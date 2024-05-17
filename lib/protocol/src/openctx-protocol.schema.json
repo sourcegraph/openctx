@@ -153,7 +153,7 @@
       "required": [],
       "properties": {
         "message": {
-          "description": "A search query that is interpreted by providers to filter the items in the result set.",
+          "description": "A message that is interpreted by providers to return relevant items.",
           "type": "string"
         },
         "mention": {
@@ -171,7 +171,7 @@
       "tsType": "Item[]"
     },
     "Mention": {
-      "description": "TODO: move this to openctx.schema.json and figure out why it is not getting imported in the protocol-schema.ts",
+      "description": "A mention contains presentation information relevant to a resource.",
       "type": "object",
       "additionalProperties": false,
       "required": ["title", "uri"],

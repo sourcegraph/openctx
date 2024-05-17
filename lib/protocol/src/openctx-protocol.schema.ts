@@ -77,7 +77,7 @@ export interface Selector {
     contentContains?: string
 }
 /**
- * TODO: move this to openctx.schema.json and figure out why it is not getting imported in the protocol-schema.ts
+ * A mention contains presentation information relevant to a resource.
  */
 export interface Mention {
     /**
@@ -100,7 +100,7 @@ export interface MentionsParams {
 }
 export interface ItemsParams {
     /**
-     * A search query that is interpreted by providers to filter the items in the result set.
+     * A message that is interpreted by providers to return relevant items.
      */
     message?: string
     /**
