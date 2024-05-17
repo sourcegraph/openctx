@@ -1,7 +1,14 @@
 import { readFileSync } from 'fs'
 import { auth, docs as googleDocsAPI, type docs_v1 } from '@googleapis/docs'
 import { drive as googleDriveAPI } from '@googleapis/drive'
-import type { Item, ItemsParams, ItemsResult, MetaResult, Provider } from '@openctx/provider'
+import type {
+    ItemsParams,
+    ItemsResult,
+    MentionsParams,
+    MentionsResult,
+    MetaResult,
+    Provider,
+} from '@openctx/provider'
 import type { Credentials } from 'google-auth-library'
 
 /** Settings for the Google Docs OpenCtx provider. */
@@ -26,19 +33,15 @@ const googleDocs: Provider<Settings> = {
         return { name: 'Google Docs' }
     },
 
-    async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
-        const settings = resolveSettings(settingsInput)
+    async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
+        if (!params.query) {
+            return []
+        }
 
-        const oauth2Client = new auth.OAuth2({
-            clientId: settings.googleOAuthClient?.client_id,
-            clientSecret: settings.googleOAuthClient?.client_secret,
-            redirectUri: settings.googleOAuthClient?.redirect_uris[0],
-        })
-        oauth2Client.setCredentials(settings.googleOAuthCredentials)
-        const docsAPI = googleDocsAPI({ version: 'v1', auth: oauth2Client })
+        const oauth2Client = resolveOAuth2Client(settingsInput)
         const driveAPI = googleDriveAPI({ version: 'v3', auth: oauth2Client })
 
-        const quotedQuery = JSON.stringify(params.message)
+        const quotedQuery = JSON.stringify(params.query)
         const files = await driveAPI.files.list({
             q: `(name contains ${quotedQuery} or fullText contains ${quotedQuery}) and mimeType = 'application/vnd.google-apps.document'`,
             spaces: 'drive',
@@ -49,29 +52,57 @@ const googleDocs: Provider<Settings> = {
             pageSize: 25,
         })
 
-        const items: Item[] = []
-        await Promise.all(
-            (files.data.files ?? []).map(async file => {
-                const doc = await docsAPI.documents.get({
-                    documentId: file.id!,
-                    fields: 'documentId,title,body',
-                })
-                const body = doc.data.body
-                items.push({
-                    title: `📝 ${file.name!}`,
-                    // TODO(sqs): un-hardcode
-                    url: `https://docs.google.com/document/d/${doc.data.documentId}/edit`,
-                    ai: {
-                        content: body ? convertGoogleDocsBodyToText(body) : undefined,
-                    },
-                })
-            })
-        )
-        return items
+        return (files.data.files ?? []).map(file => ({
+            title: `📝 ${file.name!}`,
+            // TODO(sqs): un-hardcode
+            uri: `https://docs.google.com/document/d/${file.id}/edit`,
+        }))
+    },
+
+    async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
+        if (!params.mention) {
+            return []
+        }
+
+        const documentId = parseDocumentIDFromURL(params.mention.uri)
+        if (!documentId) {
+            return []
+        }
+
+        const oauth2Client = resolveOAuth2Client(settingsInput)
+        const docsAPI = googleDocsAPI({ version: 'v1', auth: oauth2Client })
+
+        const doc = await docsAPI.documents.get({
+            documentId,
+            fields: 'body',
+        })
+        const body = doc.data.body
+        return [
+            {
+                title: params.mention.title,
+                url: params.mention.uri,
+                ai: {
+                    content: body ? convertGoogleDocsBodyToText(body) : undefined,
+                },
+            },
+        ]
     },
 }
 
 export default googleDocs
+
+function resolveOAuth2Client(settingsInput: Settings) {
+    const settings = resolveSettings(settingsInput)
+
+    const oauth2Client = new auth.OAuth2({
+        clientId: settings.googleOAuthClient?.client_id,
+        clientSecret: settings.googleOAuthClient?.client_secret,
+        redirectUri: settings.googleOAuthClient?.redirect_uris[0],
+    })
+    oauth2Client.setCredentials(settings.googleOAuthCredentials)
+
+    return oauth2Client
+}
 
 interface ResolvedSettings
     extends Required<Pick<Settings, 'googleOAuthClient' | 'googleOAuthCredentials'>> {}
@@ -103,6 +134,15 @@ function resolveSettings(settings: Settings): ResolvedSettings {
     }
 
     return { ...settings, googleOAuthClient, googleOAuthCredentials }
+}
+
+export function parseDocumentIDFromURL(urlStr: string): string | undefined {
+    const url = new URL(urlStr)
+    if (url.hostname !== 'docs.google.com') {
+        return undefined
+    }
+    const match = url.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)
+    return match ? match[1] : undefined
 }
 
 function convertGoogleDocsBodyToText(body: docs_v1.Schema$Body): string {
