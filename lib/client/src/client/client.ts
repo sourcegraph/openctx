@@ -327,7 +327,6 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         )
     }
 
-    // TODO: add option to get candidate items from a specific provider.
     const mentionsChanges = (
         params: MentionsParams,
         { emitPartial }: ObserveOptions,
@@ -343,7 +342,6 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         )
     }
 
-    // TODO: add option to get items from a specific provider.
     const itemsChanges = (
         params: ItemsParams,
         { emitPartial }: ObserveOptions,
