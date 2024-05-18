@@ -368,8 +368,10 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
             }),
         capabilitiesChanges: (params, providerUri) =>
             capabilitiesChanges(params, { emitPartial: true }, providerUri),
-        mentions: params =>
-            firstValueFrom(mentionsChanges(params, { emitPartial: false }), { defaultValue: [] }),
+        mentions: (params, providerUri) =>
+            firstValueFrom(mentionsChanges(params, { emitPartial: false }, providerUri), {
+                defaultValue: [],
+            }),
         mentionsChanges: (params, providerUri) =>
             mentionsChanges(params, { emitPartial: true }, providerUri),
         items: (params, providerUri) =>

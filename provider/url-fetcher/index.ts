@@ -28,7 +28,7 @@ const urlFetcher: Provider<UrlFetcherSettings> = {
             return []
         }
 
-        return [{ title: item.title, uri: item.url, data: { content: item.ai?.content } }]
+        return [{ title: item.title, uri: item.url || '', data: { content: item.ai?.content } }]
     },
 
     async items(params: ItemsParams, settings: UrlFetcherSettings): Promise<ItemsResult> {
@@ -41,6 +41,7 @@ async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<Items
         return [
             {
                 ...params.mention,
+                url: params.mention.uri,
                 ui: { hover: { text: `Fetched from ${params.mention.uri}` } },
                 ai: { content: params.mention.data.content },
             },

@@ -138,54 +138,61 @@ export function createController({
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeCapabilities(params: CapabilitiesParams) {
+        observeCapabilities(params: CapabilitiesParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
             return client
-                .capabilitiesChanges(params)
+                .capabilitiesChanges(params, providerUri)
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async capabilities(params: CapabilitiesParams) {
+        async capabilities(params: CapabilitiesParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return []
             }
-            return client.capabilities(params)
+            return client.capabilities(params, providerUri)
         },
-        observeMentions(params: MentionsParams) {
+        observeMentions(params: MentionsParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
-            return client.mentionsChanges(params).pipe(tap(errorTapObserver), catchError(errorCatcher))
+            return client
+                .mentionsChanges(params, providerUri)
+                .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async mentions(params: MentionsParams) {
+        async mentions(params: MentionsParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return []
             }
-            return client.mentions(params)
+            return client.mentions(params, providerUri)
         },
-        observeItems(params: ItemsParams) {
+        observeItems(params: ItemsParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
-            return client.itemsChanges(params).pipe(tap(errorTapObserver), catchError(errorCatcher))
+            return client
+                .itemsChanges(params, providerUri)
+                .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async items(params: ItemsParams) {
+        async items(params: ItemsParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return []
             }
-            return client.items(params)
+            return client.items(params, providerUri)
         },
 
-        observeAnnotations(doc: vscode.TextDocument) {
+        observeAnnotations(doc: vscode.TextDocument, providerUri?: string) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
                 return of([])
             }
             return client
-                .annotationsChanges({
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                })
+                .annotationsChanges(
+                    {
+                        uri: doc.uri.toString(),
+                        content: doc.getText(),
+                    },
+                    providerUri
+                )
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
         async annotations(doc: vscode.TextDocument, providerUri?: string) {
