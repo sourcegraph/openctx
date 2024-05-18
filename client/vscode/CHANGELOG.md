@@ -6,6 +6,10 @@ OpenCtx for VS Code uses `major.EVEN_NUMBER.patch` for release versions and `maj
 
 ## (Unreleased)
 
+## 0.2.6
+
+- Fixed a bug preventing the use of OpenCtx providers written in ESM.
+
 ## 0.2.5
 
 - The extension has been updated to use the latest OpenCtx API for providers.

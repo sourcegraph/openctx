@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "OpenCtx provider library",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,11 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src", "!**/*.test.*"],
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
