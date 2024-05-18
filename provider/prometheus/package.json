@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-prometheus",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Hover over a Prometheus metric to see what it's doing in prod (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,12 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
+  "files": [
+    "dist",
+    "index.ts",
+    "!**/*.test.*",
+    "README.md"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

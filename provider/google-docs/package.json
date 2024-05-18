@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-google-docs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Google Docs context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,12 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
+  "files": [
+    "dist",
+    "index.ts",
+    "!**/*.test.*",
+    "README.md"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

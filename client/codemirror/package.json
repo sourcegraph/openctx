@@ -1,6 +1,6 @@
 {
   "name": "@openctx/codemirror-extension",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "OpenCtx extension for CodeMirror",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,11 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["README.md", "dist", "!**/*.test.*"],
+  "files": [
+    "README.md",
+    "dist",
+    "!**/*.test.*"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

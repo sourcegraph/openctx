@@ -1,6 +1,6 @@
 {
   "name": "@openctx/ui-common",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "OpenCtx common UI library",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,12 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src", "!**/*.test.*", "dist/**/*.d.ts"],
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "dist/**/*.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

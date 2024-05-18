@@ -2,7 +2,7 @@
   "name": "openctx",
   "private": true,
   "displayName": "OpenCtx",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "publisher": "sourcegraph",
   "license": "Apache-2.0",
   "icon": "resources/logomark-v0.png",
@@ -35,9 +35,17 @@
     "test:e2e": "bash test/e2e.sh",
     "vscode:prepublish": "pnpm -s run build"
   },
-  "categories": ["Programming Languages", "Linters", "Snippets", "Education"],
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Education"
+  ],
   "preview": true,
-  "keywords": ["openctx", "metadata"],
+  "keywords": [
+    "openctx",
+    "metadata"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
@@ -53,7 +61,9 @@
   "type": "module",
   "main": "dist/extension.node.cjs",
   "browser": "dist/extension.web.js",
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "configuration": {
       "type": "object",
@@ -72,7 +82,10 @@
           "propertyNames": {
             "description": "The OpenCtx provider's URL (or relative file path).",
             "type": "string",
-            "format": ["uri", "uri-reference"]
+            "format": [
+              "uri",
+              "uri-reference"
+            ]
           },
           "additionalProperties": {
             "oneOf": [
@@ -168,7 +181,9 @@
     "untrustedWorkspaces": {
       "supported": "limited",
       "description": "OpenCtx only uses providers (configured in `openctx.providers`) from trusted workspaces because providers may execute arbitrary code.",
-      "restrictedConfigurations": ["openctx.providers"]
+      "restrictedConfigurations": [
+        "openctx.providers"
+      ]
     },
     "virtualWorkspaces": true
   },

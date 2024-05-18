@@ -100,7 +100,7 @@ export interface MentionsParams {
 }
 export interface ItemsParams {
     /**
-     * A message that can be interpreted by providers to return relevant items.
+     * A message that is interpreted by providers to return relevant items.
      */
     message?: string
     /**
