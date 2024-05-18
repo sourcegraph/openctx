@@ -1,18 +1,83 @@
 import * as assert from 'assert'
+import path from 'path'
+import type { ClientConfiguration } from '@openctx/client'
 import type { ExtensionApiForTesting } from '@openctx/vscode-lib'
+import { copyFile } from 'fs/promises'
+import { before } from 'mocha'
 import * as vscode from 'vscode'
 
+const openctxDir = path.join(__dirname, '../../../../../..')
+const scratchDir = process.env.OPENCTX_VSCODE_INTEGRATION_TEST_TMP_SCRATCH_DIR!
+if (!scratchDir) {
+    throw new Error('scratch dir not set')
+}
+
 suite('API', () => {
-    test('get exported extension API', async () => {
-        // Wait for the extension to become ready.
-        const ext = vscode.extensions.getExtension<ExtensionApiForTesting>('sourcegraph.openctx')
-        assert.ok(ext, 'extension not found')
+    let api: ExtensionApiForTesting
+    before(async () => {
+        api = await getExtension()
+    })
 
-        const api = await ext.activate()
-
+    test('items', async () => {
+        await updateOpenCtxSettings({
+            enable: true,
+            debug: true,
+            providers: {
+                [vscode.Uri.file(
+                    path.join(openctxDir, 'provider/hello-world/dist/index.js')
+                ).toString()]: true,
+            },
+        })
         assert.deepEqual(
-            (await api.getItems({}))?.map(item => item.title),
-            ['✨ Hello, world!', 'Bazel at Sourcegraph', 'View all Storybooks']
+            (await api.items({})).map(item => item.title),
+            ['✨ Hello, world!']
         )
     })
+
+    /**
+     * To manually test these in a VS Code non-debug extension host:
+     */
+    testLoadProviderFromFile('commonjsExtProvider.cjs')
+    testLoadProviderFromFile('commonjsProvider.js')
+    testLoadProviderFromFile('esmExtProvider.mjs')
+    testLoadProviderFromFile('esmProvider.js')
+    function testLoadProviderFromFile(providerFilename: string) {
+        test(`load provider from ${path.extname(providerFilename)} file`, async () => {
+            const origProviderPath = path.join(
+                openctxDir,
+                'lib/client/src/providerClient/transport/testdata',
+                providerFilename
+            )
+
+            const providerPath = path.join(scratchDir, providerFilename)
+            await copyFile(origProviderPath, providerPath)
+
+            await updateOpenCtxSettings({
+                enable: true,
+                debug: true,
+                providers: {
+                    [vscode.Uri.file(providerPath).toString()]: true,
+                },
+            })
+
+            assert.deepEqual(
+                (await api.capabilities({})).map(cap => cap.meta.name),
+                ['foo']
+            )
+        })
+    }
 })
+
+async function getExtension(): Promise<ExtensionApiForTesting> {
+    const ext = vscode.extensions.getExtension<ExtensionApiForTesting>('sourcegraph.openctx')
+    assert.ok(ext, 'extension not found')
+    const api = await ext.activate()
+    return api
+}
+
+async function updateOpenCtxSettings(settings: ClientConfiguration): Promise<void> {
+    const openctxSection = vscode.workspace.getConfiguration('openctx')
+    for (const [key, value] of Object.entries(settings)) {
+        await openctxSection.update(key, value, vscode.ConfigurationTarget.Global)
+    }
+}

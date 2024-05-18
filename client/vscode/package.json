@@ -32,6 +32,7 @@
     "test": "pnpm run -s test:unit && pnpm run -s test:integration",
     "test:integration": "tsc --build ./test/integration && pnpm run -s build:dev:desktop && node --inspect dist/tsc/test/integration/main.cjs",
     "test:unit": "vitest",
+    "test:e2e": "bash test/e2e.sh",
     "vscode:prepublish": "pnpm -s run build"
   },
   "categories": ["Programming Languages", "Linters", "Snippets", "Education"],
@@ -173,9 +174,7 @@
   },
   "dependencies": {
     "@openctx/client": "workspace:*",
-    "@openctx/ui-common": "workspace:*",
     "@openctx/vscode-lib": "workspace:*",
-    "esbuild-wasm": "^0.19.11",
     "path-browserify": "^1.0.1",
     "rxjs": "^7.8.1"
   },
@@ -188,7 +187,7 @@
     "@vscode/test-web": "^0.0.47",
     "@vscode/vsce": "^2.22.0",
     "concurrently": "^8.2.2",
-    "esbuild": "^0.19.11",
+    "esbuild": "^0.21.3",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "ovsx": "^0.8.3",

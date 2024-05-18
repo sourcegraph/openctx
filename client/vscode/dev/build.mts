@@ -13,9 +13,10 @@ const buildTarget = getBuildTarget()
 const commonBuildOptions: esbuild.BuildOptions = {
     entryPoints: ['src/extension.ts'],
     bundle: true,
-    external: ['vscode', 'esbuild-wasm/esbuild.wasm', 'fs/promises'],
+    external: ['vscode'],
     format: 'cjs',
     sourcemap: true,
+    treeShaking: true,
     minify: false,
 }
 
@@ -25,13 +26,12 @@ const buildOptions: Record<BuildTarget, esbuild.BuildOptions> = {
         platform: 'node',
         outfile: 'dist/extension.node.cjs',
         outExtension: { '.js': '.cjs' },
-        define: { ...commonBuildOptions.define, 'process.env.DESKTOP_BUILD': 'true' },
     },
     web: {
         ...commonBuildOptions,
+        external: [...commonBuildOptions.external!, 'node:fs/promises'],
         platform: 'browser',
         outfile: 'dist/extension.web.js',
-        define: { ...commonBuildOptions.define, 'process.env.DESKTOP_BUILD': 'false' },
         alias: { ...commonBuildOptions.alias, path: 'path-browserify' },
     },
 }

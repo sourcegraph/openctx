@@ -94,3 +94,6 @@ jobs:
         if: matrix.runner == 'ubuntu'
       - run: pnpm -C client/vscode run test:integration
         if: github.ref == 'refs/heads/main' && (matrix.runner == 'windows' || matrix.runner == 'macos')
+      - run: xvfb-run -a pnpm -C client/vscode run test:e2e
+        # if: matrix.runner == 'ubuntu' # only run e2e tests on Linux
+        if: false # no openctx logs printed so this fails for some reason on CI

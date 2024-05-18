@@ -2,7 +2,6 @@ import {
     type AuthInfo,
     type CapabilitiesParams,
     type Client,
-    type ClientEnv,
     type ItemsParams,
     type MentionsParams,
     type Range,
@@ -28,6 +27,7 @@ import { createHoverProvider } from './ui/editor/hover.js'
 import { createShowFileItemsList } from './ui/fileItemsList.js'
 import { createStatusBarItem } from './ui/statusBarItem.js'
 import { createErrorWaiter } from './util/errorWaiter.js'
+import { importProvider } from './util/importHelpers.js'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
 
 export type VSCodeClient = Client<vscode.Range>
@@ -57,13 +57,11 @@ export function createController({
     secrets: secretsInput,
     outputChannel,
     getAuthInfo,
-    dynamicImportFromSource,
     features,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
-    dynamicImportFromSource?: ClientEnv<any>['dynamicImportFromSource']
     features: { annotations?: boolean; statusBar?: boolean }
 }): {
     controller: Controller
@@ -113,12 +111,7 @@ export function createController({
             : undefined,
         makeRange,
         logger: message => outputChannel.appendLine(message),
-
-        // On VS Code desktop, use a workaround for dynamic imports.
-        dynamicImportFromSource:
-            vscode.env.uiKind === vscode.UIKind.Desktop && process.env.DESKTOP_BUILD
-                ? dynamicImportFromSource
-                : undefined,
+        importProvider,
     })
 
     const errorTapObserver: Partial<TapObserver<any>> = {

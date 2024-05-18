@@ -88,17 +88,7 @@ export interface ClientEnv<R extends Range> {
      * Called (if set) to dynamically import an OpenCtx provider from a URI. This can be used
      * by runtimes that need to pre-bundle providers.
      */
-    dynamicImportFromUri?: (uri: string) => Promise<{ default: Provider }>
-
-    /**
-     * Called (if set) to dynamically import an OpenCtx provider from its ES module source
-     * code. This can be used by runtimes that only support `require()` and CommonJS (such as VS
-     * Code).
-     */
-    dynamicImportFromSource?: (
-        uri: string,
-        esmSource: string
-    ) => Promise<{ exports: { default: Provider } }>
+    importProvider?: (uri: string) => Promise<{ default: Provider }>
 
     /**
      * @internal
@@ -270,9 +260,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                                       {
                                                           providerBaseUri: env.providerBaseUri,
                                                           logger,
-                                                          dynamicImportFromUri: env.dynamicImportFromUri,
-                                                          dynamicImportFromSource:
-                                                              env.dynamicImportFromSource,
+                                                          importProvider: env.importProvider,
                                                       }
                                                   ),
                                           settings,
@@ -411,10 +399,7 @@ interface ProviderCacheKey {
 function createProviderPool(): {
     getOrCreate: (
         key: ProviderCacheKey,
-        env: Pick<
-            ClientEnv<any>,
-            'providerBaseUri' | 'logger' | 'dynamicImportFromUri' | 'dynamicImportFromSource'
-        >
+        env: Pick<ClientEnv<any>, 'providerBaseUri' | 'logger' | 'importProvider'>
     ) => ProviderClient
 } {
     function cacheKey(key: ProviderCacheKey): string {
@@ -438,8 +423,7 @@ function createProviderPool(): {
                 providerBaseUri: env.providerBaseUri,
                 authInfo: key.authInfo,
                 logger: env.logger,
-                dynamicImportFromUri: env.dynamicImportFromUri,
-                dynamicImportFromSource: env.dynamicImportFromSource,
+                importProvider: env.importProvider,
             })
             cache.set(cacheKey(key), c)
             return c
