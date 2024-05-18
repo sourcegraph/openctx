@@ -1,6 +1,6 @@
 {
   "name": "@openctx/codemirror-extension",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "OpenCtx extension for CodeMirror",
   "license": "Apache-2.0",
   "repository": {
