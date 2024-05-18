@@ -532,6 +532,16 @@ importers:
         specifier: workspace:*
         version: link:../../lib/provider
 
+  provider/sourcegraph-search:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+    devDependencies:
+      esbuild:
+        specifier: ^0.19.11
+        version: 0.19.12
+
   provider/storybook:
     dependencies:
       '@openctx/provider':
