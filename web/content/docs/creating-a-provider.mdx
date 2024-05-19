@@ -64,7 +64,7 @@ See the source code for the [Hello World provider](https://openctx.org/docs/prov
 
 ### Bundling provider packages
 
-The above example works for simple providers written in a single JavaScript file. For providers written in TypeScript or implemented across multiple source files, you need to bundle the provider to a single JavaScript file (ESM).
+The above example works for simple providers written in a single JavaScript file, with no build step or dependencies. For providers written in TypeScript, implemented across multiple source files, or that have dependencies, you need to bundle the provider to a single JavaScript file (ESM).
 
 Here's an example `package.json` for this slightly more complex provider:
 
