@@ -73,12 +73,12 @@ else
 fi
 
 # Tests
-if grep -q 'failed to get provider capabilities' "$OUTPUT_CHANNEL_FILE"; then
+if grep -q 'failed to get provider meta' "$OUTPUT_CHANNEL_FILE"; then
 	echo 'FAIL - saw failures in the output'
 	exit 1
 fi
-if ! grep -q 'received capabilities' "$OUTPUT_CHANNEL_FILE"; then
-	echo 'FAIL - did not see any "received capabilities" messages in the output'
+if ! grep -q 'received meta' "$OUTPUT_CHANNEL_FILE"; then
+	echo 'FAIL - did not see any "received meta" messages in the output'
 	exit 1
 fi
 echo PASS

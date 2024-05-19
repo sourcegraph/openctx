@@ -1,8 +1,8 @@
 import {
     type AnnotationsParams,
     type AnnotationsResult,
-    type CapabilitiesParams,
-    type CapabilitiesResult,
+    type MetaParams,
+    type MetaResult,
     type PositionCalculator,
     type Provider,
     type Range,
@@ -57,7 +57,7 @@ interface MetricRegistrationPattern {
  *   'https://prometheus.demo.do.prometheus.io/api/v1/query?query=go_gc_duration_seconds&timeout=200ms'`).
  */
 const prometheus: Provider<Settings> = {
-    capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
+    meta(_params: MetaParams, settings: Settings): MetaResult {
         return {
             selector: settings.metricRegistrationPatterns?.map(({ path }) => ({ path })) || [],
             meta: { name: 'Prometheus' },

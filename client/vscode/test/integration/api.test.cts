@@ -61,7 +61,7 @@ suite('API', () => {
             })
 
             assert.deepEqual(
-                (await api.capabilities({})).map(cap => cap.meta.name),
+                (await api.meta({})).map(cap => cap.meta.name),
                 ['foo']
             )
         })

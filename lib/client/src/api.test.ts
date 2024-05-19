@@ -49,7 +49,7 @@ const DUMMY_CLIENT: ProviderClient = {
     mentions() {
         throw new Error('noop')
     },
-    capabilities() {
+    meta() {
         throw new Error('noop')
     },
 }

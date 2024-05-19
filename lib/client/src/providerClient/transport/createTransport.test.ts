@@ -1,11 +1,11 @@
 import { afterEach } from 'node:test'
-import type { CapabilitiesResult, ResponseMessage } from '@openctx/protocol'
+import type { MetaResult, ResponseMessage } from '@openctx/protocol'
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 import { type ProviderTransport, createTransport } from './createTransport.js'
 
 async function expectProviderTransport(provider: ProviderTransport) {
-    expect(await provider.capabilities({}, {})).toEqual<CapabilitiesResult>({
+    expect(await provider.meta({}, {})).toEqual<MetaResult>({
         selector: [{ path: 'foo' }],
         meta: { name: 'foo' },
     })
@@ -39,7 +39,7 @@ describe('createTransport', () => {
 
         test('not found', async () => {
             const provider = createTransport('file:///doesnotexist', {})
-            await expect(() => provider.capabilities({}, {})).rejects.toThrow(/Failed to load/)
+            await expect(() => provider.meta({}, {})).rejects.toThrow(/Failed to load/)
         })
 
         test('providerBaseUri', () =>
@@ -60,7 +60,7 @@ describe('createTransport', () => {
                     result: {
                         selector: [{ path: 'foo' }],
                         meta: { name: 'foo' },
-                    } satisfies CapabilitiesResult,
+                    } satisfies MetaResult,
                 } satisfies ResponseMessage)
             )
             const provider = createTransport('https://example.com/openctx', {})
@@ -71,13 +71,13 @@ describe('createTransport', () => {
             test('HTTP request error', async () => {
                 fetchMocker.mockRejectOnce(new Error('network error'))
                 const provider = createTransport('https://example.com/openctx', {})
-                await expect(provider.capabilities({}, {})).rejects.toThrow(/network error/)
+                await expect(provider.meta({}, {})).rejects.toThrow(/network error/)
             })
 
             test('HTTP error 404', async () => {
                 fetchMocker.mockResponseOnce('', { status: 404 })
                 const provider = createTransport('https://example.com/openctx', {})
-                await expect(provider.capabilities({}, {})).rejects.toThrow(/404/)
+                await expect(provider.meta({}, {})).rejects.toThrow(/404/)
             })
         })
     })

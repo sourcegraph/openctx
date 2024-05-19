@@ -1,10 +1,10 @@
-import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
+import type { AnnotationsResult, MetaResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import helloWorld from './index.js'
 
 describe('helloWorld', () => {
-    test('capabilities', () =>
-        expect(helloWorld.capabilities({}, {})).toStrictEqual<CapabilitiesResult>({
+    test('meta', () =>
+        expect(helloWorld.meta({}, {})).toStrictEqual<MetaResult>({
             meta: { name: '✨ Hello World!' },
         }))
 

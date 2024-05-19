@@ -21,12 +21,12 @@ For convenience, you can also just bundle and publish a `.js` file that implemen
 ```typescript
 import type {
   AnnotationsParams, AnnotationsResult,
-  CapabilitiesParams, CapabilitiesResult,
+  MetaParams, MetaResult,
   ItemsParams, ItemsResult, Provider,
 } from '@openctx/provider'
 
 export default {
-  capabilities(params: CapabilitiesParams): Promise<CapabilitiesResult> { /* ... */ }
+  meta(params: MetaParams): Promise<MetaResult> { /* ... */ }
   items(params: ItemsParams): Promise<ItemsResult> { /* ... */ }
   annotations(params: AnnotationsParams): Promise<AnnotationsResult> { /*... */ }
 } satisfies Provider

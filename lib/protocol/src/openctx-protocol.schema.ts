@@ -7,8 +7,8 @@ export type Protocol =
     | ResponseMessage
     | ResponseError
     | ProviderSettings
-    | CapabilitiesParams
-    | CapabilitiesResult
+    | MetaParams
+    | MetaResult
     | Mention
     | MentionsParams
     | MentionsResult
@@ -16,7 +16,7 @@ export type Protocol =
     | ItemsResult
     | AnnotationsParams
     | AnnotationsResult
-export type CapabilitiesParams = Record<string, never>
+export type MetaParams = Record<string, never>
 export type MentionsResult = Mention[]
 export type ItemsResult = Item[]
 export type AnnotationsResult = Annotation[]
@@ -41,7 +41,7 @@ export interface ResponseError {
     message: string
     data?: unknown
 }
-export interface CapabilitiesResult {
+export interface MetaResult {
     /**
      * Selects the scope in which this provider should be called.
      *

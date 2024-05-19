@@ -3,8 +3,8 @@ import type { Controller } from './controller.js'
 
 export function createMockController(): MockedObject<Controller> {
     return {
-        observeCapabilities: vi.fn(),
-        capabilities: vi.fn(),
+        observeMeta: vi.fn(),
+        meta: vi.fn(),
         observeMentions: vi.fn(),
         mentions: vi.fn(),
         observeItems: vi.fn(),
@@ -12,8 +12,8 @@ export function createMockController(): MockedObject<Controller> {
         observeAnnotations: vi.fn(),
         annotations: vi.fn(),
         client: {
-            capabilitiesChanges: vi.fn(),
-            capabilities: vi.fn(),
+            metaChanges: vi.fn(),
+            meta: vi.fn(),
             mentions: vi.fn(),
             mentionsChanges: vi.fn(),
             itemsChanges: vi.fn(),

@@ -18,10 +18,10 @@
       "$ref": "#/definitions/ProviderSettings"
     },
     {
-      "$ref": "#/definitions/CapabilitiesParams"
+      "$ref": "#/definitions/MetaParams"
     },
     {
-      "$ref": "#/definitions/CapabilitiesResult"
+      "$ref": "#/definitions/MetaResult"
     },
     {
       "$ref": "#/definitions/Mention"
@@ -98,14 +98,14 @@
         }
       }
     },
-    "CapabilitiesParams": {
+    "MetaParams": {
       "type": "object",
       "additionalProperties": false,
       "$comment": "(empty for now)",
       "properties": {},
       "tsType": "Record<string, never>"
     },
-    "CapabilitiesResult": {
+    "MetaResult": {
       "type": "object",
       "additionalProperties": false,
       "required": ["meta"],

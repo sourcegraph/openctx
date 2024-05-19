@@ -1,12 +1,12 @@
 import type {
     AnnotationsParams,
     AnnotationsResult,
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
     MentionsResult,
+    MetaParams,
+    MetaResult,
     ProviderSettings,
 } from '@openctx/protocol'
 
@@ -17,12 +17,9 @@ import type {
  */
 export interface Provider<S extends {} = ProviderSettings> {
     /**
-     * Reports the capabilities of the provider.
+     * Reports metadata about the provider.
      */
-    capabilities(
-        params: CapabilitiesParams,
-        settings: S
-    ): CapabilitiesResult | Promise<CapabilitiesResult>
+    meta(params: MetaParams, settings: S): MetaResult | Promise<MetaResult>
 
     mentions?(params: MentionsParams, settings: S): MentionsResult | Promise<MentionsResult>
 

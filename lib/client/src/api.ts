@@ -1,11 +1,11 @@
 import type {
     AnnotationsParams,
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
     MentionsResult,
+    MetaParams,
+    MetaResult,
     ProviderSettings,
 } from '@openctx/protocol'
 import type { Annotation as AnnotationWithPlainRange, Range } from '@openctx/schema'
@@ -106,15 +106,15 @@ function observeProviderCall<R>(
 /**
  * Observes OpenCtx items kinds from the configured providers.
  */
-export function observeCapabilities(
+export function observeMeta(
     providerClients: Observable<ProviderClientWithSettings[]>,
-    params: CapabilitiesParams,
+    params: MetaParams,
     { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
-): Observable<EachWithProviderUri<CapabilitiesResult[]>> {
-    return observeProviderCall<CapabilitiesResult>(
+): Observable<EachWithProviderUri<MetaResult[]>> {
+    return observeProviderCall<MetaResult>(
         providerClients,
         ({ providerClient, settings }) =>
-            from(providerClient.capabilities(params, settings)).pipe(map(result => [result])),
+            from(providerClient.meta(params, settings)).pipe(map(result => [result])),
         { logger, emitPartial }
     )
 }
