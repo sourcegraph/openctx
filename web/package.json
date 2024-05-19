@@ -11,7 +11,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "pnpm run -w -s build && vite build --mode production",
+    "build": "pnpm run -w -s bundle && vite build --mode production",
     "test": "vitest",
     "preview": "vite preview"
   },

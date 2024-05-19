@@ -9,13 +9,13 @@
     "url": "https://github.com/sourcegraph/openctx"
   },
   "engines": {
-    "node": "^20.10.0",
+    "node": ">=20.10.0",
     "pnpm": "^8.6.7"
   },
   "packageManager": "pnpm@8.12.1",
   "scripts": {
-    "build": "pnpm run --recursive prebuild && tsc --build && pnpm run --silent bundle",
-    "bundle": "pnpm run --recursive bundle",
+    "build": "pnpm run --recursive prebuild && tsc --build",
+    "bundle": "pnpm run --silent build && pnpm run --recursive bundle",
     "watch": "tsc --build --watch",
     "generate": "pnpm run --recursive generate",
     "check": "pnpm run -s biome && pnpm run -s check:css",
@@ -37,6 +37,7 @@
     "@types/semver": "^7.5.6",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.6.0",
+    "esbuild": "^0.21.3",
     "js-yaml": "^4.1.0",
     "semver": "^7.5.4",
     "storybook": "^7.6.7",

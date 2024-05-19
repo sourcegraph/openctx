@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-hello-world",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "Hello World (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/hello-world",
@@ -12,10 +12,14 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
+    "prepublishOnly": "tsc --build --clean && pnpm run --silent build",
     "test": "vitest"
   },
   "dependencies": {
