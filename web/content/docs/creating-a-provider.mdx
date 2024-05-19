@@ -21,15 +21,73 @@ For convenience, you can also just bundle and publish a `.js` file that implemen
 ```typescript
 import type {
   AnnotationsParams, AnnotationsResult,
+  MentionsParams, MentionsResult,
   MetaParams, MetaResult,
   ItemsParams, ItemsResult, Provider,
 } from '@openctx/provider'
 
 export default {
   meta(params: MetaParams): Promise<MetaResult> { /* ... */ }
+  mentions(params: MentionsParams): Promise<MentionsResult> { /*... */ }
   items(params: ItemsParams): Promise<ItemsResult> { /* ... */ }
   annotations(params: AnnotationsParams): Promise<AnnotationsResult> { /*... */ }
 } satisfies Provider
 ```
 
 Then use the URL (`file://` or `https://`) to that `.js` file. This way, you don't need to deploy a public HTTP server for the provider. See the [playground](/playground) for live examples.
+
+### Using providers published to npm
+
+For convenience, the URL `https://openctx.org/npm/PACKAGE` serves the contents of the named [npm](https://npmjs.com/) package's `main` file.
+
+For example, suppose you have an [npm package `@openctx/provider-hello-world`](https://npmjs.com/package/@openctx/provider-hello-world) published with the following `package.json`:
+
+```json
+{
+  "name": "@openctx/provider-hello-world",
+  "main": "index.js",
+  // ...
+}
+```
+
+You can configure that provider in an OpenCtx client like so:
+
+```json
+"openctx.providers": {
+    "https://openctx.org/npm/@openctx/provider-hello-world": true
+},
+```
+
+The package's `index.js` file is loaded and expected to have a single default export that satisfies the `Provider` interface.
+
+See the source code for the [Hello World provider](https://openctx.org/docs/providers/hello-world) for a full example.
+
+### Bundling provider packages
+
+The above example works for simple providers written in a single JavaScript file. For providers written in TypeScript or implemented across multiple source files, you need to bundle the provider to a single JavaScript file (ESM).
+
+Here's an example `package.json` for this slightly more complex provider:
+
+```
+{
+  "name": "@openctx/provider-web",
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle"
+  },
+  "dependencies": {
+    "@openctx/provider": "*"
+  },
+  "devDependencies": {
+    "esbuild": "*",
+    "typescript": "*"
+  }
+}
+```
+
+See the source code for the [web page context provider](https://openctx.org/docs/providers/web) for a full example.

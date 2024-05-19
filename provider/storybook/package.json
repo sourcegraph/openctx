@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-storybook",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "Add Storybook links and image previews to your code (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/storybook",
@@ -10,12 +10,13 @@
     "directory": "provider/storybook"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
+  "files": ["dist/bundle.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc --build",
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
     "test": "vitest"
   },
   "dependencies": {

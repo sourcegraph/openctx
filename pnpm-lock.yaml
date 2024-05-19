@@ -43,6 +43,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^1.6.0
         version: 1.6.0(vitest@1.6.0)
+      esbuild:
+        specifier: ^0.21.3
+        version: 0.21.3
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.0
@@ -537,10 +540,6 @@ importers:
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
-    devDependencies:
-      esbuild:
-        specifier: ^0.19.11
-        version: 0.19.12
 
   provider/storybook:
     dependencies:
@@ -557,10 +556,6 @@ importers:
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
-    devDependencies:
-      esbuild:
-        specifier: ^0.21.3
-        version: 0.21.3
 
   web:
     dependencies:
