@@ -5,6 +5,6 @@ describe('googleDocs', () => {
     const SETTINGS: Settings = {}
 
     test('meta', async () => {
-        expect(await googleDocs.meta({}, SETTINGS)).toEqual({ meta: { name: 'Google Docs' } })
+        expect(await googleDocs.meta({}, SETTINGS)).toEqual({ name: 'Google Docs' })
     })
 })

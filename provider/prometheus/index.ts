@@ -60,7 +60,7 @@ const prometheus: Provider<Settings> = {
     meta(_params: MetaParams, settings: Settings): MetaResult {
         return {
             selector: settings.metricRegistrationPatterns?.map(({ path }) => ({ path })) || [],
-            meta: { name: 'Prometheus' },
+            name: 'Prometheus',
         }
     },
 

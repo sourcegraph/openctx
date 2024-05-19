@@ -7,7 +7,7 @@ import { type ProviderTransport, createTransport } from './createTransport.js'
 async function expectProviderTransport(provider: ProviderTransport) {
     expect(await provider.meta({}, {})).toEqual<MetaResult>({
         selector: [{ path: 'foo' }],
-        meta: { name: 'foo' },
+        name: 'foo',
     })
 }
 
@@ -59,7 +59,7 @@ describe('createTransport', () => {
                 JSON.stringify({
                     result: {
                         selector: [{ path: 'foo' }],
-                        meta: { name: 'foo' },
+                        name: 'foo',
                     } satisfies MetaResult,
                 } satisfies ResponseMessage)
             )

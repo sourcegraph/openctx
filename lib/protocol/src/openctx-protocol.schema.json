@@ -108,7 +108,7 @@
     "MetaResult": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["meta"],
+      "required": ["name"],
       "properties": {
         "selector": {
           "description": "Selects the scope in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.",
@@ -130,18 +130,18 @@
             }
           }
         },
-        "meta": {
+        "name": {
+          "description": "The name of the provider.",
+          "type": "string"
+        },
+        "features": {
+          "description": "The features supported by the provider.",
           "type": "object",
           "additionalProperties": false,
-          "required": ["name"],
           "properties": {
-            "name": {
-              "description": "The name of the provider.",
-              "type": "string"
-            },
-            "description": {
-              "description": "A description of the provider.",
-              "type": "string"
+            "mentions": {
+              "description": "Whether the provider support mentions.",
+              "type": "boolean"
             }
           }
         }
