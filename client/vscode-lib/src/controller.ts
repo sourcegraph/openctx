@@ -7,6 +7,7 @@ import {
     type Range,
     createClient,
 } from '@openctx/client'
+import type { ConfigurationUserInput } from '@openctx/client/src/configuration.js'
 import {
     type Observable,
     type TapObserver,
@@ -58,11 +59,13 @@ export function createController({
     outputChannel,
     getAuthInfo,
     features,
+    defaultConfiguration,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
+    defaultConfiguration?: ConfigurationUserInput & { debug?: boolean }
 }): {
     controller: Controller
     apiForTesting: ExtensionApiForTesting
@@ -103,7 +106,19 @@ export function createController({
                 ? vscode.Uri.parse(resource)
                 : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
-                map(() => getClientConfiguration(scope))
+                map(() => {
+                    const configFromScope = getClientConfiguration(scope)
+
+                    // If the user has not explicitly set `enable=false`, use the default config.
+                    if (
+                        configFromScope.enable !== false &&
+                        !Object.keys(configFromScope.providers || {}).length
+                    ) {
+                        return defaultConfiguration || configFromScope
+                    }
+
+                    return configFromScope
+                })
             )
         },
         authInfo: getAuthInfo
