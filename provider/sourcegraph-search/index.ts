@@ -10,8 +10,8 @@ import type {
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
-import { SourcegraphGraphQLAPIClient } from './graphql'
-import { isError, searchForFileChunks } from './search'
+import { SourcegraphGraphQLAPIClient } from './graphql.js'
+import { isError, searchForFileChunks } from './search.js'
 
 const graphqlClient = new SourcegraphGraphQLAPIClient()
 

@@ -11,12 +11,3 @@ import { Globe } from 'lucide-react'
 1.  Look for and hover OpenCtx items, such as this one for a Prometheus metric:
 
     <img src="https://storage.googleapis.com/sourcegraph-assets/openctx/screenshot-codesearch-grafana-v0.png" width="363" height="183" alt="Screenshot of OpenCtx annotations in VS Code" className="border border-border" />
-
-1.  _(Optional)_ If you're using VS Code, you can add Sourcegraph as an OpenCtx provider to get the same context in your editor. Install the [VS Code extension](/docs/clients/vscode) and add the following provider in your VS Code settings:
-
-    ```json
-    "openctx.providers": {
-        // ...other providers...
-        "https://sourcegraph.com/.api/openctx": true,
-    },
-    ```

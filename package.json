@@ -14,7 +14,8 @@
   },
   "packageManager": "pnpm@8.12.1",
   "scripts": {
-    "build": "pnpm run --recursive prebuild && tsc --build",
+    "build": "pnpm run --recursive prebuild && tsc --build && pnpm run --silent bundle",
+    "bundle": "pnpm run --recursive bundle",
     "watch": "tsc --build --watch",
     "generate": "pnpm run --recursive generate",
     "check": "pnpm run -s biome && pnpm run -s check:css",
@@ -47,9 +48,7 @@
     "vitest": "^1.6.0"
   },
   "stylelint": {
-    "extends": [
-      "./.config/stylelintrc.json"
-    ]
+    "extends": ["./.config/stylelintrc.json"]
   },
   "pnpm": {
     "packageExtensions": {

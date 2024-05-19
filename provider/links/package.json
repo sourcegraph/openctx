@@ -3,6 +3,7 @@
   "version": "0.0.10",
   "description": "Add links to your code based on configurable patterns (OpenCtx provider)",
   "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/links",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
@@ -11,12 +12,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "index.ts",
-    "!**/*.test.*",
-    "README.md"
-  ],
+  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

@@ -3,6 +3,7 @@
   "version": "0.0.8",
   "description": "Hover over a Prometheus metric to see what it's doing in prod (OpenCtx provider)",
   "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/prometheus",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
@@ -11,12 +12,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "index.ts",
-    "!**/*.test.*",
-    "README.md"
-  ],
+  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

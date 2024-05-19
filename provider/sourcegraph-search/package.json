@@ -3,25 +3,21 @@
   "version": "0.0.1",
   "description": "Sourcegraph Search (OpenCtx provider)",
   "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/sourcegraph-search",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
     "directory": "provider/sourcegraph-search"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "index.ts",
-    "!**/*.test.*",
-    "README.md"
-  ],
+  "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
-    "test": "vitest",
-    "bundle": "esbuild --bundle --format=esm --outfile=dist/bundle.js index.ts"
+    "bundle": "esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "test": "vitest"
   },
   "dependencies": {
     "@openctx/provider": "workspace:*"

@@ -1,3 +1,4 @@
+#!/usr/bin/env -S node --experimental-modules --experimental-network-imports --no-warnings
 import path from 'path'
 import {
     type Client,
@@ -10,24 +11,32 @@ import { of } from 'rxjs'
 
 function usageFatal(message: string): never {
     console.error(message)
-    console.error(
-        `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(
-            process.argv[1]
-        )} meta|mentions|items [args...]`
-    )
+    console.error(`\nUsage: OPENCTX_CONFIG=<config> ${path.basename(process.argv[1])} <subcommand>\n`)
+    console.error('Subcommands:')
+    const subcommands = [
+        'meta [providerUri]',
+        'mentions <query> [providerUri]',
+        'items <message> [providerUri] [mentionJSON]',
+    ]
+    for (const subcommand of subcommands) {
+        console.error(`    ${subcommand}`)
+    }
     process.exit(1)
 }
 
-async function subcommandMeat(client: Client<Range>, args: string[]): Promise<void> {
-    const [provideUri] = args
-    const meta = await client.meta({}, provideUri)
+async function subcommandMeta(client: Client<Range>, args: string[]): Promise<void> {
+    if (args.length > 1) {
+        usageFatal('Error: invalid args')
+    }
+    const [providerUri] = args
+    const meta = await client.meta({}, providerUri)
 
     console.log(JSON.stringify(meta))
 }
 
 async function subcommandMentions(client: Client<Range>, args: string[]): Promise<void> {
-    if (args.length !== 1) {
-        usageFatal('Error: the "mentions" subcommand expects one argument "query"')
+    if (args.length === 0 || args.length > 2) {
+        usageFatal('Error: invalid args')
     }
     const [query, providerUri] = args
 
@@ -46,8 +55,8 @@ async function subcommandMentions(client: Client<Range>, args: string[]): Promis
 }
 
 async function subcommandItems(client: Client<Range>, args: string[]): Promise<void> {
-    if (args.length === 0) {
-        usageFatal('Error: the "items" subcommand expects one argument "query"')
+    if (args.length === 0 || args.length > 3) {
+        usageFatal('Error: invalid args')
     }
     const [message, providerUri, mentionJSON] = args
 
@@ -108,7 +117,7 @@ const subcommand = process.argv[2]
 const args = process.argv.slice(3)
 switch (subcommand) {
     case 'meta':
-        await subcommandMeat(client, args)
+        await subcommandMeta(client, args)
         break
     case 'mentions':
         await subcommandMentions(client, args)
@@ -117,5 +126,5 @@ switch (subcommand) {
         await subcommandItems(client, args)
         break
     default:
-        usageFatal('Error: only the "meta" or "items" subcommand is supported')
+        usageFatal(`Error: unrecognized subcommand ${JSON.stringify(subcommand)}`)
 }

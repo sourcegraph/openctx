@@ -1,7 +1,6 @@
 # Sourcegraph Search context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that provides
-Sourcegraph search results as context via the mention and items APIs.
+This is a context provider for [OpenCtx](https://openctx.org) that provides Sourcegraph search results as context via the mention and items APIs.
 
 ## Usage
 

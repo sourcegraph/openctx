@@ -53,11 +53,14 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'GitHub', type: 'client', slug: 'github' },
     { name: 'Sourcegraph', type: 'client', slug: 'sourcegraph' },
     { name: 'Cody', type: 'client', slug: 'cody' },
+    { name: 'CLI', type: 'client', slug: 'cli' },
     { name: 'Monaco Editor', type: 'client', slug: 'monaco-editor' },
     { name: 'CodeMirror', type: 'client', slug: 'codemirror' },
     { name: 'Storybook', type: 'provider', slug: 'storybook' },
     { name: 'Prometheus', type: 'provider', slug: 'prometheus' },
     { name: 'Links', type: 'provider', slug: 'links' },
+    { name: 'Sourcegraph search', type: 'provider', slug: 'sourcegraph-search' },
+    { name: 'Web pages', type: 'provider', slug: 'web' },
 ]
 
 const IntegrationsSection: FunctionComponent<{ className?: string }> = ({ className }) => {
@@ -67,7 +70,7 @@ const IntegrationsSection: FunctionComponent<{ className?: string }> = ({ classN
     return (
         <section className={clsx('flex flex-col items-start gap-3', className)}>
             <IntegrationsList title="Editors & clients" type="client" items={clients} />
-            <IntegrationsList title="Providers" type="provider" items={providers} />
+            <IntegrationsList title="Context providers" type="provider" items={providers} />
         </section>
     )
 }
