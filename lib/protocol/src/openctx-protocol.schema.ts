@@ -51,7 +51,7 @@ export interface MetaResult {
     /**
      * The name of the provider.
      */
-    name?: string
+    name: string
     /**
      * The features supported by the provider.
      */
@@ -60,7 +60,6 @@ export interface MetaResult {
          * Whether the provider supports mentions.
          */
         mentions?: boolean
-        [k: string]: unknown | undefined
     }
 }
 /**

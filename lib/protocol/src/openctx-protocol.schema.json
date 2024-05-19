@@ -137,7 +137,7 @@
         "features": {
           "description": "The features supported by the provider.",
           "type": "object",
-          "additionalProperties": true,
+          "additionalProperties": false,
           "properties": {
             "mentions": {
               "description": "Whether the provider support mentions.",
