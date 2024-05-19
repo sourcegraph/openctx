@@ -1,0 +1,34 @@
+{
+  "name": "@openctx/provider-url-fetcher",
+  "version": "0.0.1",
+  "description": "URL Fetcher (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/url-fetcher"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "index.ts",
+    "!**/*.test.*",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "test": "vitest",
+    "bundle": "esbuild --bundle --format=esm --external:vscode --outfile=dist/bundle.js index.ts"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*",
+    "fuzzysort": "2.0.4"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.19.11"
+  }
+}
