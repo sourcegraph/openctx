@@ -43,13 +43,13 @@ describe('createProviderClient', () => {
             expect(logger.mock.lastCall?.[0]).toContain('Error: topLevelThrow')
         })
 
-        test('throw in capabilities', async () => {
+        test('throw in meta', async () => {
             const logger = vi.fn((() => {}) as Logger)
-            const pc = createProviderClient(testdataFileUri('capabilitiesThrow.js'), { logger })
+            const pc = createProviderClient(testdataFileUri('metaThrow.js'), { logger })
             await expect(pc.annotations({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow(
-                'capabilitiesThrow'
+                'metaThrow'
             )
-            expect(logger.mock.lastCall?.[0]).toContain('Error: capabilitiesThrow')
+            expect(logger.mock.lastCall?.[0]).toContain('Error: metaThrow')
         })
 
         test('throw in items', async () => {
@@ -72,13 +72,13 @@ describe('createProviderClient', () => {
     test('transport reuse', async () => {
         // We don't want the transport to be recreated each time. Specifically:
         //
-        // - For all transports, the client should call `capabilities` once.
+        // - For all transports, the client should call `meta` once.
         // - For local module file transports, the module should be imported once.
 
         // Testing hack: communicate with the transportReuse.js module using a global var.
         const info = {
             moduleLoads: 0,
-            capabilitiesCalls: 0,
+            metaCalls: 0,
             itemsCalls: 0,
             annotationsCalls: 0,
         }
@@ -86,28 +86,28 @@ describe('createProviderClient', () => {
 
         const pc0 = createProviderClient(testdataFileUri('transportReuse.js'), {})
         expect(info.moduleLoads).toBe(0)
-        expect(info.capabilitiesCalls).toBe(0)
+        expect(info.metaCalls).toBe(0)
         expect(info.annotationsCalls).toBe(0)
 
         await pc0.annotations({ uri: 'file:///f0', content: 'A0' }, {})
         expect(info.moduleLoads).toBe(1)
-        expect(info.capabilitiesCalls).toBe(1)
+        expect(info.metaCalls).toBe(1)
         expect(info.annotationsCalls).toBe(1)
 
         await pc0.annotations({ uri: 'file:///f1', content: 'A1' }, {})
         expect(info.moduleLoads).toBe(1)
-        expect(info.capabilitiesCalls).toBe(1)
+        expect(info.metaCalls).toBe(1)
         expect(info.annotationsCalls).toBe(2)
 
         // Now create a new provider client from the same module.
         const pc1 = createProviderClient(testdataFileUri('transportReuse.js'), {})
         expect(info.moduleLoads).toBe(1)
-        expect(info.capabilitiesCalls).toBe(1)
+        expect(info.metaCalls).toBe(1)
         expect(info.annotationsCalls).toBe(2)
 
         await pc1.annotations({ uri: 'file:///f2', content: 'A2' }, {})
         expect(info.moduleLoads).toBe(1)
-        expect(info.capabilitiesCalls).toBe(2)
+        expect(info.metaCalls).toBe(2)
         expect(info.annotationsCalls).toBe(3)
     })
 })

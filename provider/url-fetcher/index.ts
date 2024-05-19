@@ -1,10 +1,10 @@
 import type {
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
     MentionsResult,
+    MetaParams,
+    MetaResult,
     Provider,
 } from '@openctx/provider'
 
@@ -14,7 +14,7 @@ type UrlFetcherSettings = { [key: string]: any }
  * An OpenCtx provider that fetches the content of a URL and provides it as an item.
  */
 const urlFetcher: Provider<UrlFetcherSettings> = {
-    capabilities(params: CapabilitiesParams, settings: UrlFetcherSettings): CapabilitiesResult {
+    meta(params: MetaParams, settings: UrlFetcherSettings): MetaResult {
         return {
             // empty since we don't provide any annotations.
             selector: [],

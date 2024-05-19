@@ -1,9 +1,9 @@
 import {
     type AuthInfo,
-    type CapabilitiesParams,
     type Client,
     type ItemsParams,
     type MentionsParams,
+    type MetaParams,
     type Range,
     createClient,
 } from '@openctx/client'
@@ -33,8 +33,8 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/obs
 export type VSCodeClient = Client<vscode.Range>
 
 export interface Controller {
-    observeCapabilities: VSCodeClient['capabilitiesChanges']
-    capabilities: VSCodeClient['capabilities']
+    observeMeta: VSCodeClient['metaChanges']
+    meta: VSCodeClient['meta']
 
     observeMentions: VSCodeClient['mentionsChanges']
     mentions: VSCodeClient['mentions']
@@ -138,19 +138,19 @@ export function createController({
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeCapabilities(params: CapabilitiesParams, providerUri?: string) {
+        observeMeta(params: MetaParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
             return client
-                .capabilitiesChanges(params, providerUri)
+                .metaChanges(params, providerUri)
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async capabilities(params: CapabilitiesParams, providerUri?: string) {
+        async meta(params: MetaParams, providerUri?: string) {
             if (!errorWaiter.ok()) {
                 return []
             }
-            return client.capabilities(params, providerUri)
+            return client.meta(params, providerUri)
         },
         observeMentions(params: MentionsParams, providerUri?: string) {
             if (!errorWaiter.ok()) {

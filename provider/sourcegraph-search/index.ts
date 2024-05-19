@@ -1,12 +1,12 @@
 import type {
     AnnotationsParams,
     AnnotationsResult,
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
     MentionsResult,
+    MetaParams,
+    MetaResult,
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
@@ -22,7 +22,7 @@ const QUERY_PREFIXES = ['?', 'src:']
 const SEARCH_QUERY_CONST = 'type:file count:10'
 
 const sourcegraphSearch: Provider = {
-    capabilities(params: CapabilitiesParams, settings: ProviderSettings): CapabilitiesResult {
+    meta(params: MetaParams, settings: ProviderSettings): MetaResult {
         return {
             // empty since we don't provide any annotations.
             selector: [],

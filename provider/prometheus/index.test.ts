@@ -1,4 +1,4 @@
-import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
+import type { AnnotationsResult, MetaResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import prometheus, { type Settings } from './index.js'
 
@@ -13,8 +13,8 @@ describe('prometheus', () => {
         ],
     }
 
-    test('capabilities', async () => {
-        expect(await prometheus.capabilities({}, SETTINGS)).toStrictEqual<CapabilitiesResult>({
+    test('meta', async () => {
+        expect(await prometheus.meta({}, SETTINGS)).toStrictEqual<MetaResult>({
             selector: [{ path: '**/*.go' }],
             meta: { name: 'Prometheus' },
         })

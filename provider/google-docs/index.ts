@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs'
 import { auth, docs as googleDocsAPI, type docs_v1 } from '@googleapis/docs'
 import { drive as googleDriveAPI } from '@googleapis/drive'
-import type { CapabilitiesResult, Item, ItemsParams, ItemsResult, Provider } from '@openctx/provider'
+import type { Item, ItemsParams, ItemsResult, MetaResult, Provider } from '@openctx/provider'
 import type { Credentials } from 'google-auth-library'
 
 /** Settings for the Google Docs OpenCtx provider. */
@@ -22,7 +22,7 @@ export type Settings = {
  * editors.
  */
 const googleDocs: Provider<Settings> = {
-    capabilities(): CapabilitiesResult {
+    meta(): MetaResult {
         return { meta: { name: 'Google Docs' } }
     },
 

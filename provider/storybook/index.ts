@@ -1,8 +1,8 @@
 import type {
     AnnotationsParams,
     AnnotationsResult,
-    CapabilitiesParams,
-    CapabilitiesResult,
+    MetaParams,
+    MetaResult,
     Provider,
     Range,
 } from '@openctx/provider'
@@ -30,7 +30,7 @@ export interface Settings {
  * components look like.
  */
 const storybook: Provider<Settings> = {
-    capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
+    meta(_params: MetaParams, settings: Settings): MetaResult {
         if (!settings.storybookUrl) {
             return { meta: { name: 'Storybook' } }
         }

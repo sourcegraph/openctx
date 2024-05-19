@@ -1,4 +1,4 @@
-import type { AnnotationsResult, CapabilitiesResult } from '@openctx/provider'
+import type { AnnotationsResult, MetaResult } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import links, { type Settings } from './index.js'
 
@@ -22,8 +22,8 @@ describe('links', () => {
         ],
     }
 
-    test('capabilities', async () => {
-        expect(await links.capabilities({}, SETTINGS)).toStrictEqual<CapabilitiesResult>({
+    test('meta', async () => {
+        expect(await links.meta({}, SETTINGS)).toStrictEqual<MetaResult>({
             selector: [{ path: '**/*.ts' }, { path: '**/*.go' }],
             meta: { name: 'Links' },
         })

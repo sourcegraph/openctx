@@ -25,26 +25,26 @@ Providers are stateless.
 
 Providers implement the following API methods:
 
-- [Capabilities](#capabilities): determine the provider's capabilities (required)
+- [Meta](#meta): report the provider's name, features, and other metadata (required)
 - [Items](#items): search for documents and other content from the provider
 - [Annotations](#annotations): get annotations for a code file
 
-### Capabilities
+### Meta
 
-The capabilities request is sent by the client to the provider to retrieve information about the provider's capabilities and when it should be invoked. This avoids unnecessary invocations of the provider on resources where it would not have any results.
+The meta request is sent by the client to the provider to retrieve the provider's name, features, other metadata, and when it should be invoked. This avoids unnecessary invocations of the provider on resources where it would not have any results.
 
-**Request:** `{ method: "capabilities", params: CapabilitiesParams, settings?: object }`
+**Request:** `{ method: "meta", params: MetaParams, settings?: object }`
 
 ```typescript
-interface CapabilitiesParams {
+interface MetaParams {
   // empty for now
 }
 ```
 
-**Response:** `{ result: CapabilitiesResult }` or `{ error: { code, integer, data? } }`
+**Response:** `{ result: MetaResult }` or `{ error: { code, integer, data? } }`
 
 ```typescript
-interface CapabilitiesResult {
+interface MetaResult {
   /**
    * Selects the scope in which this provider should be called.
    *

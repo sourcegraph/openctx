@@ -1,10 +1,10 @@
 import {
     type AnnotationsParams,
     type AnnotationsResult,
-    type CapabilitiesParams,
-    type CapabilitiesResult,
     type ItemsParams,
     type ItemsResult,
+    type MetaParams,
+    type MetaResult,
     type Provider,
     type Range,
     matchGlob,
@@ -64,7 +64,7 @@ interface LinkPattern {
  * review (assuming all of those tools have OpenCtx support).
  */
 const links: Provider<Settings> = {
-    capabilities(_params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
+    meta(_params: MetaParams, settings: Settings): MetaResult {
         return { selector: settings.links?.map(({ path }) => ({ path })) || [], meta: { name: 'Links' } }
     },
 

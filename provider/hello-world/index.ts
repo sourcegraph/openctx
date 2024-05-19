@@ -2,10 +2,10 @@ import type {
     Annotation,
     AnnotationsParams,
     AnnotationsResult,
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
+    MetaParams,
+    MetaResult,
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
@@ -15,7 +15,7 @@ import type {
  * file with "✨ Hello, world!".
  */
 const helloWorld: Provider = {
-    capabilities(params: CapabilitiesParams, settings: ProviderSettings): CapabilitiesResult {
+    meta(params: MetaParams, settings: ProviderSettings): MetaResult {
         return { meta: { name: '✨ Hello World!' } }
     },
 

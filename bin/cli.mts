@@ -13,16 +13,16 @@ function usageFatal(message: string): never {
     console.error(
         `\nUsage: OPENCTX_CONFIG=<config> ${path.basename(
             process.argv[1]
-        )} capabilities|mentions|items [args...]`
+        )} meta|mentions|items [args...]`
     )
     process.exit(1)
 }
 
-async function subcommandCapabilities(client: Client<Range>, args: string[]): Promise<void> {
+async function subcommandMeat(client: Client<Range>, args: string[]): Promise<void> {
     const [provideUri] = args
-    const capabilities = await client.capabilities({}, provideUri)
+    const meta = await client.meta({}, provideUri)
 
-    console.log(JSON.stringify(capabilities))
+    console.log(JSON.stringify(meta))
 }
 
 async function subcommandMentions(client: Client<Range>, args: string[]): Promise<void> {
@@ -107,8 +107,8 @@ const client = createClient({
 const subcommand = process.argv[2]
 const args = process.argv.slice(3)
 switch (subcommand) {
-    case 'capabilities':
-        await subcommandCapabilities(client, args)
+    case 'meta':
+        await subcommandMeat(client, args)
         break
     case 'mentions':
         await subcommandMentions(client, args)
@@ -117,5 +117,5 @@ switch (subcommand) {
         await subcommandItems(client, args)
         break
     default:
-        usageFatal('Error: only the "capabilities" or "items" subcommand is supported')
+        usageFatal('Error: only the "meta" or "items" subcommand is supported')
 }

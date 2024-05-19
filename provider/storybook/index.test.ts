@@ -8,8 +8,8 @@ describe('storybook', () => {
         storybookUrl: 'https://<branch>--abc123.chromatic.com/',
     }
 
-    test('capabilities', async () => {
-        expect(await storybook.capabilities({}, SETTINGS)).toBeDefined()
+    test('meta', async () => {
+        expect(await storybook.meta({}, SETTINGS)).toBeDefined()
     })
 
     const fetchMocker = createFetchMock(vi)

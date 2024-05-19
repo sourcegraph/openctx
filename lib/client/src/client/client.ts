@@ -1,11 +1,11 @@
 import type {
     AnnotationsParams,
-    CapabilitiesParams,
-    CapabilitiesResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
     MentionsResult,
+    MetaParams,
+    MetaResult,
 } from '@openctx/protocol'
 import type { Provider } from '@openctx/provider'
 import type { Range } from '@openctx/schema'
@@ -31,17 +31,17 @@ import {
     type ObserveOptions,
     type ProviderClientWithSettings,
     observeAnnotations,
-    observeCapabilities,
     observeItems,
     observeMentions,
+    observeMeta,
 } from '../api.js'
 import { type ConfigurationUserInput, configurationFromUserInput } from '../configuration.js'
 import type { Logger } from '../logger.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
 
 /**
- * Hooks for the OpenCtx {@link Client} to access information about the environment, such as
- * the user's configuration and authentication info.
+ * Hooks for the OpenCtx {@link Client} to access information about the environment, such as the
+ * user's configuration and authentication info.
  *
  * @template R The type to use for ranges (such as `vscode.Range` for VS Code extensions).
  */
@@ -107,51 +107,45 @@ export interface AuthInfo {
 }
 
 /**
- * An OpenCtx client, used by client applications (such as editors, code browsers, etc.) to
- * manage OpenCtx providers and items.
+ * An OpenCtx client, used by client applications (such as editors, code browsers, etc.) to manage
+ * OpenCtx providers and items.
  *
  * @template R The type to use for ranges (such as `vscode.Range` for VS Code extensions).
  */
 export interface Client<R extends Range> {
     /**
-     * Get the capabilities returned by the configured providers.
+     * Get information about the configured providers, including their names and features.
      *
-     * It does not continue to listen for changes, as {@link Client.capabilitiesChanges} does. Using
-     * {@link Client.capabilities} is simpler and does not require use of observables (with a library like
-     * RxJS), but it means that the client needs to manually poll for updated item kinds if freshness is
-     * important.
+     * It does not continue to listen for changes, as {@link Client.metaChanges} does. Using
+     * {@link Client.meta} is simpler and does not require use of observables (with a library like
+     * RxJS), but it means that the client needs to manually poll for updated item kinds if
+     * freshness is important.
      */
-    capabilities(
-        params: CapabilitiesParams,
-        providerUri?: string
-    ): Promise<EachWithProviderUri<CapabilitiesResult[]>>
+    meta(params: MetaParams, providerUri?: string): Promise<EachWithProviderUri<MetaResult[]>>
 
     /**
-     * Observe OpenCtx capabilities of the configured providers.
+     * Observe information about the configured providers.
      *
-     * The returned observable streams capabilities as they are received from the providers and continues
-     * passing along any updates until unsubscribed.
+     * The returned observable streams information as it is received from the providers and
+     * continues passing along any updates until unsubscribed.
      */
-    capabilitiesChanges(
-        params: CapabilitiesParams,
-        providerUri?: string
-    ): Observable<EachWithProviderUri<CapabilitiesResult[]>>
+    metaChanges(params: MetaParams, providerUri?: string): Observable<EachWithProviderUri<MetaResult[]>>
 
     /**
      * Get the candidate items returned by the configured providers.
      *
      * It does not continue to listen for changes, as {@link Client.mentionsChanges} does. Using
-     * {@link Client.Mentions} is simpler and does not require use of observables (with a library like
-     * RxJS), but it means that the client needs to manually poll for updated items if freshness is
-     * important.
+     * {@link Client.Mentions} is simpler and does not require use of observables (with a library
+     * like RxJS), but it means that the client needs to manually poll for updated items if
+     * freshness is important.
      */
     mentions(params: MentionsParams, providerUri?: string): Promise<EachWithProviderUri<MentionsResult>>
 
     /**
      * Observe OpenCtx candidate items from the configured providers.
      *
-     * The returned observable streams candidate items as they are received from the providers and continues
-     * passing along any updates until unsubscribed.
+     * The returned observable streams candidate items as they are received from the providers and
+     * continues passing along any updates until unsubscribed.
      */
     mentionsChanges(
         params: MentionsParams,
@@ -300,12 +294,12 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         )
     }
 
-    const capabilitiesChanges = (
-        params: CapabilitiesParams,
+    const metaChanges = (
+        params: MetaParams,
         { emitPartial }: ObserveOptions,
         providerUri?: string
-    ): Observable<EachWithProviderUri<CapabilitiesResult[]>> => {
-        return observeCapabilities(
+    ): Observable<EachWithProviderUri<MetaResult[]>> => {
+        return observeMeta(
             filterProviders(providerClientsWithSettings(undefined), providerUri),
             params,
             {
@@ -362,12 +356,11 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     }
 
     return {
-        capabilities: (params, providerUri) =>
-            firstValueFrom(capabilitiesChanges(params, { emitPartial: false }, providerUri), {
+        meta: (params, providerUri) =>
+            firstValueFrom(metaChanges(params, { emitPartial: false }, providerUri), {
                 defaultValue: [],
             }),
-        capabilitiesChanges: (params, providerUri) =>
-            capabilitiesChanges(params, { emitPartial: true }, providerUri),
+        metaChanges: (params, providerUri) => metaChanges(params, { emitPartial: true }, providerUri),
         mentions: (params, providerUri) =>
             firstValueFrom(mentionsChanges(params, { emitPartial: false }, providerUri), {
                 defaultValue: [],
