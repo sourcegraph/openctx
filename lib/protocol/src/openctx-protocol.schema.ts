@@ -57,7 +57,7 @@ export interface MetaResult {
      */
     features?: {
         /**
-         * Whether the provider support mentions.
+         * Whether the provider supports mentions.
          */
         mentions?: boolean
         [k: string]: unknown | undefined
