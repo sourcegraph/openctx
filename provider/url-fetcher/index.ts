@@ -53,7 +53,10 @@ async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<Items
         return []
     }
     try {
-        const content = await fetchContentForURLContextItem(url, timeoutSignal(timeoutMs))
+        const content = await fetchContentForURLContextItem(
+            url,
+            timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined
+        )
 
         if (content === null) {
             return []
@@ -116,15 +119,6 @@ async function fetchContentForURLContextItem(
  */
 function tryGetHTMLDocumentTitle(html: string): string | undefined {
     return html.match(/<title>(?<title>[^<]+)<\/title>/)?.groups?.title
-}
-
-function timeoutSignal(ms?: number): AbortSignal | undefined {
-    if (ms === undefined) {
-        return undefined
-    }
-    const controller = new AbortController()
-    setTimeout(() => controller.abort('timeout'), ms)
-    return controller.signal
 }
 
 export default urlFetcher
