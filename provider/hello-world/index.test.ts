@@ -5,7 +5,7 @@ import helloWorld from './index.js'
 describe('helloWorld', () => {
     test('meta', () =>
         expect(helloWorld.meta({}, {})).toStrictEqual<MetaResult>({
-            meta: { name: '✨ Hello World!' },
+            name: '✨ Hello World!',
         }))
 
     test('annotations', () =>

@@ -23,7 +23,7 @@ export type Settings = {
  */
 const googleDocs: Provider<Settings> = {
     meta(): MetaResult {
-        return { meta: { name: 'Google Docs' } }
+        return { name: 'Google Docs' }
     },
 
     async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {

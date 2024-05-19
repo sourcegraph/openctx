@@ -48,15 +48,19 @@ export interface MetaResult {
      * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.
      */
     selector?: Selector[]
-    meta: {
+    /**
+     * The name of the provider.
+     */
+    name?: string
+    /**
+     * The features supported by the provider.
+     */
+    features?: {
         /**
-         * The name of the provider.
+         * Whether the provider support mentions.
          */
-        name: string
-        /**
-         * A description of the provider.
-         */
-        description?: string
+        mentions?: boolean
+        [k: string]: unknown | undefined
     }
 }
 /**

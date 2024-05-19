@@ -18,7 +18,8 @@ const urlFetcher: Provider<UrlFetcherSettings> = {
         return {
             // empty since we don't provide any annotations.
             selector: [],
-            meta: { name: 'URLs' },
+            name: 'URLs',
+            features: { mentions: true },
         }
     },
 

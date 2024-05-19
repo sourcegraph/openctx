@@ -25,7 +25,7 @@ describe('links', () => {
     test('meta', async () => {
         expect(await links.meta({}, SETTINGS)).toStrictEqual<MetaResult>({
             selector: [{ path: '**/*.ts' }, { path: '**/*.go' }],
-            meta: { name: 'Links' },
+            name: 'Links',
         })
     })
 
