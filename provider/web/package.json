@@ -1,27 +1,28 @@
 {
-  "name": "@openctx/provider-storybook",
-  "version": "0.0.8",
-  "description": "Add Storybook links and image previews to your code (OpenCtx provider)",
+  "name": "@openctx/provider-web",
+  "version": "0.0.1",
+  "description": "Use information from web pages (OpenCtx provider)",
   "license": "Apache-2.0",
-  "homepage": "https://openctx.org/docs/providers/storybook",
+  "homepage": "https://openctx.org/docs/providers/web",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/storybook"
+    "directory": "provider/web"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "index.ts", "!**/*.test.*", "README.md"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
+    "bundle": "esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
     "test": "vitest"
   },
   "dependencies": {
     "@openctx/provider": "workspace:*"
   },
   "devDependencies": {
-    "vitest-fetch-mock": "^0.2.2"
+    "esbuild": "^0.21.3"
   }
 }

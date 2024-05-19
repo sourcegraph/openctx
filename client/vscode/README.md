@@ -27,14 +27,6 @@ _Status: experimental_
    - [Storybook](https://openctx.org/docs/providers/storybook)
    - [Prometheus](https://openctx.org/docs/providers/prometheus)
    - For more and to write your own, see "[OpenCtx docs](https://openctx.org/docs/start)".
-1. _(Optional)_ Add Sourcegraph as an OpenCtx provider in VS Code to get the same items in your editor as you get in Sourcegraph:
-
-    ```json
-    "openctx.providers": {
-        // ...other providers...
-        "https://sourcegraph.com/.api/openctx": true,
-    },
-    ```
 
 ### For extension authors
 

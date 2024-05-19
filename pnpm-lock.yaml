@@ -552,7 +552,7 @@ importers:
         specifier: ^0.2.2
         version: 0.2.2(vitest@1.6.0)
 
-  provider/url-fetcher:
+  provider/web:
     dependencies:
       '@openctx/provider':
         specifier: workspace:*

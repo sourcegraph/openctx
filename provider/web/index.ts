@@ -119,7 +119,10 @@ async function fetchContentForURLContextItem(
  * this feature is experimental and we don't need robustness yet).
  */
 function tryGetHTMLDocumentTitle(html: string): string | undefined {
-    return html.match(/<title>(?<title>[^<]+)<\/title>/)?.groups?.title
+    return html
+        .match(/<title>(?<title>[^<]+)<\/title>/)
+        ?.groups?.title.replaceAll(/\s+/gm, ' ')
+        .trim()
 }
 
 export default urlFetcher

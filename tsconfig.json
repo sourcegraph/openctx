@@ -30,7 +30,9 @@
     { "path": "provider/hello-world" },
     { "path": "provider/links" },
     { "path": "provider/prometheus" },
+    { "path": "provider/sourcegraph-search" },
     { "path": "provider/storybook" },
+    { "path": "provider/web" },
     { "path": "web" },
     { "path": "web/tsconfig.node.json" },
     { "path": "web/src/server" }
