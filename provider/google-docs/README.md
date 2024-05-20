@@ -4,6 +4,8 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Google
 
 **Status:** experimental
 
+> NOTE: Currently only works in development mode due to javascript bundling issues.
+
 ## Configuration
 
 To create Google Drive/Docs API credentials:
