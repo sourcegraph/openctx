@@ -23,8 +23,10 @@ async function main(): Promise<void> {
 
     let exitCode: number
 
-    // Ensure we're running in a clean VS Code user data dir.
-    const tmpDir = await mkdtemp(path.join(tmpdir(), 'openctx-vscode-integration-test-'))
+    // Ensure we're running in a clean VS Code user data dir. We use a short
+    // name to avoid "WARNING: IPC handle is longer than 103 chars, try a
+    // shorter --user-data-dir"
+    const tmpDir = await mkdtemp(path.join(tmpdir(), 'octxvstest-'))
     const tmpUserDataDir = path.join(tmpDir, 'userdata')
     const tmpWorkspaceDir = path.join(tmpDir, 'workspace')
     const tmpScratchDir = path.join(tmpDir, 'scratch')
