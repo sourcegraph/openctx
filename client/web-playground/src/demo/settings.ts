@@ -7,14 +7,14 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
             links: [
                 {
                     title: 'Telemetry',
-                    url: 'https://docs.sourcegraph.com/dev/background-information/telemetry#sourcegraph-web-app',
+                    url: 'https://docs-legacy.sourcegraph.com/dev/background-information/telemetry#sourcegraph-web-app',
                     type: 'docs',
                     path: '**/*.ts?(x)',
                     pattern: 'eventLogger\\.',
                 },
                 {
                     title: 'CSS in client/web',
-                    url: 'https://docs.sourcegraph.com/dev/background-information/web/styling#styling-ui',
+                    url: 'https://docs-legacy.sourcegraph.com/@3.39/dev/background-information/web/styling#styling-ui',
                     type: 'docs',
                     path: '**/*.ts?(x)',
                     pattern: '^import styles from',
