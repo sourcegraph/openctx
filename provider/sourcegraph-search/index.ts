@@ -1,6 +1,4 @@
 import type {
-    AnnotationsParams,
-    AnnotationsResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
@@ -71,7 +69,7 @@ const sourcegraphSearch: Provider = {
         return chunks.map(chunk => {
             return {
                 title: `${chunk.repoName} ${chunk.path}:${chunk.lineRange}`,
-                uri: chunk.uri,
+                url: chunk.url,
                 ui: {
                     hover: { text: `From Sourcegraph query ${query.userInput}` },
                 },
@@ -80,10 +78,6 @@ const sourcegraphSearch: Provider = {
                 },
             }
         })
-    },
-
-    annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
-        return []
     },
 }
 
