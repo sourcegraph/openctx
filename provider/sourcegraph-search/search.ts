@@ -4,7 +4,7 @@ interface GraphQLClient {
 }
 
 interface Chunk {
-    uri: string
+    url: string
     path: string
     content: string
     repoName: string
@@ -33,7 +33,7 @@ export async function searchForFileChunks(
                             chunkMatch.contentStart.line
                         )
                         return {
-                            uri: `${url}?L${lineRange}`,
+                            url: `${url}?L${lineRange}`,
                             path: result.file.path,
                             repoName: result.repository.name,
                             content: chunkMatch.content,
