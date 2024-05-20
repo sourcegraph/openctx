@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-sourcegraph-search",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Sourcegraph Search (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/sourcegraph-search",
