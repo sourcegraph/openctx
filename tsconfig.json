@@ -29,6 +29,7 @@
     { "path": "provider/google-docs" },
     { "path": "provider/hello-world" },
     { "path": "provider/links" },
+    { "path": "provider/notion" },
     { "path": "provider/prometheus" },
     { "path": "provider/sourcegraph-search" },
     { "path": "provider/storybook" },
