@@ -1,0 +1,30 @@
+{
+  "name": "@openctx/provider-notion",
+  "version": "0.0.1",
+  "description": "Notion (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/notion",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/notion"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest",
+    "emitJSDeclaration": "tsc -d --emitDeclarationOnly --allowJs parse-text-from-any-block-type.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "@openctx/provider": "workspace:*"
+  }
+}
