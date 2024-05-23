@@ -13,9 +13,6 @@ import { isError, searchForFileChunks } from './search.js'
 
 const graphqlClient = new SourcegraphGraphQLAPIClient()
 
-/** Used to prefix context queries to indicate a sourcegraph search */
-const QUERY_PREFIXES = ['?', 'src:']
-
 /** We always limit our searches to files and a conservatively sized result set */
 const SEARCH_QUERY_CONST = 'type:file count:10'
 
@@ -101,16 +98,10 @@ function searchQueryFromURL(endpoint: string, url: string): SearchQuery | undefi
 }
 
 function searchQueryFromMentionQuery(query: string): SearchQuery {
-    const userInput = trimFirstPrefix(query, QUERY_PREFIXES)
     return {
-        userInput,
-        sourcegraphQuery: `${SEARCH_QUERY_CONST} ${userInput}`,
+        userInput: query,
+        sourcegraphQuery: `${SEARCH_QUERY_CONST} ${query}`,
     }
-}
-
-function trimFirstPrefix(s: string, prefixes: string[]): string {
-    const prefix = prefixes.find(prefix => s.startsWith(prefix)) ?? ''
-    return s.slice(prefix.length)
 }
 
 function trimPrefix(s: string, prefix: string): string {
