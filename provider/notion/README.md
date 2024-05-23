@@ -9,7 +9,7 @@ Add the following to your settings in any OpenCtx client:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/notion": {
+    "https://openctx.org/npm/@openctx/provider-notion": {
         "auth": "<your notion bot access token>"
     }
 },
