@@ -3,18 +3,15 @@ import type {
     ItemsResult,
     MentionsParams,
     MentionsResult,
-    MetaParams,
     MetaResult,
     Provider,
 } from '@openctx/provider'
 
-type UrlFetcherSettings = { [key: string]: any }
-
 /**
  * An OpenCtx provider that fetches the content of a URL and provides it as an item.
  */
-const urlFetcher: Provider<UrlFetcherSettings> = {
-    meta(params: MetaParams, settings: UrlFetcherSettings): MetaResult {
+const urlFetcher: Provider = {
+    meta(): MetaResult {
         return {
             // empty since we don't provide any annotations.
             selector: [],
@@ -23,7 +20,7 @@ const urlFetcher: Provider<UrlFetcherSettings> = {
         }
     },
 
-    async mentions(params: MentionsParams, settings: UrlFetcherSettings): Promise<MentionsResult> {
+    async mentions(params: MentionsParams): Promise<MentionsResult> {
         const [item] = await fetchItem({ message: params.query }, 2000)
         if (!item) {
             return []
@@ -32,7 +29,7 @@ const urlFetcher: Provider<UrlFetcherSettings> = {
         return [{ title: item.title, uri: item.url || '', data: { content: item.ai?.content } }]
     },
 
-    async items(params: ItemsParams, settings: UrlFetcherSettings): Promise<ItemsResult> {
+    async items(params: ItemsParams): Promise<ItemsResult> {
         return fetchItem(params)
     },
 }
