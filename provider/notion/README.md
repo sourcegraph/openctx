@@ -25,11 +25,9 @@ all sub pages.
 
 This provider configuration is a subset of the configuration for the NotionHQ JavaScript client:
 
-| Option      | Default value              | Type         | Description                                                                                                                                                  |
-| ----------- | -------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `auth`      | N/A                        | `string`     | Bearer token for authentication. Required.                                                                                                                   |
-| `logLevel`  | `warn`                     | `string`     | Verbosity of logs the instance will produce. Levels are debug, info, warn and error.                                                                         |
-| `timeoutMs` | `60_000`                   | `number`     | Number of milliseconds to wait before emitting timing out an API call to Notion.                                                                             |
+- `auth` :: Bearer token for authentication. Required.
+- `logLevel` :: Verbosity of logs the client will produce. Levels are `"debug"`, `"info"`, `"warn"` (default) and `"error"`.
+- `timeoutMs` :: The number of milliseconds to wait before timing out an API call to Notion. Defaults to `60000`.
 
 ## Development
 
