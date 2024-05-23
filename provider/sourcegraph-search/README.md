@@ -9,7 +9,7 @@ Add the following to your settings in any OpenCtx client:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/sourcegraph-search": true
+    "https://openctx.org/npm/@openctx/provider-sourcegraph-search": true
 },
 ```
 
