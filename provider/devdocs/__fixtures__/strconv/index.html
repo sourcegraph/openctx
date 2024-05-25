@@ -1,0 +1,449 @@
+<h1> Package strconv  </h1>     <ul id="short-nav">
+<li><code>import "strconv"</code></li>
+<li><a href="#pkg-overview" class="overviewLink">Overview</a></li>
+<li><a href="#pkg-index" class="indexLink">Index</a></li>
+<li><a href="#pkg-examples" class="examplesLink">Examples</a></li>
+</ul>     <h2 id="pkg-overview">Overview </h2> <p>Package strconv implements conversions to and from string representations of basic data types. </p>
+<h3 id="hdr-Numeric_Conversions">Numeric Conversions</h3> <p>The most common numeric conversions are Atoi (string to int) and Itoa (int to string). </p>
+<pre data-language="go">i, err := strconv.Atoi("-42")
+s := strconv.Itoa(-42)
+</pre> <p>These assume decimal and the Go int type. </p>
+<p><a href="#ParseBool">ParseBool</a>, <a href="#ParseFloat">ParseFloat</a>, <a href="#ParseInt">ParseInt</a>, and <a href="#ParseUint">ParseUint</a> convert strings to values: </p>
+<pre data-language="go">b, err := strconv.ParseBool("true")
+f, err := strconv.ParseFloat("3.1415", 64)
+i, err := strconv.ParseInt("-42", 10, 64)
+u, err := strconv.ParseUint("42", 10, 64)
+</pre> <p>The parse functions return the widest type (float64, int64, and uint64), but if the size argument specifies a narrower width the result can be converted to that narrower type without data loss: </p>
+<pre data-language="go">s := "2147483647" // biggest int32
+i64, err := strconv.ParseInt(s, 10, 32)
+...
+i := int32(i64)
+</pre> <p><a href="#FormatBool">FormatBool</a>, <a href="#FormatFloat">FormatFloat</a>, <a href="#FormatInt">FormatInt</a>, and <a href="#FormatUint">FormatUint</a> convert values to strings: </p>
+<pre data-language="go">s := strconv.FormatBool(true)
+s := strconv.FormatFloat(3.1415, 'E', -1, 64)
+s := strconv.FormatInt(-42, 16)
+s := strconv.FormatUint(42, 16)
+</pre> <p><a href="#AppendBool">AppendBool</a>, <a href="#AppendFloat">AppendFloat</a>, <a href="#AppendInt">AppendInt</a>, and <a href="#AppendUint">AppendUint</a> are similar but append the formatted value to a destination slice. </p>
+<h3 id="hdr-String_Conversions">String Conversions</h3> <p><a href="#Quote">Quote</a> and <a href="#QuoteToASCII">QuoteToASCII</a> convert strings to quoted Go string literals. The latter guarantees that the result is an ASCII string, by escaping any non-ASCII Unicode with \u: </p>
+<pre data-language="go">q := strconv.Quote("Hello, 世界")
+q := strconv.QuoteToASCII("Hello, 世界")
+</pre> <p><a href="#QuoteRune">QuoteRune</a> and <a href="#QuoteRuneToASCII">QuoteRuneToASCII</a> are similar but accept runes and return quoted Go rune literals. </p>
+<p><a href="#Unquote">Unquote</a> and <a href="#UnquoteChar">UnquoteChar</a> unquote Go string and rune literals. </p>     <h2 id="pkg-index">Index </h2>  <ul id="manual-nav">
+<li><a href="#pkg-constants">Constants</a></li>
+<li><a href="#pkg-variables">Variables</a></li>
+<li><a href="#AppendBool">func AppendBool(dst []byte, b bool) []byte</a></li>
+<li><a href="#AppendFloat">func AppendFloat(dst []byte, f float64, fmt byte, prec, bitSize int) []byte</a></li>
+<li><a href="#AppendInt">func AppendInt(dst []byte, i int64, base int) []byte</a></li>
+<li><a href="#AppendQuote">func AppendQuote(dst []byte, s string) []byte</a></li>
+<li><a href="#AppendQuoteRune">func AppendQuoteRune(dst []byte, r rune) []byte</a></li>
+<li><a href="#AppendQuoteRuneToASCII">func AppendQuoteRuneToASCII(dst []byte, r rune) []byte</a></li>
+<li><a href="#AppendQuoteRuneToGraphic">func AppendQuoteRuneToGraphic(dst []byte, r rune) []byte</a></li>
+<li><a href="#AppendQuoteToASCII">func AppendQuoteToASCII(dst []byte, s string) []byte</a></li>
+<li><a href="#AppendQuoteToGraphic">func AppendQuoteToGraphic(dst []byte, s string) []byte</a></li>
+<li><a href="#AppendUint">func AppendUint(dst []byte, i uint64, base int) []byte</a></li>
+<li><a href="#Atoi">func Atoi(s string) (int, error)</a></li>
+<li><a href="#CanBackquote">func CanBackquote(s string) bool</a></li>
+<li><a href="#FormatBool">func FormatBool(b bool) string</a></li>
+<li><a href="#FormatComplex">func FormatComplex(c complex128, fmt byte, prec, bitSize int) string</a></li>
+<li><a href="#FormatFloat">func FormatFloat(f float64, fmt byte, prec, bitSize int) string</a></li>
+<li><a href="#FormatInt">func FormatInt(i int64, base int) string</a></li>
+<li><a href="#FormatUint">func FormatUint(i uint64, base int) string</a></li>
+<li><a href="#IsGraphic">func IsGraphic(r rune) bool</a></li>
+<li><a href="#IsPrint">func IsPrint(r rune) bool</a></li>
+<li><a href="#Itoa">func Itoa(i int) string</a></li>
+<li><a href="#ParseBool">func ParseBool(str string) (bool, error)</a></li>
+<li><a href="#ParseComplex">func ParseComplex(s string, bitSize int) (complex128, error)</a></li>
+<li><a href="#ParseFloat">func ParseFloat(s string, bitSize int) (float64, error)</a></li>
+<li><a href="#ParseInt">func ParseInt(s string, base int, bitSize int) (i int64, err error)</a></li>
+<li><a href="#ParseUint">func ParseUint(s string, base int, bitSize int) (uint64, error)</a></li>
+<li><a href="#Quote">func Quote(s string) string</a></li>
+<li><a href="#QuoteRune">func QuoteRune(r rune) string</a></li>
+<li><a href="#QuoteRuneToASCII">func QuoteRuneToASCII(r rune) string</a></li>
+<li><a href="#QuoteRuneToGraphic">func QuoteRuneToGraphic(r rune) string</a></li>
+<li><a href="#QuoteToASCII">func QuoteToASCII(s string) string</a></li>
+<li><a href="#QuoteToGraphic">func QuoteToGraphic(s string) string</a></li>
+<li><a href="#QuotedPrefix">func QuotedPrefix(s string) (string, error)</a></li>
+<li><a href="#Unquote">func Unquote(s string) (string, error)</a></li>
+<li><a href="#UnquoteChar">func UnquoteChar(s string, quote byte) (value rune, multibyte bool, tail string, err error)</a></li>
+<li><a href="#NumError">type NumError</a></li>
+<li> <a href="#NumError.Error">func (e *NumError) Error() string</a>
+</li>
+<li> <a href="#NumError.Unwrap">func (e *NumError) Unwrap() error</a>
+</li>
+</ul> <div id="pkg-examples"> <h3>Examples</h3>  <dl> <dd><a class="exampleLink" href="#example_AppendBool">AppendBool</a></dd> <dd><a class="exampleLink" href="#example_AppendFloat">AppendFloat</a></dd> <dd><a class="exampleLink" href="#example_AppendInt">AppendInt</a></dd> <dd><a class="exampleLink" href="#example_AppendQuote">AppendQuote</a></dd> <dd><a class="exampleLink" href="#example_AppendQuoteRune">AppendQuoteRune</a></dd> <dd><a class="exampleLink" href="#example_AppendQuoteRuneToASCII">AppendQuoteRuneToASCII</a></dd> <dd><a class="exampleLink" href="#example_AppendQuoteToASCII">AppendQuoteToASCII</a></dd> <dd><a class="exampleLink" href="#example_AppendUint">AppendUint</a></dd> <dd><a class="exampleLink" href="#example_Atoi">Atoi</a></dd> <dd><a class="exampleLink" href="#example_CanBackquote">CanBackquote</a></dd> <dd><a class="exampleLink" href="#example_FormatBool">FormatBool</a></dd> <dd><a class="exampleLink" href="#example_FormatFloat">FormatFloat</a></dd> <dd><a class="exampleLink" href="#example_FormatInt">FormatInt</a></dd> <dd><a class="exampleLink" href="#example_FormatUint">FormatUint</a></dd> <dd><a class="exampleLink" href="#example_IsGraphic">IsGraphic</a></dd> <dd><a class="exampleLink" href="#example_IsPrint">IsPrint</a></dd> <dd><a class="exampleLink" href="#example_Itoa">Itoa</a></dd> <dd><a class="exampleLink" href="#example_NumError">NumError</a></dd> <dd><a class="exampleLink" href="#example_ParseBool">ParseBool</a></dd> <dd><a class="exampleLink" href="#example_ParseFloat">ParseFloat</a></dd> <dd><a class="exampleLink" href="#example_ParseInt">ParseInt</a></dd> <dd><a class="exampleLink" href="#example_ParseUint">ParseUint</a></dd> <dd><a class="exampleLink" href="#example_Quote">Quote</a></dd> <dd><a class="exampleLink" href="#example_QuoteRune">QuoteRune</a></dd> <dd><a class="exampleLink" href="#example_QuoteRuneToASCII">QuoteRuneToASCII</a></dd> <dd><a class="exampleLink" href="#example_QuoteRuneToGraphic">QuoteRuneToGraphic</a></dd> <dd><a class="exampleLink" href="#example_QuoteToASCII">QuoteToASCII</a></dd> <dd><a class="exampleLink" href="#example_QuoteToGraphic">QuoteToGraphic</a></dd> <dd><a class="exampleLink" href="#example_QuotedPrefix">QuotedPrefix</a></dd> <dd><a class="exampleLink" href="#example_Unquote">Unquote</a></dd> <dd><a class="exampleLink" href="#example_UnquoteChar">UnquoteChar</a></dd> </dl> </div> <h3>Package files</h3> <p>  <span>atob.go</span> <span>atoc.go</span> <span>atof.go</span> <span>atoi.go</span> <span>bytealg.go</span> <span>ctoa.go</span> <span>decimal.go</span> <span>doc.go</span> <span>eisel_lemire.go</span> <span>ftoa.go</span> <span>ftoaryu.go</span> <span>isprint.go</span> <span>itoa.go</span> <span>quote.go</span>  </p>   <h2 id="pkg-constants">Constants</h2> <p>IntSize is the size in bits of an int or uint value. </p>
+<pre data-language="go">const IntSize = intSize</pre> <h2 id="pkg-variables">Variables</h2> <p>ErrRange indicates that a value is out of range for the target type. </p>
+<pre data-language="go">var ErrRange = errors.New("value out of range")</pre> <p>ErrSyntax indicates that a value does not have the right syntax for the target type. </p>
+<pre data-language="go">var ErrSyntax = errors.New("invalid syntax")</pre> <h2 id="AppendBool">func <span>AppendBool</span>  </h2> <pre data-language="go">func AppendBool(dst []byte, b bool) []byte</pre> <p>AppendBool appends "true" or "false", according to the value of b, to dst and returns the extended buffer. </p>   <h4 id="example_AppendBool"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b := []byte("bool:")
+b = strconv.AppendBool(b, true)
+fmt.Println(string(b))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">bool:true
+</pre>   <h2 id="AppendFloat">func <span>AppendFloat</span>  </h2> <pre data-language="go">func AppendFloat(dst []byte, f float64, fmt byte, prec, bitSize int) []byte</pre> <p>AppendFloat appends the string form of the floating-point number f, as generated by FormatFloat, to dst and returns the extended buffer. </p>   <h4 id="example_AppendFloat"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b32 := []byte("float32:")
+b32 = strconv.AppendFloat(b32, 3.1415926535, 'E', -1, 32)
+fmt.Println(string(b32))
+
+b64 := []byte("float64:")
+b64 = strconv.AppendFloat(b64, 3.1415926535, 'E', -1, 64)
+fmt.Println(string(b64))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">float32:3.1415927E+00
+float64:3.1415926535E+00
+</pre>   <h2 id="AppendInt">func <span>AppendInt</span>  </h2> <pre data-language="go">func AppendInt(dst []byte, i int64, base int) []byte</pre> <p>AppendInt appends the string form of the integer i, as generated by FormatInt, to dst and returns the extended buffer. </p>   <h4 id="example_AppendInt"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b10 := []byte("int (base 10):")
+b10 = strconv.AppendInt(b10, -42, 10)
+fmt.Println(string(b10))
+
+b16 := []byte("int (base 16):")
+b16 = strconv.AppendInt(b16, -42, 16)
+fmt.Println(string(b16))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">int (base 10):-42
+int (base 16):-2a
+</pre>   <h2 id="AppendQuote">func <span>AppendQuote</span>  </h2> <pre data-language="go">func AppendQuote(dst []byte, s string) []byte</pre> <p>AppendQuote appends a double-quoted Go string literal representing s, as generated by Quote, to dst and returns the extended buffer. </p>   <h4 id="example_AppendQuote"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b := []byte("quote:")
+b = strconv.AppendQuote(b, `"Fran &amp; Freddie's Diner"`)
+fmt.Println(string(b))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">quote:"\"Fran &amp; Freddie's Diner\""
+</pre>   <h2 id="AppendQuoteRune">func <span>AppendQuoteRune</span>  </h2> <pre data-language="go">func AppendQuoteRune(dst []byte, r rune) []byte</pre> <p>AppendQuoteRune appends a single-quoted Go character literal representing the rune, as generated by QuoteRune, to dst and returns the extended buffer. </p>   <h4 id="example_AppendQuoteRune"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b := []byte("rune:")
+b = strconv.AppendQuoteRune(b, '☺')
+fmt.Println(string(b))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">rune:'☺'
+</pre>   <h2 id="AppendQuoteRuneToASCII">func <span>AppendQuoteRuneToASCII</span>  </h2> <pre data-language="go">func AppendQuoteRuneToASCII(dst []byte, r rune) []byte</pre> <p>AppendQuoteRuneToASCII appends a single-quoted Go character literal representing the rune, as generated by QuoteRuneToASCII, to dst and returns the extended buffer. </p>   <h4 id="example_AppendQuoteRuneToASCII"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b := []byte("rune (ascii):")
+b = strconv.AppendQuoteRuneToASCII(b, '☺')
+fmt.Println(string(b))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">rune (ascii):'\u263a'
+</pre>   <h2 id="AppendQuoteRuneToGraphic">func <span>AppendQuoteRuneToGraphic</span>  <span title="Added in Go 1.6">1.6</span> </h2> <pre data-language="go">func AppendQuoteRuneToGraphic(dst []byte, r rune) []byte</pre> <p>AppendQuoteRuneToGraphic appends a single-quoted Go character literal representing the rune, as generated by QuoteRuneToGraphic, to dst and returns the extended buffer. </p>
+<h2 id="AppendQuoteToASCII">func <span>AppendQuoteToASCII</span>  </h2> <pre data-language="go">func AppendQuoteToASCII(dst []byte, s string) []byte</pre> <p>AppendQuoteToASCII appends a double-quoted Go string literal representing s, as generated by QuoteToASCII, to dst and returns the extended buffer. </p>   <h4 id="example_AppendQuoteToASCII"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b := []byte("quote (ascii):")
+b = strconv.AppendQuoteToASCII(b, `"Fran &amp; Freddie's Diner"`)
+fmt.Println(string(b))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">quote (ascii):"\"Fran &amp; Freddie's Diner\""
+</pre>   <h2 id="AppendQuoteToGraphic">func <span>AppendQuoteToGraphic</span>  <span title="Added in Go 1.6">1.6</span> </h2> <pre data-language="go">func AppendQuoteToGraphic(dst []byte, s string) []byte</pre> <p>AppendQuoteToGraphic appends a double-quoted Go string literal representing s, as generated by QuoteToGraphic, to dst and returns the extended buffer. </p>
+<h2 id="AppendUint">func <span>AppendUint</span>  </h2> <pre data-language="go">func AppendUint(dst []byte, i uint64, base int) []byte</pre> <p>AppendUint appends the string form of the unsigned integer i, as generated by FormatUint, to dst and returns the extended buffer. </p>   <h4 id="example_AppendUint"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">b10 := []byte("uint (base 10):")
+b10 = strconv.AppendUint(b10, 42, 10)
+fmt.Println(string(b10))
+
+b16 := []byte("uint (base 16):")
+b16 = strconv.AppendUint(b16, 42, 16)
+fmt.Println(string(b16))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">uint (base 10):42
+uint (base 16):2a
+</pre>   <h2 id="Atoi">func <span>Atoi</span>  </h2> <pre data-language="go">func Atoi(s string) (int, error)</pre> <p>Atoi is equivalent to ParseInt(s, 10, 0), converted to type int. </p>   <h4 id="example_Atoi"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := "10"
+if s, err := strconv.Atoi(v); err == nil {
+    fmt.Printf("%T, %v", s, s)
+}
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">int, 10
+</pre>   <h2 id="CanBackquote">func <span>CanBackquote</span>  </h2> <pre data-language="go">func CanBackquote(s string) bool</pre> <p>CanBackquote reports whether the string s can be represented unchanged as a single-line backquoted string without control characters other than tab. </p>   <h4 id="example_CanBackquote"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">fmt.Println(strconv.CanBackquote("Fran &amp; Freddie's Diner ☺"))
+fmt.Println(strconv.CanBackquote("`can't backquote this`"))
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">true
+false
+</pre>   <h2 id="FormatBool">func <span>FormatBool</span>  </h2> <pre data-language="go">func FormatBool(b bool) string</pre> <p>FormatBool returns "true" or "false" according to the value of b. </p>   <h4 id="example_FormatBool"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := true
+s := strconv.FormatBool(v)
+fmt.Printf("%T, %v\n", s, s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">string, true
+</pre>   <h2 id="FormatComplex">func <span>FormatComplex</span>  <span title="Added in Go 1.15">1.15</span> </h2> <pre data-language="go">func FormatComplex(c complex128, fmt byte, prec, bitSize int) string</pre> <p>FormatComplex converts the complex number c to a string of the form (a+bi) where a and b are the real and imaginary parts, formatted according to the format fmt and precision prec. </p>
+<p>The format fmt and precision prec have the same meaning as in FormatFloat. It rounds the result assuming that the original was obtained from a complex value of bitSize bits, which must be 64 for complex64 and 128 for complex128. </p>
+<h2 id="FormatFloat">func <span>FormatFloat</span>  </h2> <pre data-language="go">func FormatFloat(f float64, fmt byte, prec, bitSize int) string</pre> <p>FormatFloat converts the floating-point number f to a string, according to the format fmt and precision prec. It rounds the result assuming that the original was obtained from a floating-point value of bitSize bits (32 for float32, 64 for float64). </p>
+<p>The format fmt is one of 'b' (-ddddp±ddd, a binary exponent), 'e' (-d.dddde±dd, a decimal exponent), 'E' (-d.ddddE±dd, a decimal exponent), 'f' (-ddd.dddd, no exponent), 'g' ('e' for large exponents, 'f' otherwise), 'G' ('E' for large exponents, 'f' otherwise), 'x' (-0xd.ddddp±ddd, a hexadecimal fraction and binary exponent), or 'X' (-0Xd.ddddP±ddd, a hexadecimal fraction and binary exponent). </p>
+<p>The precision prec controls the number of digits (excluding the exponent) printed by the 'e', 'E', 'f', 'g', 'G', 'x', and 'X' formats. For 'e', 'E', 'f', 'x', and 'X', it is the number of digits after the decimal point. For 'g' and 'G' it is the maximum number of significant digits (trailing zeros are removed). The special precision -1 uses the smallest number of digits necessary such that ParseFloat will return f exactly. </p>   <h4 id="example_FormatFloat"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := 3.1415926535
+
+s32 := strconv.FormatFloat(v, 'E', -1, 32)
+fmt.Printf("%T, %v\n", s32, s32)
+
+s64 := strconv.FormatFloat(v, 'E', -1, 64)
+fmt.Printf("%T, %v\n", s64, s64)
+
+// fmt.Println uses these arguments to print floats
+fmt64 := strconv.FormatFloat(v, 'g', -1, 64)
+fmt.Printf("%T, %v\n", fmt64, fmt64)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">string, 3.1415927E+00
+string, 3.1415926535E+00
+string, 3.1415926535
+</pre>   <h2 id="FormatInt">func <span>FormatInt</span>  </h2> <pre data-language="go">func FormatInt(i int64, base int) string</pre> <p>FormatInt returns the string representation of i in the given base, for 2 &lt;= base &lt;= 36. The result uses the lower-case letters 'a' to 'z' for digit values &gt;= 10. </p>   <h4 id="example_FormatInt"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := int64(-42)
+
+s10 := strconv.FormatInt(v, 10)
+fmt.Printf("%T, %v\n", s10, s10)
+
+s16 := strconv.FormatInt(v, 16)
+fmt.Printf("%T, %v\n", s16, s16)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">string, -42
+string, -2a
+</pre>   <h2 id="FormatUint">func <span>FormatUint</span>  </h2> <pre data-language="go">func FormatUint(i uint64, base int) string</pre> <p>FormatUint returns the string representation of i in the given base, for 2 &lt;= base &lt;= 36. The result uses the lower-case letters 'a' to 'z' for digit values &gt;= 10. </p>   <h4 id="example_FormatUint"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := uint64(42)
+
+s10 := strconv.FormatUint(v, 10)
+fmt.Printf("%T, %v\n", s10, s10)
+
+s16 := strconv.FormatUint(v, 16)
+fmt.Printf("%T, %v\n", s16, s16)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">string, 42
+string, 2a
+</pre>   <h2 id="IsGraphic">func <span>IsGraphic</span>  <span title="Added in Go 1.6">1.6</span> </h2> <pre data-language="go">func IsGraphic(r rune) bool</pre> <p>IsGraphic reports whether the rune is defined as a Graphic by Unicode. Such characters include letters, marks, numbers, punctuation, symbols, and spaces, from categories L, M, N, P, S, and Zs. </p>   <h4 id="example_IsGraphic"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">shamrock := strconv.IsGraphic('☘')
+fmt.Println(shamrock)
+
+a := strconv.IsGraphic('a')
+fmt.Println(a)
+
+bel := strconv.IsGraphic('\007')
+fmt.Println(bel)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">true
+true
+false
+</pre>   <h2 id="IsPrint">func <span>IsPrint</span>  </h2> <pre data-language="go">func IsPrint(r rune) bool</pre> <p>IsPrint reports whether the rune is defined as printable by Go, with the same definition as unicode.IsPrint: letters, numbers, punctuation, symbols and ASCII space. </p>   <h4 id="example_IsPrint"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">c := strconv.IsPrint('\u263a')
+fmt.Println(c)
+
+bel := strconv.IsPrint('\007')
+fmt.Println(bel)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">true
+false
+</pre>   <h2 id="Itoa">func <span>Itoa</span>  </h2> <pre data-language="go">func Itoa(i int) string</pre> <p>Itoa is equivalent to FormatInt(int64(i), 10). </p>   <h4 id="example_Itoa"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">i := 10
+s := strconv.Itoa(i)
+fmt.Printf("%T, %v\n", s, s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">string, 10
+</pre>   <h2 id="ParseBool">func <span>ParseBool</span>  </h2> <pre data-language="go">func ParseBool(str string) (bool, error)</pre> <p>ParseBool returns the boolean value represented by the string. It accepts 1, t, T, TRUE, true, True, 0, f, F, FALSE, false, False. Any other value returns an error. </p>   <h4 id="example_ParseBool"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := "true"
+if s, err := strconv.ParseBool(v); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">bool, true
+</pre>   <h2 id="ParseComplex">func <span>ParseComplex</span>  <span title="Added in Go 1.15">1.15</span> </h2> <pre data-language="go">func ParseComplex(s string, bitSize int) (complex128, error)</pre> <p>ParseComplex converts the string s to a complex number with the precision specified by bitSize: 64 for complex64, or 128 for complex128. When bitSize=64, the result still has type complex128, but it will be convertible to complex64 without changing its value. </p>
+<p>The number represented by s must be of the form N, Ni, or N±Ni, where N stands for a floating-point number as recognized by ParseFloat, and i is the imaginary component. If the second N is unsigned, a + sign is required between the two components as indicated by the ±. If the second N is NaN, only a + sign is accepted. The form may be parenthesized and cannot contain any spaces. The resulting complex number consists of the two components converted by ParseFloat. </p>
+<p>The errors that ParseComplex returns have concrete type *NumError and include err.Num = s. </p>
+<p>If s is not syntactically well-formed, ParseComplex returns err.Err = ErrSyntax. </p>
+<p>If s is syntactically well-formed but either component is more than 1/2 ULP away from the largest floating point number of the given component's size, ParseComplex returns err.Err = ErrRange and c = ±Inf for the respective component. </p>
+<h2 id="ParseFloat">func <span>ParseFloat</span>  </h2> <pre data-language="go">func ParseFloat(s string, bitSize int) (float64, error)</pre> <p>ParseFloat converts the string s to a floating-point number with the precision specified by bitSize: 32 for float32, or 64 for float64. When bitSize=32, the result still has type float64, but it will be convertible to float32 without changing its value. </p>
+<p>ParseFloat accepts decimal and hexadecimal floating-point numbers as defined by the Go syntax for <a href="https://go.dev/ref/spec#Floating-point_literals">floating-point literals</a>. If s is well-formed and near a valid floating-point number, ParseFloat returns the nearest floating-point number rounded using IEEE754 unbiased rounding. (Parsing a hexadecimal floating-point value only rounds when there are more bits in the hexadecimal representation than will fit in the mantissa.) </p>
+<p>The errors that ParseFloat returns have concrete type *NumError and include err.Num = s. </p>
+<p>If s is not syntactically well-formed, ParseFloat returns err.Err = ErrSyntax. </p>
+<p>If s is syntactically well-formed but is more than 1/2 ULP away from the largest floating point number of the given size, ParseFloat returns f = ±Inf, err.Err = ErrRange. </p>
+<p>ParseFloat recognizes the string "NaN", and the (possibly signed) strings "Inf" and "Infinity" as their respective special floating point values. It ignores case when matching. </p>   <h4 id="example_ParseFloat"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := "3.1415926535"
+if s, err := strconv.ParseFloat(v, 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat(v, 64); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat("NaN", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+// ParseFloat is case insensitive
+if s, err := strconv.ParseFloat("nan", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat("inf", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat("+Inf", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat("-Inf", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat("-0", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseFloat("+0", 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">float64, 3.1415927410125732
+float64, 3.1415926535
+float64, NaN
+float64, NaN
+float64, +Inf
+float64, +Inf
+float64, -Inf
+float64, -0
+float64, 0
+</pre>   <h2 id="ParseInt">func <span>ParseInt</span>  </h2> <pre data-language="go">func ParseInt(s string, base int, bitSize int) (i int64, err error)</pre> <p>ParseInt interprets a string s in the given base (0, 2 to 36) and bit size (0 to 64) and returns the corresponding value i. </p>
+<p>The string may begin with a leading sign: "+" or "-". </p>
+<p>If the base argument is 0, the true base is implied by the string's prefix following the sign (if present): 2 for "0b", 8 for "0" or "0o", 16 for "0x", and 10 otherwise. Also, for argument base 0 only, underscore characters are permitted as defined by the Go syntax for <a href="https://go.dev/ref/spec#Integer_literals">integer literals</a>. </p>
+<p>The bitSize argument specifies the integer type that the result must fit into. Bit sizes 0, 8, 16, 32, and 64 correspond to int, int8, int16, int32, and int64. If bitSize is below 0 or above 64, an error is returned. </p>
+<p>The errors that ParseInt returns have concrete type *NumError and include err.Num = s. If s is empty or contains invalid digits, err.Err = ErrSyntax and the returned value is 0; if the value corresponding to s cannot be represented by a signed integer of the given size, err.Err = ErrRange and the returned value is the maximum magnitude integer of the appropriate bitSize and sign. </p>   <h4 id="example_ParseInt"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v32 := "-354634382"
+if s, err := strconv.ParseInt(v32, 10, 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseInt(v32, 16, 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+
+v64 := "-3546343826724305832"
+if s, err := strconv.ParseInt(v64, 10, 64); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseInt(v64, 16, 64); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">int64, -354634382
+int64, -3546343826724305832
+</pre>   <h2 id="ParseUint">func <span>ParseUint</span>  </h2> <pre data-language="go">func ParseUint(s string, base int, bitSize int) (uint64, error)</pre> <p>ParseUint is like ParseInt but for unsigned numbers. </p>
+<p>A sign prefix is not permitted. </p>   <h4 id="example_ParseUint"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v := "42"
+if s, err := strconv.ParseUint(v, 10, 32); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+if s, err := strconv.ParseUint(v, 10, 64); err == nil {
+    fmt.Printf("%T, %v\n", s, s)
+}
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">uint64, 42
+uint64, 42
+</pre>   <h2 id="Quote">func <span>Quote</span>  </h2> <pre data-language="go">func Quote(s string) string</pre> <p>Quote returns a double-quoted Go string literal representing s. The returned string uses Go escape sequences (\t, \n, \xFF, \u0100) for control characters and non-printable characters as defined by IsPrint. </p>   <h4 id="example_Quote"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">// This string literal contains a tab character.
+s := strconv.Quote(`"Fran &amp; Freddie's Diner	☺"`)
+fmt.Println(s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">"\"Fran &amp; Freddie's Diner\t☺\""
+</pre>   <h2 id="QuoteRune">func <span>QuoteRune</span>  </h2> <pre data-language="go">func QuoteRune(r rune) string</pre> <p>QuoteRune returns a single-quoted Go character literal representing the rune. The returned string uses Go escape sequences (\t, \n, \xFF, \u0100) for control characters and non-printable characters as defined by IsPrint. If r is not a valid Unicode code point, it is interpreted as the Unicode replacement character U+FFFD. </p>   <h4 id="example_QuoteRune"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">s := strconv.QuoteRune('☺')
+fmt.Println(s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">'☺'
+</pre>   <h2 id="QuoteRuneToASCII">func <span>QuoteRuneToASCII</span>  </h2> <pre data-language="go">func QuoteRuneToASCII(r rune) string</pre> <p>QuoteRuneToASCII returns a single-quoted Go character literal representing the rune. The returned string uses Go escape sequences (\t, \n, \xFF, \u0100) for non-ASCII characters and non-printable characters as defined by IsPrint. If r is not a valid Unicode code point, it is interpreted as the Unicode replacement character U+FFFD. </p>   <h4 id="example_QuoteRuneToASCII"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">s := strconv.QuoteRuneToASCII('☺')
+fmt.Println(s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">'\u263a'
+</pre>   <h2 id="QuoteRuneToGraphic">func <span>QuoteRuneToGraphic</span>  <span title="Added in Go 1.6">1.6</span> </h2> <pre data-language="go">func QuoteRuneToGraphic(r rune) string</pre> <p>QuoteRuneToGraphic returns a single-quoted Go character literal representing the rune. If the rune is not a Unicode graphic character, as defined by IsGraphic, the returned string will use a Go escape sequence (\t, \n, \xFF, \u0100). If r is not a valid Unicode code point, it is interpreted as the Unicode replacement character U+FFFD. </p>   <h4 id="example_QuoteRuneToGraphic"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">s := strconv.QuoteRuneToGraphic('☺')
+fmt.Println(s)
+
+s = strconv.QuoteRuneToGraphic('\u263a')
+fmt.Println(s)
+
+s = strconv.QuoteRuneToGraphic('\u000a')
+fmt.Println(s)
+
+s = strconv.QuoteRuneToGraphic('	') // tab character
+fmt.Println(s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">'☺'
+'☺'
+'\n'
+'\t'
+</pre>   <h2 id="QuoteToASCII">func <span>QuoteToASCII</span>  </h2> <pre data-language="go">func QuoteToASCII(s string) string</pre> <p>QuoteToASCII returns a double-quoted Go string literal representing s. The returned string uses Go escape sequences (\t, \n, \xFF, \u0100) for non-ASCII characters and non-printable characters as defined by IsPrint. </p>   <h4 id="example_QuoteToASCII"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">// This string literal contains a tab character.
+s := strconv.QuoteToASCII(`"Fran &amp; Freddie's Diner	☺"`)
+fmt.Println(s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">"\"Fran &amp; Freddie's Diner\t\u263a\""
+</pre>   <h2 id="QuoteToGraphic">func <span>QuoteToGraphic</span>  <span title="Added in Go 1.6">1.6</span> </h2> <pre data-language="go">func QuoteToGraphic(s string) string</pre> <p>QuoteToGraphic returns a double-quoted Go string literal representing s. The returned string leaves Unicode graphic characters, as defined by IsGraphic, unchanged and uses Go escape sequences (\t, \n, \xFF, \u0100) for non-graphic characters. </p>   <h4 id="example_QuoteToGraphic"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">s := strconv.QuoteToGraphic("☺")
+fmt.Println(s)
+
+// This string literal contains a tab character.
+s = strconv.QuoteToGraphic("This is a \u263a	\u000a")
+fmt.Println(s)
+
+s = strconv.QuoteToGraphic(`" This is a ☺ \n "`)
+fmt.Println(s)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">"☺"
+"This is a ☺\t\n"
+"\" This is a ☺ \\n \""
+</pre>   <h2 id="QuotedPrefix">func <span>QuotedPrefix</span>  <span title="Added in Go 1.17">1.17</span> </h2> <pre data-language="go">func QuotedPrefix(s string) (string, error)</pre> <p>QuotedPrefix returns the quoted string (as understood by Unquote) at the prefix of s. If s does not start with a valid quoted string, QuotedPrefix returns an error. </p>   <h4 id="example_QuotedPrefix"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">s, err := strconv.QuotedPrefix("not a quoted string")
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.QuotedPrefix("\"double-quoted string\" with trailing text")
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.QuotedPrefix("`or backquoted` with more trailing text")
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.QuotedPrefix("'\u263a' is also okay")
+fmt.Printf("%q, %v\n", s, err)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">"", invalid syntax
+"\"double-quoted string\"", &lt;nil&gt;
+"`or backquoted`", &lt;nil&gt;
+"'☺'", &lt;nil&gt;
+</pre>   <h2 id="Unquote">func <span>Unquote</span>  </h2> <pre data-language="go">func Unquote(s string) (string, error)</pre> <p>Unquote interprets s as a single-quoted, double-quoted, or backquoted Go string literal, returning the string value that s quotes. (If s is single-quoted, it would be a Go character literal; Unquote returns the corresponding one-character string.) </p>   <h4 id="example_Unquote"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">s, err := strconv.Unquote("You can't unquote a string without quotes")
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.Unquote("\"The string must be either double-quoted\"")
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.Unquote("`or backquoted.`")
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.Unquote("'\u263a'") // single character only allowed in single quotes
+fmt.Printf("%q, %v\n", s, err)
+s, err = strconv.Unquote("'\u2639\u2639'")
+fmt.Printf("%q, %v\n", s, err)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">"", invalid syntax
+"The string must be either double-quoted", &lt;nil&gt;
+"or backquoted.", &lt;nil&gt;
+"☺", &lt;nil&gt;
+"", invalid syntax
+</pre>   <h2 id="UnquoteChar">func <span>UnquoteChar</span>  </h2> <pre data-language="go">func UnquoteChar(s string, quote byte) (value rune, multibyte bool, tail string, err error)</pre> <p>UnquoteChar decodes the first character or byte in the escaped string or character literal represented by the string s. It returns four values: </p>
+<ol> <li>value, the decoded Unicode code point or byte value; </li>
+<li>multibyte, a boolean indicating whether the decoded character requires a multibyte UTF-8 representation; </li>
+<li>tail, the remainder of the string after the character; and </li>
+<li>an error that will be nil if the character is syntactically valid. </li>
+</ol> <p>The second argument, quote, specifies the type of literal being parsed and therefore which escaped quote character is permitted. If set to a single quote, it permits the sequence \' and disallows unescaped '. If set to a double quote, it permits \" and disallows unescaped ". If set to zero, it does not permit either escape and allows both quote characters to appear unescaped. </p>   <h4 id="example_UnquoteChar"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">v, mb, t, err := strconv.UnquoteChar(`\"Fran &amp; Freddie's Diner\"`, '"')
+if err != nil {
+    log.Fatal(err)
+}
+
+fmt.Println("value:", string(v))
+fmt.Println("multibyte:", mb)
+fmt.Println("tail:", t)
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">value: "
+multibyte: false
+tail: Fran &amp; Freddie's Diner\"
+</pre>   <h2 id="NumError">type <span>NumError</span>  </h2> <p>A NumError records a failed conversion. </p>
+<pre data-language="go">type NumError struct {
+    Func string // the failing function (ParseBool, ParseInt, ParseUint, ParseFloat, ParseComplex)
+    Num  string // the input
+    Err  error  // the reason the conversion failed (e.g. ErrRange, ErrSyntax, etc.)
+}
+</pre>    <h4 id="example_NumError"> <span class="text">Example</span>
+</h4> <p>Code:</p> <pre class="code" data-language="go">str := "Not a number"
+if _, err := strconv.ParseFloat(str, 64); err != nil {
+    e := err.(*strconv.NumError)
+    fmt.Println("Func:", e.Func)
+    fmt.Println("Num:", e.Num)
+    fmt.Println("Err:", e.Err)
+    fmt.Println(err)
+}
+
+</pre> <p>Output:</p> <pre class="output" data-language="go">Func: ParseFloat
+Num: Not a number
+Err: invalid syntax
+strconv.ParseFloat: parsing "Not a number": invalid syntax
+</pre>   <h3 id="NumError.Error">func (*NumError) <span>Error</span>  </h3> <pre data-language="go">func (e *NumError) Error() string</pre> <h3 id="NumError.Unwrap">func (*NumError) <span>Unwrap</span>  <span title="Added in Go 1.14">1.14</span> </h3> <pre data-language="go">func (e *NumError) Unwrap() error</pre><div class="_attribution">
+  <p class="_attribution-p">
+    &copy; Google, Inc.<br>Licensed under the Creative Commons Attribution License 3.0.<br>
+    <a href="https://golang.org/pkg/strconv/" class="_attribution-link">http://golang.org/pkg/strconv/</a>
+  </p>
+</div>
