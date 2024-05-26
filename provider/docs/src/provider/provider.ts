@@ -27,7 +27,7 @@ export default multiplex<Settings>(async settings => {
     return {
         meta(): MetaResult {
             return {
-                name: 'docs',
+                name: 'docs.anthropic.com',
                 features: { mentions: true },
             }
         },
