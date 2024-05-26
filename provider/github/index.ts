@@ -93,7 +93,7 @@ function parseMentionUri(
         return null
     }
 
-    // "https://github.com/sourcegraph/openctx/pull/1234",
+    // example url: "https://github.com/sourcegraph/openctx/pull/1234",
     const [_, owner, repoName, kind, numberText] = url.pathname.split('/')
 
     if (!['issues', 'pull'].includes(kind)) {
@@ -112,8 +112,8 @@ function parseQuery(
     query = ''
 ): { owner?: string; repoName?: string; number?: number; kind: string } | null {
     /* supported query formats:
-     * - github:issue:1234
-     * - github:issue:sourcegraph/cody/1234
+     * - issue:1234
+     * - issue:sourcegraph/cody/1234
      */
     const [kind = '', id = ''] = query.split(':')
 
