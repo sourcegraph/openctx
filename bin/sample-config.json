@@ -13,6 +13,9 @@
           "path": "**"
         }
       ]
+    },
+    "file:///Users/sqs/src/github.com/sourcegraph/openctx/provider/docs/dist/provider.mjs": {
+      "index": "file:///Users/sqs/tmp/octx-provider-docs/anthropic-docs-web-index.json"
     }
   }
 }

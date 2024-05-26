@@ -2,6 +2,11 @@
   "openctx.enable": true,
   "openctx.debug": true,
   "openctx.providers": {
+    //"../../../../../../provider/docs/dist/provider.cjs": {
+    //  // "index": "http://localhost:5900/@fs/home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
+    //  // "index": "file:///home/sqs/tmp/openctx-provider-docs/vite-docs-web.index.json",
+    //  "index": "file:///Users/sqs/tmp/octx-provider-docs/sourcegraph-handbook-web-index.json",
+    //},
     // "https://sourcegraph.test:3443/.api/openctx": true,
     // "https://openctx.org/npm/@openctx/provider-hello-world": true,
     "../../../../../../provider/hello-world/dist/index.js": true,
