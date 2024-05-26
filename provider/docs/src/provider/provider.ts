@@ -36,6 +36,8 @@ export default multiplex<Settings>(async settings => {
             const query = params.query?.trim()
             const results = query ? await client.search({ text: query }) : client.docs
 
+            console.log('AA', results)
+
             const mentions: MentionsResult = []
             const seenDocIDs = new Set<DocID>()
             for (const result of results) {
@@ -100,7 +102,7 @@ function isSearchResult(value: SearchResult | IndexedDoc): value is SearchResult
 async function fetchIndex(urlStr: string): Promise<CorpusIndex> {
     const url = new URL(urlStr)
     if (url.protocol === 'file:') {
-        const { readFile } = await import('node:fs/promises')
+        const { readFile } = require('node:fs/promises')
         return fromJSON(JSON.parse(await readFile(url.pathname, 'utf-8')))
     }
 

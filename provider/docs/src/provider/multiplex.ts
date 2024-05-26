@@ -21,6 +21,8 @@ export function multiplex<S extends {}>(
 
     return {
         meta: (params, settings) => getProvider(settings).then(p => p.meta(params, settings)),
+        mentions: (params, settings) =>
+            getProvider(settings).then(p => p.mentions?.(params, settings) ?? []),
         items: (params, settings) => getProvider(settings).then(p => p.items?.(params, settings) ?? []),
         annotations: (params, settings) =>
             getProvider(settings).then(p => p.annotations?.(params, settings) ?? []),
