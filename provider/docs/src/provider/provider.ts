@@ -40,12 +40,22 @@ export default multiplex<Settings>(async settings => {
 
             const mentions: MentionsResult = []
             const seenDocIDs = new Set<DocID>()
+            const seenTitles = new Set<string>()
             for (const result of results) {
                 const doc = isSearchResult(result) ? client.doc(result.doc) : result
                 if (seenDocIDs.has(doc.doc.id)) {
                     continue
                 }
                 seenDocIDs.add(doc.doc.id)
+
+                // HACK
+                if (!doc.content?.title) {
+                    continue
+                }
+                if (seenTitles.has(doc.content?.title)) {
+                    continue
+                }
+                seenTitles.add(doc.content?.title)
 
                 const uri = doc.doc?.url
                 if (uri) {

@@ -43,7 +43,9 @@ if (isWebWindowRuntime) {
     )
 } else if (typeof __dirname !== 'undefined') {
     // TODO(sqs): seems to be triggered when running in vscode
-    env.backends.onnx.wasm.wasmPaths = __dirname + '/../node_modules/@xenova/transformers/dist/'
+    //env.backends.onnx.wasm.wasmPaths = __dirname + '/../node_modules/@xenova/transformers/dist/'
+    env.backends.onnx.wasm.wasmPaths =
+        '/Users/sqs/src/github.com/sourcegraph/openctx/provider/docs/node_modules/@xenova/transformers/dist/'
     env.backends.onnx.wasm.numThreads = 1
 }
 
