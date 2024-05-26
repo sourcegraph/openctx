@@ -1,6 +1,6 @@
 # GitHub provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that fetches contents from web pages by URL for use as context.
+This is a context provider for [OpenCtx](https://openctx.org) that fetches pull requests and issues contents from GitHub.
 
 ## Usage
 
