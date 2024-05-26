@@ -4,8 +4,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import { HTTP } from './http'
-import { type Settings } from '../index'
+import { HTTP } from './http.js'
+import type { Settings } from '../index.js'
 
 
 export class Sentry {

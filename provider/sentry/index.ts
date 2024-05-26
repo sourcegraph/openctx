@@ -4,30 +4,25 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
-import {
-    type AnnotationsParams,
-    type AnnotationsResult,
-    type CapabilitiesParams,
-    type CapabilitiesResult,
-    type Provider
-} from '@opencodegraph/provider'
+import type {
+    AnnotationsParams,
+    AnnotationsResult,
+    MentionsParams,
+    MentionsResult,
+    MetaParams,
+    MetaResult,
+    Provider
+} from '@openctx/provider'
 
-import { Sentry } from './web/client'
-import * as extensions from './extensions'
+import { Sentry } from './web/client.js'
 
 
-export interface Settings {
-    /** Organization slug */
-    organization: string
-
-    /** Individual project slug */
-    project: string
-
-    /** Sentry auth token */
-    token: string
-
-    /** Sentry platform */
-    platform?: string   // TODO: Use platform value from sentry API
+export type Settings = {
+    organization: string    // Organization slug
+    project: string         // Individual project slug
+    token: string           // Sentry auth token
+    platform?: string       // Sentry platform
+                            /* TODO: Use platform value from sentry API */
 }
 
 function parseStacktrace(frames: any, params: AnnotationsParams, metadata: any): void {
@@ -50,10 +45,12 @@ function parseStacktrace(frames: any, params: AnnotationsParams, metadata: any):
 }
 
 const sentry: Provider<Settings> = {
-    capabilities(params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
-        return {} // FIXME: Map platform correctly
-        return { selector: extensions.filetype(settings.platform || 'null')
-                                     .map(ext => new Object({path: ext})) }
+    meta(params: MetaParams, settings: Settings): MetaResult {
+        return {
+            selector: [],
+            name: 'Sentry',
+            features: { mentions: true },
+        }
     },
 
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
@@ -86,6 +83,10 @@ const sentry: Provider<Settings> = {
 
         return metadata.result
     },
+
+    async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
+        return []   // TODO: Fetch mentions from sentry platform
+    }
 }
 
 export default sentry
