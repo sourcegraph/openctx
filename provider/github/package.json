@@ -1,0 +1,33 @@
+{
+  "name": "@openctx/provider-github",
+  "version": "0.0.1",
+  "description": "GitHub OpenCtx provider",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/github",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/github"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@octokit/core": "5.2.0",
+    "@openctx/provider": "workspace:*",
+    "fast-xml-parser": "^4.4.0"
+  },
+  "devDependencies": {
+    "@octokit/types": "^13.5.0"
+  }
+}
