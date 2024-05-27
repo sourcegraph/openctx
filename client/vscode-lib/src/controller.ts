@@ -7,6 +7,7 @@ import {
     type Range,
     createClient,
 } from '@openctx/client'
+import type { ImportedProviderConfiguration } from '@openctx/client/src/configuration.js'
 import {
     type Observable,
     type TapObserver,
@@ -58,11 +59,13 @@ export function createController({
     outputChannel,
     getAuthInfo,
     features,
+    providers,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
+    providers?: ImportedProviderConfiguration[]
 }): {
     controller: Controller
     apiForTesting: ExtensionApiForTesting
@@ -112,6 +115,7 @@ export function createController({
         makeRange,
         logger: message => outputChannel.appendLine(message),
         importProvider,
+        providers,
     })
 
     const errorTapObserver: Partial<TapObserver<any>> = {
