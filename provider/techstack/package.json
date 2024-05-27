@@ -1,0 +1,29 @@
+{
+  "name": "@openctx/provider-techstack",
+  "version": "0.0.1",
+  "description": "Tech stack file annotations for your code.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/techstack"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "index.ts",
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "rm -rf dist && tsc --build && esbuild --log-level=error --bundle --format=esm --platform=node --outfile=dist/bundle.js index.ts",
+    "build": "tsc --build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*",
+    "yaml": "^2.3.4"
+  }
+}

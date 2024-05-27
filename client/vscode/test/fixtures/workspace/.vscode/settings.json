@@ -3,9 +3,12 @@
   "openctx.debug": true,
   "openctx.providers": {
     // "https://sourcegraph.test:3443/.api/openctx": true,
-    // "https://openctx.org/npm/@openctx/provider-hello-world": true,
-    "../../../../../../provider/hello-world/dist/index.js": true,
-    "../../../../../../provider/links/dist/index.js": {
+    // "../../../../../../provider/hello-world/dist/index.js": true,
+    "https://openctx.org/npm/@openctx/provider-hello-world": true,
+    "https://openctx.org/npm/@openctx/provider-techstack": {
+      "yaml": "../techstacks/stackshare.yml"
+    },
+    "https://openctx.org/npm/@openctx/provider-links": {
       "links": [
         {
           "title": "Telemetry",
