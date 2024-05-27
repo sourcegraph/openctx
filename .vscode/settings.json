@@ -4,7 +4,6 @@
     "**/dist": true
   },
   "files.exclude": {
-    "**/dist": true,
     "**/.vscode-test": true,
     "**/.vscode-test-web": true,
     "coverage/": true,
