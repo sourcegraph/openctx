@@ -7,11 +7,13 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import { type JiraIssue, fetchLatestJiraTickets, issueUrl } from './api.js'
 
 export type Settings = {
-    endpoint?: string
-    username?: string
-    apiToken?: string
+    host: string
+    port?: string
+    username: string
+    apiToken: string
 }
 
 const jiraProvider: Provider = {
@@ -20,42 +22,28 @@ const jiraProvider: Provider = {
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        if (!params.query) {
-            return []
-        }
-
-        const jiraMentions = [
-            {
-                title: 'JIRA-123',
-                url: 'https://jira.openctx.org/browse/JIRA-123',
-                content: 'JIRA-123',
-            },
-            {
-                title: 'JIRA-456',
-                url: 'https://jira.openctx.org/browse/JIRA-456',
-                content: 'JIRA-456',
-            },
-            {
-                title: 'JIRA-789',
-                url: 'https://jira.openctx.org/browse/JIRA-789',
-                content: 'JIRA-789',
-            },
-        ]
-
-        return jiraMentions.map(mention => ({
-            title: mention.title,
-            uri: mention.url,
-            data: { content: mention.content },
-        }))
+        // if (!params.query) {
+        return fetchLatestJiraTickets(settings).then(issues =>
+            issues.map(issue => ({
+                title: `${issue.key} ${issue.fields.summary}`,
+                uri: issueUrl(settings, issue),
+                data: {
+                    issue: issue,
+                },
+            }))
+        )
+        // }
+        // todo: else search
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
+        const issue = params.mention?.data?.issue as JiraIssue
         return [
             {
-                title: params.mention?.title || '',
-                url: params.mention?.uri || '',
+                title: issue.key,
+                url: issueUrl(settings, issue),
                 ai: {
-                    content: 'asd',
+                    content: issue.fields?.description,
                 },
             },
         ]
