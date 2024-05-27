@@ -1,59 +1,64 @@
 import type {
-    Annotation,
-    AnnotationsParams,
-    AnnotationsResult,
     ItemsParams,
     ItemsResult,
+    MentionsParams,
+    MentionsResult,
     MetaParams,
     MetaResult,
     Provider,
-    ProviderSettings,
 } from '@openctx/provider'
 
+export type Settings = {
+    endpoint?: string
+    username?: string
+    apiToken?: string
+}
+
 const jiraProvider: Provider = {
-    meta(params: MetaParams, settings: ProviderSettings): MetaResult {
+    meta(params: MetaParams, settings: Settings): MetaResult {
         return { name: 'Jira', features: { mentions: true } }
     },
 
-    items(params: ItemsParams, settings: ProviderSettings): ItemsResult {
+    async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
+        if (!params.query) {
+            return []
+        }
+
+        const jiraMentions = [
+            {
+                title: 'JIRA-123',
+                url: 'https://jira.openctx.org/browse/JIRA-123',
+                content: 'JIRA-123',
+            },
+            {
+                title: 'JIRA-456',
+                url: 'https://jira.openctx.org/browse/JIRA-456',
+                content: 'JIRA-456',
+            },
+            {
+                title: 'JIRA-789',
+                url: 'https://jira.openctx.org/browse/JIRA-789',
+                content: 'JIRA-789',
+            },
+        ]
+
+        return jiraMentions.map(mention => ({
+            title: mention.title,
+            uri: mention.url,
+            data: { content: mention.content },
+        }))
+    },
+
+    items(params: ItemsParams, settings: Settings): ItemsResult {
         return [
             {
-                title: '✨ Hello, world!',
-                url: 'https://openctx.org',
-                ui: {
-                    hover: { text: 'From OpenCtx' },
-                },
+                title: params.mention?.title || '',
+                url: params.mention?.uri || '',
                 ai: {
-                    content: 'Hello, world!',
+                    content: 'asd',
                 },
             },
         ]
-    },
-
-    annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
-        const lines = params.content.split('\n')
-        const anns: Annotation[] = []
-        for (const [i, line] of lines.entries()) {
-            if (i % 10 !== 0) {
-                continue
-            }
-            anns.push({
-                uri: params.uri,
-                range: {
-                    start: { line: i, character: 0 },
-                    end: { line: i, character: line.length },
-                },
-                item: {
-                    title: '✨ Hello, world!',
-                    url: 'https://openctx.org',
-                    ui: {
-                        hover: { text: 'From OpenCtx' },
-                    },
-                },
-            })
-        }
-
-        return anns
     },
 }
 
