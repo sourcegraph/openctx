@@ -58,6 +58,8 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
                             client_secret: config.client_secret,
                         })
 
+                        // Exchange `code` for an access token
+                        // https://developers.linear.app/docs/oauth/authentication#id-4.-exchange-code-for-an-access-token
                         const tokenResponse = await fetch('https://api.linear.app/oauth/token', {
                             method: 'POST',
                             headers: {
@@ -78,7 +80,9 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
                     reject(e)
                 }
             })
-            .listen(3000, () => {
+            .listen(port, () => {
+                //  Redirect user access requests to Linear
+                // https://developers.linear.app/docs/oauth/authentication#id-2.-redirect-user-access-requests-to-linear
                 const authorizeURL = new url.URL('https://linear.app/oauth/authorize')
                 authorizeURL.searchParams.set('response_type', 'code')
                 authorizeURL.searchParams.set('client_id', config.client_id)
