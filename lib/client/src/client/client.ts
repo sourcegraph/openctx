@@ -35,7 +35,11 @@ import {
     observeMentions,
     observeMeta,
 } from '../api.js'
-import { type ConfigurationUserInput, configurationFromUserInput } from '../configuration.js'
+import {
+    type ConfigurationUserInput,
+    type ImportedProviderConfiguration,
+    configurationFromUserInput,
+} from '../configuration.js'
 import type { Logger } from '../logger.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
 
@@ -63,6 +67,11 @@ export interface ClientEnv<R extends Range> {
      * The base URI to use when resolving configured provider URIs.
      */
     providerBaseUri?: string
+
+    /**
+     * The list of providers already resolved and imported.
+     */
+    providers?: ImportedProviderConfiguration[]
 
     /**
      * The authentication info for the provider.
@@ -227,16 +236,14 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
             .catch(() => {})
     }
 
-    function providerClientsWithSettings(
-        ...args: Parameters<typeof env.configuration>
-    ): Observable<ProviderClientWithSettings[]> {
-        return from(env.configuration(...args))
+    function providerClientsWithSettings(resource?: string): Observable<ProviderClientWithSettings[]> {
+        return from(env.configuration(resource))
             .pipe(
                 map(config => {
                     if (!config.enable) {
                         config = { ...config, providers: {} }
                     }
-                    return configurationFromUserInput(config)
+                    return configurationFromUserInput(config, env.providers)
                 })
             )
             .pipe(
@@ -255,7 +262,11 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                                           providerBaseUri: env.providerBaseUri,
                                                           logger,
                                                           importProvider: env.importProvider,
-                                                      }
+                                                      },
+                                                      env.providers?.find(
+                                                          provider =>
+                                                              provider.providerUri === providerUri
+                                                      )?.provider
                                                   ),
                                           settings,
                                       })),
@@ -394,7 +405,8 @@ interface ProviderCacheKey {
 function createProviderPool(): {
     getOrCreate: (
         key: ProviderCacheKey,
-        env: Pick<ClientEnv<any>, 'providerBaseUri' | 'logger' | 'importProvider'>
+        env: Pick<ClientEnv<any>, 'providerBaseUri' | 'logger' | 'importProvider'>,
+        provider?: Provider
     ) => ProviderClient
 } {
     function cacheKey(key: ProviderCacheKey): string {
@@ -408,18 +420,22 @@ function createProviderPool(): {
     })
 
     return {
-        getOrCreate(key, env) {
+        getOrCreate(key, env, provider) {
             const existing = cache.get(cacheKey(key))
             if (existing) {
                 return existing
             }
 
-            const c = createProviderClient(key.providerUri, {
-                providerBaseUri: env.providerBaseUri,
-                authInfo: key.authInfo,
-                logger: env.logger,
-                importProvider: env.importProvider,
-            })
+            const c = createProviderClient(
+                key.providerUri,
+                {
+                    providerBaseUri: env.providerBaseUri,
+                    authInfo: key.authInfo,
+                    logger: env.logger,
+                    importProvider: env.importProvider,
+                },
+                provider
+            )
             cache.set(cacheKey(key), c)
             return c
         },

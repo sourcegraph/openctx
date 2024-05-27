@@ -9,6 +9,7 @@ import type {
     MetaResult,
     ProviderSettings,
 } from '@openctx/protocol'
+import type { Provider } from '@openctx/provider'
 import { scopedLogger } from '../logger.js'
 import { matchSelectors } from './selector.js'
 import { type ProviderTransportOptions, createTransport } from './transport/createTransport.js'
@@ -46,11 +47,12 @@ export interface ProviderClientOptions
  */
 export function createProviderClient(
     providerUri: string,
-    { logger, ...options }: ProviderClientOptions = {}
+    { logger, ...options }: ProviderClientOptions = {},
+    provider?: Provider
 ): ProviderClient {
     logger = scopedLogger(logger, `providerClient(${providerUri})`)
 
-    const transport = createTransport(providerUri, { ...options, cache: true, logger })
+    const transport = provider || createTransport(providerUri, { ...options, cache: true, logger })
 
     return {
         async meta(params: MetaParams, settings: ProviderSettings): Promise<MetaResult> {
@@ -66,7 +68,7 @@ export function createProviderClient(
             settings: ProviderSettings
         ): Promise<MentionsResult | null> {
             try {
-                return await transport.mentions(params, settings)
+                return (await transport.mentions?.(params, settings)) || null
             } catch (error) {
                 logger?.(`failed to get mentions: ${error}`)
                 return Promise.reject(error)
@@ -74,7 +76,7 @@ export function createProviderClient(
         },
         async items(params: ItemsParams, settings: ProviderSettings): Promise<ItemsResult | null> {
             try {
-                return await transport.items(params, settings)
+                return (await transport.items?.(params, settings)) || null
             } catch (error) {
                 logger?.(`failed to get items: ${error}`)
                 return Promise.reject(error)
@@ -105,7 +107,7 @@ export function createProviderClient(
                 return null
             }
             try {
-                return await transport.annotations(params, settings)
+                return (await transport.annotations?.(params, settings)) || null
             } catch (error) {
                 logger?.(`failed to get annotations: ${error}`)
                 return Promise.reject(error)

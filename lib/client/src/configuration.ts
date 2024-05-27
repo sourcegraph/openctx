@@ -1,4 +1,5 @@
 import type { ProviderSettings } from '@openctx/protocol'
+import type { Provider } from '@openctx/provider'
 
 /**
  * Raw configuration set by the user in the client application. Use
@@ -22,14 +23,28 @@ export interface Configuration extends Omit<Required<ConfigurationUserInput>, 'p
     providers: { providerUri: string; settings: ProviderSettings }[]
 }
 
+export interface ImportedProviderConfiguration {
+    providerUri: string
+    settings: boolean | ProviderSettings
+    provider: Provider
+}
 /**
  * Apply defaults to and normalize the raw {@link ConfigurationUserInput}.
  */
-export function configurationFromUserInput(raw: ConfigurationUserInput): Configuration {
+export function configurationFromUserInput(
+    raw: ConfigurationUserInput,
+    providers: ImportedProviderConfiguration[] = []
+): Configuration {
     return {
         enable: raw.enable ?? true,
         debug: raw.debug ?? false,
-        providers: providersFromUserInput(raw.providers),
+        providers: [
+            ...providersFromUserInput(raw.providers),
+            ...providers.map(({ providerUri, settings }) => ({
+                providerUri,
+                settings: typeof settings === 'boolean' ? {} : settings,
+            })),
+        ],
     }
 }
 
