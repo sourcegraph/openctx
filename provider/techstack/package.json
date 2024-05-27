@@ -1,24 +1,25 @@
 {
   "name": "@openctx/provider-techstack",
   "version": "0.0.1",
-  "description": "Add tech stack file annotations to your code.",
+  "description": "Tech stack file annotations for your code.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcegraph/opencodegraph",
+    "url": "https://github.com/sourcegraph/openctx",
     "directory": "provider/techstack"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist",
     "index.ts",
     "!**/*.test.*",
-    "README.md"
+    "dist/bundle.js",
+    "dist/index.d.ts"
   ],
   "sideEffects": false,
   "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
     "build": "tsc --build",
     "test": "vitest"
   },
