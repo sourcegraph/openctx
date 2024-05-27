@@ -1,17 +1,19 @@
-# Tech Stack File context provider for OpenCodeGraph
+# Tech Stack File context provider for OpenCtx
 
-This is a context provider for [OpenCodeGraph](https://opencodegraph.org) that annotates your code with metadata such as package category and package homepage urls provided by a corresponding `techstack.yml` file.
+This is a context provider for [OpenCtx](https://openctx.org) that annotates your code with metadata such as package category and package homepage urls provided by a corresponding `techstack.yml` file.
 
 ## Example
-![OpenCodeGraph Techstack provider in action](./examples/demo.gif)
+
+![OpenCtx Techstack provider in action](./examples/demo.gif)
 
 ## Usage
 
 Provide the absolute file path of the techstack yml file in the settings.
+
 ```json
-"opencodegraph.providers": {
+"openctx.providers": {
     // ... other providers ...
-    "https://opencodegraph.org/npm/@opencodegraph/provider-techstack": {
+    "https://openctx.org/npm/@openctx/provider-techstack": {
         "yaml": "</full/path/to/techstack.yml>"
     }
 }
@@ -19,7 +21,7 @@ Provide the absolute file path of the techstack yml file in the settings.
 
 ## Notes
 
-- The Tech Stack File provider for [OpenCodeGraph](https://opencodegraph.org) currently provides annotations for `.js(x)` and `.ts(x)` files.
+- The Tech Stack File provider for [OpenCtx](https://openctx.org) currently provides annotations for `.js(x)` and `.ts(x)` files.
 
     ```typescript
     capabilities(params: CapabilitiesParams, settings: Settings): CapabilitiesResult {
