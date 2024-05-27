@@ -25,16 +25,16 @@ export type Settings = {
                             /* TODO: Use platform value from sentry API */
 }
 
-function parseStacktrace(frames: any, params: AnnotationsParams, metadata: any): void {
+function parseStacktrace(frames: any, params: AnnotationsParams, context: any): void {
     frames.forEach((frame: any) => {
         if (frame.lineNo <= params.content.split(/\r?\n/).length) {
-            metadata.result.items.push({
-                id: frame.lineNo,
-                title: `🔺 ${metadata.err.title ?? metadata.err.message}` ?? 'Unknown Error',
-                url: `https://${metadata.project.organization.slug}.sentry.io/issues/${metadata.err.groupID}/?project=${metadata.err.projectID}`
-            })
-            metadata.result.annotations.push({
-                item: { id: frame.lineNo },
+            context.annotations.push({
+                uri: params.uri,
+                item: {
+                    id: frame.lineNo,
+                    title: `🔺 ${context.err.title ?? context.err.message}` ?? 'Unknown Error',
+                    url: `https://${context.project.organization.slug}.sentry.io/issues/${context.err.groupID}/?project=${context.err.projectID}`
+                },
                 range: {
                     start: { line: frame.lineNo, character: 0 },
                     end: { line: frame.lineNo, character: 1 }
@@ -55,9 +55,9 @@ const sentry: Provider<Settings> = {
 
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
         const client: Sentry = new Sentry(settings)
-        const metadata = {
+        const context = {
             err: null,
-            result: { items: [], annotations: [] },
+            annotations: [],
             project: await client.project(settings.organization, settings.project),
         }
 
@@ -65,23 +65,23 @@ const sentry: Provider<Settings> = {
         const errs: any = await client.errors(settings.organization, settings.project)
         errs?.forEach((err: any) => {
             // Update metadata
-            metadata.err = err
+            context.err = err
 
             // Parse through stacktrace if available
             const stacktrace = err.entries.filter((e: any) => e.type === 'stacktrace')
-            stacktrace?.forEach((val: any) => parseStacktrace(val.data.frames, params, metadata))
+            stacktrace?.forEach((val: any) => parseStacktrace(val.data.frames, params, context))
 
             // Parse through exception if available
             const exception = err.entries.filter((e: any) => e.type === 'exception')
             exception?.forEach((exc: any) => {
-                exc.data.values.forEach((val: any) => parseStacktrace(val.stacktrace.frames, params, metadata))
+                exc.data.values.forEach((val: any) => parseStacktrace(val.stacktrace.frames, params, context))
             })
 
             // TODO: Can we have an API response with both 'stacktrace' and 'exception' keys?
             //       How should we handle that scenario?
         })
 
-        return metadata.result
+        return context.annotations
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
