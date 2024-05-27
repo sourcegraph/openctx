@@ -4,7 +4,12 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Linear
 
 **Status:** Experimental
 
-## Configuration
+## Configuration for Sourcegraph teammates
+
+1. Find "OpenCtx Linear provider config" in 1Password and add it to your user settings.
+1. Start using the provider!
+
+## Configuration outside of Sourcegraph
 
 To create Linear API credentials:
 

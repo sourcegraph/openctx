@@ -2,7 +2,6 @@ import { readFileSync, writeFileSync } from 'fs'
 import http from 'http'
 import path from 'path'
 import url, { fileURLToPath } from 'url'
-import { LinearClient } from '@linear/sdk'
 import open from 'open'
 import destroyer from 'server-destroy'
 
@@ -68,7 +67,7 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
                             body: params.toString(),
                         })
 
-                        const tokenData = await tokenResponse.json()
+                        const tokenData = (await tokenResponse.json()) as { access_token?: string }
 
                         if (tokenData.access_token) {
                             resolve(tokenData.access_token)
@@ -97,10 +96,8 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
 
 async function main() {
     const accessToken = await createAccessToken()
-    const client = new LinearClient({ accessToken })
     console.log(`Got access token: ${accessToken}`)
 
-    await client.issueSearch({ query: 'test' })
     const userCredentials = JSON.stringify({ access_token: accessToken } satisfies UserCredentials)
     writeFileSync(userCredentialsPath, userCredentials, {
         encoding: 'utf8',
