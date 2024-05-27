@@ -1,7 +1,0 @@
-{
-  "enable": true,
-  "debug": true,
-  "providers": {
-    "file:///Users/hiteshsagtani/dev/openctx/provider/slack-channel-context/dist/bundle.js": true
-  }
-}
