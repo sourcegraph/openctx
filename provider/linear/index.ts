@@ -10,22 +10,31 @@ import type {
 
 import { LinearClient, type LinearClientOptions } from '@linear/sdk'
 import { XMLBuilder } from 'fast-xml-parser'
-import type { UserCredentials } from './auth.js'
+import {
+    type LinearAuthClientConfig,
+    type UserCredentials,
+    createAccessToken,
+} from './create-access-token.js'
 
 /** Settings for the Linear OpenCtx provider. */
 export type Settings = {
     linearUserCredentialsPath?: string
-    linearClientOptions?: LinearClientOptions
+    linearClientConfig?: LinearAuthClientConfig
+    linearClientCredentials?: LinearClientOptions
 }
 
 const xmlBuilder = new XMLBuilder({ format: true })
 
 const linearIssues: Provider<Settings> = {
-    meta(): MetaResult {
+    meta(params, settings): MetaResult {
+        if (!settings.linearClientCredentials && settings.linearClientConfig) {
+            createAccessToken(settings.linearClientConfig)
+        }
+
         return { name: 'Linear Issues', features: { mentions: true } }
     },
 
-    async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
+    async mentions(params: MentionsParams, settingsInput): Promise<MentionsResult> {
         if (!params.query) {
             return []
         }
@@ -39,7 +48,7 @@ const linearIssues: Provider<Settings> = {
         }))
     },
 
-    async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
+    async items(params: ItemsParams, settingsInput): Promise<ItemsResult> {
         if (!params.mention) {
             return []
         }
@@ -85,12 +94,12 @@ function getLinearClient(settings: Settings): LinearClient {
         return new LinearClient({ accessToken: userCredentials.access_token })
     }
 
-    if (settings.linearClientOptions?.accessToken) {
-        return new LinearClient({ accessToken: settings.linearClientOptions?.accessToken })
+    if (settings.linearClientCredentials?.accessToken) {
+        return new LinearClient({ accessToken: settings.linearClientCredentials?.accessToken })
     }
 
-    if (settings.linearClientOptions?.apiKey) {
-        return new LinearClient({ apiKey: settings.linearClientOptions?.apiKey })
+    if (settings.linearClientCredentials?.apiKey) {
+        return new LinearClient({ apiKey: settings.linearClientCredentials?.apiKey })
     }
 
     throw new Error(

@@ -1,8 +1,6 @@
-import { readFileSync, writeFileSync } from 'fs'
 import http from 'http'
-import path from 'path'
-import url, { fileURLToPath } from 'url'
-import { LinearClient } from '@linear/sdk'
+import url from 'url'
+import dedent from 'dedent'
 import open from 'open'
 import destroyer from 'server-destroy'
 
@@ -16,26 +14,13 @@ export interface UserCredentials {
     access_token: string
 }
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-const DEFAULT_USER_CREDENTIALS_PATH = path.resolve(__dirname, 'linear_user_credentials.json')
-const DEFAULT_CLIENT_CONFIG_PATH = path.join(__dirname, 'linear_client_config.json')
-
-const clientConfigPath = process.env.LINEAR_OAUTH_CLIENT_FILE || DEFAULT_CLIENT_CONFIG_PATH
-const userCredentialsPath = process.env.LINEAR_USER_CREDENTIALS_FILE || DEFAULT_USER_CREDENTIALS_PATH
-
 const port = process.env.PORT ? Number(process.env.PORT) : 3000
 const serverURL = `http://localhost:${port}`
 
 export const SCOPES = ['read']
 
-export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promise<string> {
+export function createAccessToken(config: LinearAuthClientConfig): Promise<string> {
     return new Promise((resolve, reject) => {
-        const config =
-            clientConfig ||
-            (JSON.parse(readFileSync(clientConfigPath, 'utf8')) as LinearAuthClientConfig)
-
         const [redirectUri] = config.redirect_uris
 
         const server = http
@@ -47,9 +32,6 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
                         if (!code) {
                             throw new Error('code is not found!')
                         }
-                        res.end('Authentication successful. Please return to the console.')
-                        server.destroy()
-
                         const params = new URLSearchParams({
                             code,
                             grant_type: 'authorization_code',
@@ -71,10 +53,26 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
                         const tokenData = await tokenResponse.json()
 
                         if (tokenData.access_token) {
+                            res.end(dedent`
+                                Add the following to the Linear provider config and reload VS Code:
+
+                                "https://openctx.org/npm/@openctx/provider-linear": {
+                                    "linearClientCredentials": {
+                                      "accessToken": "${tokenData.access_token}"
+                                    },
+                                }
+                            `)
+
                             resolve(tokenData.access_token)
                         } else {
+                            res.end(dedent`
+                                Authorization failed. Please try again by reloading the VS Code window.
+                            `)
+
                             reject(new Error('Failed to retrieve access token'))
                         }
+
+                        server.destroy()
                     }
                 } catch (e) {
                     reject(e)
@@ -91,22 +89,7 @@ export function createAccessToken(clientConfig?: LinearAuthClientConfig): Promis
 
                 open(authorizeURL.toString(), { wait: false }).then(cp => cp.unref())
             })
+
         destroyer(server)
     })
 }
-
-async function main() {
-    const accessToken = await createAccessToken()
-    const client = new LinearClient({ accessToken })
-    console.log(`Got access token: ${accessToken}`)
-
-    await client.issueSearch({ query: 'test' })
-    const userCredentials = JSON.stringify({ access_token: accessToken } satisfies UserCredentials)
-    writeFileSync(userCredentialsPath, userCredentials, {
-        encoding: 'utf8',
-    })
-
-    console.log(`Saved access token to ${userCredentialsPath}`)
-}
-
-main()
