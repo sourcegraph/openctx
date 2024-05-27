@@ -18,7 +18,7 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --platform=node --outfile=dist/bundle.js index.ts",
+    "bundle": "rm -rf dist && tsc --build && esbuild --log-level=error --bundle --format=esm --platform=node --outfile=dist/bundle.js index.ts",
     "build": "tsc --build",
     "test": "vitest"
   },
