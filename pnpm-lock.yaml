@@ -508,19 +508,6 @@ importers:
         specifier: ^13.5.0
         version: 13.5.0
 
-  provider/github2:
-    dependencies:
-      '@octokit/core':
-        specifier: 5.2.0
-        version: 5.2.0
-      '@openctx/provider':
-        specifier: workspace:*
-        version: link:../../lib/provider
-    devDependencies:
-      '@octokit/types':
-        specifier: ^13.5.0
-        version: 13.5.0
-
   provider/google-docs:
     dependencies:
       '@googleapis/docs':
