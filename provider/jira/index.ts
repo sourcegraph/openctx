@@ -12,7 +12,7 @@ import type {
 
 const jiraProvider: Provider = {
     meta(params: MetaParams, settings: ProviderSettings): MetaResult {
-        return { name: 'JIRA', features: { mentions: true } }
+        return { name: 'Jira', features: { mentions: true } }
     },
 
     items(params: ItemsParams, settings: ProviderSettings): ItemsResult {

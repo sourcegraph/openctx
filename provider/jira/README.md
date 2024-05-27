@@ -1,6 +1,6 @@
-# JIRA context provider for OpenCtx
+# Jira context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that brings JIRA context to code AI and editors. 
+This is a context provider for [OpenCtx](https://openctx.org) that brings Jira context to code AI and editors. 
 
 **Status:** Experimental
 

@@ -1,7 +1,7 @@
 {
   "name": "@openctx/provider-jira",
   "version": "0.0.1",
-  "description": "JIRA (OpenCtx provider)",
+  "description": "Jira (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/jira",
   "repository": {
