@@ -57,6 +57,12 @@ You can configure that provider in an OpenCtx client like so:
     "https://openctx.org/npm/@openctx/provider-hello-world": true
 },
 ```
+When developing locally, configure the provider by pointing the bundled `.js` path in the client(eg. VSCode) settings.
+```json
+"openctx.providers": {
+    "file:///<path/to/js/bundle>/index.js": true,
+}
+```
 
 The package's `index.js` file is loaded and expected to have a single default export that satisfies the `Provider` interface.
 
