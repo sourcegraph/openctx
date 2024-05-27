@@ -539,6 +539,12 @@ importers:
         specifier: workspace:*
         version: link:../../lib/provider
 
+  provider/jira:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+
   provider/linear:
     dependencies:
       '@linear/sdk':
