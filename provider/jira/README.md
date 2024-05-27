@@ -12,7 +12,7 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Jira c
 "openctx.providers": {
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-jira": {
-        "endpoint": "https://<subdomain>.atlassian.net/rest/api/",
+        "host": "<subdomain>.atlassian.net",
         "username": "<email-address>",
         "apiToken": "<your-atlassian-api-token>",
     }
