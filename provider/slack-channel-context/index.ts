@@ -39,7 +39,7 @@ async function listAllChannels(client: WebClient): Promise<ChannelInfo[]> {
             const channelInfo = response.channels.map(channel => ({
                 name: channel.name || '',
                 id: channel.id || '',
-                url: `https://sourcegraph.slack.com/archives/${channel.id}`,
+                url: `https://slack.com/archives/${channel.id}`,
             }))
             allChannels = [...allChannels, ...channelInfo]
         }
@@ -48,9 +48,11 @@ async function listAllChannels(client: WebClient): Promise<ChannelInfo[]> {
     return allChannels
 }
 
-async function getChannelId(client: WebClient, channelName: string): Promise<ChannelInfo[] | null> {
+async function getChannelId(
+    channelData: ChannelInfo[],
+    channelName: string
+): Promise<ChannelInfo[] | null> {
     try {
-        const channelData = await listAllChannels(client)
         const allPossibleChannels = []
         for (const channel of channelData) {
             if (channel.name.indexOf(channelName) !== -1) {
@@ -59,7 +61,6 @@ async function getChannelId(client: WebClient, channelName: string): Promise<Cha
         }
         return allPossibleChannels
     } catch (error) {
-        console.error(`Error fetching channels: ${error}`)
         return null
     }
 }
@@ -74,7 +75,6 @@ async function searchInChannel(
         const result = await client.search.messages({ query: `in:<#${channelId}> ${query}`, count: 50 })
         return result?.messages?.matches
     } catch (error) {
-        console.error(`Error searching messages: ${error}`)
         return undefined
     }
 }
@@ -100,12 +100,21 @@ async function fetchThreadMessages(
             allMessages.push(...messages)
         }
         const threadConvo = allMessages?.map(msg => msg.text)
-        const threadConvoArray = threadConvo?.join('\n')
+        const threadConvoArray = threadConvo?.join('\n\n')
         return threadConvoArray
     } catch (error) {
-        console.error(`Error fetching thread messages: ${error}`)
         return null
     }
+}
+
+interface SlackChannelData {
+    isInitialized: boolean
+    channelList: ChannelInfo[]
+}
+
+let slackChannelData: SlackChannelData = {
+    isInitialized: false,
+    channelList: [],
 }
 
 const slackContext = {
@@ -113,17 +122,28 @@ const slackContext = {
         return { name: 'Slack Context', features: { mentions: true } }
     },
 
+    async initializeChannelList(settingsInput: Settings) {
+        if (slackChannelData.isInitialized === false) {
+            const client = getSlackClient(settingsInput)
+            const channelList = await listAllChannels(client)
+            slackChannelData = {
+                isInitialized: true,
+                channelList: channelList,
+            }
+        }
+    },
+
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
-        const client = getSlackClient(settingsInput)
+        await this.initializeChannelList(settingsInput)
 
         if (!params.query) {
             return []
         }
-        const channelIdList = await getChannelId(client, params.query)
+        const channelIdList = await getChannelId(slackChannelData.channelList, params.query)
         if (!channelIdList) {
             return []
         }
-        const mentionRes = []
+        const mentionRes: MentionsResult = []
         for (const channel of channelIdList) {
             mentionRes.push({
                 title: channel.name,
@@ -148,32 +168,47 @@ const slackContext = {
         if (message.startsWith(mentionUrl)) {
             message = message.slice(mentionUrl.length)
         }
+        // Slack api does not expose the `ts` property via the interface which is required to get the slack thread messages
         const searchResults = (await searchInChannel(client, channelId, message)) as any[]
 
         if (!searchResults) {
             return []
         }
-        const threadTs = searchResults[0].ts
-        const link = searchResults[0].permalink
 
-        const threadMessage = await fetchThreadMessages(client, channelId, threadTs)
-        const allMessages = `
-            Here is a conversation from the slack message which could be useful to answer the question.
-            Please use the context from the slack conversation to check if it helps:
-        
+        const NUM_SEARCH_RESULTS = 10
+        if (searchResults.length > NUM_SEARCH_RESULTS) {
+            searchResults.splice(NUM_SEARCH_RESULTS)
+        }
+        const allPromises = searchResults.map(async searchResult => {
+            const threadTs = searchResult.ts as string
+            const link = searchResult.permalink as string
 
-            ${threadMessage}
-        `
-        if (allMessages) {
-            return [
-                {
+            const threadMessage = await fetchThreadMessages(client, channelId, threadTs)
+            const allMessages = `
+                Here is a conversation from the slack message which could be useful to answer the question.
+                Please use the context from the slack conversation to check if it helps.
+                Please ignore the slack conversation if it is not relevant to the query.
+            
+
+                ${threadMessage}
+            `
+            if (allMessages) {
+                return {
                     url: link,
                     title: allMessages,
                     ai: { content: allMessages },
-                },
-            ]
+                }
+            }
+            return undefined
+        })
+        const allMessages = await Promise.all(allPromises)
+        const allSlackContext = []
+        for (const message of allMessages) {
+            if (message) {
+                allSlackContext.push(message)
+            }
         }
-        return []
+        return allSlackContext
     },
 }
 
