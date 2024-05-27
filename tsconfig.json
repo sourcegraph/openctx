@@ -26,6 +26,7 @@
     { "path": "client/vscode/dev" },
     { "path": "client/vscode/test/integration" },
     { "path": "client/web-playground" },
+    { "path": "provider/devdocs" },
     { "path": "provider/google-docs" },
     { "path": "provider/hello-world" },
     { "path": "provider/links" },
