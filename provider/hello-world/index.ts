@@ -16,7 +16,7 @@ import type {
  */
 const helloWorld: Provider = {
     meta(params: MetaParams, settings: ProviderSettings): MetaResult {
-        return { name: '✨ Hello World!' }
+        return { name: '✨ Hello World!', features: { annotations: { implements: true } } }
     },
 
     items(params: ItemsParams, settings: ProviderSettings): ItemsResult {

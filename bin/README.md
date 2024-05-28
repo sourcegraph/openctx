@@ -12,7 +12,7 @@ $ npm install -g @openctx/cli@latest
 $ export OPENCTX_CONFIG='{"enable":true,"debug":true,"providers":{"https://openctx.org/npm/@openctx/provider-web": true}}'
 
 $ openctx meta
-[{"selector":[],"name":"URLs",...}]
+[{"name":"URLs", "featues": {"annotations": "selectors": []}, ...}]
 
 $ openctx mentions https://example.com
 #1 Example Domain — https://example.com

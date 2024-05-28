@@ -37,10 +37,8 @@ export type Settings = {
 const notion: Provider<Settings> = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return {
-            // empty since we don't provide any annotations.
-            selector: [],
             name: 'Notion',
-            features: { mentions: true },
+            features: { mentions: { implements: true } },
         }
     },
 

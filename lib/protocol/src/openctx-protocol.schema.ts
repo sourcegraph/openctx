@@ -10,6 +10,9 @@ export type Protocol =
     | MetaParams
     | MetaResult
     | Mention
+    | MentionKind
+    | MentionSelector
+    | AnnotationSelector
     | MentionsParams
     | MentionsResult
     | ItemsParams
@@ -43,12 +46,6 @@ export interface ResponseError {
 }
 export interface MetaResult {
     /**
-     * Selects the scope in which this provider should be called.
-     *
-     * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.
-     */
-    selector?: Selector[]
-    /**
      * The name of the provider.
      */
     name: string
@@ -57,27 +54,53 @@ export interface MetaResult {
      */
     features?: {
         /**
-         * Whether the provider support mentions.
+         * Configuration for the mentions feature.
          */
-        mentions?: boolean
+        mentions?: {
+            /**
+             * Whether the provider implements the mentions feature
+             */
+            implements?: boolean
+            /**
+             * A list of patterns matching the mention text for which the provider can return mentions
+             */
+            selectors?: MentionSelector[]
+            /**
+             * A list of kinds of  mentions the provider supports.
+             */
+            kinds?: MentionKind[]
+        }
+        /**
+         * Configuration for the annotations feature.
+         */
+        annotations?: {
+            /**
+             * Whether the provider implements the mentions feature
+             */
+            implements?: boolean
+            /**
+             * A list of patterns matching the mention text for which the provider can return mentions
+             */
+            selectors?: AnnotationSelector[]
+        }
     }
 }
 /**
- * Defines a scope in which a provider is called.
- *
- * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
+ * A mention kind supported by the provider.
  */
-export interface Selector {
+export interface MentionKind {
     /**
-     * A glob that must match the resource's hostname and path.
-     *
-     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.
+     * The unique identifier for the mention kind.
      */
-    path?: string
+    id: string
     /**
-     * A literal string that must be present in the resource's content.
+     * The title of the mention kind.
      */
-    contentContains?: string
+    title: string
+    /**
+     * The description of the mention kind.
+     */
+    description?: string
 }
 /**
  * A mention contains presentation information relevant to a resource.
@@ -99,11 +122,41 @@ export interface Mention {
         [k: string]: unknown | undefined
     }
 }
+/**
+ * List of regex patterns matching the mention text for which the provider can return mentions.
+ */
+export interface MentionSelector {
+    /**
+     * The regex pattern matching the mention text for which the provider can return mentions
+     */
+    pattern: string
+}
+/**
+ * Defines a scope in which a provider is called.
+ *
+ * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
+ */
+export interface AnnotationSelector {
+    /**
+     * A glob that must match the resource's hostname and path.
+     *
+     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.
+     */
+    path?: string
+    /**
+     * A literal string that must be present in the resource's content.
+     */
+    contentContains?: string
+}
 export interface MentionsParams {
     /**
      * A search query that is interpreted by providers to filter the items in the result set.
      */
     query?: string
+    /**
+     * The id of the mention kind to return.
+     */
+    kind?: string
 }
 export interface ItemsParams {
     /**

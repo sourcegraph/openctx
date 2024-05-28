@@ -19,7 +19,7 @@ const xmlBuilder = new XMLBuilder({
 
 const github: Provider<GithubProviderSettings> = {
     meta(params: MetaParams, settings: ProviderSettings): MetaResult {
-        return { name: 'Github PRs & Issues', features: { mentions: true } }
+        return { name: 'Github PRs & Issues', features: { mentions: { implements: true } } }
     },
 
     async mentions({ query }, settings) {

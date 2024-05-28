@@ -27,6 +27,15 @@
       "$ref": "#/definitions/Mention"
     },
     {
+      "$ref": "#/definitions/MentionKind"
+    },
+    {
+      "$ref": "#/definitions/MentionSelector"
+    },
+    {
+      "$ref": "#/definitions/AnnotationSelector"
+    },
+    {
       "$ref": "#/definitions/MentionsParams"
     },
     {
@@ -105,31 +114,58 @@
       "properties": {},
       "tsType": "Record<string, never>"
     },
+    "MentionSelector": {
+      "description": "List of regex patterns matching the mention text for which the provider can return mentions.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pattern"],
+      "properties": {
+        "pattern": {
+          "description": "The regex pattern matching the mention text for which the provider can return mentions",
+          "type": "string"
+        }
+      }
+    },
+    "MentionKind": {
+      "type": "object",
+      "description": "A mention kind supported by the provider.",
+      "additionalProperties": false,
+      "required": ["id", "title"],
+      "properties": {
+        "id": {
+          "description": "The unique identifier for the mention kind.",
+          "type": "string"
+        },
+        "title": {
+          "description": "The title of the mention kind.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The description of the mention kind.",
+          "type": "string"
+        }
+      }
+    },
+    "AnnotationSelector": {
+      "description": "Defines a scope in which a provider is called.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "description": "A glob that must match the resource's hostname and path.\n\nUse `**/` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.",
+          "type": "string"
+        },
+        "contentContains": {
+          "description": "A literal string that must be present in the resource's content.",
+          "type": "string"
+        }
+      }
+    },
     "MetaResult": {
       "type": "object",
       "additionalProperties": false,
       "required": ["name"],
       "properties": {
-        "selector": {
-          "description": "Selects the scope in which this provider should be called.\n\nAt least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.",
-          "type": "array",
-          "items": {
-            "title": "Selector",
-            "description": "Defines a scope in which a provider is called.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.",
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "path": {
-                "description": "A glob that must match the resource's hostname and path.\n\nUse `**/` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.",
-                "type": "string"
-              },
-              "contentContains": {
-                "description": "A literal string that must be present in the resource's content.",
-                "type": "string"
-              }
-            }
-          }
-        },
         "name": {
           "description": "The name of the provider.",
           "type": "string"
@@ -140,8 +176,49 @@
           "additionalProperties": false,
           "properties": {
             "mentions": {
-              "description": "Whether the provider support mentions.",
-              "type": "boolean"
+              "description": "Configuration for the mentions feature.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "implements": {
+                  "description": "Whether the provider implements the mentions feature",
+                  "type": "boolean"
+                },
+                "selectors": {
+                  "description": "A list of patterns matching the mention text for which the provider can return mentions",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MentionSelector"
+                  },
+                  "tsType": "MentionSelector[]"
+                },
+                "kinds": {
+                  "description": "A list of kinds of  mentions the provider supports.",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/MentionKind"
+                  }
+                }
+              }
+            },
+            "annotations": {
+              "description": "Configuration for the annotations feature.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "implements": {
+                  "description": "Whether the provider implements the mentions feature",
+                  "type": "boolean"
+                },
+                "selectors": {
+                  "description": "A list of patterns matching the mention text for which the provider can return mentions",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/AnnotationSelector"
+                  },
+                  "tsType": "AnnotationSelector[]"
+                }
+              }
             }
           }
         }
@@ -203,6 +280,10 @@
       "properties": {
         "query": {
           "description": "A search query that is interpreted by providers to filter the items in the result set.",
+          "type": "string"
+        },
+        "kind": {
+          "description": "The id of the mention kind to return.",
           "type": "string"
         }
       }

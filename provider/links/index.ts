@@ -65,7 +65,15 @@ interface LinkPattern {
  */
 const links: Provider<Settings> = {
     meta(_params: MetaParams, settings: Settings): MetaResult {
-        return { selector: settings.links?.map(({ path }) => ({ path })) || [], name: 'Links' }
+        return {
+            features: {
+                annotations: {
+                    implements: true,
+                    selectors: settings.links?.map(({ path }) => ({ path })) || [],
+                },
+            },
+            name: 'Links',
+        }
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
@@ -181,7 +189,7 @@ function interpolate(text: string, groups?: MatchGroup[]): string {
     }
     return text.replaceAll(/\$(\d+)|\$<([^>]+)>/g, (_, nStr: string, name: string) => {
         if (nStr) {
-            const n = parseInt(nStr, 10)
+            const n = Number.parseInt(nStr, 10)
             const group = groups.find(g => g.name === n)
             return group?.value ?? _
         }

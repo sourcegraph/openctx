@@ -30,7 +30,7 @@ export type Settings = {
  */
 const googleDocs: Provider<Settings> = {
     meta(): MetaResult {
-        return { name: 'Google Docs' }
+        return { name: 'Google Docs', features: { mentions: { implements: true } } }
     },
 
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {

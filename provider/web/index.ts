@@ -13,10 +13,11 @@ import type {
 const urlFetcher: Provider = {
     meta(): MetaResult {
         return {
-            // empty since we don't provide any annotations.
-            selector: [],
             name: 'Web URLs',
-            features: { mentions: true },
+            features: {
+                mentions: { implements: true },
+                annotations: { implements: true, selectors: [] },
+            },
         }
     },
 
