@@ -53,7 +53,6 @@ const github: Provider<GithubProviderSettings> = {
     },
 
     async items({ message, mention }, settings) {
-        console.log(mention)
         if (!message && !mention?.uri) {
             return []
         }
