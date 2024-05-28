@@ -1,5 +1,7 @@
 
 import type { Settings } from './index.js';
+import type { Finding, Findings } from './api.js'
+
 
 export default class API {
     private abortSig: any
@@ -41,6 +43,6 @@ export default class API {
         if (fno === null || fno === undefined) {
             throw Error("Bad Request :: Findings ID not specifiied")
         }
-        return (await this.findings() as []).filter(f => (f.id === fno))
+        return (await this.findings() as Findings).filter((f: Finding) => (f.id === fno))
     }
 }

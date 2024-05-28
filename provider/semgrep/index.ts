@@ -21,7 +21,20 @@ export type Settings = {
 }
 
 
-export function helperText(finding: Finding): string {
+function parseUri(link: string): {deployment: string, finding: string} | null {
+    const url = new URL(link)
+    if (url.hostname.includes('semgrep.dev')) {
+        try {
+            const [d, f] = url.pathname.split('/orgs/')[1].split('/findings/')
+            return {deployment: d, finding: f}
+        } catch (err) {
+            return null
+        }
+    }
+    return null
+}
+
+function helperText(finding: Finding): string {
     return [
         finding.rule_name ?? '',
         finding.rule_message ?? '',
@@ -51,8 +64,20 @@ const semgrep: Provider = {
         }]
     },
 
-    mentions(params: MentionsParams, settings: Settings): MentionsResult {
-        return [] // TODO
+    async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
+        if (params.query) {
+            const q: {deployment: string, finding: string} | null = parseUri(params.query)
+            if (q) {
+                const client: API = new API({deployment: q.deployment, token: settings.token})
+                const finding: Finding = await client.get(q.finding) as Finding
+                return !finding ? [] : [{
+                    title: finding.rule_name,
+                    uri: finding.line_of_code_url,
+                    data: {finding: finding}
+                }]
+            }
+        }
+        return []
     },
 
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
