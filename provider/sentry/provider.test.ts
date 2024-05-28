@@ -159,7 +159,7 @@ describe('provider.meta', () => {
     test('returns expected meta result', async () => {
         const metaResult = providerImplementation.meta()
         expect(metaResult).toEqual({
-            name: 'Sentry issues',
+            name: 'Sentry Issues',
             mentions: {},
             annotations: { selectors: [] },
         })
@@ -172,7 +172,7 @@ describe('provider.meta', () => {
 
     test('returns correct name', async () => {
         const metaResult = providerImplementation.meta()
-        expect(metaResult.name).toBe('Sentry issues')
+        expect(metaResult.name).toBe('Sentry Issues')
     })
 
     test('returns correct features', async () => {
