@@ -6,7 +6,7 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import Fuse from 'fuse.js'
+import fuzzysort from 'fuzzysort'
 import { LRUCache } from 'lru-cache'
 import { parse } from 'node-html-parser'
 import { fetchDoc, fetchIndex } from './devdocs.js'
@@ -54,14 +54,19 @@ const devdocs: Provider<Settings> = {
 
         const indexes = await Promise.all(urls.map(url => getMentionIndex(url)))
         const entries = indexes.flatMap(index => {
-            return index.fuse.search(query, { limit: 10 }).map(result => ({
-                score: result.score ?? 0,
-                item: result.item,
-                url: index.url,
-            }))
+            return fuzzysort
+                .go(query, index.entries, {
+                    limit: 20,
+                    key: 'name',
+                })
+                .map(result => ({
+                    score: result.score,
+                    item: result.obj,
+                    url: index.url,
+                }))
         })
 
-        entries.sort((a, b) => a.score - b.score)
+        entries.sort((a, b) => b.score - a.score)
 
         return entries.slice(0, 20).map(entry => {
             return {
@@ -124,9 +129,7 @@ const cache = new LRUCache<string, MentionIndex>({
 interface MentionIndex {
     // The normalized devdocs URL
     url: string
-    // A fuzzy finder index. We use this to help return the best match when
-    // there are many.
-    fuse: Fuse<{ name: string; path: string }>
+    entries: { name: string; path: string }[]
 }
 
 async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
@@ -145,16 +148,11 @@ async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
         path: entry.path,
     }))
 
-    const options = {
-        includeScore: true,
-        keys: ['name'],
-    }
-    const fuse = new Fuse(entries, options)
-
     const result = {
         url: devdocsURL,
-        fuse,
+        entries: entries,
     }
+
     cache.set(devdocsURL, result)
 
     return result
