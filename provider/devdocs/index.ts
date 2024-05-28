@@ -11,18 +11,26 @@ import { LRUCache } from 'lru-cache'
 import { parse } from 'node-html-parser'
 import { fetchDoc, fetchIndex } from './devdocs.js'
 
+const DEFAULT_URLS = [
+    'https://devdocs.io/css/',
+    'https://devdocs.io/html/',
+    'https://devdocs.io/http/',
+    'https://devdocs.io/javascript/',
+    'https://devdocs.io/dom/',
+]
+
 /**
  * Settings for the DevDocs OpenCtx provider.
  */
 export type Settings = {
     /**
-     * The list of URLs to serve.
+     * The list of URLs to serve. Defaults to DEFAULT_URLS.
      *
      * These should be top-level documentation URLs like https://devdocs.io/angular~16/ or https://devdocs.io/typescript/
      *
      * Additionally this supports file:// URLs for local development.
      */
-    urls: string[]
+    urls?: string[]
 }
 
 /**
@@ -42,7 +50,9 @@ const devdocs: Provider<Settings> = {
             return []
         }
 
-        const indexes = await Promise.all(settings.urls.map(url => getMentionIndex(url)))
+        const urls = settings.urls ?? DEFAULT_URLS
+
+        const indexes = await Promise.all(urls.map(url => getMentionIndex(url)))
         const entries = indexes.flatMap(index => {
             return index.fuse.search(query, { limit: 10 }).map(result => ({
                 score: result.score ?? 0,

@@ -9,13 +9,22 @@ Add the following to your settings in any OpenCtx client:
 ```json
 "openctx.providers": {
     // ...other providers...
+    "https://openctx.org/npm/@openctx/provider-devdocs": true,
+},
+```
+
+This will use the default documentation sets as used by https://devdocs.io/. To specify the documentation use a configuration like:
+
+```json
+"openctx.providers": {
+    // ...other providers...
     "https://openctx.org/npm/@openctx/provider-devdocs": {
         "urls": ["https://devdocs.io/go/", "https://devdocs.io/angular~16/"]
     }
 },
 ```
 
-A URL is any top-level documentation URL on https://devdocs.io/. 
+A URL is any top-level documentation URL on https://devdocs.io/.
 
 ## Development
 
