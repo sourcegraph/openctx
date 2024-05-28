@@ -88,6 +88,10 @@ export interface Mention {
      */
     title: string
     /**
+     * An item description.
+     */
+    description?: string
+    /**
      * A URI for the mention item.
      */
     uri: string

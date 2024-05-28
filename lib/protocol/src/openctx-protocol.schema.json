@@ -180,6 +180,10 @@
           "description": "A descriptive title.",
           "type": "string"
         },
+        "description": {
+          "description": "An item description.",
+          "type": "string"
+        },
         "uri": {
           "description": "A URI for the mention item.",
           "type": "string",
