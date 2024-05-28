@@ -91,8 +91,10 @@ const linearIssues: Provider<Settings> = {
         const comments = issue.comments?.nodes as Comment[]
 
         const content = xmlBuilder.build({
-            description: issue.description || '',
-            comments: comments.map(comment => comment.body).join('\n'),
+            linear_issue: {
+                description: issue.description || '',
+                comments: comments.map(comment => comment.body).join('\n'),
+            },
         })
 
         return [
