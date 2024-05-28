@@ -1,0 +1,35 @@
+{
+  "name": "@openctx/provider-slack-channel-context",
+  "version": "0.0.1",
+  "description": "Slack channel context for code AI and editors (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/slack-channel-context"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest",
+    "google-auth": "node --no-warnings=ExperimentalWarning --es-module-specifier-resolution=node --loader ts-node/esm/transpile-only auth.ts"
+  },
+  "dependencies": {
+    "@slack/web-api": "^7.0.4",
+    "@slack/bolt": "^3.18.0",
+    "@openctx/provider": "workspace:*",
+    "open": "^10.0.4",
+    "server-destroy": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/server-destroy": "^1.0.3"
+  }
+}
