@@ -44,7 +44,7 @@ const linearIssues: Provider<Settings> = {
 
         const query = `
             query IssueSearch($query: String!, $first: Int!) {
-                issueSearch(query: $query, first: $first) {
+                issueSearch(query: $query, first: $first, orderBy: updatedAt) {
                     nodes {
                         title
                         url
