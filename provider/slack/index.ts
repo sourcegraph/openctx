@@ -31,6 +31,7 @@ async function listAllChannels(client: WebClient): Promise<ChannelInfo[]> {
     let cursor: string | undefined
     do {
         const response = await client.conversations.list({
+            exclude_archived: true,
             limit: 1000,
             cursor: cursor,
         })
