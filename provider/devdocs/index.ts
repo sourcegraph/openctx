@@ -7,8 +7,8 @@ import type {
     Provider,
 } from '@openctx/provider'
 import fuzzysort from 'fuzzysort'
-import { LRUCache } from 'lru-cache'
 import { parse } from 'node-html-parser'
+import { Cache } from './cache.js'
 import { fetchDoc, fetchIndex } from './devdocs.js'
 
 const DEFAULT_URLS = [
@@ -121,9 +121,8 @@ const devdocs: Provider<Settings> = {
 }
 
 // Use cache to avoid refetching index on each request.
-const cache = new LRUCache<string, MentionIndex>({
-    ttl: 1000 * 60 * 60 * 12, // 12 hours
-    ttlAutopurge: true,
+const cache = new Cache<MentionIndex>({
+    ttlMS: 1000 * 60 * 60 * 12, // 12 hours
 })
 
 interface MentionIndex {
@@ -138,24 +137,18 @@ async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
         devdocsURL = devdocsURL + '/'
     }
 
-    if (cache.has(devdocsURL)) {
-        return cache.get(devdocsURL)!
-    }
+    return await cache.getOrFill(devdocsURL, async () => {
+        const index = await fetchIndex(devdocsURL)
+        const entries = index.entries.map(entry => ({
+            name: entry.name,
+            path: entry.path,
+        }))
 
-    const index = await fetchIndex(devdocsURL)
-    const entries = index.entries.map(entry => ({
-        name: entry.name,
-        path: entry.path,
-    }))
-
-    const result = {
-        url: devdocsURL,
-        entries: entries,
-    }
-
-    cache.set(devdocsURL, result)
-
-    return result
+        return {
+            url: devdocsURL,
+            entries: entries,
+        }
+    })
 }
 
 export default devdocs
