@@ -1,3 +1,4 @@
+
 import type {
     Annotation,
     AnnotationsParams,
@@ -11,20 +12,18 @@ import type {
     Provider,
 } from '@openctx/provider'
 
+import API from './client.js'
+import type { Finding } from './api.js'
+
 export type Settings = {
-    organization: string,   // Organization slug
-    project: string,        // Project slug
+    deployment: string,     // Deployment slug
     token: string           // Semgrep app token
 }
 
 
 const semgrep: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
-        return {
-            selector: [],
-            name: 'Semgrep',
-            features: { mentions: true },
-        }
+        return {name: 'Semgrep', features: { mentions: true }}
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
@@ -35,9 +34,25 @@ const semgrep: Provider = {
         return [] // TODO
     },
 
-    annotations(params: AnnotationsParams, settings: Settings): AnnotationsResult {
+    async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
         const anns: Annotation[] = []
-        // TODO
+        const client: API = new API(settings)
+        const findings = await client.findings() || []
+
+        // TODO(Harish): Match current file path against location.file_path before assigning annotations
+        findings.forEach((f: Finding) => {
+            anns.push({
+                uri: f.line_of_code_url,
+                item: {
+                    title: f.rule_name,
+                    url: f.line_of_code_url
+                },
+                range: {
+                    start: {line: f.location.line, character: f.location.column},
+                    end: {line: f.location.end_line, character: f.location.end_column}
+                }
+            })
+        })
         return anns
     },
 }
