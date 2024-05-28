@@ -1,12 +1,12 @@
 {
-  "name": "@openctx/provider-slack-channel-context",
+  "name": "@openctx/provider-slack",
   "version": "0.0.1",
-  "description": "Slack channel context for code AI and editors (OpenCtx provider)",
+  "description": "Slack context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/slack-channel-context"
+    "directory": "provider/slack"
   },
   "type": "module",
   "main": "dist/bundle.js",
