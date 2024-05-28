@@ -7,7 +7,8 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import { type JiraIssue, fetchLatestJiraTickets, issueUrl } from './api.js'
+import { XMLBuilder } from 'fast-xml-parser'
+import { type JiraIssue, fetchRecentIssues, searchIssues } from './api.js'
 
 export type Settings = {
     host: string
@@ -16,24 +17,41 @@ export type Settings = {
     apiToken: string
 }
 
+const xmlBuilder = new XMLBuilder({ format: true })
+
+const issueToItemContent = (issue: JiraIssue): string => {
+    const subtasks = issue.fields.subtasks?.map(subtask => issueToItemContent(subtask))
+    const issueObject = {
+        issue: {
+            id: issue.id,
+            key: issue.key,
+            summary: issue.fields.summary,
+            description: issue.fields.description,
+            subtasks: subtasks || [],
+        },
+    }
+    return xmlBuilder.build(issueObject)
+}
+
 const jiraProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return { name: 'Jira', features: { mentions: true } }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        // if (!params.query) {
-        return fetchLatestJiraTickets(settings).then(issues =>
-            issues.map(issue => ({
-                title: `${issue.key} ${issue.fields.summary}`,
-                uri: issueUrl(settings, issue),
-                data: {
-                    issue: issue,
-                },
-            }))
-        )
-        // }
-        // todo: else search
+        const result = (issue: JiraIssue) => ({
+            title: `${issue.key} ${issue.fields.summary}`,
+            uri: issue.url,
+            data: {
+                issue: issue,
+            },
+        })
+
+        if (params.query) {
+            return searchIssues(params.query, settings).then(issues => issues.map(result))
+        }
+
+        return fetchRecentIssues(settings).then(issues => issues.map(result))
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
@@ -41,9 +59,9 @@ const jiraProvider: Provider = {
         return [
             {
                 title: issue.key,
-                url: issueUrl(settings, issue),
+                url: issue.url,
                 ai: {
-                    content: issue.fields?.description,
+                    content: issueToItemContent(issue),
                 },
             },
         ]

@@ -1,6 +1,9 @@
 # Jira context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that brings Jira context to code AI and editors. 
+This is a context provider for [OpenCtx](https://openctx.org) that brings Jira context to code AI and editors. It supports:
+
+- Showing recent issues that are assigned to you, you've created, or you've commented on
+- Searching issues based on title, summary or issue key (PROJ-123)
 
 **Status:** Experimental
 
@@ -13,6 +16,7 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Jira c
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-jira": {
         "host": "<subdomain>.atlassian.net",
+        // optional: "port": "443",
         "username": "<email-address>",
         "apiToken": "<your-atlassian-api-token>",
     }
