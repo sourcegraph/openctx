@@ -38,7 +38,7 @@ const NUMBER_OF_ISSUES_TO_FETCH = 10
 
 const linearIssues: Provider<Settings> = {
     meta(): MetaResult {
-        return { name: 'Linear Issues', features: { mentions: true } }
+        return { name: 'Linear Issues', mentions: {} }
     },
 
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {

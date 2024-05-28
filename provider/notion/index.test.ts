@@ -14,7 +14,6 @@ describe('notion', () => {
         }
 
         const mentions = await notion.mentions!({ query }, settings)
-        console.log(mentions)
         expect(mentions).not.toStrictEqual([])
 
         const mention = mentions[0]

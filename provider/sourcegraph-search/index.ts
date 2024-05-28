@@ -20,9 +20,9 @@ const sourcegraphSearch: Provider = {
     meta(params: MetaParams, settings: ProviderSettings): MetaResult {
         return {
             // empty since we don't provide any annotations.
-            selector: [],
             name: 'Sourcegraph Search',
-            features: { mentions: true },
+            mentions: {},
+            annotations: { selectors: [] },
         }
     },
 

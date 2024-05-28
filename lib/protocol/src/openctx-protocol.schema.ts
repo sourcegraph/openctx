@@ -10,6 +10,8 @@ export type Protocol =
     | MetaParams
     | MetaResult
     | Mention
+    | MentionSelector
+    | AnnotationSelector
     | MentionsParams
     | MentionsResult
     | ItemsParams
@@ -43,41 +45,27 @@ export interface ResponseError {
 }
 export interface MetaResult {
     /**
-     * Selects the scope in which this provider should be called.
-     *
-     * At least 1 must be satisfied for the provider to be called. If empty, the provider is never called. If undefined, the provider is called on all resources.
-     */
-    selector?: Selector[]
-    /**
      * The name of the provider.
      */
     name: string
     /**
-     * The features supported by the provider.
+     * Configuration for the mentions feature.
      */
-    features?: {
+    mentions?: {
         /**
-         * Whether the provider support mentions.
+         * The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.
          */
-        mentions?: boolean
+        selectors?: MentionSelector[]
     }
-}
-/**
- * Defines a scope in which a provider is called.
- *
- * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
- */
-export interface Selector {
     /**
-     * A glob that must match the resource's hostname and path.
-     *
-     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.
+     * Configuration for the annotations feature.
      */
-    path?: string
-    /**
-     * A literal string that must be present in the resource's content.
-     */
-    contentContains?: string
+    annotations?: {
+        /**
+         * A list of patterns matching the mention text for which the provider can return mentions
+         */
+        selectors?: AnnotationSelector[]
+    }
 }
 /**
  * A mention contains presentation information relevant to a resource.
@@ -98,6 +86,32 @@ export interface Mention {
     data?: {
         [k: string]: unknown | undefined
     }
+}
+/**
+ * List of regex patterns matching the mention text for which the provider can return mentions.
+ */
+export interface MentionSelector {
+    /**
+     * The regex pattern matching the mention text for which the provider can return mentions
+     */
+    pattern: string
+}
+/**
+ * Defines a scope in which a provider is called.
+ *
+ * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
+ */
+export interface AnnotationSelector {
+    /**
+     * A glob that must match the resource's hostname and path.
+     *
+     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.
+     */
+    path?: string
+    /**
+     * A literal string that must be present in the resource's content.
+     */
+    contentContains?: string
 }
 export interface MentionsParams {
     /**

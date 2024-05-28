@@ -101,7 +101,7 @@ let slackChannelData: SlackChannelData = {
 
 const slackContext = {
     meta(): MetaResult {
-        return { name: 'Slack', features: { mentions: true } }
+        return { name: 'Slack', mentions: {} }
     },
 
     async initializeChannelList(settingsInput: Settings) {

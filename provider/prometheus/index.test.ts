@@ -15,7 +15,9 @@ describe('prometheus', () => {
 
     test('meta', async () => {
         expect(await prometheus.meta({}, SETTINGS)).toStrictEqual<MetaResult>({
-            selector: [{ path: '**/*.go' }],
+            annotations: {
+                selectors: [{ path: '**/*.go' }],
+            },
             name: 'Prometheus',
         })
     })

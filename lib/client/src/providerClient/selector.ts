@@ -1,4 +1,4 @@
-import type { AnnotationsParams, Selector } from '@openctx/protocol'
+import type { AnnotationSelector, AnnotationsParams } from '@openctx/protocol'
 //
 // Import from a subpackage because the main module calls `os.platform()`, which doesn't work on
 // non-Node engines.
@@ -9,7 +9,7 @@ import match from 'picomatch/lib/picomatch.js'
  * docs for the selector specification.
  */
 export function matchSelectors(
-    selectors: Selector[] | undefined
+    selectors: AnnotationSelector[] | undefined
 ): (params: AnnotationsParams) => boolean {
     if (selectors === undefined) {
         return ALWAYS_TRUE
@@ -23,7 +23,7 @@ export function matchSelectors(
 
 const ALWAYS_TRUE = (): boolean => true
 
-function matchSelector(selector: Selector): (filePath: string, content: string) => boolean {
+function matchSelector(selector: AnnotationSelector): (filePath: string, content: string) => boolean {
     const matchPath =
         selector.path !== undefined && selector.path !== null
             ? match(trimLeadingSlash(selector.path))
