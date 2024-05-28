@@ -1,6 +1,6 @@
 # Sentry issue context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that fetches contents from a Sentty issue by just pasting the URL to it.
+This is a context provider for [OpenCtx](https://openctx.org) that fetches contents from a Sentry issue by just pasting the URL to it.
 
 ## Usage
 
