@@ -6,21 +6,28 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Slack 
 
 ## Configuration
 
+
+### Configuration for Sourcegraph teammates
+
+1. Find "OpenCtx Slack provider config" in 1Password and add it to your user settings.
+2. Start using the provider!
+
+
+### Configuration outside of Sourcegraph
+
 To create Slack User Auth token:
 
 1. [Create a slack app from scratch from slack api](https://api.slack.com/apps).
-2. Add the following permission in the User Token Scopes. For access to private channels, additional include permissions prefixed with `groups:`
+2. Add the following permission in the User Token Scopes.
  - `channels:history`
  - `channels:read`
  - `search:read`
- - `groups:history`
- - `groups:read`
 3. Use the following OpenCtx provider configuration:
 
 ```json
 "openctx.providers": {
     // ...other providers...
-    "file:///Users/hiteshsagtani/dev/openctx/provider/slack-channel-context/dist/bundle.js": {
+    "https://openctx.org/npm/@openctx/provider-slack-channel-context": {
       "slackAuthToken": "<AUTH_TOKEN>"
     }
 },
