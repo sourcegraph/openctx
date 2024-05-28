@@ -1,11 +1,18 @@
 # Jira context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that brings Jira context to code AI and editors.
+[OpenCtx](https://openctx.org) context provider for bringing Jira context into code AI and editors.
 
 Features:
 
-- Shows recent issues that are assigned to you, you've created, or you've commented on
-- Searching issues based on title, summary or issue key (PROJ-123)
+- By default, displays the recent issues that are assigned to you, you've created, or you've commented on
+- Searches issues based on title, summary, or issue key (PROJ-123)
+
+Issue context included:
+
+- URL
+- Summary
+- Description
+- Subtasks
 
 ## Usage
 
