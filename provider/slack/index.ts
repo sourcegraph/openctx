@@ -100,7 +100,7 @@ let slackChannelData: SlackChannelData = {
 
 const slackContext = {
     meta(): MetaResult {
-        return { name: 'Slack Context', features: { mentions: true } }
+        return { name: 'Slack', features: { mentions: true } }
     },
 
     async initializeChannelList(settingsInput: Settings) {
@@ -165,10 +165,7 @@ const slackContext = {
 
             const threadMessage = await fetchThreadMessages(client, channelId, threadTs)
             const allMessages = `
-                Here is a conversation from the slack message which could be useful to answer the question.
-                Please use the context from the slack conversation to check if it helps.
-                Please ignore the slack conversation if it is not relevant to the query.
-            
+                Here is a Slack conversation that may contain useful information for answering the user query. Please incorporate context from the Slack conversation only if it is directly relevant and provides sufficient information to address the question. If the Slack conversation is not relevant or lacks enough information, please disregard it.    
 
                 ${threadMessage}
             `
