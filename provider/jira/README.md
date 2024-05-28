@@ -2,18 +2,6 @@
 
 [OpenCtx](https://openctx.org) context provider for bringing Jira context into code AI and editors.
 
-Features:
-
-- By default, displays the recent issues that are assigned to you, you've created, or you've commented on
-- Searches issues based on title, summary, or issue key (PROJ-123)
-
-Issue context included:
-
-- URL
-- Summary
-- Description
-- Subtasks
-
 ## Usage
 
 [Create an API token](https://id.atlassian.com/manage-profile/security/api-tokens) and then configure your OpenCtx client to use this provider:
@@ -28,6 +16,20 @@ Issue context included:
     }
 },
 ```
+
+## Mention support
+
+- Searches issues based on title, summary, or issue key (PROJ-123).
+- Displays the recent issues that are assigned to you, you've created, or you've commented on
+
+## Context included
+
+Issues:
+
+- URL
+- Summary
+- Description
+- Subtasks
 
 ## Configuration
 
