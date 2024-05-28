@@ -27,9 +27,6 @@
       "$ref": "#/definitions/Mention"
     },
     {
-      "$ref": "#/definitions/MentionKind"
-    },
-    {
       "$ref": "#/definitions/MentionSelector"
     },
     {
@@ -126,26 +123,6 @@
         }
       }
     },
-    "MentionKind": {
-      "type": "object",
-      "description": "A mention kind supported by the provider.",
-      "additionalProperties": false,
-      "required": ["id", "title"],
-      "properties": {
-        "id": {
-          "description": "The unique identifier for the mention kind.",
-          "type": "string"
-        },
-        "title": {
-          "description": "The title of the mention kind.",
-          "type": "string"
-        },
-        "description": {
-          "description": "The description of the mention kind.",
-          "type": "string"
-        }
-      }
-    },
     "AnnotationSelector": {
       "description": "Defines a scope in which a provider is called.\n\nTo satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.",
       "type": "object",
@@ -191,13 +168,6 @@
                     "$ref": "#/definitions/MentionSelector"
                   },
                   "tsType": "MentionSelector[]"
-                },
-                "kinds": {
-                  "description": "A list of kinds of  mentions the provider supports.",
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/MentionKind"
-                  }
                 }
               }
             },
@@ -280,10 +250,6 @@
       "properties": {
         "query": {
           "description": "A search query that is interpreted by providers to filter the items in the result set.",
-          "type": "string"
-        },
-        "kind": {
-          "description": "The id of the mention kind to return.",
           "type": "string"
         }
       }

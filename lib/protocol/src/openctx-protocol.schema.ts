@@ -10,7 +10,6 @@ export type Protocol =
     | MetaParams
     | MetaResult
     | Mention
-    | MentionKind
     | MentionSelector
     | AnnotationSelector
     | MentionsParams
@@ -65,10 +64,6 @@ export interface MetaResult {
              * A list of patterns matching the mention text for which the provider can return mentions
              */
             selectors?: MentionSelector[]
-            /**
-             * A list of kinds of  mentions the provider supports.
-             */
-            kinds?: MentionKind[]
         }
         /**
          * Configuration for the annotations feature.
@@ -84,23 +79,6 @@ export interface MetaResult {
             selectors?: AnnotationSelector[]
         }
     }
-}
-/**
- * A mention kind supported by the provider.
- */
-export interface MentionKind {
-    /**
-     * The unique identifier for the mention kind.
-     */
-    id: string
-    /**
-     * The title of the mention kind.
-     */
-    title: string
-    /**
-     * The description of the mention kind.
-     */
-    description?: string
 }
 /**
  * A mention contains presentation information relevant to a resource.
@@ -153,10 +131,6 @@ export interface MentionsParams {
      * A search query that is interpreted by providers to filter the items in the result set.
      */
     query?: string
-    /**
-     * The id of the mention kind to return.
-     */
-    kind?: string
 }
 export interface ItemsParams {
     /**
