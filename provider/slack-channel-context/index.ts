@@ -116,8 +116,10 @@ const slackContext = {
 
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
         await this.initializeChannelList(settingsInput)
-        const userQuery = params.query ?? "";
-        const channelIdList = slackChannelData.channelList.filter(channel => channel.name.includes(userQuery))
+        const userQuery = params.query ?? ''
+        const channelIdList = slackChannelData.channelList.filter(channel =>
+            channel.name.includes(userQuery)
+        )
         if (!channelIdList) {
             return []
         }
@@ -191,5 +193,3 @@ const slackContext = {
 }
 
 export default slackContext
-
-
