@@ -21,13 +21,34 @@ export type Settings = {
 }
 
 
+export function helperText(finding: Finding): string {
+    return [
+        finding.rule_name ?? '',
+        finding.rule_message ?? '',
+        finding.rule.name ?? '',
+        finding.rule.message ?? '',
+        finding.triage_comment ?? '',
+        finding.triage_reason ?? '',
+        finding.assistant?.autofix?.fix_code ?? '',
+        finding.assistant?.autofix?.explanation ?? '',
+        finding.assistant?.autotriage?.reason ?? ''
+    ].join('\n')
+}
+
 const semgrep: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return {name: 'Semgrep', features: { mentions: true }}
     },
 
-    items(params: ItemsParams, settings: Settings): ItemsResult {
-        return [] // TODO
+    async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
+        if (params.mention?.data?.finding === undefined) return []
+        const finding: Finding = params.mention.data.finding as Finding
+        return !finding ? [] : [{
+            title: finding.rule_name,
+            url: finding.line_of_code_url,
+            ai: {content: helperText(finding)},
+            ui: {hover: {text: finding.rule_name}},
+        }]
     },
 
     mentions(params: MentionsParams, settings: Settings): MentionsResult {
