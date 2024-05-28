@@ -89,6 +89,27 @@ describe('devdocs', () => {
                 '</pre>'
         )
     })
+
+    test('missing documentation has no results', async () => {
+        const fixturesDir = path.join(__dirname, '__fixtures__')
+        const settings = {
+            urls: [url.pathToFileURL(fixturesDir).toString()],
+        }
+
+        const mentions = await devdocs.mentions!({ query: 'abortcontroller' }, settings)
+        expect(mentions).toHaveLength(0)
+    })
+
+    test.runIf(INTEGRATION)('integration abortcontroller top in default urls', async () => {
+        const settings = {}
+        const want = {
+            title: 'AbortController',
+            uri: 'https://devdocs.io/dom/abortcontroller',
+        }
+        const mentions = await devdocs.mentions!({ query: 'abortcontroller' }, settings)
+        expect(mentions).toContainEqual(want)
+        expect(mentions[0]).toEqual(want)
+    })
 })
 
 /**

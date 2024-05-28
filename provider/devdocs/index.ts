@@ -6,23 +6,31 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import Fuse from 'fuse.js'
+import fuzzysort from 'fuzzysort'
 import { LRUCache } from 'lru-cache'
 import { parse } from 'node-html-parser'
 import { fetchDoc, fetchIndex } from './devdocs.js'
+
+const DEFAULT_URLS = [
+    'https://devdocs.io/css/',
+    'https://devdocs.io/html/',
+    'https://devdocs.io/http/',
+    'https://devdocs.io/javascript/',
+    'https://devdocs.io/dom/',
+]
 
 /**
  * Settings for the DevDocs OpenCtx provider.
  */
 export type Settings = {
     /**
-     * The list of URLs to serve.
+     * The list of URLs to serve. Defaults to DEFAULT_URLS.
      *
      * These should be top-level documentation URLs like https://devdocs.io/angular~16/ or https://devdocs.io/typescript/
      *
      * Additionally this supports file:// URLs for local development.
      */
-    urls: string[]
+    urls?: string[]
 }
 
 /**
@@ -42,16 +50,23 @@ const devdocs: Provider<Settings> = {
             return []
         }
 
-        const indexes = await Promise.all(settings.urls.map(url => getMentionIndex(url)))
+        const urls = settings.urls ?? DEFAULT_URLS
+
+        const indexes = await Promise.all(urls.map(url => getMentionIndex(url)))
         const entries = indexes.flatMap(index => {
-            return index.fuse.search(query, { limit: 10 }).map(result => ({
-                score: result.score ?? 0,
-                item: result.item,
-                url: index.url,
-            }))
+            return fuzzysort
+                .go(query, index.entries, {
+                    limit: 20,
+                    key: 'name',
+                })
+                .map(result => ({
+                    score: result.score,
+                    item: result.obj,
+                    url: index.url,
+                }))
         })
 
-        entries.sort((a, b) => a.score - b.score)
+        entries.sort((a, b) => b.score - a.score)
 
         return entries.slice(0, 20).map(entry => {
             return {
@@ -114,9 +129,7 @@ const cache = new LRUCache<string, MentionIndex>({
 interface MentionIndex {
     // The normalized devdocs URL
     url: string
-    // A fuzzy finder index. We use this to help return the best match when
-    // there are many.
-    fuse: Fuse<{ name: string; path: string }>
+    entries: { name: string; path: string }[]
 }
 
 async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
@@ -135,16 +148,11 @@ async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
         path: entry.path,
     }))
 
-    const options = {
-        includeScore: true,
-        keys: ['name'],
-    }
-    const fuse = new Fuse(entries, options)
-
     const result = {
         url: devdocsURL,
-        fuse,
+        entries: entries,
     }
+
     cache.set(devdocsURL, result)
 
     return result
