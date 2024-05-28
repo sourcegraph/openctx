@@ -13,7 +13,7 @@ import type {
 } from '@openctx/provider'
 
 import API from './client.js'
-import type { Finding, Findings } from './api.js'
+import { urlfor, type Finding, type Findings } from './api.js'
 
 export type Settings = {
     deployment: string,     // Semgrep deployment slug
@@ -59,7 +59,7 @@ const semgrep: Provider = {
         const finding: Finding = params.mention.data.finding as Finding
         return !finding ? [] : [{
             title: finding.rule_name,
-            url: finding.line_of_code_url,
+            url: urlfor(settings.deployment, settings.repo ?? ''),
             ai: {content: helperText(finding)},
             ui: {hover: {text: finding.rule_name}},
         }]
@@ -77,8 +77,8 @@ const semgrep: Provider = {
                 const findings: Findings = await client.findings(q.finding)
                 return !findings ? [] : findings.map((f: Finding) => ({
                     title: f.rule_name,
-                    uri: f.line_of_code_url,
-                    data: {finding: f}
+                    data: {finding: f},
+                    uri: params.query ?? urlfor(q.deployment, settings.repo ?? '', q.finding),
                 }))
             }
         }
@@ -90,13 +90,13 @@ const semgrep: Provider = {
         const client: API = new API(settings)
         const findings = await client.findings() || []
 
-        // TODO(Harish): Match current file path against location.file_path before assigning annotations
+        // TODO(Harish): Match current file path against location.file_path
         findings.forEach((f: Finding) => {
             anns.push({
-                uri: f.line_of_code_url,
+                uri: params.uri,
                 item: {
                     title: f.rule_name,
-                    url: f.line_of_code_url
+                    url: urlfor(settings.deployment, f.repository.name, f.id)
                 },
                 range: {
                     start: {line: f.location.line, character: f.location.column},
