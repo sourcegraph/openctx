@@ -48,23 +48,6 @@ async function listAllChannels(client: WebClient): Promise<ChannelInfo[]> {
     return allChannels
 }
 
-async function getChannelId(
-    channelData: ChannelInfo[],
-    channelName: string
-): Promise<ChannelInfo[] | null> {
-    try {
-        const allPossibleChannels = []
-        for (const channel of channelData) {
-            if (channel.name.indexOf(channelName) !== -1) {
-                allPossibleChannels.push(channel)
-            }
-        }
-        return allPossibleChannels
-    } catch (error) {
-        return null
-    }
-}
-
 // Function to search messages in a channel
 async function searchInChannel(
     client: WebClient,
@@ -99,9 +82,7 @@ async function fetchThreadMessages(
             messages = response.messages as any[]
             allMessages.push(...messages)
         }
-        const threadConvo = allMessages?.map(msg => msg.text)
-        const threadConvoArray = threadConvo?.join('\n\n')
-        return threadConvoArray
+        return allMessages?.map(msg => msg.text).join('\n\n')
     } catch (error) {
         return null
     }
@@ -135,11 +116,8 @@ const slackContext = {
 
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
         await this.initializeChannelList(settingsInput)
-
-        if (!params.query) {
-            return []
-        }
-        const channelIdList = await getChannelId(slackChannelData.channelList, params.query)
+        const userQuery = params.query ?? "";
+        const channelIdList = slackChannelData.channelList.filter(channel => channel.name.includes(userQuery))
         if (!channelIdList) {
             return []
         }
@@ -213,3 +191,5 @@ const slackContext = {
 }
 
 export default slackContext
+
+
