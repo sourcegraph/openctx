@@ -91,7 +91,11 @@ export function createProviderClient(
                 logger?.('checking provider meta')
                 const meta = await transport.meta({}, settings)
                 logger?.(`received meta = ${JSON.stringify(meta)}`)
-                match = matchSelectors(meta.features?.annotations?.selectors)
+                match = () => false
+
+                if (meta?.features?.annotations?.implements) {
+                    match = matchSelectors(meta.features?.annotations?.selectors)
+                }
             } catch (error) {
                 logger?.(`failed to get provider meta: ${error}`)
                 return Promise.reject(error)

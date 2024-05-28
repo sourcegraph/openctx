@@ -31,10 +31,8 @@ export type Settings = {
 const devdocs: Provider<Settings> = {
     meta(): MetaResult {
         return {
-            // empty since we don't provide any annotations.
-            selector: [],
             name: 'DevDocs',
-            features: { mentions: true },
+            features: { mentions: { implements: true } },
         }
     },
 
