@@ -6,7 +6,7 @@ import { type ProviderTransport, createTransport } from './createTransport.js'
 
 async function expectProviderTransport(provider: ProviderTransport) {
     expect(await provider.meta({}, {})).toEqual<MetaResult>({
-        selector: [{ path: 'foo' }],
+        annotations: { selectors: [{ path: 'foo' }] },
         name: 'foo',
     })
 }
@@ -58,7 +58,9 @@ describe('createTransport', () => {
             fetchMocker.mockOnce(
                 JSON.stringify({
                     result: {
-                        selector: [{ path: 'foo' }],
+                        annotations: {
+                            selectors: [{ path: 'foo' }],
+                        },
                         name: 'foo',
                     } satisfies MetaResult,
                 } satisfies ResponseMessage)

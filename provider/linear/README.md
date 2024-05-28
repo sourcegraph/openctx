@@ -9,6 +9,15 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Linear
 1. Find "OpenCtx Linear provider config" in 1Password and add it to your user settings.
 1. Start using the provider!
 
+```json
+"openctx.providers": {
+    // ...other providers...
+    "https://openctx.org/npm/@openctx/provider-linear": {
+        "accessToken": "YOUR_ACCESS_TOKEN",
+    }
+},
+```
+
 ## Configuration outside of Sourcegraph
 
 To create Linear API credentials:
@@ -24,7 +33,7 @@ Then use the following OpenCtx provider configuration:
 "openctx.providers": {
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-linear": {
-        "linearUserCredentialsPath": "path/to/access_token_file_printed.json",
+        "userCredentialsPath": "path/to/access_token_file_printed.json",
     }
 },
 ```

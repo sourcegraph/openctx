@@ -7,19 +7,21 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import dedent from 'dedent'
 import { XMLBuilder } from 'fast-xml-parser'
 
 import type { UserCredentials } from './auth.js'
 
 /** Settings for the Linear OpenCtx provider. */
 export type Settings = {
-    linearUserCredentialsPath?: string
-    linearClientCredentials?: { accessToken?: string }
+    userCredentialsPath?: string
+    accessToken?: string
 }
 
 const xmlBuilder = new XMLBuilder({ format: true })
 
 interface Issue {
+    identifier: string
     title: string
     url: string
     description: string
@@ -32,34 +34,36 @@ interface Comment {
     body: string
 }
 
+const NUMBER_OF_ISSUES_TO_FETCH = 10
+
 const linearIssues: Provider<Settings> = {
     meta(): MetaResult {
-        return { name: 'Linear Issues', features: { mentions: true } }
+        return { name: 'Linear Issues', mentions: {} }
     },
 
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
-        if (!params.query || params.query.length < 3) {
-            return []
+        let issues: Issue[] = []
+
+        if (params.query) {
+            const variables = { query: params.query, first: NUMBER_OF_ISSUES_TO_FETCH }
+            const response = await linearApiRequest(issueSearchQuery, variables, settingsInput)
+            issues = response.data.issueSearch.nodes as Issue[]
+        } else {
+            const variables = { first: NUMBER_OF_ISSUES_TO_FETCH / 2 }
+            const response = await linearApiRequest(viewerIssuesQuery, variables, settingsInput)
+
+            const createdIssues = response.data.viewer.createdIssues.nodes as Issue[]
+            const assignedIssues = response.data.viewer.createdIssues.nodes as Issue[]
+            issues = dedupeWith([...assignedIssues, ...createdIssues], 'url')
         }
 
-        const query = `
-            query IssueSearch($query: String!, $first: Int!) {
-                issueSearch(query: $query, first: $first, orderBy: updatedAt) {
-                    nodes {
-                        title
-                        url
-                    }
-                }
-            }
-        `
-        const variables = { query: params.query, first: 10 }
-        const response = await linearApiRequest(query, variables, settingsInput)
-        const issues = response.data.issueSearch.nodes as Issue[]
-
-        return (issues ?? []).map(issue => ({
-            title: issue.title,
+        const mentions = (issues ?? []).map(issue => ({
+            title: `${issue.identifier} ${issue.title}`,
             uri: issue.url,
+            description: issue.description,
         }))
+
+        return mentions
     },
 
     async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
@@ -72,30 +76,23 @@ const linearIssues: Provider<Settings> = {
             return []
         }
 
-        const query = `
-            query Issue($id: String!) {
-                issue(id: $id) {
-                    title
-                    description
-                    comments {
-                        nodes {
-                            body
-                        }
-                    }
-                }
-            }
-        `
         const variables = { id: issueId }
-        const data = await linearApiRequest(query, variables, settingsInput)
+        const data = await linearApiRequest(issueWithCommentsQuery, variables, settingsInput)
         const issue = data.data.issue as Issue
         const comments = issue.comments?.nodes as Comment[]
 
-        const content = xmlBuilder.build({
-            linear_issue: {
-                description: issue.description || '',
-                comments: comments.map(comment => comment.body).join('\n'),
-            },
+        const issueInfo = xmlBuilder.build({
+            title: issue.title,
+            description: issue.description || '',
+            comments: comments.map(comment => comment.body).join('\n'),
+            url: issue.url,
         })
+        const content = dedent`
+            Here is the Linear issue. Use it to check if it helps.
+            Ignore it if it is not relevant.
+
+            ${issueInfo}
+        `
 
         return [
             {
@@ -112,23 +109,23 @@ const linearIssues: Provider<Settings> = {
 export default linearIssues
 
 function getAccessToken(settings: Settings): string {
-    if (settings.linearClientCredentials?.accessToken) {
-        return settings.linearClientCredentials.accessToken
+    if (settings?.accessToken) {
+        return settings.accessToken
     }
 
-    if (settings.linearUserCredentialsPath) {
-        const userCredentialsString = readFileSync(settings.linearUserCredentialsPath, 'utf-8')
+    if (settings.userCredentialsPath) {
+        const userCredentialsString = readFileSync(settings.userCredentialsPath, 'utf-8')
         const userCredentials = JSON.parse(userCredentialsString) as Partial<UserCredentials>
 
         if (!userCredentials.access_token) {
-            throw new Error(`access_token not found in ${settings.linearUserCredentialsPath}`)
+            throw new Error(`access_token not found in ${settings.userCredentialsPath}`)
         }
 
         return userCredentials.access_token
     }
 
     throw new Error(
-        'must provide a Linear user credentials path in the `linearUserCredentialsPath` settings field or an accessToken in the linearClientOptions'
+        'must provide a Linear user credentials path in the `userCredentialsPath` settings field or an accessToken in the linearClientOptions'
     )
 }
 
@@ -168,3 +165,71 @@ function parseIssueIDFromURL(urlStr: string): string | undefined {
     const match = url.pathname.match(/\/issue\/([a-zA-Z0-9_-]+)/)
     return match ? match[1] : undefined
 }
+
+const dedupeWith = <T>(items: T[], key: keyof T | ((item: T) => string)): T[] => {
+    const seen = new Set()
+    const isKeyFunction = typeof key === 'function'
+
+    return items.reduce((result, item) => {
+        const itemKey = isKeyFunction ? key(item) : item[key]
+
+        if (!seen.has(itemKey)) {
+            seen.add(itemKey)
+            result.push(item)
+        }
+
+        return result
+    }, [] as T[])
+}
+
+const issueFragment = `
+  fragment IssueFragment on Issue {
+      identifier
+      title
+      url
+      description
+  }
+`
+const viewerIssuesQuery = `
+  query ViewerIssues($first: Int!) {
+    viewer {
+      createdIssues(first: $first, orderBy: updatedAt) {
+        nodes {
+          ...IssueFragment
+        }
+      }
+      assignedIssues(first: $first, orderBy: updatedAt) {
+        nodes {
+          ...IssueFragment
+        }
+      }
+    }
+  }
+
+  ${issueFragment}
+`
+const issueSearchQuery = `
+    query IssueSearch($query: String!, $first: Int!) {
+        issueSearch(query: $query, first: $first, orderBy: updatedAt) {
+            nodes {
+              ...IssueFragment
+            }
+        }
+    }
+
+    ${issueFragment}
+`
+const issueWithCommentsQuery = `
+  query IssueWithComment($id: String!) {
+    issue(id: $id) {
+      identifier
+      title
+      description
+      comments {
+        nodes {
+          body
+        }
+      }
+    }
+  }
+`

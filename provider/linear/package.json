@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-linear",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Linear context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@openctx/provider": "workspace:*",
+    "dedent": "^1.5.3",
     "fast-xml-parser": "^4.4.0",
     "open": "^10.0.4",
     "server-destroy": "^1.0.1"

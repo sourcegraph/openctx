@@ -59,7 +59,9 @@ interface MetricRegistrationPattern {
 const prometheus: Provider<Settings> = {
     meta(_params: MetaParams, settings: Settings): MetaResult {
         return {
-            selector: settings.metricRegistrationPatterns?.map(({ path }) => ({ path })) || [],
+            annotations: {
+                selectors: settings.metricRegistrationPatterns?.map(({ path }) => ({ path })) || [],
+            },
             name: 'Prometheus',
         }
     },

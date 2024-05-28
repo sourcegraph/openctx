@@ -1,0 +1,28 @@
+{
+  "name": "@openctx/provider-sentry",
+  "version": "0.0.1",
+  "description": "Use information from Sentry.io issues (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/sentry",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/sentry"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*"
+  }
+}

@@ -6,6 +6,7 @@ describe('helloWorld', () => {
     test('meta', () =>
         expect(helloWorld.meta({}, {})).toStrictEqual<MetaResult>({
             name: '✨ Hello World!',
+            annotations: {},
         }))
 
     test('annotations', () =>

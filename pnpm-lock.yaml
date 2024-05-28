@@ -497,9 +497,9 @@ importers:
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
-      fuse.js:
-        specifier: ^7.0.0
-        version: 7.0.0
+      fuzzysort:
+        specifier: ^3.0.1
+        version: 3.0.1
       lru-cache:
         specifier: ^10.1.0
         version: 10.1.0
@@ -571,6 +571,9 @@ importers:
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
+      dedent:
+        specifier: ^1.5.3
+        version: 1.5.3
       fast-xml-parser:
         specifier: ^4.4.0
         version: 4.4.0
@@ -601,6 +604,12 @@ importers:
         version: link:../../lib/provider
 
   provider/prometheus:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+
+  provider/sentry:
     dependencies:
       '@openctx/provider':
         specifier: workspace:*
@@ -9227,9 +9236,8 @@ packages:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
     dev: false
 
-  /fuse.js@7.0.0:
-    resolution: {integrity: sha512-14F4hBIxqKvD4Zz/XjDc3y94mNZN6pRv3U13Udo0lNLCWRBUsrMv2xwcF/y/Z5sV6+FQW+/ow68cHpm4sunt8Q==}
-    engines: {node: '>=10'}
+  /fuzzysort@3.0.1:
+    resolution: {integrity: sha512-jpiSrv+j2GwtI13z3vzdBAD5m7iVH23spSZwJrD657dfr6jUV2Jyc5YuSPKirmTp9OqnJbHudPIBGIId1bCWmA==}
     dev: false
 
   /gaxios@6.5.0:
