@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs'
-import { auth, docs as googleDocsAPI, type docs_v1 } from '@googleapis/docs'
-import { drive as googleDriveAPI } from '@googleapis/drive'
+import type { docs_v1 } from '@googleapis/docs'
 import type {
     ItemsParams,
     ItemsResult,
@@ -21,7 +20,10 @@ export type Settings = {
     }
 
     googleOAuthCredentialsFile?: string
-    googleOAuthCredentials?: Credentials
+    googleOAuthCredentials?: Pick<
+        Required<Credentials>,
+        'access_token' | 'expiry_date' | 'refresh_token'
+    >
 }
 
 /**
@@ -30,36 +32,28 @@ export type Settings = {
  */
 const googleDocs: Provider<Settings> = {
     meta(): MetaResult {
-        return { name: 'Google Docs' }
+        return { name: 'Google Docs', features: { mentions: true } }
     },
 
-    async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
+    async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
         if (!params.query) {
             return []
         }
 
-        const oauth2Client = resolveOAuth2Client(settingsInput)
-        const driveAPI = googleDriveAPI({ version: 'v3', auth: oauth2Client })
-
+        const token = await fetchAccessToken(settings)
         const quotedQuery = JSON.stringify(params.query)
-        const files = await driveAPI.files.list({
-            q: `(name contains ${quotedQuery} or fullText contains ${quotedQuery}) and mimeType = 'application/vnd.google-apps.document'`,
-            spaces: 'drive',
-            corpora: 'allDrives',
-            includeItemsFromAllDrives: true,
-            supportsAllDrives: true,
-            fields: 'files(id, name)',
-            pageSize: 25,
-        })
+        const url = `https://www.googleapis.com/drive/v3/files?q=(name contains ${quotedQuery} or fullText contains ${quotedQuery}) and mimeType = 'application/vnd.google-apps.document'&spaces=drive&corpora=allDrives&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id, name)&pageSize=25`
 
-        return (files.data.files ?? []).map(file => ({
+        const files = await fetchWithAuth(url, token)
+
+        return (files.files ?? []).map((file: any) => ({
             title: `📝 ${file.name!}`,
             // TODO(sqs): un-hardcode
             uri: `https://docs.google.com/document/d/${file.id}/edit`,
         }))
     },
 
-    async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
+    async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
         if (!params.mention) {
             return []
         }
@@ -69,14 +63,11 @@ const googleDocs: Provider<Settings> = {
             return []
         }
 
-        const oauth2Client = resolveOAuth2Client(settingsInput)
-        const docsAPI = googleDocsAPI({ version: 'v1', auth: oauth2Client })
+        const token = await fetchAccessToken(settings)
+        const url = `https://docs.googleapis.com/v1/documents/${documentId}?fields=body`
+        const doc = (await fetchWithAuth(url, token)) as docs_v1.Schema$Document
+        const body = doc.body
 
-        const doc = await docsAPI.documents.get({
-            documentId,
-            fields: 'body',
-        })
-        const body = doc.data.body
         return [
             {
                 title: params.mention.title,
@@ -91,23 +82,7 @@ const googleDocs: Provider<Settings> = {
 
 export default googleDocs
 
-function resolveOAuth2Client(settingsInput: Settings) {
-    const settings = resolveSettings(settingsInput)
-
-    const oauth2Client = new auth.OAuth2({
-        clientId: settings.googleOAuthClient?.client_id,
-        clientSecret: settings.googleOAuthClient?.client_secret,
-        redirectUri: settings.googleOAuthClient?.redirect_uris[0],
-    })
-    oauth2Client.setCredentials(settings.googleOAuthCredentials)
-
-    return oauth2Client
-}
-
-interface ResolvedSettings
-    extends Required<Pick<Settings, 'googleOAuthClient' | 'googleOAuthCredentials'>> {}
-
-function resolveSettings(settings: Settings): ResolvedSettings {
+function resolveSettings(settings: Settings): any {
     const googleOAuthClient =
         settings.googleOAuthClient ??
         JSON.parse(
@@ -136,7 +111,56 @@ function resolveSettings(settings: Settings): ResolvedSettings {
     return { ...settings, googleOAuthClient, googleOAuthCredentials }
 }
 
-export function parseDocumentIDFromURL(urlStr: string): string | undefined {
+async function fetchAccessToken(settings: Settings): Promise<string> {
+    let { access_token, expiry_date } = resolveSettings(settings).googleOAuthCredentials
+
+    if (Date.now() < expiry_date) {
+        access_token = await refreshAccessTokenWithFetch(settings)
+        // Hacky access_token update for this module.
+        settings.googleOAuthCredentials!.access_token = access_token
+    }
+
+    return access_token
+}
+
+async function fetchWithAuth(url: string, token: string): Promise<any> {
+    const response = await fetch(url, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+    if (!response.ok) {
+        const errorBody = await response.text()
+        console.error(`Failed to fetch: ${response.status} - ${response.statusText}\n${errorBody}`)
+        throw new Error(`Failed to fetch: ${response.statusText}`)
+    }
+
+    return response.json()
+}
+
+async function refreshAccessTokenWithFetch(settings: Settings): Promise<string> {
+    const response = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            client_id: settings.googleOAuthClient!.client_id,
+            client_secret: settings.googleOAuthClient!.client_secret,
+            refresh_token: settings.googleOAuthCredentials!.refresh_token!,
+            grant_type: 'refresh_token',
+        }),
+    })
+
+    if (!response.ok) {
+        throw new Error('Failed to refresh access token')
+    }
+
+    const data = (await response.json()) as any
+    return data.access_token
+}
+
+function parseDocumentIDFromURL(urlStr: string): string | undefined {
     const url = new URL(urlStr)
     if (url.hostname !== 'docs.google.com') {
         return undefined

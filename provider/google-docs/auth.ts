@@ -2,6 +2,7 @@ import { readFileSync } from 'fs'
 import http from 'http'
 import type { AddressInfo } from 'net'
 import url from 'url'
+import dedent from 'dedent'
 import { OAuth2Client } from 'google-auth-library'
 import open from 'open'
 import destroyer from 'server-destroy'
@@ -17,17 +18,42 @@ const SCOPES = [
 export function getAuthenticatedClient(): Promise<OAuth2Client> {
     return new Promise<OAuth2Client>((resolve, reject) => {
         let serverURL: string | undefined = undefined
+
         const server = http
             .createServer(async (req, res) => {
                 try {
                     if (req.url!.indexOf('/oauth2callback') > -1) {
                         const qs = new url.URL(req.url!, serverURL).searchParams
                         const code = qs.get('code')
-                        res.end('Authentication successful. Please return to the console.')
+
+                        if (!code) {
+                            res.end('Authentication successful. Please return to the console.')
+                            reject('Authentication failed.')
+                            return
+                        }
+
+                        const r = await oauthClient.getToken(code)
+
+                        res.end(dedent`
+                          Authentication successful. Update your provider settings:
+
+                          "https://openctx.org/npm/@openctx/provider-google-docs": {
+                              "googleOAuthClient": {
+                                  "client_id": "${keys.installed.client_id}",
+                                  "client_secret": "${keys.installed.client_secret}",
+                                  "redirect_uris": ["${keys.installed.redirect_uris[0]}"]
+                              },
+                              "googleOAuthCredentials": {
+                                  "refresh_token": "${r.tokens.refresh_token}",
+                                  "access_token": "${r.tokens.access_token}",
+                                  "expiry_date": "${r.tokens.expiry_date}",
+                              }
+                          }
+                        `)
+
                         server.destroy()
 
-                        const r = await oauthClient.getToken(code!)
-                        oauthClient.setCredentials(r.tokens!)
+                        oauthClient.setCredentials(r.tokens)
                         resolve(oauthClient)
                     }
                 } catch (e) {
@@ -40,6 +66,7 @@ export function getAuthenticatedClient(): Promise<OAuth2Client> {
         destroyer(server)
 
         serverURL = `http://localhost:${(server.address() as AddressInfo).port}`
+
         const oauthClient = new OAuth2Client({
             clientId: keys.installed.client_id,
             clientSecret: keys.installed.client_secret,
