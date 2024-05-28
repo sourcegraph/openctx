@@ -9,7 +9,9 @@ Add the following to your settings in any OpenCtx client:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-sentry": true
+    "https://openctx.org/npm/@openctx/provider-sentry": {
+        "apiToken": "SENTRYTOKENHERE"
+    }
 },
 ```
 
