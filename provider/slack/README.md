@@ -27,7 +27,7 @@ To create Slack User Auth token:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-slack-channel-context": {
+    "https://openctx.org/npm/@openctx/provider-slack": {
       "slackAuthToken": "<AUTH_TOKEN>"
     }
 },
