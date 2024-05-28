@@ -38,7 +38,7 @@ const linearIssues: Provider<Settings> = {
     },
 
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
-        if (!params.query) {
+        if (!params.query || params.query.length < 3) {
             return []
         }
 
@@ -52,7 +52,7 @@ const linearIssues: Provider<Settings> = {
                 }
             }
         `
-        const variables = { query: params.query, first: 25 }
+        const variables = { query: params.query, first: 10 }
         const response = await linearApiRequest(query, variables, settingsInput)
         const issues = response.data.issueSearch.nodes as Issue[]
 
