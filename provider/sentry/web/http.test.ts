@@ -1,7 +1,7 @@
 
 import { describe, expect, test } from 'vitest'
 
-import { HTTP } from './http'
+import { HTTP } from './http.js'
 
 
 describe('http adapter', () => {

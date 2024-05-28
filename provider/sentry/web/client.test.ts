@@ -2,8 +2,8 @@
 import 'dotenv/config'
 import { describe, expect, test } from 'vitest'
 
-import { Sentry } from './client'
-import { type Settings } from '../index'
+import { Sentry } from './client.js'
+import type { Settings } from '../index.js'
 
 
 describe('sentry client', () => {
