@@ -65,7 +65,7 @@ export type Findings = Finding[]
 
 export function urlfor(depl: string, repo: string, fnum: number | null = null): string {
     const host = 'https://semgrep.dev'
-    const qs = new URLSearchParams({repo: repo}).toString()
+    const qs = new URLSearchParams({repo:repo}).toString()
     return !fnum ? `${host}/orgs/${depl}/findings?${qs}` :
                    `${host}/orgs/${depl}/findings/${fnum}?${qs}`
 }

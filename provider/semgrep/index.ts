@@ -59,9 +59,9 @@ const semgrep: Provider = {
         const finding: Finding = params.mention.data.finding as Finding
         return !finding ? [] : [{
             title: finding.rule_name,
-            url: urlfor(settings.deployment, settings.repo ?? ''),
             ai: {content: helperText(finding)},
             ui: {hover: {text: finding.rule_name}},
+            url: urlfor(settings.deployment, finding.repository.name, finding.id)
         }]
     },
 
@@ -78,7 +78,7 @@ const semgrep: Provider = {
                 return !findings ? [] : findings.map((f: Finding) => ({
                     title: f.rule_name,
                     data: {finding: f},
-                    uri: params.query ?? urlfor(q.deployment, settings.repo ?? '', q.finding),
+                    uri: urlfor(q.deployment, f.repository.name, f.id)
                 }))
             }
         }
