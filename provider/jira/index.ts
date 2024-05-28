@@ -40,8 +40,9 @@ const jiraProvider: Provider = {
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
         const result = (issue: JiraIssue) => ({
-            title: `${issue.key} ${issue.fields.summary}`,
+            title: `${issue.key}: ${issue.fields.summary}`,
             uri: issue.url,
+            description: issue.fields.description,
             data: {
                 issue: issue,
             },
