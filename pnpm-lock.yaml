@@ -500,9 +500,6 @@ importers:
       fuzzysort:
         specifier: ^3.0.1
         version: 3.0.1
-      lru-cache:
-        specifier: ^10.1.0
-        version: 10.1.0
       node-html-parser:
         specifier: ^6.1.13
         version: 6.1.13
