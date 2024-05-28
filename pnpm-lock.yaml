@@ -604,6 +604,12 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
 
+  provider/sentry:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+
   provider/sourcegraph-search:
     dependencies:
       '@openctx/provider':
