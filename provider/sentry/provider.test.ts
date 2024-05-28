@@ -159,17 +159,15 @@ describe('provider.meta', () => {
     test('returns expected meta result', async () => {
         const metaResult = providerImplementation.meta()
         expect(metaResult).toEqual({
-            selector: [],
             name: 'Sentry issues',
-            features: {
-                mentions: true,
-            },
+            mentions: {},
+            annotations: { selectors: [] },
         })
     })
 
     test('returns empty selector', async () => {
         const metaResult = providerImplementation.meta()
-        expect(metaResult.selector).toHaveLength(0)
+        expect(metaResult.annotations?.selectors).toHaveLength(0)
     })
 
     test('returns correct name', async () => {
@@ -179,7 +177,7 @@ describe('provider.meta', () => {
 
     test('returns correct features', async () => {
         const metaResult = providerImplementation.meta()
-        expect(metaResult.features).toEqual({ mentions: true })
+        expect(metaResult.mentions).toEqual({})
     })
 })
 
