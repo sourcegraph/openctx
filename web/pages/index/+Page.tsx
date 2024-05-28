@@ -57,6 +57,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'Monaco Editor', type: 'client', slug: 'monaco-editor' },
     { name: 'CodeMirror', type: 'client', slug: 'codemirror' },
     { name: 'Storybook', type: 'provider', slug: 'storybook' },
+    { name: 'DevDocs', type: 'provider', slug: 'devdocs' },
     { name: 'Notion', type: 'provider', slug: 'notion' },
     { name: 'Prometheus', type: 'provider', slug: 'prometheus' },
     { name: 'Links', type: 'provider', slug: 'links' },
