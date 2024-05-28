@@ -85,7 +85,13 @@ const sentry: Provider<Settings> = {
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        return []   // TODO: Fetch mentions from sentry platform
+        const client: Sentry = new Sentry(settings)
+        const issues: any = await client.issues(settings.organization, settings.project)
+        return issues?.map(issue => ({
+            uri: issue.permalink,
+            title: issue.title,
+            data: {metadata: issue.metadata}
+        }))
     }
 }
 
