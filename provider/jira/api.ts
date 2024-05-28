@@ -69,8 +69,6 @@ export const fetchRecentIssues = async (settings: Settings): Promise<JiraIssue[]
         )
     }
 
-    console.dir(response.json())
-
     return ((await response.json()) as { issues: IssueJSON[] }).issues.map(issue =>
         jsonToIssue(issue, settings)
     )
