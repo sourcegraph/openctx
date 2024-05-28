@@ -25,5 +25,8 @@
   },
   "dependencies": {
     "@openctx/provider": "workspace:*"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
   }
 }

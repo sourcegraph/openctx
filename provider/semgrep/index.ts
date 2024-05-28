@@ -13,20 +13,21 @@ import type {
 } from '@openctx/provider'
 
 import API from './client.js'
-import type { Finding } from './api.js'
+import type { Finding, Findings } from './api.js'
 
 export type Settings = {
-    deployment: string,     // Deployment slug
+    deployment: string,     // Semgrep deployment slug
     token: string           // Semgrep app token
+    repo?: string           // Semgrep scan repository
 }
 
 
-function parseUri(link: string): {deployment: string, finding: string} | null {
+function parseUri(link: string): {deployment: string, finding: number} | null {
     const url = new URL(link)
     if (url.hostname.includes('semgrep.dev')) {
         try {
             const [d, f] = url.pathname.split('/orgs/')[1].split('/findings/')
-            return {deployment: d, finding: f}
+            return {deployment: d, finding: parseInt(f)}
         } catch (err) {
             return null
         }
@@ -66,15 +67,19 @@ const semgrep: Provider = {
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
         if (params.query) {
-            const q: {deployment: string, finding: string} | null = parseUri(params.query)
+            const q: {deployment: string, finding: number} | null = parseUri(params.query)
             if (q) {
-                const client: API = new API({deployment: q.deployment, token: settings.token})
-                const finding: Finding = await client.get(q.finding) as Finding
-                return !finding ? [] : [{
-                    title: finding.rule_name,
-                    uri: finding.line_of_code_url,
-                    data: {finding: finding}
-                }]
+                const client: API = new API({
+                    repo: settings.repo,
+                    token: settings.token,
+                    deployment: q.deployment
+                })
+                const findings: Findings = await client.findings(q.finding)
+                return !findings ? [] : findings.map((f: Finding) => ({
+                    title: f.rule_name,
+                    uri: f.line_of_code_url,
+                    data: {finding: f}
+                }))
             }
         }
         return []

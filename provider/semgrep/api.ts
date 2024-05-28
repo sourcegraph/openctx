@@ -1,6 +1,6 @@
 
 export type Finding = {
-    id: string,                 // 1234567
+    id: number,                 // 1234567
     ref: string,                // "refs/pull/1234/merge"
     first_seen_scan_id: string, // 1234
     syntactic_id: string,       // "440eeface888e78afceac3dc7d4cc2cf"
@@ -61,4 +61,4 @@ export type Finding = {
     }
 }
 
-export type Findings = Array<Finding>
+export type Findings = Finding[]

@@ -4,45 +4,44 @@ import type { Finding, Findings } from './api.js'
 
 
 export default class API {
-    private abortSig: any
+    private signal: any
     private url: string
+    private repo: string
     private token: string
     private deployment: string
 
     constructor(settings: Settings) {
-        this.abortSig = null
+        this.signal = null
         this.token = settings.token
+        this.repo = settings.repo || ''
         this.deployment = settings.deployment
-        this.url = "https://semgrep.dev/api/v1/"
+        this.url = "https://semgrep.dev/api/v1"
     }
 
     private abort(): any {
-        if (this.abortSig === null) {
+        if (this.signal === null) {
             const abc = new AbortController()
             setTimeout(() => abc.abort(), 5000)
-            this.abortSig = abc.signal
+            this.signal = abc.signal
         }
-        return this.abortSig
+        return this.signal
     }
 
     public headers(): any {
         return {'Authorization': `Bearer ${this.token}`}
     }
 
-    public async findings(): Promise<any> {
-        const res = await fetch(this.url + `/deployments/${this.deployment}/findings`, 
-                                { headers: this.headers(), signal: this.abort() })
+    public async findings(fnum: number | null = null): Promise<Findings> {
+        const url = `${this.url}/deployments/${this.deployment}/findings`
+        const params = {headers: this.headers(), signal: this.abort()}
+        const res = await fetch(url, params)
         if (!res.ok) {
             console.error(`Failed to fetch findings for deployment ${this.deployment}`)
-            return []
+            return [] as Findings
         }
-        return await res.json()
-    }
 
-    public async get(fno: string): Promise<any> {
-        if (fno === null || fno === undefined) {
-            throw Error("Bad Request :: Findings ID not specifiied")
-        }
-        return (await this.findings() as Findings).filter((f: Finding) => (f.id === fno))
+        const all = (await res.json())['findings'] ?? []
+        const repos: Findings = !this.repo ? all : all.filter((f: Finding) => this.repo === f.repository.name)
+        return !fnum ? repos : repos.filter((f: Finding) => f.id === fnum)
     }
 }
