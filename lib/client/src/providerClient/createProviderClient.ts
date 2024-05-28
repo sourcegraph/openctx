@@ -93,8 +93,8 @@ export function createProviderClient(
                 logger?.(`received meta = ${JSON.stringify(meta)}`)
                 match = () => false
 
-                if (meta?.features?.annotations?.implements) {
-                    match = matchSelectors(meta.features?.annotations?.selectors)
+                if (meta?.annotations) {
+                    match = matchSelectors(meta.annotations?.selectors)
                 }
             } catch (error) {
                 logger?.(`failed to get provider meta: ${error}`)

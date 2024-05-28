@@ -7,7 +7,7 @@ describe('googleDocs', () => {
     test('meta', async () => {
         expect(await googleDocs.meta({}, SETTINGS)).toEqual({
             name: 'Google Docs',
-            features: { mentions: { implements: true } },
+            mentions: {},
         })
     })
 })

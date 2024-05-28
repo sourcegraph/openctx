@@ -21,10 +21,8 @@ const sourcegraphSearch: Provider = {
         return {
             // empty since we don't provide any annotations.
             name: 'Sourcegraph Search',
-            features: {
-                mentions: { implements: true },
-                annotations: { implements: true, selectors: [] },
-            },
+            mentions: {},
+            annotations: { selectors: [] },
         }
     },
 

@@ -66,11 +66,8 @@ interface LinkPattern {
 const links: Provider<Settings> = {
     meta(_params: MetaParams, settings: Settings): MetaResult {
         return {
-            features: {
-                annotations: {
-                    implements: true,
-                    selectors: settings.links?.map(({ path }) => ({ path })) || [],
-                },
+            annotations: {
+                selectors: settings.links?.map(({ path }) => ({ path })) || [],
             },
             name: 'Links',
         }

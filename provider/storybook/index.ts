@@ -35,14 +35,11 @@ const storybook: Provider<Settings> = {
             return { name: 'Storybook' }
         }
         return {
-            features: {
-                annotations: {
-                    implements: true,
-                    selectors: [
-                        { path: '**/*.story.(t|j)s?(x)' },
-                        { path: '**/*.(t|j)s(x)', contentContains: 'react' },
-                    ],
-                },
+            annotations: {
+                selectors: [
+                    { path: '**/*.story.(t|j)s?(x)' },
+                    { path: '**/*.(t|j)s(x)', contentContains: 'react' },
+                ],
             },
             name: 'Storybook',
         }

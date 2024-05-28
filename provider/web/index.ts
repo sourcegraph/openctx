@@ -14,10 +14,8 @@ const urlFetcher: Provider = {
     meta(): MetaResult {
         return {
             name: 'Web URLs',
-            features: {
-                mentions: { implements: true },
-                annotations: { implements: true, selectors: [] },
-            },
+            mentions: {},
+            annotations: { selectors: [] },
         }
     },
 

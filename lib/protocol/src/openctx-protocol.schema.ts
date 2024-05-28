@@ -49,35 +49,22 @@ export interface MetaResult {
      */
     name: string
     /**
-     * The features supported by the provider.
+     * Configuration for the mentions feature.
      */
-    features?: {
+    mentions?: {
         /**
-         * Configuration for the mentions feature.
+         * The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.
          */
-        mentions?: {
-            /**
-             * Whether the provider implements the mentions feature
-             */
-            implements?: boolean
-            /**
-             * A list of patterns matching the mention text for which the provider can return mentions
-             */
-            selectors?: MentionSelector[]
-        }
+        selectors?: MentionSelector[]
+    }
+    /**
+     * Configuration for the annotations feature.
+     */
+    annotations?: {
         /**
-         * Configuration for the annotations feature.
+         * A list of patterns matching the mention text for which the provider can return mentions
          */
-        annotations?: {
-            /**
-             * Whether the provider implements the mentions feature
-             */
-            implements?: boolean
-            /**
-             * A list of patterns matching the mention text for which the provider can return mentions
-             */
-            selectors?: AnnotationSelector[]
-        }
+        selectors?: AnnotationSelector[]
     }
 }
 /**

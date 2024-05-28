@@ -38,7 +38,7 @@ const notion: Provider<Settings> = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return {
             name: 'Notion',
-            features: { mentions: { implements: true } },
+            mentions: {},
         }
     },
 

@@ -147,48 +147,33 @@
           "description": "The name of the provider.",
           "type": "string"
         },
-        "features": {
-          "description": "The features supported by the provider.",
+        "mentions": {
+          "description": "Configuration for the mentions feature.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "mentions": {
-              "description": "Configuration for the mentions feature.",
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "implements": {
-                  "description": "Whether the provider implements the mentions feature",
-                  "type": "boolean"
-                },
-                "selectors": {
-                  "description": "A list of patterns matching the mention text for which the provider can return mentions",
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/MentionSelector"
-                  },
-                  "tsType": "MentionSelector[]"
-                }
-              }
-            },
-            "annotations": {
-              "description": "Configuration for the annotations feature.",
-              "type": "object",
-              "additionalProperties": false,
-              "properties": {
-                "implements": {
-                  "description": "Whether the provider implements the mentions feature",
-                  "type": "boolean"
-                },
-                "selectors": {
-                  "description": "A list of patterns matching the mention text for which the provider can return mentions",
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/AnnotationSelector"
-                  },
-                  "tsType": "AnnotationSelector[]"
-                }
-              }
+            "selectors": {
+              "description": "The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/MentionSelector"
+              },
+              "tsType": "MentionSelector[]"
+            }
+          }
+        },
+        "annotations": {
+          "description": "Configuration for the annotations feature.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "selectors": {
+              "description": "A list of patterns matching the mention text for which the provider can return mentions",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AnnotationSelector"
+              },
+              "tsType": "AnnotationSelector[]"
             }
           }
         }

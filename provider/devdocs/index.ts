@@ -32,7 +32,7 @@ const devdocs: Provider<Settings> = {
     meta(): MetaResult {
         return {
             name: 'DevDocs',
-            features: { mentions: { implements: true } },
+            mentions: {},
         }
     },
 
