@@ -16,7 +16,7 @@ export const providerImplementation = {
     meta(): MetaResult {
         return {
             // We don't provide any annotations for now.
-            name: 'Sentry issues',
+            name: 'Sentry Issues',
             mentions: {},
             annotations: {
                 selectors: [],

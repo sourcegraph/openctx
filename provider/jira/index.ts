@@ -35,7 +35,7 @@ const issueToItemContent = (issue: JiraIssue): string => {
 
 const jiraProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
-        return { name: 'Jira', mentions: {} }
+        return { name: 'Jira Issues', mentions: {} }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
