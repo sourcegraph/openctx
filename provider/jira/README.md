@@ -4,7 +4,8 @@
 
 ## Usage
 
-[Create an API token](https://id.atlassian.com/manage-profile/security/api-tokens) and then configure your OpenCtx client to use this provider:
+1. [Create an API token](https://id.atlassian.com/manage-profile/security/api-tokens)
+2. Configure your OpenCtx client
 
 ```json
 "openctx.providers": {
