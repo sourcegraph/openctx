@@ -17,12 +17,13 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Slack 
 
 To create Slack User Auth token:
 
-1. [Create a slack app from scratch from slack api](https://api.slack.com/apps).
-2. Add the following permission in the User Token Scopes.
+1. [Create a slack app for you workspace from scratch from slack api - Click on "Create New App" button.](https://api.slack.com/apps).
+2. Go to the "OAuth & Permissions" tab and add the following permission in the User Token Scopes.
  - `channels:history`
  - `channels:read`
  - `search:read`
-3. Use the following OpenCtx provider configuration:
+3. Click on "Install to workspace" on the  "OAuth & Permissions" page.
+4. Use the following OpenCtx provider configuration:
 
 ```json
 "openctx.providers": {
