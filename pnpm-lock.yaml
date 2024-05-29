@@ -509,6 +509,9 @@ importers:
       '@octokit/core':
         specifier: 5.2.0
         version: 5.2.0
+      '@octokit/openapi-types':
+        specifier: ^22.2.0
+        version: 22.2.0
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
