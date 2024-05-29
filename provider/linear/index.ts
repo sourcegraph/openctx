@@ -222,9 +222,7 @@ const issueSearchQuery = `
 const issueWithCommentsQuery = `
   query IssueWithComment($id: String!) {
     issue(id: $id) {
-      identifier
-      title
-      description
+      ...IssueFragment
       comments {
         nodes {
           body
@@ -232,4 +230,6 @@ const issueWithCommentsQuery = `
       }
     }
   }
+
+  ${issueFragment}
 `
