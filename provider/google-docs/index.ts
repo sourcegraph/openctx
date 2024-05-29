@@ -9,6 +9,7 @@ import type {
     Provider,
 } from '@openctx/provider'
 import type { Credentials } from 'google-auth-library'
+import { parseDocumentIDFromURL } from './utils.js'
 
 /** Settings for the Google Docs OpenCtx provider. */
 export type Settings = {
@@ -26,6 +27,8 @@ export type Settings = {
     >
 }
 
+const NUMBER_OF_DOCUMENTS_TO_FETCH = 10
+
 /**
  * An [OpenCtx](https://openctx.org) provider that brings Google Docs context to code AI and
  * editors.
@@ -36,19 +39,19 @@ const googleDocs: Provider<Settings> = {
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        if (!params.query) {
-            return []
-        }
-
         const token = await fetchAccessToken(settings)
-        const quotedQuery = JSON.stringify(params.query)
-        const url = `https://www.googleapis.com/drive/v3/files?q=(name contains ${quotedQuery} or fullText contains ${quotedQuery}) and mimeType = 'application/vnd.google-apps.document'&spaces=drive&corpora=allDrives&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id, name)&pageSize=25`
+        let url: string
+        if (!params.query) {
+            url = `https://www.googleapis.com/drive/v3/files?q=mimeType='application/vnd.google-apps.document'&orderBy=modifiedTime desc&spaces=drive&corpora=user&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id, name)&pageSize=${NUMBER_OF_DOCUMENTS_TO_FETCH}`
+        } else {
+            const quotedQuery = JSON.stringify(params.query)
+            url = `https://www.googleapis.com/drive/v3/files?q=(name contains ${quotedQuery} or fullText contains ${quotedQuery}) and mimeType = 'application/vnd.google-apps.document'&spaces=drive&corpora=allDrives&includeItemsFromAllDrives=true&supportsAllDrives=true&fields=files(id, name)&pageSize=${NUMBER_OF_DOCUMENTS_TO_FETCH}`
+        }
 
         const files = await fetchWithAuth(url, token)
 
         return (files.files ?? []).map((file: any) => ({
-            title: `📝 ${file.name!}`,
-            // TODO(sqs): un-hardcode
+            title: file.name!,
             uri: `https://docs.google.com/document/d/${file.id}/edit`,
         }))
     },
@@ -114,7 +117,7 @@ function resolveSettings(settings: Settings): any {
 async function fetchAccessToken(settings: Settings): Promise<string> {
     let { access_token, expiry_date } = resolveSettings(settings).googleOAuthCredentials
 
-    if (Date.now() < expiry_date) {
+    if (Date.now() >= expiry_date) {
         access_token = await refreshAccessTokenWithFetch(settings)
         // Hacky access_token update for this module.
         settings.googleOAuthCredentials!.access_token = access_token
@@ -158,15 +161,6 @@ async function refreshAccessTokenWithFetch(settings: Settings): Promise<string> 
 
     const data = (await response.json()) as any
     return data.access_token
-}
-
-function parseDocumentIDFromURL(urlStr: string): string | undefined {
-    const url = new URL(urlStr)
-    if (url.hostname !== 'docs.google.com') {
-        return undefined
-    }
-    const match = url.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)
-    return match ? match[1] : undefined
 }
 
 function convertGoogleDocsBodyToText(body: docs_v1.Schema$Body): string {

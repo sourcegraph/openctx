@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
-import googleDocs, { parseDocumentIDFromURL, type Settings } from './index.js'
+import googleDocs, { type Settings } from './index.js'
+import { parseDocumentIDFromURL } from './utils.js'
 
-// TODO: fix multiple exports from the index.ts file caused by the ESM to CommonJS conversion
 describe('googleDocs', () => {
     const SETTINGS: Settings = {}
 
