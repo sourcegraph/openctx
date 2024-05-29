@@ -4,9 +4,11 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Google
 
 **Status:** experimental
 
-> NOTE: Currently only works in development mode due to JavaScript bundling issues.
+## Configuration for Sourcegraph teammates
 
-## Configuration
+1. Find "OpenCtx Google Docs provider config" in 1Password and follow instructions from there.
+
+## Configuration outside of Sourcegraph
 
 To create Google Drive/Docs API credentials:
 
@@ -15,7 +17,6 @@ To create Google Drive/Docs API credentials:
 1. [Create a new OAuth client ID](https://console.cloud.google.com/apis/credentials/oauthclient) (select "Desktop app" as the application type)
 1. Save the credentials JSON file (`client_secret_xxx.apps.googleusercontent.json`)
 1. Obtain an access token for your Google Drive user account: run `GOOGLE_OAUTH_CLIENT_FILE=path/to/client_secret_xxx.apps.googleusercontent.json pnpm run google-auth` and continue in your web browser
-1. Save the printed JSON user credentials of the form `{"access_token": "xxx"}` to a file
 
 Then use the following OpenCtx provider configuration:
 
@@ -23,8 +24,16 @@ Then use the following OpenCtx provider configuration:
 "openctx.providers": {
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-google-docs": {
-        "googleOAuthClientFile": "path/to/client_secret_xxx.apps.googleusercontent.json",
-        "googleOAuthCredentialsFile": "path/to/user-credentials.json"
+        "googleOAuthClient": {
+            "client_id": "XXX",
+            "client_secret": "XXX",
+            "redirect_uris": ["http://localhost"]
+        },
+        "googleOAuthCredentials": {
+            "refresh_token": "XXX",
+            "access_token": "XXX",
+            "expiry_date": "XXX",
+        }
     }
 },
 ```

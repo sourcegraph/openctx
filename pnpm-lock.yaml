@@ -531,6 +531,9 @@ importers:
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
+      dedent:
+        specifier: ^1.5.3
+        version: 1.5.3
       google-auth-library:
         specifier: ^9.6.3
         version: 9.9.0

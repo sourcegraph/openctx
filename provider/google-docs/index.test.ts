@@ -1,8 +1,20 @@
 import { describe, expect, test } from 'vitest'
-import googleDocs, { parseDocumentIDFromURL, type Settings } from './index.js'
+import googleDocs, { type Settings } from './index.js'
+import { parseDocumentIDFromURL } from './utils.js'
 
 describe('googleDocs', () => {
-    const SETTINGS: Settings = {}
+    const SETTINGS: Settings = {
+        googleOAuthClient: {
+            client_id: 'abc123',
+            client_secret: 'def456',
+            redirect_uris: ['https://example.com/oauth2/callback'],
+        },
+        googleOAuthCredentials: {
+            access_token: 'ghi789',
+            expiry_date: '2022-01-01',
+            refresh_token: '<PASSWORD>',
+        },
+    }
 
     test('meta', async () => {
         expect(await googleDocs.meta({}, SETTINGS)).toEqual({
