@@ -16,10 +16,30 @@ Add the following to your settings in any OpenCtx client:
 },
 ```
 
+### Usage with GitHub enterprise
+
+Add the URL of your GitHub enterprise instance to the configuration as well to point the openctx provider at that:
+
+```json
+"openctx.providers": {
+    // ...other providers...
+    "https://openctx.org/npm/@openctx/provider-github": {
+        // create an access token from here: https://github.com/settings/tokens/new?scopes=repo
+        "accessToken": "<your-access-token>",
+        "gheURL": "https://ghe.example.com"
+    }
+},
+```
+
 Then use the `@`-mention type **Github PRs & Issues** and search for issues or pull requests to include in context using the followining possible query examples:
 
-- issue:sourcegraph/cody/123
-- pr:sourcegraph/cody/456
+- <https://github.com/sourcegraph/sourcegraph/issues/1234>
+- <https://github.com/sourcegraph/sourcegraph/pull/1234>
+- <https://ghe.example.com/sourcegraph/sourcegraph/pull/1234>
+- github.com/sourcegraph/sourcegraph/issues/1234
+- ghe.example.com/sourcegraph/sourcegraph/issues/1234
+- sourcegraph/sourcegraph/issues/1234
+- sourcegraph/sourcegraph:1234
 
 ## Development
 
