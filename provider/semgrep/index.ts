@@ -51,7 +51,7 @@ function helperText(finding: Finding): string {
 
 const semgrep: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
-        return {name: 'Semgrep', features: { mentions: true }}
+        return {name: 'Semgrep', annotations: {}, mentions: {}}
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
