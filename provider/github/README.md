@@ -16,9 +16,9 @@ Add the following to your settings in any OpenCtx client:
 },
 ```
 
-### Usage with GitHub enterprise
+### Usage with other GitHub instances
 
-Add the URL of your GitHub enterprise instance to the configuration as well to point the openctx provider at that:
+By default, this provider talks to GitHub.com. Add the URL to your GitHub Enterprise Server or GitHub AE instance to the configuration to point this openctx provider at that:
 
 ```json
 "openctx.providers": {
@@ -26,7 +26,7 @@ Add the URL of your GitHub enterprise instance to the configuration as well to p
     "https://openctx.org/npm/@openctx/provider-github": {
         // create an access token from here: https://github.com/settings/tokens/new?scopes=repo
         "accessToken": "<your-access-token>",
-        "gheURL": "https://ghe.example.com"
+        "baseURL": "https://ghe.example.com"
     }
 },
 ```

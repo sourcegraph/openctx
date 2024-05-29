@@ -30,7 +30,7 @@ export const githubProvider: Provider<Settings> = {
 
         const githubClient = new GithubClient({
             accessToken: settings.accessToken,
-            baseURL: settings.gheURL,
+            baseURL: settings.baseURL,
         })
 
         const [issue, pr] = await Promise.all([
@@ -66,7 +66,7 @@ export const githubProvider: Provider<Settings> = {
 
         const githubClient = new GithubClient({
             accessToken: settings.accessToken,
-            baseURL: settings.gheURL,
+            baseURL: settings.baseURL,
         })
 
         if (mention.data.pr) {
