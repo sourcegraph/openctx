@@ -1,6 +1,6 @@
-# Linear context provider for OpenCtx
+# Linear Issues context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that brings Linear context to code AI and editors. Only items, not annotations, are supported.
+This is a context provider for [OpenCtx](https://openctx.org) that brings Linear Issues context to code AI and editors. Only items, not annotations, are supported.
 
 **Status:** Experimental
 
@@ -12,7 +12,7 @@ This is a context provider for [OpenCtx](https://openctx.org) that brings Linear
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-linear": {
+    "https://openctx.org/npm/@openctx/provider-linear-issues": {
         "accessToken": "YOUR_ACCESS_TOKEN",
     }
 },
@@ -32,7 +32,7 @@ Then use the following OpenCtx provider configuration:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-linear": {
+    "https://openctx.org/npm/@openctx/provider-linear-issues": {
         "userCredentialsPath": "path/to/access_token_file_printed.json",
     }
 },
@@ -40,6 +40,6 @@ Then use the following OpenCtx provider configuration:
 
 ## Development
 
-- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/linear)
-- [Docs](https://openctx.org/docs/providers/linear)
+- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/linear-issues)
+- [Docs](https://openctx.org/docs/providers/linear-issues)
 - License: Apache 2.0

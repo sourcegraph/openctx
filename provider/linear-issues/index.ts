@@ -12,7 +12,7 @@ import { XMLBuilder } from 'fast-xml-parser'
 
 import type { UserCredentials } from './auth.js'
 
-/** Settings for the Linear OpenCtx provider. */
+/** Settings for the Linear Issues OpenCtx provider. */
 export type Settings = {
     userCredentialsPath?: string
     accessToken?: string

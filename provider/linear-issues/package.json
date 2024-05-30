@@ -1,20 +1,17 @@
 {
-  "name": "@openctx/provider-linear",
-  "version": "0.0.5",
-  "description": "Linear context for code AI and editors (OpenCtx provider)",
+  "name": "@openctx/provider-linear-issues",
+  "version": "0.0.1",
+  "description": "Linear Issues context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/linear"
+    "directory": "provider/linear-issues"
   },
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/bundle.js",
-    "dist/index.d.ts"
-  ],
+  "files": ["dist/bundle.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
