@@ -61,7 +61,7 @@ export function getAuthenticatedClient(): Promise<OAuth2Client> {
                 }
             })
             .listen(0, () => {
-                console.log("opening " + authorizeURL)
+                console.log('opening ' + authorizeURL)
                 open(authorizeURL, { wait: false }).then(cp => cp.unref())
             })
         destroyer(server)
