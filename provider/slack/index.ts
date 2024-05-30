@@ -6,7 +6,10 @@ import type {
     MetaResult,
 } from '@openctx/provider'
 import { WebClient } from '@slack/web-api'
+import type { MessageElement } from '@slack/web-api/dist/types/response/ConversationsHistoryResponse.js'
 import type { Match } from '@slack/web-api/dist/types/response/SearchFilesResponse.js'
+import dedent from 'dedent'
+import { XMLBuilder } from 'fast-xml-parser'
 
 interface ChannelInfo {
     name: string
@@ -17,6 +20,8 @@ interface ChannelInfo {
 export type Settings = {
     slackAuthToken: string
 }
+
+const xmlBuilder = new XMLBuilder({ format: true })
 
 function getSlackClient(settingsInput: Settings) {
     if (settingsInput.slackAuthToken) {
@@ -49,16 +54,46 @@ async function listAllChannels(client: WebClient): Promise<ChannelInfo[]> {
     return allChannels
 }
 
+function getMessageInformation(message: MessageElement) {
+    const relatedInformation: string[] = []
+
+    if (message.attachments) {
+        for (const attachmentInfo of message.attachments) {
+            const fileXML = xmlBuilder.build({
+                relatedInfo: attachmentInfo.text || '',
+            })
+            relatedInformation.push(fileXML)
+        }
+    }
+
+    if (message.files) {
+        for (const attachmentInfo of message.files) {
+            const fileXML = xmlBuilder.build({
+                relatedInfo: attachmentInfo.title || '',
+            })
+            relatedInformation.push(fileXML)
+        }
+    }
+
+    const allRelatedInformation = relatedInformation.join('\n')
+    const messageInfo = xmlBuilder.build({
+        message: message.text || '',
+        allRelatedInformation: allRelatedInformation,
+    })
+    return messageInfo
+}
+
 async function fetchThreadMessages(
     client: WebClient,
     channelId: string,
     threadTs: string
 ): Promise<string | null> {
-    const allMessages = []
+    const allMessages: MessageElement[] = []
     try {
         let response = await client.conversations.replies({ channel: channelId, ts: threadTs })
-        let messages = response.messages as any[]
-        allMessages.push(...messages)
+        if (response.messages) {
+            allMessages.push(...response.messages)
+        }
         while (response.has_more) {
             const nextCursor = response.response_metadata?.next_cursor
             response = await client.conversations.replies({
@@ -66,16 +101,39 @@ async function fetchThreadMessages(
                 ts: threadTs,
                 cursor: nextCursor,
             })
-            messages = response.messages as any[]
-            allMessages.push(...messages)
+            if (response.messages) {
+                allMessages.push(...response.messages)
+            }
         }
-        return allMessages?.map(msg => msg.text).join('\n\n')
+        return allMessages?.map(msg => getMessageInformation(msg)).join('\n\n')
     } catch (error) {
         return null
     }
 }
 
-// Function to search messages across
+function extractThreadTs(permalink: string | undefined): string | null {
+    if (!permalink) {
+        return null
+    }
+    const url = new URL(permalink)
+    const queryParams = new URLSearchParams(url.search)
+    const threadTs = queryParams.get('thread_ts')
+    return threadTs
+}
+
+function extractChannelId(slackUrl: string | undefined): string | null {
+    if (!slackUrl) {
+        return null
+    }
+    const pattern = /archives\/([A-Z0-9]+)\//
+    const match = slackUrl.match(pattern)
+    if (match) {
+        return match[1]
+    }
+    return null
+}
+
+// Function to search messages using slack api
 async function searchQuery(
     client: WebClient,
     query: string,
@@ -89,35 +147,66 @@ async function searchQuery(
     }
 }
 
+async function getContextFromSlackSearchApi(
+    client: WebClient,
+    channelId: string | undefined,
+    query: string,
+    channelLimit = 50,
+    workspaceLimit = 50
+) {
+    if (channelId) {
+        const [channelSearchResults, workspaceSearchResults] = await Promise.all([
+            searchQuery(client, `in:<#${channelId}> ${query}`, channelLimit),
+            searchQuery(client, query, workspaceLimit),
+        ])
+        const searchResults = [...(channelSearchResults || []), ...(workspaceSearchResults || [])]
+        return searchResults
+    }
+    const [searchResults] = await Promise.all([searchQuery(client, query, workspaceLimit)])
+    return searchResults
+}
+
 async function searchContextCandidates(
     client: WebClient,
-    channelId: string,
-    query: string
+    channelId: string | undefined,
+    query: string,
+    channelLimit = 10,
+    workspaceLimit = 2
 ): Promise<ItemsResult> {
-    const channelLimit = 5
-    const workspaceLimit = 5
-
-    const [channelSearchResults, workspaceSearchResults] = await Promise.all([
-        searchQuery(client, `in:<#${channelId}> ${query}`, channelLimit),
-        searchQuery(client, query, workspaceLimit),
-    ])
-    const searchResults = [...(channelSearchResults || []), ...(workspaceSearchResults || [])]
+    const searchResults = await getContextFromSlackSearchApi(
+        client,
+        channelId,
+        query,
+        channelLimit,
+        workspaceLimit
+    )
     if (!searchResults) {
         return []
     }
-    const NUM_SEARCH_RESULTS = 10
-    if (searchResults.length > NUM_SEARCH_RESULTS) {
-        searchResults.splice(NUM_SEARCH_RESULTS)
-    }
+
     const allPromises = searchResults.map(async searchResult => {
-        const threadTs = (searchResult as any).ts as string
-        const link = searchResult.permalink as string
+        const link = searchResult.permalink
+        const threadTs = extractThreadTs(link)
+        const threadChannelId = extractChannelId(link)
+        if (!threadTs || !threadChannelId) {
+            return undefined
+        }
 
-        const threadMessage = await fetchThreadMessages(client, channelId, threadTs)
-        const allMessages = `
-            Here is a conversation that may contain useful information for answering the user query. Please incorporate context from the conversation only if it is directly relevant and provides sufficient information to address the question. If the conversation is not relevant or lacks enough information, please disregard it.    
+        const threadMessage = await fetchThreadMessages(client, threadChannelId, threadTs)
+        // Basic checks to ensure some minimum conversation in the thread
+        if (!threadMessage || threadMessage?.trim().length < 300) {
+            return undefined
+        }
 
-            ${threadMessage}
+        const slackInfo = xmlBuilder.build({
+            timeStamp: threadTs,
+            conversation: threadMessage,
+        })
+
+        const allMessages = dedent`
+            Here is a slack conversation that matches the search query of the user and can provide the relevant context for answering the question.
+
+            ${slackInfo}
         `
         if (allMessages) {
             return {
@@ -140,9 +229,12 @@ async function searchContextCandidates(
 
 async function recentThreadsContextCandidates(
     client: WebClient,
-    channelId: string
+    channelId: string | undefined,
+    limit = 10
 ): Promise<ItemsResult> {
-    const limit = 5
+    if (!channelId) {
+        return []
+    }
     const conversations = await client.conversations.history({
         channel: channelId,
         limit,
@@ -152,20 +244,29 @@ async function recentThreadsContextCandidates(
 
     const allPromises = messages.map(async msg => {
         const threadTs = msg.ts
-
         if (threadTs === undefined) {
             return undefined
         }
         const threadConversation = await fetchThreadMessages(client, channelId, threadTs)
-        const allMessages = `
-            Here is a recent conversation that may contain useful information for answering the user query. Please incorporate context from the conversation only if it is directly relevant and provides sufficient information to address the question. If the conversation is not relevant or lacks enough information, please disregard it.    
+        // Basic checks to ensure some minimum conversation in the thread
+        if (!threadConversation || threadConversation?.trim().length < 300) {
+            return undefined
+        }
 
-            ${threadConversation}
+        const slackInfo = xmlBuilder.build({
+            timeStamp: msg.ts,
+            conversation: threadConversation,
+        })
+        const allMessages = dedent`
+            Here is a slack conversation that contains the recent conversation between the users and can help you provide context for answering the question.
+
+            ${slackInfo}
         `
+
         if (allMessages) {
             return {
                 url: `https://slack.com/archives/${channelId}/p${threadTs}`,
-                title: allMessages,
+                title: channelId,
                 ai: { content: allMessages },
             }
         }
@@ -224,6 +325,7 @@ const slackContext = {
                 uri: channel.url,
                 data: {
                     channelId: channel.id,
+                    channelName: channel.name,
                 },
             })
         }
@@ -232,19 +334,16 @@ const slackContext = {
 
     async items(params: ItemsParams, settingsInput: Settings): Promise<ItemsResult> {
         const client = getSlackClient(settingsInput)
-
         const channelId = params.mention?.data?.channelId as string
-        if (channelId === undefined || channelId === null) {
-            return []
-        }
+
         let message = params.message || ''
         const mentionUrl = `@openctx:${params.mention?.uri}` || ''
         if (message.startsWith(mentionUrl)) {
             message = message.slice(mentionUrl.length)
         }
         const [searchContext, recentContext] = await Promise.all([
-            searchContextCandidates(client, channelId, message),
             recentThreadsContextCandidates(client, channelId),
+            searchContextCandidates(client, channelId, message),
         ])
         const allContext = [...searchContext, ...recentContext]
         return allContext

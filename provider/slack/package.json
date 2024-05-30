@@ -25,6 +25,8 @@
   "dependencies": {
     "@slack/web-api": "^7.0.4",
     "@slack/bolt": "^3.18.0",
+    "dedent": "^1.5.3",
+    "fast-xml-parser": "^4.4.0",
     "@openctx/provider": "workspace:*",
     "open": "^10.0.4",
     "server-destroy": "^1.0.1"

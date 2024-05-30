@@ -626,6 +626,12 @@ importers:
       '@slack/web-api':
         specifier: ^7.0.4
         version: 7.0.4
+      dedent:
+        specifier: ^1.5.3
+        version: 1.5.3
+      fast-xml-parser:
+        specifier: ^4.4.0
+        version: 4.4.0
       open:
         specifier: ^10.0.4
         version: 10.1.0
