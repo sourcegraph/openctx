@@ -59,6 +59,6 @@ describe('Semgrep provider', () => {
         const mx = async () => {
             mentions = semgrep.mentions ? await semgrep.mentions(p, SETTINGS) : []
         }
-        expect(mentions).toThrow(TypeError)
+        expect(mx).rejects.toThrow(TypeError)
     })
 })
