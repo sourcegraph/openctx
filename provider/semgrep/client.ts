@@ -1,7 +1,5 @@
-
-import type { Settings } from './index.js';
 import type { Finding, Findings } from './api.js'
-
+import type { Settings } from './index.js'
 
 export default class API {
     private signal: any
@@ -15,7 +13,7 @@ export default class API {
         this.token = settings.token
         this.repo = settings.repo || ''
         this.deployment = settings.deployment
-        this.url = "https://semgrep.dev/api/v1"
+        this.url = 'https://semgrep.dev/api/v1'
     }
 
     private abort(): any {
@@ -28,20 +26,22 @@ export default class API {
     }
 
     public headers(): any {
-        return {'Authorization': `Bearer ${this.token}`}
+        return { Authorization: `Bearer ${this.token}` }
     }
 
     public async findings(fnum: number | null = null): Promise<Findings> {
         const url = `${this.url}/deployments/${this.deployment}/findings`
-        const params = {headers: this.headers(), signal: this.abort()}
+        const params = { headers: this.headers(), signal: this.abort() }
         const res = await fetch(url, params)
         if (!res.ok) {
             console.error(`Failed to fetch findings for deployment ${this.deployment}`)
             return [] as Findings
         }
 
-        const all = (await res.json())['findings'] ?? []
-        const repos: Findings = !this.repo ? all : all.filter((f: Finding) => this.repo === f.repository.name)
+        const all = (await res.json()).findings ?? []
+        const repos: Findings = !this.repo
+            ? all
+            : all.filter((f: Finding) => this.repo === f.repository.name)
         return !fnum ? repos : repos.filter((f: Finding) => f.id === fnum)
     }
 }
