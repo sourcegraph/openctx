@@ -95,25 +95,12 @@ const devdocs: Provider<Settings> = {
             ]
         }
 
-        const root = parse(content)
-
-        let last = root.querySelector(hash)!
-        const nodes = [last]
-        while (true) {
-            const next = last.nextElementSibling
-            if (!next || next.rawTagName === 'h2') {
-                break
-            }
-            last = next
-            nodes.push(last)
-        }
-
         return [
             {
                 title: mention.title,
                 url: mention.uri,
                 ai: {
-                    content: nodes.map(node => node.toString()).join(''),
+                    content: extractHashContent(content, hash),
                 },
             },
         ]
@@ -149,6 +136,23 @@ async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
             entries: entries,
         }
     })
+}
+
+function extractHashContent(content: string, hash: string): string {
+    const root = parse(content)
+
+    let last = root.querySelector(hash)!
+    const nodes = [last]
+    while (true) {
+        const next = last.nextElementSibling
+        if (!next || next.rawTagName === 'h2') {
+            break
+        }
+        last = next
+        nodes.push(last)
+    }
+
+    return nodes.map(node => node.toString()).join('')
 }
 
 export default devdocs
