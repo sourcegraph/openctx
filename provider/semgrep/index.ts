@@ -52,7 +52,7 @@ const semgrep: Provider = {
         return { name: 'Semgrep', annotations: {}, mentions: {} }
     },
 
-    async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
+    items(params: ItemsParams, settings: Settings): ItemsResult {
         if (params.mention?.data?.finding === undefined) return []
         const finding: Finding = params.mention.data.finding as Finding
         return !finding
