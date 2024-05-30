@@ -224,6 +224,7 @@ async function searchContextCandidates(
             allSlackContext.push(message)
         }
     }
+    allSlackContext.reverse()
     return allSlackContext
 }
 
@@ -341,11 +342,11 @@ const slackContext = {
         if (message.startsWith(mentionUrl)) {
             message = message.slice(mentionUrl.length)
         }
-        const [searchContext, recentContext] = await Promise.all([
+        const [recentContext, searchContext ] = await Promise.all([
             recentThreadsContextCandidates(client, channelId),
             searchContextCandidates(client, channelId, message),
         ])
-        const allContext = [...searchContext, ...recentContext]
+        const allContext = [...recentContext, ...searchContext]
         return allContext
     },
 }
