@@ -141,11 +141,26 @@ async function getMentionIndex(devdocsURL: string): Promise<MentionIndex> {
 function extractHashContent(content: string, hash: string): string {
     const root = parse(content)
 
-    let last = root.querySelector(hash)!
+    const first = root.querySelector(hash)
+    if (!first) {
+        // If the anchor is missing just return the full document
+        return content
+    }
+
+    // From manual testing first.tagName should be "H2" and we stop at the next
+    // "H2". However, I haven't exhaustively tested this so conservatively we
+    // stop at any more important header or the same tagName.
+    const stopTags = [first.tagName]
+    const headerNum = first.tagName.startsWith('H') ? parseInt(first.tagName.slice(1)) : 0
+    for (let i = 1; i < headerNum; i++) {
+        stopTags.push(`H${i}`)
+    }
+
+    let last = first
     const nodes = [last]
     while (true) {
         const next = last.nextElementSibling
-        if (!next || next.rawTagName === 'h2') {
+        if (!next || stopTags.includes(next.tagName)) {
             break
         }
         last = next
