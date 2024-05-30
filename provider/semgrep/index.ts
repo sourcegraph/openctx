@@ -35,7 +35,7 @@ function parseUri(link: string): {deployment: string, finding: number} | null {
     return null
 }
 
-function helperText(finding: Finding): string {
+function aiPrompt(finding: Finding): string {
     return [
         finding.rule_name ?? '',
         finding.rule_message ?? '',
@@ -59,7 +59,7 @@ const semgrep: Provider = {
         const finding: Finding = params.mention.data.finding as Finding
         return !finding ? [] : [{
             title: finding.rule_name,
-            ai: {content: helperText(finding)},
+            ai: {content: aiPrompt(finding)},
             ui: {hover: {text: finding.rule_name}},
             url: urlfor(settings.deployment, finding.repository.name, finding.id)
         }]
