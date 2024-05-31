@@ -23,6 +23,12 @@ $ openctx items https://example.com
    - ai.content: (575 characters)
 ```
 
+`OPENCTX_CONFIG` can be one of:
+- JSON object of config
+- Path to JSON config
+- Provider URI
+- Path to provider bundle
+
 ## Known issues
 
 - Using providers from JavaScript bundles fetched over HTTPS requires [Node 22](https://nodejs.org/api/esm.html#https-and-http-imports) and running with the `node --experimental-modules --experimental-network-imports` option. These experimental flags are set in the `openctx` CLI when it invokes `node`, so you *should* not need to manually pass these.
