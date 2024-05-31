@@ -25,8 +25,16 @@ export default class API {
         return this.signal
     }
 
-    public headers(): any {
+    private headers(): any {
         return { Authorization: `Bearer ${this.token}` }
+    }
+
+    public settings(): Settings {
+        return {
+            repo: this.repo,
+            token: this.token,
+            deployment: this.deployment
+        }
     }
 
     public async findings(fnum: number | null = null): Promise<Findings> {
@@ -38,7 +46,7 @@ export default class API {
             return [] as Findings
         }
 
-        const all = (await res.json()).findings ?? []
+        const all: Findings = (await res.json()).findings ?? []
         const repos: Findings = !this.repo
             ? all
             : all.filter((f: Finding) => this.repo === f.repository.name)
