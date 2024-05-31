@@ -33,7 +33,7 @@ export default class API {
         return {
             repo: this.repo,
             token: this.token,
-            deployment: this.deployment
+            deployment: this.deployment,
         }
     }
 
