@@ -5,6 +5,7 @@ import { pathToFileURL } from 'url'
 import {
     type Client,
     type ClientConfiguration,
+    type Item,
     type Mention,
     type Range,
     createClient,
@@ -19,6 +20,7 @@ function usageFatal(message: string): never {
         'meta [providerUri]',
         'mentions <query> [providerUri]',
         'items <message> [providerUri] [mentionJSON]',
+        'mention-items <query> [mentionIndex] [providerUri]',
     ]
     for (const subcommand of subcommands) {
         console.error(`    ${subcommand}`)
@@ -33,7 +35,19 @@ async function subcommandMeta(client: Client<Range>, args: string[]): Promise<vo
     const [providerUri] = args
     const meta = await client.meta({}, providerUri)
 
-    console.log(JSON.stringify(meta))
+    if (process.env.OUTPUT_JSON) {
+        console.log(JSON.stringify(meta, null, 2))
+    } else {
+        for (const [i, item] of meta.entries()) {
+            console.log(`#${i + 1} ${item.name}`)
+            if (item.mentions) {
+                console.log(`    - mentions ${JSON.stringify(item.mentions)}`)
+            }
+            if (item.annotations) {
+                console.log(`    - annotations ${JSON.stringify(item.annotations)}`)
+            }
+        }
+    }
 }
 
 async function subcommandMentions(client: Client<Range>, args: string[]): Promise<void> {
@@ -68,7 +82,22 @@ async function subcommandItems(client: Client<Range>, args: string[]): Promise<v
     }
 
     const items = await client.items({ message, mention }, providerUri)
+    printItems(items)
+}
 
+async function subcommandMentionItems(client: Client<Range>, args: string[]): Promise<void> {
+    if (args.length === 0 || args.length > 3) {
+        usageFatal('Error: invalid args')
+    }
+    const [query, itemIndex, providerUri] = args
+
+    const mentions = await client.mentions({ query }, providerUri)
+    const mention = mentions[parseInt(itemIndex ?? 0)]
+    const items = await client.items({ mention }, mention.providerUri)
+    printItems(items)
+}
+
+function printItems(items: Item[]): void {
     if (process.env.OUTPUT_JSON) {
         console.log(JSON.stringify(items, null, 2))
     } else {
@@ -151,6 +180,11 @@ switch (subcommand) {
     case 'items':
         await subcommandItems(client, args)
         break
+    case 'mention-items':
+        await subcommandMentionItems(client, args)
+        break
     default:
         usageFatal(`Error: unrecognized subcommand ${JSON.stringify(subcommand)}`)
 }
+
+process.exit(0)
