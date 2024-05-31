@@ -33,7 +33,19 @@ async function subcommandMeta(client: Client<Range>, args: string[]): Promise<vo
     const [providerUri] = args
     const meta = await client.meta({}, providerUri)
 
-    console.log(JSON.stringify(meta))
+    if (process.env.OUTPUT_JSON) {
+        console.log(JSON.stringify(meta, null, 2))
+    } else {
+        for (const [i, item] of meta.entries()) {
+            console.log(`#${i + 1} ${item.name}`)
+            if (item.mentions) {
+                console.log(`    - mentions ${JSON.stringify(item.mentions)}`)
+            }
+            if (item.annotations) {
+                console.log(`    - annotations ${JSON.stringify(item.annotations)}`)
+            }
+        }
+    }
 }
 
 async function subcommandMentions(client: Client<Range>, args: string[]): Promise<void> {
