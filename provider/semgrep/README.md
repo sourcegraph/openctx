@@ -1,4 +1,4 @@
-# Hello World context provider for OpenCtx
+# Semgrep context provider for OpenCtx
 
 This is a sample context provider for [OpenCtx](https://openctx.org) that fetches the contents of a Semgrep finding from a given URL.
 
