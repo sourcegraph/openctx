@@ -1,5 +1,7 @@
 #!/usr/bin/env -S node --experimental-modules --experimental-network-imports --no-warnings
+import { readFileSync } from 'fs'
 import path from 'path'
+import { pathToFileURL } from 'url'
 import {
     type Client,
     type ClientConfiguration,
@@ -94,16 +96,40 @@ function truncate(text: string, maxLength: number): string {
     return text
 }
 
-const configStr = process.env.OPENCTX_CONFIG
-if (!configStr) {
-    usageFatal('Error: no config specified in OPENCTX_CONFIG env var')
+function defaultProviderConfig(providerURI: string): ClientConfiguration {
+    const providers: Record<string, boolean> = {}
+    providers[providerURI] = true
+    return {
+        enable: true,
+        debug: true,
+        providers,
+    }
+}
+
+function loadConfig(): ClientConfiguration {
+    const configEnv = process.env.OPENCTX_CONFIG ?? 'config.json'
+    // Raw config in environment variable
+    if (configEnv.startsWith('{')) {
+        return JSON.parse(configEnv)
+    }
+    // A URL to a provider
+    if (configEnv.startsWith('http') || configEnv.startsWith('file')) {
+        return defaultProviderConfig(configEnv)
+    }
+    // A path to a bundle
+    if (configEnv.endsWith('.js')) {
+        return defaultProviderConfig(pathToFileURL(configEnv).toString())
+    }
+    return JSON.parse(readFileSync(configEnv, 'utf-8'))
 }
 
 let config: ClientConfiguration
 try {
-    config = JSON.parse(configStr)
+    config = loadConfig()
 } catch (e) {
-    usageFatal('Error: invalid config JSON (from OPENCTX_CONFIG env var)')
+    usageFatal(
+        'Error: invalid OPENCTX_CONFIG env var. Must be one of:\n- JSON object of config\n- Path to JSON config\n- Provider URI\n- Path to provider bundle'
+    )
 }
 
 const client = createClient({
