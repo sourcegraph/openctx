@@ -12,10 +12,12 @@ Add the following to your settings in any OpenCtx client:
     "https://openctx.org/npm/@openctx/provider-semgrep": {
         "deployment": "Semgrep deployment",
         "repo": "Semgrep repository or project filter",
-        "token": "Your <SEMGREP_APP_TOKEN>"",
+        "token": "Your <SEMGREP_APP_TOKEN>",
     }
 },
 ```
+
+You can create and download a `SEMGREP_APP_TOKEN` from <https://semgrep.dev/orgs/-/settings/tokens> under the "API tokens" tab menu option.
 
 ## Development
 
