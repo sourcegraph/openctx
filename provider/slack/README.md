@@ -13,6 +13,7 @@ To create Slack User Auth token:
  - `channels:history`
  - `channels:read`
  - `search:read`
+ - `users:read`
 3. Click on "Install to workspace".
 4. Copy the "User OAuth Token" and use it as the `slackAuthToken` in the OpenCtx provider configuration.
 5. Use the following OpenCtx provider configuration:
