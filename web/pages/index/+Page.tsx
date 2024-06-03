@@ -60,6 +60,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'DevDocs', type: 'provider', slug: 'devdocs' },
     { name: 'Jira', type: 'provider', slug: 'jira' },
     { name: 'Linear Issues', type: 'provider', slug: 'linear-issues' },
+    { name: 'Slack', type: 'provider', slug: 'slack' },
     { name: 'Google Docs', type: 'provider', slug: 'google-docs' },
     { name: 'Notion', type: 'provider', slug: 'notion' },
     { name: 'Prometheus', type: 'provider', slug: 'prometheus' },

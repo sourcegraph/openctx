@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-slack",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Slack context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -25,6 +25,8 @@
   "dependencies": {
     "@slack/web-api": "^7.0.4",
     "@slack/bolt": "^3.18.0",
+    "dedent": "^1.5.3",
+    "fast-xml-parser": "^4.4.0",
     "@openctx/provider": "workspace:*",
     "open": "^10.0.4",
     "server-destroy": "^1.0.1"
