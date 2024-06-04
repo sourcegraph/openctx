@@ -1,7 +1,4 @@
 import type {
-    Annotation,
-    AnnotationsParams,
-    AnnotationsResult,
     ItemsParams,
     ItemsResult,
     MentionsParams,
@@ -101,12 +98,15 @@ const semgrep: Provider = {
         return []
     },
 
+    /**
+     * TODO: Implement annotations.
+     *
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
         const anns: Annotation[] = []
         const client: API = new API(settings)
         const findings = (await client.findings()) || []
 
-        // TODO(Harish): Match current file path against location.file_path
+        // FIXME: Match current file path against location.file_path
         for (const f of findings) {
             anns.push({
                 uri: params.uri,
@@ -123,6 +123,7 @@ const semgrep: Provider = {
 
         return anns
     },
+     */
 }
 
 export default semgrep
