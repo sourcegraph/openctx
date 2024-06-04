@@ -1,45 +1,21 @@
 import type { Settings } from './index.ts'
 
-interface IssueJSON {
-    id: string
+export interface IssuePickerItem {
     key: string
-    fields: {
-        summary: string
-        description: string
-        subtasks?: IssueJSON[]
-    }
+    summaryText: string
+    url: string
 }
 
-export interface JiraIssue {
-    id: string
+export interface Issue {
     key: string
     url: string
     fields: {
         summary: string
         description: string
-        subtasks?: JiraIssue[]
+        labels: string[]
+        subtasks?: Issue[]
     }
 }
-
-// Adds the URL fields to the issues & nested issues
-const jsonToIssue = (json: IssueJSON, settings: Settings): JiraIssue => ({
-    id: json.id,
-    key: json.key,
-    fields: {
-        summary: json.fields.summary,
-        description: json.fields.description,
-        subtasks: json.fields.subtasks?.map(subtask => ({
-            id: subtask.id,
-            key: subtask.key,
-            fields: {
-                summary: subtask.fields.summary,
-                description: subtask.fields.description,
-            },
-            url: `${endpoint(settings)}/browse/${subtask.key}`,
-        })),
-    },
-    url: `${endpoint(settings)}/browse/${json.key}`,
-})
 
 const authHeaders = (settings: Settings) => ({
     Authorization: `Basic ${btoa(`${settings.username}:${settings.apiToken}`)}`,
@@ -48,78 +24,64 @@ const authHeaders = (settings: Settings) => ({
 const endpoint = (settings: Settings) =>
     'https://' + settings.host + (settings.port ? `:${settings.port}` : '')
 
-const jqlEscapeString = (query: string): string => query.replace(/"/g, '\\"')
-
-export const fetchRecentIssues = async (settings: Settings): Promise<JiraIssue[]> => {
-    const response = await fetch(
-        `${endpoint(settings)}/rest/api/2/search?jql=${encodeURIComponent(
-            '(assignee = currentUser() OR reporter = currentUser() OR issue in issueHistory()) ORDER BY created DESC'
-        )}`,
+export const searchIssues = async (
+    query: string | undefined,
+    settings: Settings
+): Promise<IssuePickerItem[]> => {
+    const pickerResponse = await fetch(
+        `${endpoint(settings)}/rest/api/2/issue/picker?query=${encodeURIComponent(query || '')}`,
         {
             method: 'GET',
             headers: authHeaders(settings),
         }
     )
-
-    if (!response.ok) {
+    if (!pickerResponse.ok) {
         throw new Error(
-            `Error fetching recent JIRA issues (${response.status} ${
-                response.statusText
-            }): ${await response.text()}`
+            `Error fetching recent JIRA issues (${pickerResponse.status} ${
+                pickerResponse.statusText
+            }): ${await pickerResponse.text()}`
         )
     }
 
-    return ((await response.json()) as { issues: IssueJSON[] }).issues.map(issue =>
-        jsonToIssue(issue, settings)
+    const pickerJSON = (await pickerResponse.json()) as { sections: { issues: IssuePickerItem[] }[] }
+
+    return (
+        pickerJSON.sections?.[0]?.issues?.map(json => {
+            return {
+                ...json,
+                // add a URL property, as the API response doesn't have one
+                url: `${endpoint(settings)}/browse/${json.key}`,
+            }
+        }) || []
     )
 }
 
-export const searchIssues = async (query: string, settings: Settings): Promise<JiraIssue[]> => {
-    // If query is in Jira issue ID format (ABC-123) fetch it, otherwise search
-    if (/^[A-Z]+-\d+$/.test(query)) {
-        return fetchIssue(query, settings).then(issue => (issue ? [issue] : []))
-    }
-
-    const response = await fetch(
-        `${endpoint(settings)}/rest/api/2/search?jql=${encodeURIComponent(
-            `summary ~ "${jqlEscapeString(query)}" OR description ~ "${jqlEscapeString(query)}"`
-        )}`,
+export const fetchIssue = async (issueId: string, settings: Settings): Promise<Issue | null> => {
+    const issueResponse = await fetch(
+        `${endpoint(settings)}/rest/api/2/search/?jql=${encodeURIComponent(`key="${issueId}"`)}`,
         {
             method: 'GET',
             headers: authHeaders(settings),
         }
     )
-
-    if (!response.ok) {
+    if (!issueResponse.ok) {
         throw new Error(
-            `Error fetching recent JIRA issues (${response.status} ${
-                response.statusText
-            }): ${await response.text()}`
+            `Error fetching JIRA issue (${issueResponse.status} ${
+                issueResponse.statusText
+            }): ${await issueResponse.text()}`
         )
     }
 
-    return ((await response.json()) as { issues: IssueJSON[] }).issues.map(issue =>
-        jsonToIssue(issue, settings)
-    )
-}
+    const responseJSON = (await issueResponse.json()) as { issues: Issue[] }
+    const issue = responseJSON.issues?.[0]
 
-const fetchIssue = async (issueId: string, settings: Settings): Promise<JiraIssue | null> => {
-    const response = await fetch(
-        `${endpoint(settings)}/rest/api/2/issue/${encodeURIComponent(issueId)}`,
-        {
-            method: 'GET',
-            headers: authHeaders(settings),
-        }
-    )
-    if (response.status === 404) {
+    if (!issue) {
         return null
     }
-    if (!response.ok) {
-        throw new Error(
-            `Error fetching JIRA issue (${response.status} ${
-                response.statusText
-            }): ${await response.text()}`
-        )
+
+    return {
+        ...issue,
+        // add a URL property, as the API response doesn't have one
+        url: `${endpoint(settings)}/browse/${issue?.key}`,
     }
-    return jsonToIssue((await response.json()) as IssueJSON, settings)
 }

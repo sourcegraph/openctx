@@ -1,4 +1,5 @@
 import type {
+    Item,
     ItemsParams,
     ItemsResult,
     MentionsParams,
@@ -7,8 +8,7 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import { XMLBuilder } from 'fast-xml-parser'
-import { type JiraIssue, fetchRecentIssues, searchIssues } from './api.js'
+import { type Issue, fetchIssue, searchIssues } from './api.js'
 
 export type Settings = {
     host: string
@@ -17,21 +17,40 @@ export type Settings = {
     apiToken: string
 }
 
-const xmlBuilder = new XMLBuilder({ format: true })
-
-const issueToItemContent = (issue: JiraIssue): string => {
-    const subtasks = issue.fields.subtasks?.map(subtask => issueToItemContent(subtask))
-    const issueObject = {
-        issue: {
-            id: issue.id,
-            key: issue.key,
-            summary: issue.fields.summary,
-            description: issue.fields.description,
-            subtasks: subtasks || [],
-        },
-    }
-    return xmlBuilder.build(issueObject)
+type MentionData = {
+    key: string
+    url: string
 }
+
+const maxSubTasks = 10
+
+const issueToItem = (issue: Issue): Item => ({
+    url: issue.url,
+    title: issue.fields.summary,
+    ui: {
+        hover: {
+            markdown: issue.fields.description,
+            text: issue.fields.description || issue.fields.summary,
+        },
+    },
+    ai: {
+        content:
+            `The following JSON represents the JIRA issue ${issue.key}: ` +
+            JSON.stringify({
+                issue: {
+                    key: issue.key,
+                    summary: issue.fields.summary,
+                    url: issue.url,
+                    description: issue.fields.description,
+                    labels: issue.fields.labels,
+                    // Include high level details of the subissues on the primary issue, but their full content is included as separate items
+                    relatedChildIssues: issue.fields.subtasks
+                        ?.slice(0, maxSubTasks)
+                        .map(item => item.key),
+                },
+            }),
+    },
+})
 
 const jiraProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
@@ -39,33 +58,46 @@ const jiraProvider: Provider = {
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        const result = (issue: JiraIssue) => ({
-            title: `${issue.key}: ${issue.fields.summary}`,
-            uri: issue.url,
-            description: issue.fields.description,
-            data: {
-                issue: issue,
-            },
-        })
-
-        if (params.query) {
-            return searchIssues(params.query, settings).then(issues => issues.map(result))
-        }
-
-        return fetchRecentIssues(settings).then(issues => issues.map(result))
+        // Uses the quick REST picker API to fuzzy match potential items
+        return searchIssues(params.query, settings).then(items =>
+            items.map(item => ({
+                title: item.key,
+                uri: item.url,
+                description: item.summaryText,
+                data: {
+                    key: item.key,
+                    url: item.url,
+                } as MentionData,
+            }))
+        )
     },
 
-    items(params: ItemsParams, settings: Settings): ItemsResult {
-        const issue = params.mention?.data?.issue as JiraIssue
-        return [
-            {
-                title: issue.key,
-                url: issue.url,
-                ai: {
-                    content: issueToItemContent(issue),
-                },
-            },
-        ]
+    async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
+        const key = (params.mention?.data as MentionData).key
+        const issue = await fetchIssue(key, settings)
+
+        console.dir({ issue }, { depth: null })
+
+        if (!issue) {
+            return []
+        }
+
+        const subtasks = issue.fields.subtasks?.slice(0, maxSubTasks)
+        if (!subtasks) {
+            return [issueToItem(issue)]
+        }
+
+        const childIssues = await Promise.all(
+            subtasks.map(subtask =>
+                fetchIssue(subtask.key, settings).then(childIssue => {
+                    return childIssue ? issueToItem(childIssue) : null
+                })
+            )
+        )
+
+        const items = [issueToItem(issue), ...childIssues.filter((item): item is Item => item !== null)]
+
+        return items
     },
 }
 

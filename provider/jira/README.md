@@ -30,7 +30,8 @@ Issues:
 - URL
 - Summary
 - Description
-- Subtasks
+- Labels
+- Subtasks (max 10)
 
 ## Configuration
 
