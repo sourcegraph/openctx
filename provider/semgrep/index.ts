@@ -63,8 +63,9 @@ const semgrep: Provider = {
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
         if (params.mention?.data?.finding === undefined) return []
-        const deployment = params.mention?.uri ?? settings.deployment
         const finding: Finding = params.mention.data.finding as Finding
+        const uri =
+            params.mention?.uri ?? urlfor(settings.deployment || '', finding.repository.name, finding.id)
         return !finding
             ? []
             : [
@@ -72,7 +73,7 @@ const semgrep: Provider = {
                       title: finding.rule_name,
                       ai: { content: aiPrompt(finding) },
                       ui: { hover: { text: finding.rule_name } },
-                      url: urlfor(deployment, finding.repository.name, finding.id),
+                      url: uri,
                   },
               ]
     },
@@ -101,6 +102,7 @@ const semgrep: Provider = {
 
     /**
      * TODO: Implement annotations.
+     * https://github.com/sourcegraph/openctx/issues/125
      *
     async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
         const anns: Annotation[] = []
