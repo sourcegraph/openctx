@@ -1,7 +1,7 @@
 {
   "name": "@openctx/provider-jira",
   "private": false,
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Jira (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/jira",
@@ -21,7 +21,6 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@openctx/provider": "workspace:*",
-    "fast-xml-parser": "^4.4.0"
+    "@openctx/provider": "workspace:*"
   }
 }
