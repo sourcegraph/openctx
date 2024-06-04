@@ -10,7 +10,7 @@ export default class API {
     constructor(settings: Settings) {
         this.token = settings.token
         this.repo = settings.repo || ''
-        this.deployment = settings.deployment
+        this.deployment = settings.deployment || ''
         this.url = 'https://semgrep.dev/api/v1'
     }
 

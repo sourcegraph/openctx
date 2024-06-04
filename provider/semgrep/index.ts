@@ -13,9 +13,9 @@ import { type Finding, type Findings, urlfor } from './api.js'
 import API from './client.js'
 
 export type Settings = {
-    deployment: string // Semgrep deployment slug
     token: string // Semgrep app token
     repo?: string // Semgrep scan repository
+    deployment?: string // Semgrep deployment slug
 }
 
 function parseUri(link: string): { deployment: string; finding: number } | null {
@@ -63,6 +63,7 @@ const semgrep: Provider = {
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
         if (params.mention?.data?.finding === undefined) return []
+        const deployment = params.mention?.uri ?? settings.deployment
         const finding: Finding = params.mention.data.finding as Finding
         return !finding
             ? []
@@ -71,7 +72,7 @@ const semgrep: Provider = {
                       title: finding.rule_name,
                       ai: { content: aiPrompt(finding) },
                       ui: { hover: { text: finding.rule_name } },
-                      url: urlfor(settings.deployment, finding.repository.name, finding.id),
+                      url: urlfor(deployment, finding.repository.name, finding.id),
                   },
               ]
     },
