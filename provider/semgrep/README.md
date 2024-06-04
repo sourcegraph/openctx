@@ -10,9 +10,8 @@ Add the following to your settings in any OpenCtx client:
 "openctx.providers": {
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-semgrep": {
-        "deployment": "Semgrep deployment",
-        "repo": "Semgrep repository or project filter",
         "token": "Your <SEMGREP_APP_TOKEN>",
+        "repo": "Semgrep repository or project filter"
     }
 },
 ```
