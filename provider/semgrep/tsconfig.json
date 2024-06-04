@@ -7,6 +7,6 @@
     "lib": ["ESNext", "DOM"],
   },
   "include": ["*.ts"],
-  "exclude": ["dist", "*.test.*", "vitest.config.ts"],
+  "exclude": ["dist", "mocks", "*.test.*", "vitest.config.ts"],
   "references": [{ "path": "../../lib/provider" }],
 }
