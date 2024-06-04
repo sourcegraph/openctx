@@ -58,7 +58,7 @@ function aiPrompt(finding: Finding): string {
 
 const semgrep: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
-        return { name: 'Semgrep', annotations: {}, mentions: {} }
+        return { name: 'Semgrep', mentions: {} }
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {
@@ -99,34 +99,6 @@ const semgrep: Provider = {
         }
         return []
     },
-
-    /**
-     * TODO: Implement annotations.
-     * https://github.com/sourcegraph/openctx/issues/125
-     *
-    async annotations(params: AnnotationsParams, settings: Settings): Promise<AnnotationsResult> {
-        const anns: Annotation[] = []
-        const client: API = new API(settings)
-        const findings = (await client.findings()) || []
-
-        // FIXME: Match current file path against location.file_path
-        for (const f of findings) {
-            anns.push({
-                uri: params.uri,
-                item: {
-                    title: f.rule_name,
-                    url: urlfor(settings.deployment, f.repository.name, f.id),
-                },
-                range: {
-                    start: { line: f.location.line, character: f.location.column },
-                    end: { line: f.location.end_line, character: f.location.end_column },
-                },
-            })
-        }
-
-        return anns
-    },
-     */
 }
 
 export default semgrep

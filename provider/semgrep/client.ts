@@ -42,6 +42,8 @@ export default class API {
         }
 
         const all: Findings = (await res.json()).findings ?? []
+        // TODO: Use query params on the API to filter instead
+        // ?repos=myorg/repo1,myorg/repo2
         const repos: Findings = !this.repo
             ? all
             : all.filter((f: Finding) => this.repo === f.repository.name)
