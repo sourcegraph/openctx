@@ -21,6 +21,6 @@ You can create and download a `SEMGREP_APP_TOKEN` from <https://semgrep.dev/orgs
 
 ## Development
 
-- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/hello-world)
-- [Docs](https://openctx.org/docs/providers/hello-world)
+- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/semgrep)
+- [Docs](https://openctx.org/docs/providers/semgrep)
 - License: Apache 2.0

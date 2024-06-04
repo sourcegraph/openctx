@@ -57,6 +57,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'Monaco Editor', type: 'client', slug: 'monaco-editor' },
     { name: 'CodeMirror', type: 'client', slug: 'codemirror' },
     { name: 'Storybook', type: 'provider', slug: 'storybook' },
+    { name: 'Semgrep', type: 'provider', slug: 'semgrep' },
     { name: 'DevDocs', type: 'provider', slug: 'devdocs' },
     { name: 'Jira', type: 'provider', slug: 'jira' },
     { name: 'Linear Issues', type: 'provider', slug: 'linear-issues' },
