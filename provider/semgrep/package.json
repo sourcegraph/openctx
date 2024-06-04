@@ -24,7 +24,8 @@
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --platform=node --outfile=dist/bundle.js index.ts"
   },
   "dependencies": {
-    "@openctx/provider": "workspace:*"
+    "@openctx/provider": "workspace:*",
+    "fast-xml-parser": "^4.4.0"
   },
   "devDependencies": {
     "nock": "14.0.0-beta.7"

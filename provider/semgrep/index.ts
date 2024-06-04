@@ -10,6 +10,7 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import { XMLBuilder } from 'fast-xml-parser'
 
 import { type Finding, type Findings, urlfor } from './api.js'
 import API from './client.js'
@@ -34,17 +35,28 @@ function parseUri(link: string): { deployment: string; finding: number } | null 
 }
 
 function aiPrompt(finding: Finding): string {
-    return [
-        finding.rule_name ?? '',
-        finding.rule_message ?? '',
-        finding.rule.name ?? '',
-        finding.rule.message ?? '',
-        finding.triage_comment ?? '',
-        finding.triage_reason ?? '',
-        finding.assistant?.autofix?.fix_code ?? '',
-        finding.assistant?.autofix?.explanation ?? '',
-        finding.assistant?.autotriage?.reason ?? '',
-    ].join('\n')
+    const xml = new XMLBuilder({ format: true })
+    const info = {
+        rule: {
+            name: (finding.rule_name || finding.rule.name) ?? null,
+            message: (finding.rule_message || finding.rule.message) ?? null,
+        },
+        triage: {
+            state: finding.triage_state ?? null,
+            reason: finding.triage_reason ?? null,
+            comment: finding.triage_comment ?? null,
+        },
+        assistant: {
+            autofix: {
+                fixCode: finding.assistant?.autofix?.fix_code ?? null,
+                explanation: finding.assistant?.autofix?.explanation ?? null,
+            },
+            autotriage: {
+                reason: finding.assistant?.autotriage?.reason ?? null,
+            },
+        },
+    }
+    return xml.build(info)
 }
 
 const semgrep: Provider = {

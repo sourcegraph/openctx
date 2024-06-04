@@ -611,6 +611,9 @@ importers:
       '@openctx/provider':
         specifier: workspace:*
         version: link:../../lib/provider
+      fast-xml-parser:
+        specifier: ^4.4.0
+        version: 4.4.0
     devDependencies:
       nock:
         specifier: 14.0.0-beta.7
