@@ -1,0 +1,28 @@
+{
+  "name": "@openctx/provider-pprof",
+  "version": "0.0.13",
+  "description": "pprof (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/pprof",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/pprof"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc --build",
+    "prepublishOnly": "tsc --build --clean && pnpm run --silent build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*"
+  }
+}
