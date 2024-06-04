@@ -2,27 +2,22 @@ import type { Finding, Findings } from './api.js'
 import type { Settings } from './index.js'
 
 export default class API {
-    private signal: any
     private url: string
     private repo: string
     private token: string
     private deployment: string
 
     constructor(settings: Settings) {
-        this.signal = null
         this.token = settings.token
         this.repo = settings.repo || ''
         this.deployment = settings.deployment
         this.url = 'https://semgrep.dev/api/v1'
     }
 
-    private abort(): any {
-        if (this.signal === null) {
-            const abc = new AbortController()
-            setTimeout(() => abc.abort(), 5000)
-            this.signal = abc.signal
-        }
-        return this.signal
+    private timeout(): any {
+        const ctrl = new AbortController()
+        setTimeout(() => ctrl.abort(), 5000)
+        return ctrl.signal
     }
 
     private headers(): any {
@@ -39,7 +34,7 @@ export default class API {
 
     public async findings(fnum: number | null = null): Promise<Findings> {
         const url = `${this.url}/deployments/${this.deployment}/findings`
-        const params = { headers: this.headers(), signal: this.abort() }
+        const params = { headers: this.headers(), signal: this.timeout() }
         const res = await fetch(url, params)
         if (!res.ok) {
             console.error(`Failed to fetch findings for deployment ${this.deployment}`)
