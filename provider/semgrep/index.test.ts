@@ -25,7 +25,7 @@ describe('Semgrep provider', () => {
         const meta = semgrep.meta({}, settings)
 
         expect(meta).toBeDefined()
-        expect(meta).toEqual({ name: 'Semgrep', annotations: {}, mentions: {} })
+        expect(meta).toEqual({ name: 'Semgrep', mentions: {} })
     })
 
     test('items', async () => {
@@ -37,7 +37,7 @@ describe('Semgrep provider', () => {
             mention: {
                 title: f.rule_name,
                 data: { finding: f },
-                uri: urlfor(settings.deployment, f.repository.name, f.id),
+                uri: urlfor(settings.deployment || '', f.repository.name, f.id),
             },
         }
 
