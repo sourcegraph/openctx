@@ -1,6 +1,6 @@
 # Confluence context provider for OpenCtx
 
-[OpenCtx](https://openctx.org) context provider for bringing Jira context into code AI and editors.
+[OpenCtx](https://openctx.org) context provider for bringing Confluence context into code AI and editors.
 
 ## Usage
 
