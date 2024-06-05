@@ -11,9 +11,9 @@
 "openctx.providers": {
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-confluence": {
-        "host": "<subdomain>.atlassian.net",
+        "url": "https://some-org.atlassian.net/wiki",
         "email": "<email-address>",
-        "apiToken": "<your-atlassian-api-token>",
+        "apiToken": "<api-token>",
     }
 },
 ```
@@ -28,8 +28,7 @@
 
 ## Configuration
 
-- `host` — Host URL — Required
-- `port` — Host port — Optional
+- `url` — Confluence URL — Required (e.g. `"https://some-org.atlassian.net/wiki"`)
 - `email` — Email — Required
 - `apiToken` — API token — Required
 
@@ -39,7 +38,7 @@
 - [Docs](https://openctx.org/docs/providers/confluence)
 - License: Apache 2.0
 
-### Testing it locally
+### Local Testing
 
 1. Clone the repo
 1. `pnpm install`

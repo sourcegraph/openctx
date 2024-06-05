@@ -7,13 +7,16 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import { type Page, listPages } from './api.js'
+import { getPage, listPages } from './api.js'
 
 export type Settings = {
-    host: string
-    port?: string
+    url: string
     email: string
     apiToken: string
+}
+
+type PageData = {
+    id: string
 }
 
 const confluenceProvider: Provider = {
@@ -34,23 +37,32 @@ const confluenceProvider: Provider = {
                     },
                 },
                 data: {
-                    page: page,
+                    page: {
+                        id: page.id,
+                    },
                 },
             }
         })
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
-        const page = params.mention?.data?.page as Page
+        const pageId = (params.mention?.data?.page as PageData).id
 
-        if (!page) {
+        if (!pageId) {
             return []
         }
+
+        const page = await getPage(settings, pageId)
 
         return [
             {
                 title: `${page.title} (${page.space.name})`,
                 url: page.uri,
+                ui: {
+                    hover: {
+                        text: page.title,
+                    },
+                },
                 ai: {
                     content: 'The contents of the confluence page: ' + page.body,
                 },
