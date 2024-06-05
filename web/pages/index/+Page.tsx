@@ -58,6 +58,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'CodeMirror', type: 'client', slug: 'codemirror' },
     { name: 'Storybook', type: 'provider', slug: 'storybook' },
     { name: 'DevDocs', type: 'provider', slug: 'devdocs' },
+    { name: 'Confluence', type: 'provider', slug: 'confluence' },
     { name: 'Jira', type: 'provider', slug: 'jira' },
     { name: 'Linear Issues', type: 'provider', slug: 'linear-issues' },
     { name: 'Slack', type: 'provider', slug: 'slack' },
