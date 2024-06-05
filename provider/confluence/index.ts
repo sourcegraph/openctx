@@ -31,11 +31,6 @@ const confluenceProvider: Provider = {
                 title: page.title,
                 uri: page.uri,
                 description: page.space.name,
-                ui: {
-                    hover: {
-                        text: page.title,
-                    },
-                },
                 data: {
                     page: {
                         id: page.id,
@@ -60,6 +55,7 @@ const confluenceProvider: Provider = {
                 url: page.uri,
                 ui: {
                     hover: {
+                        // Show the title here because the UI only shows the URL
                         text: page.title,
                     },
                 },
