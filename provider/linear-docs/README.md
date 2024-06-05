@@ -1,18 +1,18 @@
-# Linear Issues context provider for OpenCtx
+# Linear Docs context provider for OpenCtx
 
-This is a context provider for [OpenCtx](https://openctx.org) that brings Linear Issues context to code AI and editors. Only items, not annotations, are supported.
+This is a context provider for [OpenCtx](https://openctx.org) that brings Linear Docs context to code AI and editors. Only items, not annotations, are supported.
 
 **Status:** Experimental
 
 ## Configuration for Sourcegraph teammates
 
-1. Find "OpenCtx Linear Issues provider config" in 1Password and add it to your user settings.
+1. Find "OpenCtx Linear Docs provider config" in 1Password and add it to your user settings.
 1. Start using the provider!
 
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-linear-issues": {
+    "https://openctx.org/npm/@openctx/provider-linear-docs": {
         "accessToken": "YOUR_ACCESS_TOKEN",
     }
 },
@@ -32,7 +32,7 @@ Then use the following OpenCtx provider configuration:
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-linear-issues": {
+    "https://openctx.org/npm/@openctx/provider-linear-docs": {
         "userCredentialsPath": "path/to/access_token_file_printed.json",
     }
 },
@@ -40,6 +40,6 @@ Then use the following OpenCtx provider configuration:
 
 ## Development
 
-- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/linear-issues)
-- [Docs](https://openctx.org/docs/providers/linear-issues)
+- [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/linear-docs)
+- [Docs](https://openctx.org/docs/providers/linear-docs)
 - License: Apache 2.0
