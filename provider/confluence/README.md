@@ -43,6 +43,6 @@
 
 1. Clone the repo
 1. `pnpm install`
-1. `pnpm -C provider/jira bundle --watch` to automatically recompile on changes
-1. Run `echo file://$(pwd)/provider/jira/dist/bundle.js` and use that URL in your OpenCtx instead of `"https://openctx.org/npm/@openctx/provider-confluence"`
+1. `pnpm -C provider/confluence bundle --watch` to automatically recompile on changes
+1. Run `echo file://$(pwd)/provider/confluence/dist/bundle.js` and use that URL in your OpenCtx instead of `"https://openctx.org/npm/@openctx/provider-confluence"`
 1. Reload your OpenCtx client
