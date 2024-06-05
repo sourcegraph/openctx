@@ -1,7 +1,7 @@
 import type { Settings } from './index.ts'
 
 const authHeaders = (settings: Settings) => ({
-    Authorization: `Basic ${btoa(`${settings.username}:${settings.apiToken}`)}`,
+    Authorization: `Basic ${Buffer.from(`${settings.email}:${settings.apiToken}`).toString('base64')}`,
 })
 
 const endpoint = (settings: Settings) =>
@@ -47,9 +47,12 @@ export const listPages = async (settings: Settings, query?: string): Promise<Pag
             headers: authHeaders(settings),
         }
     )
+
     if (!response.ok) {
         throw new Error(
-            `Error fetching spaces (${response.status} ${response.statusText}): ${await response.text()}`
+            `Error searching content (${response.status} ${
+                response.statusText
+            }): ${await response.text()}`
         )
     }
 

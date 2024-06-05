@@ -12,7 +12,7 @@ import { type Page, listPages } from './api.js'
 export type Settings = {
     host: string
     port?: string
-    username: string
+    email: string
     apiToken: string
 }
 
