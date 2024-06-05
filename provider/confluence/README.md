@@ -20,11 +20,11 @@
 
 ## Mention support
 
-- TODO
+- Searches page titles
 
 ## Context included
 
-- TODO
+- Page body
 
 ## Configuration
 

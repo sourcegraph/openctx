@@ -7,6 +7,7 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import { type Page, listPages } from './api.js'
 
 export type Settings = {
     host: string
@@ -15,43 +16,47 @@ export type Settings = {
     apiToken: string
 }
 
-type MentionData = {
-    key: string
-    url: string
-}
-
-const jiraProvider: Provider = {
+const confluenceProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return { name: 'Confluence Pages', mentions: {} }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        return [
-            {
-                title: 'Engineering Ownership',
-                description: 'Knowledge base',
-                uri: 'https://openctx-provider-test.atlassian.net/wiki/spaces/KB/pages/851976/Engineering+Ownership',
-            },
-        ]
+        const spaces = await listPages(settings, params.query)
+        return spaces.map(page => {
+            return {
+                title: page.title,
+                uri: page.uri,
+                description: page.space.name,
+                ui: {
+                    hover: {
+                        text: page.title,
+                    },
+                },
+                data: {
+                    page: page,
+                },
+            }
+        })
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
+        const page = params.mention?.data?.page as Page
+
+        if (!page) {
+            return []
+        }
+
         return [
             {
-                title: 'Engineering Ownership',
-                url: 'https://openctx-provider-test.atlassian.net/wiki/spaces/KB/pages/851976/Engineering+Ownership',
-                ui: {
-                    hover: {
-                        markdown: 'Knowledge base',
-                        text: 'Knowledge base',
-                    },
-                },
+                title: `${page.title} (${page.space.name})`,
+                url: page.uri,
                 ai: {
-                    content: 'Test',
+                    content: 'The contents of the confluence page: ' + page.body,
                 },
             },
         ]
     },
 }
 
-export default jiraProvider
+export default confluenceProvider
