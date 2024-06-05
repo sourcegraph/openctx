@@ -33,8 +33,10 @@ interface PagesSearchJSON {
     }[]
 }
 
+const escapeCqlQuotes = (input: string) => input.replace(/"/g, '\\"')
+
 export const listPages = async (settings: Settings, query?: string): Promise<Page[]> => {
-    const titleQuery = query ? `title ~ "${query}*"` : 'title ~ "*"'
+    const titleQuery = query ? `title ~ "${escapeCqlQuotes(query)}*"` : 'title ~ "*"'
 
     const response = await fetch(
         `${endpoint(settings)}/wiki/rest/api/content/search?cql=${encodeURIComponent(
