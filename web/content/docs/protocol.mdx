@@ -26,7 +26,8 @@ Providers are stateless.
 Providers implement the following API methods:
 
 - [Meta](#meta): report the provider's name, features, and other metadata (required)
-- [Items](#items): search for documents and other content from the provider
+- [Mentions](#mentions): search for @-mentionable items
+- [Items](#items): fetch documents and other content from the provider
 - [Annotations](#annotations): get annotations for a code file
 
 ### Meta
@@ -76,18 +77,68 @@ interface Selector {
 }
 ```
 
+### Mentions
+
+The mentions request is sent by the client to the provider to search for @-mentionable items in the resource.
+
+**Request:** `{ method: "mentions", params: MentionsParams, settings?: object }`
+
+```typescript
+export interface MentionsParams {
+    /**
+     * A search query that is interpreted by providers to filter the items in the result set.
+     */
+    query?: string
+}
+```
+
+**Response:** `{ result: MentionsResult }` or `{ error: { code, integer, data? } }`
+
+```typescript
+type MentionsResult = Mention[]
+
+/**
+ * A mention contains presentation information relevant to a resource.
+ */
+export interface Mention {
+    /**
+     * A descriptive title.
+     */
+    title: string
+
+    /**
+     * An item description.
+     */
+    description?: string
+
+    /**
+     * A URI for the mention item.
+     */
+    uri: string
+
+    data?: {
+        [k: string]: unknown | undefined
+    }
+}
+```
+
 ### Items
 
-The items request is sent by the client to the provider to fetch a list of items for a resource.
+The items request is sent by the client to the provider to fetch items from a resource.
 
 **Request:** `{ method: "items", params: ItemsParams, settings?: object }`
 
 ```typescript
 interface ItemsParams {
-  /**
-   * A search query that is interpreted by providers to filter the items in the result set.
-   */
-  query?: string
+    /**
+     * A message that is interpreted by providers to return relevant items.
+     */
+    message?: string
+
+    /**
+     * A mention interpreted by providers to return items for the specified mention.
+     */
+    mention?: Mention
 }
 ```
 
