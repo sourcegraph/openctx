@@ -11,7 +11,7 @@
 "openctx.providers": {
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-jira": {
-        "host": "<subdomain>.atlassian.net",
+        "url": "https://<subdomain>.atlassian.net/",
         "username": "<email-address>",
         "apiToken": "<your-atlassian-api-token>",
     }
@@ -35,9 +35,8 @@ Issues:
 
 ## Configuration
 
-- `host` — Host URL — Required
-- `port` — Host port — Optional
-- `username` — Username — Required
+- `url` — Jira URL — Required (e.g. `"https://some-org.atlassian.net/"`)
+- `email` — Email — Required
 - `apiToken` — API token — Required
 
 ## Development

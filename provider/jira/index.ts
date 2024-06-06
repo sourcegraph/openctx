@@ -11,15 +11,16 @@ import type {
 import { type Issue, fetchIssue, searchIssues } from './api.js'
 
 export type Settings = {
-    host: string
-    port?: string
-    username: string
+    url: string
+    email: string
     apiToken: string
 }
 
-type MentionData = {
-    key: string
-    url: string
+const checkSettings = (settings: Settings) => {
+    const missingKeys = ['url', 'email', 'apiToken'].filter(key => !(key in settings))
+    if (missingKeys.length > 0) {
+        throw new Error(`Missing settings: ${JSON.stringify(missingKeys)}`)
+    }
 }
 
 const maxSubTasks = 10
@@ -35,7 +36,7 @@ const issueToItem = (issue: Issue): Item => ({
     },
     ai: {
         content:
-            `The following JSON represents the JIRA issue ${issue.key}: ` +
+            `The following represents contents of the JIRA issue ${issue.key}: ` +
             JSON.stringify({
                 issue: {
                     key: issue.key,
@@ -58,25 +59,25 @@ const jiraProvider: Provider = {
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
+        checkSettings(settings)
+
         // Uses the quick REST picker API to fuzzy match potential items
         return searchIssues(params.query, settings).then(items =>
             items.map(item => ({
                 title: item.key,
                 uri: item.url,
                 description: item.summaryText,
-                data: {
-                    key: item.key,
-                    url: item.url,
-                } as MentionData,
+                data: { key: item.key },
             }))
         )
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
-        const key = (params.mention?.data as MentionData).key
-        const issue = await fetchIssue(key, settings)
+        checkSettings(settings)
 
-        console.dir({ issue }, { depth: null })
+        const key = (params.mention?.data as { key: string }).key
+
+        const issue = await fetchIssue(key, settings)
 
         if (!issue) {
             return []
