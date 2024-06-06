@@ -15,12 +15,21 @@ export type Settings = {
     apiToken: string
 }
 
+const checkSettings = (settings: Settings) => {
+    const missingKeys = ['url', 'email', 'apiToken'].filter(key => !(key in settings))
+    if (missingKeys.length > 0) {
+        throw new Error(`Missing settings: ${JSON.stringify(missingKeys)}`)
+    }
+}
+
 const confluenceProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return { name: 'Confluence Pages', mentions: {} }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
+        checkSettings(settings)
+
         const spaces = await listPages(settings, params.query)
         return spaces.map(page => {
             return {
@@ -37,6 +46,8 @@ const confluenceProvider: Provider = {
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
+        checkSettings(settings)
+
         const pageId = (params.mention?.data?.page as { id: string }).id
 
         if (!pageId) {
