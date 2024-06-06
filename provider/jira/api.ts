@@ -18,18 +18,24 @@ export interface Issue {
 }
 
 const authHeaders = (settings: Settings) => ({
-    Authorization: `Basic ${btoa(`${settings.username}:${settings.apiToken}`)}`,
+    Authorization: `Basic ${Buffer.from(`${settings.email}:${settings.apiToken}`).toString('base64')}`,
 })
 
-const endpoint = (settings: Settings) =>
-    'https://' + settings.host + (settings.port ? `:${settings.port}` : '')
+const buildUrl = (settings: Settings, path: string, searchParams: Record<string, string> = {}) => {
+    // Avoid double / if settings.url ends with '/' and path starts with '/'
+    const url = new URL(settings.url.replace(/\/$/, '') + path)
+    url.search = new URLSearchParams(searchParams).toString()
+    return url
+}
 
 export const searchIssues = async (
     query: string | undefined,
     settings: Settings
 ): Promise<IssuePickerItem[]> => {
     const pickerResponse = await fetch(
-        `${endpoint(settings)}/rest/api/2/issue/picker?query=${encodeURIComponent(query || '')}`,
+        buildUrl(settings, '/rest/api/2/issue/picker', {
+            query: query || '',
+        }),
         {
             method: 'GET',
             headers: authHeaders(settings),
@@ -43,14 +49,21 @@ export const searchIssues = async (
         )
     }
 
-    const pickerJSON = (await pickerResponse.json()) as { sections: { issues: IssuePickerItem[] }[] }
+    const pickerJSON = (await pickerResponse.json()) as {
+        sections: {
+            issues: {
+                key: string
+                summaryText: string
+                url: string
+            }[]
+        }[]
+    }
 
     return (
         pickerJSON.sections?.[0]?.issues?.map(json => {
             return {
                 ...json,
-                // add a URL property, as the API response doesn't have one
-                url: `${endpoint(settings)}/browse/${json.key}`,
+                url: buildUrl(settings, `/browse/${json.key}`).toString(),
             }
         }) || []
     )
@@ -58,7 +71,9 @@ export const searchIssues = async (
 
 export const fetchIssue = async (issueId: string, settings: Settings): Promise<Issue | null> => {
     const issueResponse = await fetch(
-        `${endpoint(settings)}/rest/api/2/search/?jql=${encodeURIComponent(`key="${issueId}"`)}`,
+        buildUrl(settings, '/rest/api/2/search/', {
+            jql: `key="${issueId}"`,
+        }),
         {
             method: 'GET',
             headers: authHeaders(settings),
@@ -81,7 +96,6 @@ export const fetchIssue = async (issueId: string, settings: Settings): Promise<I
 
     return {
         ...issue,
-        // add a URL property, as the API response doesn't have one
-        url: `${endpoint(settings)}/browse/${issue?.key}`,
+        url: buildUrl(settings, `/browse/${issue.key}`).toString(),
     }
 }
