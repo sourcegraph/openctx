@@ -1,5 +1,5 @@
+import { execSync } from 'child_process'
 import { readdirSync } from 'fs'
-import { type ExecException, exec } from 'node:child_process'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
     Pprof,
@@ -10,8 +10,8 @@ import {
     getPprof,
 } from './pprof.js'
 
-vi.mock('node:child_process', () => ({ exec: vi.fn() }))
-const execMock = vi.mocked(exec)
+vi.mock('child_process', () => ({ execSync: vi.fn() }))
+const execSyncMock = vi.mocked(execSync)
 
 vi.mock('fs', () => ({ readdirSync: vi.fn() }))
 const readdirSyncMock = vi.mocked(readdirSync)
@@ -22,20 +22,22 @@ describe('pprof', () => {
     })
 
     test('get pprof (installed)', () => {
-        execMock.mockImplementationOnce(mockExec('/usr/local/go/bin') as unknown as typeof exec)
+        execSyncMock.mockImplementationOnce(
+            mockExecSync('/usr/local/go/bin') as unknown as typeof execSync
+        )
 
         const pprof = getPprof()
 
-        expect(exec).toHaveBeenCalledOnce()
+        expect(execSync).toHaveBeenCalledOnce()
         expect(pprof).not.toBeNull()
     })
 
     test('get pprof (not installed)', () => {
-        execMock.mockImplementationOnce(mockExec('go not found') as unknown as typeof exec)
+        execSyncMock.mockImplementationOnce(mockExecSync('go not found') as unknown as typeof execSync)
 
         const pprof = getPprof()
 
-        expect(exec).toHaveBeenCalledOnce()
+        expect(execSync).toHaveBeenCalledOnce()
         expect(pprof).toBeNull()
     })
 
@@ -117,15 +119,15 @@ describe('pprof', () => {
             want: `go tool pprof -top -show="main\\." -cum report.pprof`,
         },
     ])('top command ($name)', (tt: TopCmdTest) => {
-        execMock.mockImplementationOnce(mockExec('') as unknown as typeof exec)
+        execSyncMock.mockImplementationOnce(mockExecSync('') as unknown as typeof execSync)
         const pprof = new Pprof(tt.tool)
         pprof.setReport('report.pprof')
         pprof.setBinary(tt.binary)
 
         pprof.top(tt.opts)
 
-        expect(execMock).toHaveBeenCalledOnce()
-        expect(exec).toHaveBeenCalledWith(tt.want, expect.any(Function))
+        expect(execSyncMock).toHaveBeenCalledOnce()
+        expect(execSync).toHaveBeenCalledWith(tt.want, expect.any(Function))
     })
 
     test.only('top (CPU)', () => {
@@ -145,7 +147,7 @@ Showing top 3 nodes out of 7
 
         const tool: PprofTool = 'go tool pprof'
         const topOptions: TopOptions = { package: 'main' }
-        execMock.mockImplementationOnce(mockExec(outputCpu) as unknown as typeof exec)
+        execSyncMock.mockImplementationOnce(mockExecSync(outputCpu) as unknown as typeof execSync)
 
         const pprof = new Pprof(tool)
         pprof.setReport('/path/to/report.pprof')
@@ -166,12 +168,8 @@ Showing top 3 nodes out of 7
     test.todo('list')
 })
 
-type ExecCallback = (error: ExecException | null, stdout: string, stderr: string) => void
-
-function mockExec(stdout: string): (command: string, callback?: ExecCallback) => void {
-    return (command: string, callback?: ExecCallback) => {
-        if (callback) {
-            callback(null, stdout, '')
-        }
+function mockExecSync(stdout: string): (command: string) => Buffer {
+    return (_command: string) => {
+        return Buffer.from(stdout, 'utf-8')
     }
 }

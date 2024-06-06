@@ -12,17 +12,18 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/index.js",
-    "dist/index.d.ts"
-  ],
+  "files": ["dist/index.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=cjs --platform=node --external:vscode --outfile=dist/bundle.js index.ts",
     "prepublishOnly": "tsc --build --clean && pnpm run --silent build",
     "test": "vitest"
   },
   "dependencies": {
     "@openctx/provider": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0"
   }
 }
