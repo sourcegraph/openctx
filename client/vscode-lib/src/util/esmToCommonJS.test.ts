@@ -14,11 +14,18 @@ describe('esmToCommonJS', () => {
         expect(esmToCommonJS(esm)).toBe(expected)
     })
 
+    test("aliased import statements", () => {
+        const esm = "import { foo as foo2 } from './foo.js'"
+        const expected = "const foo2 = require('./foo.js').foo;"
+        expect(esmToCommonJS(esm)).toBe(expected)
+    })
+
     test('namespace import statements', () => {
         const esm = "import * as foobar from './foobar.js'"
         const expected = "const foobar = require('./foobar.js');"
         expect(esmToCommonJS(esm)).toBe(expected)
     })
+
 
     test('default export identifiers', () => {
         const esm = 'export default foo'
