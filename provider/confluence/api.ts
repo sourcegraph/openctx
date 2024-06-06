@@ -5,6 +5,7 @@ const authHeaders = (settings: Settings) => ({
 })
 
 const buildUrl = (settings: Settings, path: string, searchParams: Record<string, string> = {}) => {
+    // Avoid double / if settings.url ends with '/' and path starts with '/'
     const url = new URL(settings.url.replace(/\/$/, '') + path)
     url.search = new URLSearchParams(searchParams).toString()
     return url
@@ -13,49 +14,14 @@ const buildUrl = (settings: Settings, path: string, searchParams: Record<string,
 export interface PageSearchResult {
     id: string
     title: string
-    space: {
-        name: string
-    }
     uri: string
-}
-
-interface PagesSearchJSON {
-    results: {
-        id: string
-        title: string
-        space: {
-            name: string
-        }
-        _links: {
-            webui: string
-        }
-    }[]
-}
-
-export interface Page {
-    id: string
-    title: string
     space: {
         name: string
     }
+}
+
+export interface Page extends PageSearchResult {
     body: string
-    uri: string
-}
-
-interface PageJSON {
-    id: string
-    title: string
-    space: {
-        name: string
-    }
-    body: {
-        storage: {
-            value: string
-        }
-    }
-    _links: {
-        webui: string
-    }
 }
 
 export const listPages = async (settings: Settings, query?: string): Promise<PageSearchResult[]> => {
@@ -79,7 +45,18 @@ export const listPages = async (settings: Settings, query?: string): Promise<Pag
         )
     }
 
-    const json = (await response.json()) as PagesSearchJSON
+    const json = (await response.json()) as {
+        results: {
+            id: string
+            title: string
+            space: {
+                name: string
+            }
+            _links: {
+                webui: string
+            }
+        }[]
+    }
 
     // Uncomment to debug
     // console.dir(json, { depth: null })
@@ -108,7 +85,21 @@ export const getPage = async (settings: Settings, id: string): Promise<Page> => 
         )
     }
 
-    const json = (await response.json()) as PageJSON
+    const json = (await response.json()) as {
+        id: string
+        title: string
+        space: {
+            name: string
+        }
+        body: {
+            storage: {
+                value: string
+            }
+        }
+        _links: {
+            webui: string
+        }
+    }
 
     // Uncomment to debug
     // console.dir(json, { depth: null })

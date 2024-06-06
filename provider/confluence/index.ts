@@ -15,10 +15,6 @@ export type Settings = {
     apiToken: string
 }
 
-type PageData = {
-    id: string
-}
-
 const confluenceProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return { name: 'Confluence Pages', mentions: {} }
@@ -41,7 +37,7 @@ const confluenceProvider: Provider = {
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
-        const pageId = (params.mention?.data?.page as PageData).id
+        const pageId = (params.mention?.data?.page as { id: string }).id
 
         if (!pageId) {
             return []
