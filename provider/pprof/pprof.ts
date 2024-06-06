@@ -1,4 +1,4 @@
-import { exec } from 'child_process'
+import { execSync } from 'child_process'
 import { readdirSync } from 'fs'
 import { dirname, join } from 'path'
 import { matchGlob } from '@openctx/provider'
@@ -26,12 +26,13 @@ export type PprofTool = 'go tool pprof' | 'pprof'
 
 export function getPprof(): Pprof | null {
     let hasGo = false
-    exec('which go', (error, stdout, _stderr) => {
-        if (error !== null || stdout.endsWith('not found')) {
-            return
-        }
+
+    try {
+        execSync('which go')
         hasGo = true
-    })
+    } catch (e) {
+        return null
+    }
 
     if (!hasGo) {
         return null
@@ -73,11 +74,15 @@ export function findReportPath(currentDir: string, options: SearchOptions): stri
         let contents: string[] = []
         try {
             contents = readdirSync(searchDir)
-        } catch {
+        } catch (e) {
             return null
         }
 
         for (const file of contents) {
+            // TODO: search for binary
+            // Note, that by breaking the loop after finding the report we assume that the binary
+            // is located in in the same directories or in one of the directories we've searched before.
+            // Which is a rather fair assumption.
             if (matchReport(file)) {
                 report = join(searchDir, file)
                 break Search
@@ -89,6 +94,7 @@ export function findReportPath(currentDir: string, options: SearchOptions): stri
         }
         searchDir = dirname(searchDir)
     }
+
     return report
 }
 
@@ -150,21 +156,22 @@ export class Pprof {
         this.binary = path
     }
 
+    // TODO: return raw output
     top(options: TopOptions): TopOutput | null {
         if (!this.report) {
             return null
         }
 
         const cmd = this.topCmd(options)
-        let out: string | null = null
-        exec(cmd, (error, stdout, stderr) => {
-            if (error !== null || stderr.endsWith('no such file or directory')) {
-                return
-            }
-            out = stdout
-        })
 
-        if (out === null) {
+        let out: string | null = null
+        try {
+            out = execSync(cmd).toString('utf-8').trim()
+        } catch (e) {
+            return null
+        }
+
+        if (out === null || out.includes('no such file or directory')) {
             return null
         }
 
