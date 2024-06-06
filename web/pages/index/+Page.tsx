@@ -62,6 +62,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'Confluence', type: 'provider', slug: 'confluence' },
     { name: 'Jira', type: 'provider', slug: 'jira' },
     { name: 'Linear Issues', type: 'provider', slug: 'linear-issues' },
+    { name: 'Linear Docs', type: 'provider', slug: 'linear-docs' },
     { name: 'Slack', type: 'provider', slug: 'slack' },
     { name: 'Google Docs', type: 'provider', slug: 'google-docs' },
     { name: 'Notion', type: 'provider', slug: 'notion' },

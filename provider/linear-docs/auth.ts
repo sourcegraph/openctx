@@ -1,4 +1,4 @@
-// Identical to provider/linear-docs/auth.ts.
+// Identical to provider/linear-issues/auth.ts.
 // Keep the duplicate for now to keep things simple.
 import { readFileSync, writeFileSync } from 'fs'
 import http from 'http'
