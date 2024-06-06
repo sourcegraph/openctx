@@ -99,5 +99,5 @@ export default function parseGolang(source: string): Func[] {
  * @returns string
  */
 function escapeSpecial(s: string): string {
-    return s.replace(/[().*]/g, '\\$&')
+    return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
