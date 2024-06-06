@@ -35,8 +35,6 @@ Issues:
 
 ## Configuration
 
-This provider configuration is a subset of the configuration for the NotionHQ JavaScript client:
-
 - `host` — Host URL — Required
 - `port` — Host port — Optional
 - `username` — Username — Required
