@@ -14,7 +14,7 @@ describe('esmToCommonJS', () => {
         expect(esmToCommonJS(esm)).toBe(expected)
     })
 
-    test("aliased import statements", () => {
+    test('aliased import statements', () => {
         const esm = "import { foo as foo2 } from './foo.js'"
         const expected = "const foo2 = require('./foo.js').foo;"
         expect(esmToCommonJS(esm)).toBe(expected)
