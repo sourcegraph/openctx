@@ -24,7 +24,7 @@ export const DocsLayout: FunctionComponent<{ children: ReactNode }> = ({ childre
             <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 md:px-8">
                 <NavMenu
                     contentPageInfos={pageContext.contentPageInfos}
-                    className="fixed inset-0 left-[max(0px,calc(50%-45rem))] right-auto top-[3.8125rem] z-20 hidden w-[19rem] pb-10 pl-8 pr-6 lg:block"
+                    className="fixed inset-0 left-[max(0px,calc(50%-45rem))] right-auto top-[3.8125rem] z-20 hidden w-[15rem] pb-10 pl-8 pr-6 lg:block"
                 />
                 <div className="mb-24 lg:pl-[19.6rem]">
                     <div className="mt-10">{children}</div>
