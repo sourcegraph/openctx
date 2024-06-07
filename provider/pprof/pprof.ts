@@ -28,8 +28,10 @@ export function getPprof(): Pprof | null {
     let hasGo = false
 
     try {
-        execSync('which go')
+        const stdout = execSync('which go').toString('utf-8').trim()
+        if (!stdout.endsWith('not found')) {
         hasGo = true
+        }
     } catch (e) {
         return null
     }

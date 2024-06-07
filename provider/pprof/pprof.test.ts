@@ -22,9 +22,7 @@ describe('pprof', () => {
     })
 
     test('get pprof (installed)', () => {
-        execSyncMock.mockImplementationOnce(
-            mockExecSync('/usr/local/go/bin') as unknown as typeof execSync
-        )
+        execSyncMock.mockReturnValueOnce(buffer('/usr/local/go/bin'))
 
         const pprof = getPprof()
 
@@ -33,7 +31,7 @@ describe('pprof', () => {
     })
 
     test('get pprof (not installed)', () => {
-        execSyncMock.mockImplementationOnce(mockExecSync('go not found') as unknown as typeof execSync)
+        execSyncMock.mockReturnValueOnce(buffer('go not found'))
 
         const pprof = getPprof()
 
@@ -77,9 +75,7 @@ describe('pprof', () => {
     })
 
     test('find report with workspaceRoot (does not exist)', () => {
-        readdirSyncMock.mockImplementation(((s: string): string[] => {
-            return []
-        }) as unknown as typeof readdirSync)
+        readdirSyncMock.mockReturnValueOnce([])
 
         const profilePath = findReportPath('/path/to/current', {
             reportGlob: '*.pprof',
@@ -99,7 +95,7 @@ describe('pprof', () => {
             want: `go tool pprof -top -show="main\\." -cum -noinlines report.pprof`,
         },
         {
-            name: 'defaults',
+            name: 'include binary',
             tool: 'go tool pprof',
             opts: { package: 'main' },
             binary: './my-binary',
@@ -119,7 +115,7 @@ describe('pprof', () => {
             want: `go tool pprof -top -show="main\\." -cum report.pprof`,
         },
     ])('top command ($name)', (tt: TopCmdTest) => {
-        execSyncMock.mockImplementationOnce(mockExecSync('') as unknown as typeof execSync)
+        execSyncMock.mockReturnValueOnce(buffer(''))
         const pprof = new Pprof(tt.tool)
         pprof.setReport('report.pprof')
         pprof.setBinary(tt.binary)
@@ -127,10 +123,10 @@ describe('pprof', () => {
         pprof.top(tt.opts)
 
         expect(execSyncMock).toHaveBeenCalledOnce()
-        expect(execSync).toHaveBeenCalledWith(tt.want, expect.any(Function))
+        expect(execSync).toHaveBeenCalledWith(tt.want)
     })
 
-    test.only('top (CPU)', () => {
+    test('top (CPU)', () => {
         const outputCpu = `File: pprof-example
 Type: cpu
 Time: Jun 1, 2024 at 10:56pm (CEST)
@@ -147,7 +143,7 @@ Showing top 3 nodes out of 7
 
         const tool: PprofTool = 'go tool pprof'
         const topOptions: TopOptions = { package: 'main' }
-        execSyncMock.mockImplementationOnce(mockExecSync(outputCpu) as unknown as typeof execSync)
+        execSyncMock.mockReturnValueOnce(buffer(outputCpu))
 
         const pprof = new Pprof(tool)
         pprof.setReport('/path/to/report.pprof')
@@ -168,8 +164,6 @@ Showing top 3 nodes out of 7
     test.todo('list')
 })
 
-function mockExecSync(stdout: string): (command: string) => Buffer {
-    return (_command: string) => {
-        return Buffer.from(stdout, 'utf-8')
-    }
+function buffer(s: string): Buffer {
+    return Buffer.from(s, 'utf-8')
 }
