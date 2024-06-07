@@ -30,7 +30,7 @@ export function getPprof(): Pprof | null {
     try {
         const stdout = execSync('which go').toString('utf-8').trim()
         if (!stdout.endsWith('not found')) {
-        hasGo = true
+            hasGo = true
         }
     } catch (e) {
         return null
@@ -202,6 +202,7 @@ export class Pprof {
         let unit: string | null = null
         const nodes: Node[] = []
 
+        // Find the table with per-function stats and discard the headers
         const startPos = output.search(/ +flat +flat% +sum% +cum +cum%/)
         if (startPos === -1) {
             return null
