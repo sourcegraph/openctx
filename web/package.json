@@ -10,7 +10,7 @@
     "directory": "web"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "pnpm run -w -s bundle && vite",
     "build": "pnpm run -w -s bundle && vite build --mode production",
     "test": "vitest",
     "preview": "vite preview"
