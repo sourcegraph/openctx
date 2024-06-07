@@ -42,7 +42,7 @@ const pprof: Provider = {
 
         const searchDir = dirname(params.uri).replace(/^file:\/{2}/, '')
         const report = findReportPath(searchDir, {
-            reportGlob: (settings.reportGlob as string) || '**/*pb.gz',
+            reportGlob: (settings.reportGlob as string) || '**/*.pb.gz',
             // workspaceRoot: workspaceRoot,
             rootDirectoryMarkers: settings.rootDirectoryMarkers as string[],
         })

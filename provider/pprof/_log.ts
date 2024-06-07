@@ -3,7 +3,7 @@
  * I could not find a way to log things to VSCode Output, so I came up with this workaround.
  *
  * This file is not imported anywhere, so no directories will be created on your machine
- * with `pprof` provider activated enabled.
+ * with `pprof` provider enabled.
  * 
  * It's only a temporary fixture -- there's probably a better solution to this.
  */
