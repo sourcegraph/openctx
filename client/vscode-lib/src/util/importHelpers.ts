@@ -15,7 +15,7 @@ export async function importProvider(providerUri: string): Promise<{ default: Pr
 
     if (vscode.env.uiKind === vscode.UIKind.Desktop) {
         // VS Code Desktop only supports require()ing of CommonJS modules.
-        return importCommonJSFromESM(source) as { default: Provider }
+        return importCommonJSFromESM(source, providerUri) as { default: Provider }
     }
 
     // VS Code Web supports import()ing, but not cross-origin.
@@ -34,9 +34,9 @@ export async function importProvider(providerUri: string): Promise<{ default: Pr
  * extension marketplace). When VS Code supports dynamic import()s for extensions, we can remove
  * this.
  */
-function importCommonJSFromESM(esmSource: string): unknown {
+function importCommonJSFromESM(esmSource: string, fakeFilename: string): unknown {
     return {
-        default: requireCommonJSFromString('<CJS-STRING>', esmToCommonJS(esmSource)),
+        default: requireCommonJSFromString(`cjs-string:${fakeFilename}`, esmToCommonJS(esmSource)),
     }
 }
 
