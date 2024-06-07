@@ -37,17 +37,12 @@ const pprof: Provider = {
             return []
         }
 
-        // let workspaceRoot: string | undefined = undefined
-        // const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.parse(params.uri))
-        // if (workspaceFolder && workspaceFolder !== null) {
-        //     workspaceRoot = workspaceFolder.uri.path
-        // }
-
         const searchDir = dirname(params.uri).replace(/^file:\/{2}/, '')
         const report = findReportPath(searchDir, {
             reportGlob: (settings.reportGlob as string) || '**/*.pb.gz',
-            // workspaceRoot: workspaceRoot,
             rootDirectoryMarkers: settings.rootDirectoryMarkers as string[],
+            // TODO: pass workspaceRoot once it's made available
+            // workspaceRoot: workspaceRoot,
         })
         if (report === null) {
             return []
