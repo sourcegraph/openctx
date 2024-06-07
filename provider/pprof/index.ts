@@ -26,7 +26,10 @@ const pprof: Provider = {
     },
 
     annotations(params: AnnotationsParams, settings: ProviderSettings): AnnotationsResult {
-        // TODO: check it is not a test file, skip otherwise
+        // Test files do not need pprof annotations.
+        if (params.uri.endsWith('_test.go')) {
+            return []
+        }
 
         const pprof = getPprof()
         if (pprof === null) {
