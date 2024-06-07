@@ -26,7 +26,6 @@ describe('esmToCommonJS', () => {
         expect(esmToCommonJS(esm)).toBe(expected)
     })
 
-
     test('default export identifiers', () => {
         const esm = 'export default foo'
         const expected = 'module.exports = foo'
