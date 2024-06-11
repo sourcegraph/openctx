@@ -9,18 +9,7 @@ import {
     createClient,
 } from '@openctx/client'
 import type { ImportedProviderConfiguration } from '@openctx/client/src/configuration.js'
-import {
-    type Observable,
-    type TapObserver,
-    catchError,
-    combineLatest,
-    from,
-    isObservable,
-    map,
-    mergeMap,
-    of,
-    tap,
-} from 'rxjs'
+import { type Observable, combineLatest, from, isObservable, map, mergeMap, of } from 'rxjs'
 import * as vscode from 'vscode'
 import { getClientConfiguration } from './configuration.js'
 import { type ExtensionApiForTesting, createApiForTesting } from './testing.js'
@@ -28,11 +17,12 @@ import { createCodeLensProvider } from './ui/editor/codeLens.js'
 import { createHoverProvider } from './ui/editor/hover.js'
 import { createShowFileItemsList } from './ui/fileItemsList.js'
 import { createStatusBarItem } from './ui/statusBarItem.js'
+import { createErrorReporter } from './util/errorReporter.js'
 import { createErrorWaiter } from './util/errorWaiter.js'
 import { importProvider } from './util/importHelpers.js'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
 
-export type VSCodeClient = Client<vscode.Range>
+type VSCodeClient = Client<vscode.Range>
 
 export interface Controller {
     observeMeta: VSCodeClient['metaChanges']
@@ -51,8 +41,6 @@ export interface Controller {
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
         opts?: ProviderMethodOptions
     ): ReturnType<VSCodeClient['annotations']>
-
-    client: Client<vscode.Range>
 }
 
 export function createController({
@@ -96,10 +84,6 @@ export function createController({
     const statusBarItem = features.statusBar ? createStatusBarItem() : null
     if (statusBarItem) disposables.push(statusBarItem)
 
-    // Pause for 10 seconds if we get 5 errors in a row.
-    const errorWaiter = createErrorWaiter(10 * 1000, 5)
-    disposables.push(errorWaiter)
-
     const client = createClient<vscode.Range>({
         configuration: resource => {
             // TODO(sqs): support multi-root somehow. this currently only takes config from the 1st root.
@@ -119,73 +103,88 @@ export function createController({
         providers,
     })
 
-    const errorTapObserver: Partial<TapObserver<any>> = {
-        next(): void {
-            errorWaiter.gotError(false)
-        },
-        error(): void {
-            // Show an error notification unless we've recently shown one (to avoid annoying
-            // the user).
-            const shouldNotify = errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
-            if (shouldNotify) {
-                showErrorNotification(outputChannel)
-            }
+    // Pause for 10 seconds if we get 5 errors in a row.
+    const errorDelay = 10 * 1000
+    const errorThreshold = 5
+    const errorWaiterMeta = createErrorWaiter(errorDelay, errorThreshold)
+    const errorWaiterMentions = createErrorWaiter(errorDelay, errorThreshold)
+    const errorWaiterItems = createErrorWaiter(errorDelay, errorThreshold)
+    const errorWaiterAnnotations = createErrorWaiter(errorDelay, errorThreshold)
+    disposables.push(errorWaiterMeta, errorWaiterMentions, errorWaiterItems, errorWaiterAnnotations)
 
-            errorWaiter.gotError(true)
-        },
-    }
-    const errorCatcher = <T = any>(error: any): Observable<T[]> => {
-        outputChannel.appendLine(error)
-        return of([])
-    }
+    const errorReporterMeta = createErrorReporter(
+        outputChannel,
+        errorWaiterMeta,
+        'OpenCtx provider failed initializing.'
+    )
+    const errorReporterMentions = createErrorReporter(
+        outputChannel,
+        errorWaiterMentions,
+        'OpenCtx provider failed to fetch mentions.'
+    )
+    const errorReporterItems = createErrorReporter(
+        outputChannel,
+        errorWaiterItems,
+        'OpenCtx provider failed to hydrate mention items.'
+    )
+    const errorReporterAnnotations = createErrorReporter(
+        outputChannel,
+        errorWaiterAnnotations,
+        'OpenCtx provider failed to get annotations.'
+    )
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
         observeMeta(params: MetaParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
+            if (!errorWaiterMeta.ok()) {
                 return of([])
             }
-            return client.metaChanges(params, opts).pipe(tap(errorTapObserver), catchError(errorCatcher))
+            return client
+                .metaChanges(params, errorReporterMeta.withObserveOpts(opts))
+                .pipe(errorReporterMeta.tapAndCatch)
         },
-        async meta(params: MetaParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
+        async meta(params: MetaParams, optsInput?: ProviderMethodOptions) {
+            if (!errorWaiterMeta.ok()) {
                 return []
             }
-            return client.meta(params, opts)
+            const { opts, onfinally } = errorReporterMeta.withPromiseOpts(optsInput)
+            return client.meta(params, opts).finally(onfinally)
         },
         observeMentions(params: MentionsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
+            if (!errorWaiterMentions.ok()) {
                 return of([])
             }
             return client
-                .mentionsChanges(params, opts)
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
+                .mentionsChanges(params, errorReporterMentions.withObserveOpts(opts))
+                .pipe(errorReporterMentions.tapAndCatch)
         },
-        async mentions(params: MentionsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
+        async mentions(params: MentionsParams, optsInput?: ProviderMethodOptions) {
+            if (!errorWaiterMentions.ok()) {
                 return []
             }
-            return client.mentions(params, opts)
+            const { opts, onfinally } = errorReporterMentions.withPromiseOpts(optsInput)
+            return client.mentions(params, opts).finally(onfinally)
         },
         observeItems(params: ItemsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
+            if (!errorWaiterItems.ok()) {
                 return of([])
             }
             return client
-                .itemsChanges(params, opts)
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
+                .itemsChanges(params, errorReporterItems.withObserveOpts(opts))
+                .pipe(errorReporterItems.tapAndCatch)
         },
-        async items(params: ItemsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
+        async items(params: ItemsParams, optsInput?: ProviderMethodOptions) {
+            if (!errorWaiterItems.ok()) {
                 return []
             }
-            return client.items(params, opts)
+            const { opts, onfinally } = errorReporterItems.withPromiseOpts(optsInput)
+            return client.items(params, opts).finally(onfinally)
         },
 
         observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc) || !errorWaiter.ok()) {
+            if (ignoreDoc(doc) || !errorWaiterAnnotations.ok()) {
                 return of([])
             }
             return client
@@ -194,24 +193,25 @@ export function createController({
                         uri: doc.uri.toString(),
                         content: doc.getText(),
                     },
-                    opts
+                    errorReporterAnnotations.withObserveOpts(opts)
                 )
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
+                .pipe(errorReporterAnnotations.tapAndCatch)
         },
-        async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc) || !errorWaiter.ok()) {
+        async annotations(doc: vscode.TextDocument, optsInput?: ProviderMethodOptions) {
+            if (ignoreDoc(doc) || !errorWaiterAnnotations.ok()) {
                 return []
             }
-            return client.annotations(
-                {
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                },
-                opts
-            )
+            const { opts, onfinally } = errorReporterAnnotations.withPromiseOpts(optsInput)
+            return client
+                .annotations(
+                    {
+                        uri: doc.uri.toString(),
+                        content: doc.getText(),
+                    },
+                    opts
+                )
+                .finally(onfinally)
         },
-
-        client,
     }
 
     if (features.annotations) {
@@ -247,17 +247,4 @@ function ignoreDoc(doc: vscode.TextDocument): boolean {
 
 function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
-}
-
-function showErrorNotification(outputChannel: vscode.OutputChannel): void {
-    const OPEN_LOG = 'Open Log'
-    vscode.window
-        .showErrorMessage('OpenCtx items failed.', {
-            title: OPEN_LOG,
-        } satisfies vscode.MessageItem)
-        .then(action => {
-            if (action?.title === OPEN_LOG) {
-                outputChannel.show()
-            }
-        })
 }
