@@ -1,6 +1,7 @@
 import {
     type AuthInfo,
     type Client,
+    type ClientCallOptions,
     type ItemsParams,
     type MentionsParams,
     type MetaParams,
@@ -48,7 +49,7 @@ export interface Controller {
     ): ReturnType<VSCodeClient['annotationsChanges']>
     annotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-        providerUri?: string
+        opts?: ClientCallOptions
     ): ReturnType<VSCodeClient['annotations']>
 
     client: Client<vscode.Range>
@@ -142,50 +143,48 @@ export function createController({
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeMeta(params: MetaParams, providerUri?: string) {
+        observeMeta(params: MetaParams, opts?: ClientCallOptions) {
+            if (!errorWaiter.ok()) {
+                return of([])
+            }
+            return client.metaChanges(params, opts).pipe(tap(errorTapObserver), catchError(errorCatcher))
+        },
+        async meta(params: MetaParams, opts?: ClientCallOptions) {
+            if (!errorWaiter.ok()) {
+                return []
+            }
+            return client.meta(params, opts)
+        },
+        observeMentions(params: MentionsParams, opts?: ClientCallOptions) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
             return client
-                .metaChanges(params, providerUri)
+                .mentionsChanges(params, opts)
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async meta(params: MetaParams, providerUri?: string) {
+        async mentions(params: MentionsParams, opts?: ClientCallOptions) {
             if (!errorWaiter.ok()) {
                 return []
             }
-            return client.meta(params, providerUri)
+            return client.mentions(params, opts)
         },
-        observeMentions(params: MentionsParams, providerUri?: string) {
+        observeItems(params: ItemsParams, opts?: ClientCallOptions) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
             return client
-                .mentionsChanges(params, providerUri)
+                .itemsChanges(params, opts)
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async mentions(params: MentionsParams, providerUri?: string) {
+        async items(params: ItemsParams, opts?: ClientCallOptions) {
             if (!errorWaiter.ok()) {
                 return []
             }
-            return client.mentions(params, providerUri)
-        },
-        observeItems(params: ItemsParams, providerUri?: string) {
-            if (!errorWaiter.ok()) {
-                return of([])
-            }
-            return client
-                .itemsChanges(params, providerUri)
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
-        },
-        async items(params: ItemsParams, providerUri?: string) {
-            if (!errorWaiter.ok()) {
-                return []
-            }
-            return client.items(params, providerUri)
+            return client.items(params, opts)
         },
 
-        observeAnnotations(doc: vscode.TextDocument, providerUri?: string) {
+        observeAnnotations(doc: vscode.TextDocument, opts?: ClientCallOptions) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
                 return of([])
             }
@@ -195,11 +194,11 @@ export function createController({
                         uri: doc.uri.toString(),
                         content: doc.getText(),
                     },
-                    providerUri
+                    opts
                 )
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async annotations(doc: vscode.TextDocument, providerUri?: string) {
+        async annotations(doc: vscode.TextDocument, opts?: ClientCallOptions) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
                 return []
             }
@@ -208,7 +207,7 @@ export function createController({
                     uri: doc.uri.toString(),
                     content: doc.getText(),
                 },
-                providerUri
+                opts
             )
         },
 
