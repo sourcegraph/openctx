@@ -70,7 +70,7 @@ ORDER BY [System.ChangedDate] DESC
         'api-version': DEFAULT_API_VERSION,
         $top: `${NUMBER_OF_ISSUES_TO_FETCH}`,
     })
-    console.log(`Calling Azure DevOps API: ${queryUrl}`)
+
     const queryResponse = await fetch(queryUrl, {
         method: 'POST',
         headers: authHeaders(settings),
@@ -105,7 +105,7 @@ ORDER BY [System.ChangedDate] DESC
             fields: fields.join(','),
             ids: workItemIds.join(','),
         })
-        console.log(`Calling Azure DevOps API: ${wiUrl}`)
+
         const workItemsResponse = await fetch(wiUrl, {
             method: 'GET',
             headers: authHeaders(settings),
@@ -156,7 +156,6 @@ export const fetchWorkItem = async (
         fields: fields.join(','),
     })
 
-    console.log(`Calling Azure DevOps API: ${url}`)
     const workItemResponse = await fetch(url, {
         method: 'GET',
         headers: authHeaders(settings),
