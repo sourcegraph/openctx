@@ -9,7 +9,7 @@ import type {
     ProviderSettings,
 } from '@openctx/provider'
 import { escapeSpecial, parseGolang } from './parser.js'
-import { type Node, findReportPath, getPprof } from './pprof.js'
+import { type Node, findReportPath as findPprofSources, getPprof } from './pprof.js'
 
 /**
  * An [OpenCtx](https://openctx.org) provider that annotates every function declaration with
@@ -38,16 +38,16 @@ const pprof: Provider = {
         }
 
         const searchDir = dirname(params.uri).replace(/^file:\/{2}/, '')
-        const report = findReportPath(searchDir, {
+        const sources = findPprofSources(searchDir, {
             reportGlob: (settings.reportGlob as string) || '**/*.pb.gz',
             rootDirectoryMarkers: settings.rootDirectoryMarkers as string[],
             // TODO: pass workspaceRoot once it's made available
             // workspaceRoot: workspaceRoot,
         })
-        if (report === null) {
+        if (!sources.report) {
             return []
         }
-        pprof.setReport(report)
+        pprof.setSources(sources)
 
         const content = parseGolang(params.content)
         if (!content) {

@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
-import { readdirSync } from 'fs'
-import { beforeEach, describe, expect, onTestFinished, test, vi } from 'vitest'
+import { type Dirent, type PathLike, accessSync, readdirSync } from 'fs'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
     Pprof,
     type PprofTool,
@@ -13,19 +13,21 @@ import {
 vi.mock('child_process', () => ({ execSync: vi.fn() }))
 const execSyncMock = vi.mocked(execSync)
 
-vi.mock('fs', () => ({ readdirSync: vi.fn() }))
+vi.mock('fs', async () => {
+    const fs = await vi.importActual('fs')
+    return { ...fs, readdirSync: vi.fn(), accessSync: vi.fn() }
+})
 const readdirSyncMock = vi.mocked(readdirSync)
+const accessSyncMock = vi.mocked(accessSync)
 
 describe('pprof', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        vi.resetAllMocks()
     })
 
     test('get pprof (go installed)', () => {
         execSyncMock.mockImplementation(whichCommand('go', '/usr/local/go/bin/og', 'pprof'))
-        onTestFinished(() => {
-            execSyncMock.mockReset()
-        })
 
         const pprof = getPprof()
 
@@ -35,9 +37,6 @@ describe('pprof', () => {
 
     test('get pprof (standalone pprof installed)', () => {
         execSyncMock.mockImplementation(whichCommand('pprof', '/usr/local/go/bin/pprof', 'go'))
-        onTestFinished(() => {
-            execSyncMock.mockReset()
-        })
 
         const pprof = getPprof()
 
@@ -59,20 +58,19 @@ describe('pprof', () => {
             return s === '/path/to' ? ['report.pprof'] : []
         }) as unknown as typeof readdirSync)
 
-        const profilePath = findReportPath('/path/to/current', {
+        const sources = findReportPath('/path/to/current', {
             reportGlob: '*.pprof',
             workspaceRoot: '/path',
         })
 
-        expect(profilePath).toBe('/path/to/report.pprof')
+        expect(sources.report).toBe('/path/to/report.pprof')
     })
 
     test('find report with rootDirectoryMarkers (does not exist)', () => {
         readdirSyncMock.mockImplementation(((s: string): string[] => {
             switch (s) {
                 case '/':
-                    // Should not reach this case
-                    return ['other.pprof']
+                    throw new Error('should not check after root directory')
                 case '/root':
                     // Contains root directory markers
                     return ['README.md', '.git']
@@ -81,23 +79,55 @@ describe('pprof', () => {
             }
         }) as unknown as typeof readdirSync)
 
-        const profilePath = findReportPath('/root/to/current', {
+        const sources = findReportPath('/root/to/current', {
             reportGlob: '*.pprof',
             rootDirectoryMarkers: ['.git'],
         })
 
-        expect(profilePath).toBeNull()
+        expect(sources.report).toBeUndefined()
     })
 
     test('find report with workspaceRoot (does not exist)', () => {
-        readdirSyncMock.mockReturnValueOnce([])
+        readdirSyncMock.mockReturnValue([])
 
-        const profilePath = findReportPath('/path/to/current', {
+        const sources = findReportPath('/path/to/current', {
             reportGlob: '*.pprof',
             workspaceRoot: '/path',
         })
 
-        expect(profilePath).toBeNull()
+        expect(sources.report).toBeUndefined()
+    })
+
+    test('find binary (exists in the same directory)', () => {
+        // File 'mybinary' exists in every directory, but only /root/mybinary/mybinary is executable
+        readdirSyncMock.mockReturnValue(['mybinary', 'test.yaml', 'README.md'] as unknown as Dirent[])
+        accessSyncMock.mockImplementation((file: PathLike, mode?: number): void => {
+            if (!(file as string).endsWith('/mybinary')) {
+                throw new Error('not a binary')
+            }
+        })
+
+        const sources = findReportPath('/root/mybinary/is/here', {
+            reportGlob: '*.pprof',
+            workspaceRoot: '/root',
+        })
+
+        expect(sources.binary).toBe('/root/mybinary/mybinary')
+        expect(accessSync).toHaveBeenCalled()
+    })
+
+    test('find binary (matches binaryGlob)', () => {
+        readdirSyncMock.mockImplementation(((s: string): string[] => {
+            return s === '/root/cmd/here/comes' ? ['mybinary.exe', 'mybinary.yaml', 'nothing'] : []
+        }) as unknown as typeof readdirSync)
+
+        const sources = findReportPath('/root/cmd/here/comes/nothing', {
+            reportGlob: '*.pprof',
+            binaryGlob: '**/cmd/**/*.exe',
+            workspaceRoot: '/root',
+        })
+
+        expect(sources.binary).toBe('/root/cmd/here/comes/mybinary.exe')
     })
 
     type TopCmdTest = { name: string; tool: PprofTool; opts: TopOptions; binary?: string; want: string }
@@ -132,8 +162,7 @@ describe('pprof', () => {
     ])('top command ($name)', (tt: TopCmdTest) => {
         execSyncMock.mockReturnValueOnce(buffer(''))
         const pprof = new Pprof(tt.tool)
-        pprof.setReport('report.pprof')
-        pprof.setBinary(tt.binary)
+        pprof.setSources({ report: 'report.pprof', binary: tt.binary })
 
         pprof.top(tt.opts)
 
@@ -161,7 +190,7 @@ Showing top 3 nodes out of 7
         execSyncMock.mockReturnValueOnce(buffer(outputCpu))
 
         const pprof = new Pprof(tool)
-        pprof.setReport('/path/to/report.pprof')
+        pprof.setSources({ report: '/path/to/report.pprof' })
 
         const top = pprof.top(topOptions)
 
@@ -184,7 +213,7 @@ function buffer(s: string): Buffer {
 }
 
 /**
- * whichCommand helper returns a mock implementation for `execSync` that expects some kind of lookup command, 
+ * whichCommand helper returns a mock implementation for `execSync` that expects some kind of lookup command,
  * e.g. `which`, and returns "not found" for binaries that should not be found in the mock invocation.
  * @param found name of the executable that is "found" in this mock
  * @param foundPath executable path that should be returned

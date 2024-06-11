@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
-import { readdirSync } from 'fs'
-import { dirname, join } from 'path'
+import { constants, accessSync, readdirSync } from 'fs'
+import { basename, dirname, join, parse } from 'path'
 import { matchGlob } from '@openctx/provider'
 
 /**
@@ -46,12 +46,18 @@ interface SearchOptions {
     reportGlob: string
     workspaceRoot?: string
     rootDirectoryMarkers?: string[]
-    binaryGlob?: string // TODO: find binary if possible
+    binaryGlob?: string
 }
 
-export function findReportPath(currentDir: string, options: SearchOptions): string | null {
+/** PprofSources are passed to pprof command. */
+interface PprofSources {
+    report?: string
+    binary?: string
+}
+
+export function findReportPath(currentDir: string, options: SearchOptions): PprofSources {
     const matchReport = matchGlob(options.reportGlob)
-    // const matchBinary = options.binaryGlob ? matchGlob(options.binaryGlob) : (s: string) => falses
+    const matchBinary = options.binaryGlob ? matchGlob(options.binaryGlob) : matchGoBinary
 
     const reachedRoot = (dir: string): boolean => {
         if (options.workspaceRoot !== undefined) {
@@ -69,7 +75,7 @@ export function findReportPath(currentDir: string, options: SearchOptions): stri
         }
     }
 
-    let report: string | null = null
+    const sources: PprofSources = {}
     let searchDir = currentDir
 
     Search: while (true) {
@@ -77,27 +83,65 @@ export function findReportPath(currentDir: string, options: SearchOptions): stri
         try {
             contents = readdirSync(searchDir)
         } catch (e) {
-            return null
+            break
         }
 
         for (const file of contents) {
-            // TODO: search for binary
+            const fullPath = join(searchDir, file)
+            if (matchBinary(fullPath)) {
+                sources.binary = fullPath
+            }
+
             // Note, that by breaking the loop after finding the report we assume that the binary
             // is located in in the same directories or in one of the directories we've searched before.
             // Which is a rather fair assumption.
+
+            // TODO: match full path to the file here, so that the user could limit directories
+            // where we should search for the report.
             if (matchReport(file)) {
-                report = join(searchDir, file)
+                sources.report = fullPath
                 break Search
             }
         }
 
         if (reachedRoot(searchDir) || searchDir === '/') {
-            return null
+            break
         }
         searchDir = dirname(searchDir)
     }
 
-    return report
+    return sources
+}
+
+/**
+ * matchGoBinary is a fallback matcher for finding Go binary to pass as a source to `pprof`.
+ *
+ * It uses a heuristic of relying on Go's convention to name binaries as their parent directories.
+ * For example, running `go build .` in `/project/cmd/thing` directory will produce `/project/cmd/thing/thing` binary.
+ *
+ * Go build automatically assigns "execute" permission to the binary, so `matchGoBinary` will only match executable files
+ * in order to differentiate from normal files that are called the same as their parent directory.
+ * @param file Full path to the file
+ * @returns
+ */
+function matchGoBinary(file: string): boolean {
+    const { base: name, ext, dir: dirFull } = parse(file)
+    const dir = basename(dirFull)
+
+    if (name !== dir || ext !== '') {
+        return false
+    }
+    return isExecutable(file)
+}
+
+/** isExecutable checks that a file has the "execute" permission. */
+function isExecutable(file: string): boolean {
+    try {
+        accessSync(file, constants.X_OK)
+        return true
+    } catch (err) {
+        return false
+    }
 }
 
 export interface TopOptions {
@@ -143,24 +187,20 @@ export interface Node {
  */
 export class Pprof {
     private tool: PprofTool
-    private report: string | null = null
-    private binary?: string
+    private sources: PprofSources
 
     constructor(tool: PprofTool) {
         this.tool = tool
+        this.sources = {}
     }
 
-    setReport(path: string) {
-        this.report = path
-    }
-
-    setBinary(path?: string) {
-        this.binary = path
+    setSources(sources: PprofSources) {
+        this.sources = sources
     }
 
     // TODO: return raw output
     top(options: TopOptions): TopOutput | null {
-        if (!this.report) {
+        if (!this.sources.report) {
             return null
         }
 
@@ -181,6 +221,8 @@ export class Pprof {
     }
 
     private topCmd(options: TopOptions): string {
+        const { report, binary } = this.sources
+
         let cmd = this.tool + ` -top -show="${options.package}\\."`
         cmd += options.sort ? ` -${options.sort}` : ' -cum'
 
@@ -188,10 +230,10 @@ export class Pprof {
             cmd += ' -noinlines'
         }
 
-        if (this.binary) {
-            cmd += ` ${this.binary}`
+        if (binary) {
+            cmd += ` ${binary}`
         }
-        cmd += ` ${this.report}`
+        cmd += ` ${report}`
         return cmd
     }
 
