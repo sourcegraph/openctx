@@ -1,10 +1,10 @@
 import {
     type AuthInfo,
     type Client,
-    type ClientCallOptions,
     type ItemsParams,
     type MentionsParams,
     type MetaParams,
+    type ProviderMethodOptions,
     type Range,
     createClient,
 } from '@openctx/client'
@@ -49,7 +49,7 @@ export interface Controller {
     ): ReturnType<VSCodeClient['annotationsChanges']>
     annotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-        opts?: ClientCallOptions
+        opts?: ProviderMethodOptions
     ): ReturnType<VSCodeClient['annotations']>
 
     client: Client<vscode.Range>
@@ -143,19 +143,19 @@ export function createController({
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeMeta(params: MetaParams, opts?: ClientCallOptions) {
+        observeMeta(params: MetaParams, opts?: ProviderMethodOptions) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
             return client.metaChanges(params, opts).pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async meta(params: MetaParams, opts?: ClientCallOptions) {
+        async meta(params: MetaParams, opts?: ProviderMethodOptions) {
             if (!errorWaiter.ok()) {
                 return []
             }
             return client.meta(params, opts)
         },
-        observeMentions(params: MentionsParams, opts?: ClientCallOptions) {
+        observeMentions(params: MentionsParams, opts?: ProviderMethodOptions) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
@@ -163,13 +163,13 @@ export function createController({
                 .mentionsChanges(params, opts)
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async mentions(params: MentionsParams, opts?: ClientCallOptions) {
+        async mentions(params: MentionsParams, opts?: ProviderMethodOptions) {
             if (!errorWaiter.ok()) {
                 return []
             }
             return client.mentions(params, opts)
         },
-        observeItems(params: ItemsParams, opts?: ClientCallOptions) {
+        observeItems(params: ItemsParams, opts?: ProviderMethodOptions) {
             if (!errorWaiter.ok()) {
                 return of([])
             }
@@ -177,14 +177,14 @@ export function createController({
                 .itemsChanges(params, opts)
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async items(params: ItemsParams, opts?: ClientCallOptions) {
+        async items(params: ItemsParams, opts?: ProviderMethodOptions) {
             if (!errorWaiter.ok()) {
                 return []
             }
             return client.items(params, opts)
         },
 
-        observeAnnotations(doc: vscode.TextDocument, opts?: ClientCallOptions) {
+        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
                 return of([])
             }
@@ -198,7 +198,7 @@ export function createController({
                 )
                 .pipe(tap(errorTapObserver), catchError(errorCatcher))
         },
-        async annotations(doc: vscode.TextDocument, opts?: ClientCallOptions) {
+        async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
             if (ignoreDoc(doc) || !errorWaiter.ok()) {
                 return []
             }
