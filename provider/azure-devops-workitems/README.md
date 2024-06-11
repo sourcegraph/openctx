@@ -7,7 +7,7 @@
 1. [Create an personal access token](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows)
 2. Configure your OpenCtx client
 
-### Azure DevOps Service 
+### Azure DevOps Services
 
 ```json
 "openctx.providers": {

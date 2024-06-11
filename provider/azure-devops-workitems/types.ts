@@ -18,13 +18,7 @@ export interface WorkItem {
         [key: string]: any
     }
     id?: number
-    /**
-     * Relations of the work item.
-     */
     relations?: WorkItemRelation[]
-    /**
-     * Revision number of the work item.
-     */
     rev?: number
 }
 
