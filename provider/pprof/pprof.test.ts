@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
 import { readdirSync } from 'fs'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { beforeEach, describe, expect, onTestFinished, test, vi } from 'vitest'
 import {
     Pprof,
     type PprofTool,
@@ -21,12 +21,27 @@ describe('pprof', () => {
         vi.clearAllMocks()
     })
 
-    test('get pprof (installed)', () => {
-        execSyncMock.mockReturnValueOnce(buffer('/usr/local/go/bin'))
+    test('get pprof (go installed)', () => {
+        execSyncMock.mockImplementation(whichCommand('go', '/usr/local/go/bin/og', 'pprof'))
+        onTestFinished(() => {
+            execSyncMock.mockReset()
+        })
 
         const pprof = getPprof()
 
-        expect(execSync).toHaveBeenCalledOnce()
+        expect(execSync).toHaveBeenCalled()
+        expect(pprof).not.toBeNull()
+    })
+
+    test('get pprof (standalone pprof installed)', () => {
+        execSyncMock.mockImplementation(whichCommand('pprof', '/usr/local/go/bin/pprof', 'go'))
+        onTestFinished(() => {
+            execSyncMock.mockReset()
+        })
+
+        const pprof = getPprof()
+
+        expect(execSync).toHaveBeenCalled()
         expect(pprof).not.toBeNull()
     })
 
@@ -35,7 +50,7 @@ describe('pprof', () => {
 
         const pprof = getPprof()
 
-        expect(execSync).toHaveBeenCalledOnce()
+        expect(execSync).toHaveBeenCalled()
         expect(pprof).toBeNull()
     })
 
@@ -166,4 +181,24 @@ Showing top 3 nodes out of 7
 
 function buffer(s: string): Buffer {
     return Buffer.from(s, 'utf-8')
+}
+
+/**
+ * whichCommand helper returns a mock implementation for `execSync` that expects some kind of lookup command, 
+ * e.g. `which`, and returns "not found" for binaries that should not be found in the mock invocation.
+ * @param found name of the executable that is "found" in this mock
+ * @param foundPath executable path that should be returned
+ * @param notFound name of the executable that is "not found" in this mock
+ * @returns stdout buffer
+ */
+function whichCommand(found: string, foundPath: string, notFound: string): (cmd: string) => Buffer {
+    return (cmd: string): Buffer => {
+        switch (true) {
+            case cmd.includes(found):
+                return buffer(foundPath)
+            case cmd.includes(notFound):
+                return buffer(`${notFound} not found`)
+        }
+        return buffer('command not found: ' + cmd)
+    }
 }
