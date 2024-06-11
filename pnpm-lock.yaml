@@ -492,7 +492,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
 
-  provider/azure-devops:
+  provider/azure-devops-workitems:
     dependencies:
       '@openctx/provider':
         specifier: workspace:*
