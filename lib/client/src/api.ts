@@ -22,7 +22,7 @@ import {
     startWith,
     tap,
 } from 'rxjs'
-import type { ClientEnv } from './client/client.js'
+import type { ClientEnv, ProviderMethodOptions } from './client/client.js'
 import type { ProviderClient } from './providerClient/createProviderClient.js'
 
 /**
@@ -48,23 +48,13 @@ export interface ProviderClientWithSettings {
     settings: ProviderSettings
 }
 
-export interface ObserveOptions {
+export interface ObserveOptions extends Pick<ProviderMethodOptions, 'errorHook'> {
     /**
      * Emit partial results immediately. If `false`, wait for all providers to return an initial
      * result before emitting. If the caller is consuming the result as a Promise (with only one
      * value), this should be `false`.
      */
     emitPartial: boolean
-
-    /**
-     * If set will be called each time a provider returns an error. Errors are
-     * only logged in the OpenCtx client since we do not want a badly configured
-     * provider causing all to fail. This allows a caller to do have other
-     * behaviours on failure.
-     *
-     * If errorHook is set console.error will not be called on the error.
-     */
-    errorHook?(providerUri: string, error: any): void
 }
 
 /**

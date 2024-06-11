@@ -2,7 +2,13 @@ export type * from '@openctx/protocol'
 export type { Provider } from '@openctx/provider'
 export type * from '@openctx/schema'
 export { observeItems, type Annotation, type EachWithProviderUri } from './api.js'
-export { createClient, type AuthInfo, type Client, type ClientEnv } from './client/client.js'
+export {
+    createClient,
+    type AuthInfo,
+    type Client,
+    type ProviderMethodOptions as ClientCallOptions,
+    type ClientEnv,
+} from './client/client.js'
 export { type ConfigurationUserInput as ClientConfiguration } from './configuration.js'
 export type { Logger } from './logger.js'
 export { fetchProviderSource } from './providerClient/transport/module.js'
