@@ -6,8 +6,8 @@ export {
     createClient,
     type AuthInfo,
     type Client,
-    type ProviderMethodOptions as ClientCallOptions,
     type ClientEnv,
+    type ProviderMethodOptions,
 } from './client/client.js'
 export { type ConfigurationUserInput as ClientConfiguration } from './configuration.js'
 export type { Logger } from './logger.js'
