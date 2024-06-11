@@ -25,21 +25,21 @@ const topNodeRegex =
 export type PprofTool = 'go tool pprof' | 'pprof'
 
 export function getPprof(): Pprof | null {
-    let hasGo = false
-
     try {
         const stdout = execSync('which go').toString('utf-8').trim()
         if (!stdout.endsWith('not found')) {
-            hasGo = true
+            return new Pprof('go tool pprof')
         }
-    } catch (e) {
-        return null
-    }
+    } catch (e) {}
 
-    if (!hasGo) {
-        return null
-    }
-    return new Pprof('go tool pprof')
+    try {
+        const stdout = execSync('which pprof').toString('utf-8').trim()
+        if (!stdout.endsWith('not found')) {
+            return new Pprof('pprof')
+        }
+    } catch (e) {}
+
+    return null
 }
 
 interface SearchOptions {
