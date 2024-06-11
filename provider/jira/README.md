@@ -12,7 +12,7 @@
     // ...other providers...
     "https://openctx.org/npm/@openctx/provider-jira": {
         "url": "https://<subdomain>.atlassian.net/",
-        "username": "<email-address>",
+        "email": "<email-address>",
         "apiToken": "<your-atlassian-api-token>",
     }
 },
