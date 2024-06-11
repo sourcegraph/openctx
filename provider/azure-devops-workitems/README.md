@@ -4,7 +4,7 @@
 
 ## Usage
 
-1. [Create an personal access token](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows)
+1. [Create a personal access token](https://learn.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=Windows)
 2. Configure your OpenCtx client
 
 ### Azure DevOps Services
