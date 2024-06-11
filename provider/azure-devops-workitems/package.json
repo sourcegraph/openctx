@@ -2,7 +2,7 @@
   "name": "@openctx/azure-devops-workitems",
   "private": false,
   "version": "0.0.1",
-  "description": "Azure DevOps (OpenCtx provider)",
+  "description": "Azure DevOps Work Items (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/azure-devops-workitems",
   "repository": {
