@@ -54,12 +54,10 @@ describe('pprof', () => {
     })
 
     test('find report (exists)', () => {
-        readdirSyncMock.mockImplementation(((s: string): string[] => {
-            return s === '/path/to' ? ['report.pprof'] : []
-        }) as unknown as typeof readdirSync)
+        readdirSyncMock.mockReturnValue(['report.pprof'] as unknown as Dirent[])
 
         const sources = findReportPath('/path/to/current', {
-            reportGlob: '*.pprof',
+            reportGlob: '**/to/*.pprof',
             workspaceRoot: '/path',
         })
 
@@ -71,7 +69,7 @@ describe('pprof', () => {
             switch (s) {
                 case '/':
                     throw new Error('should not check after root directory')
-                case '/root':
+                case '/path':
                     // Contains root directory markers
                     return ['README.md', '.git']
                 default:
@@ -79,8 +77,8 @@ describe('pprof', () => {
             }
         }) as unknown as typeof readdirSync)
 
-        const sources = findReportPath('/root/to/current', {
-            reportGlob: '*.pprof',
+        const sources = findReportPath('/path/to/current', {
+            reportGlob: '**/*.pprof',
             rootDirectoryMarkers: ['.git'],
         })
 
@@ -88,10 +86,10 @@ describe('pprof', () => {
     })
 
     test('find report with workspaceRoot (does not exist)', () => {
-        readdirSyncMock.mockReturnValue([])
+        readdirSyncMock.mockReturnValue(['report.pprof'] as unknown as Dirent[])
 
         const sources = findReportPath('/path/to/current', {
-            reportGlob: '*.pprof',
+            reportGlob: '/other/path/**/*.pprof',
             workspaceRoot: '/path',
         })
 
@@ -108,7 +106,7 @@ describe('pprof', () => {
         })
 
         const sources = findReportPath('/root/mybinary/is/here', {
-            reportGlob: '*.pprof',
+            reportGlob: '**/*.pprof',
             workspaceRoot: '/root',
         })
 
@@ -122,7 +120,7 @@ describe('pprof', () => {
         }) as unknown as typeof readdirSync)
 
         const sources = findReportPath('/root/cmd/here/comes/nothing', {
-            reportGlob: '*.pprof',
+            reportGlob: '**/*.pprof',
             binaryGlob: '**/cmd/**/*.exe',
             workspaceRoot: '/root',
         })

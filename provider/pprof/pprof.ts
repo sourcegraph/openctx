@@ -95,10 +95,10 @@ export function findReportPath(currentDir: string, options: SearchOptions): Ppro
             // Note, that by breaking the loop after finding the report we assume that the binary
             // is located in in the same directories or in one of the directories we've searched before.
             // Which is a rather fair assumption.
+            // The search also favours the binary that's closest to the report file,
+            // as `sources.binary` will be overwritten with the more recent matches.
 
-            // TODO: match full path to the file here, so that the user could limit directories
-            // where we should search for the report.
-            if (matchReport(file)) {
+            if (matchReport(fullPath)) {
                 sources.report = fullPath
                 break Search
             }
