@@ -1,5 +1,5 @@
 {
-  "name": "@openctx/azure-devops-workitems",
+  "name": "@openctx/provider-azure-devops-workitems",
   "private": false,
   "version": "0.0.1",
   "description": "Azure DevOps Work Items (OpenCtx provider)",
