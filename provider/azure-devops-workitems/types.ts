@@ -27,3 +27,8 @@ export interface WorkItem {
      */
     rev?: number
 }
+
+export interface AzDevArrayResponse<T> {
+    count: number
+    value: T[]
+}

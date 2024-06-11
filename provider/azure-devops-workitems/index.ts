@@ -7,12 +7,16 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import dedent from 'dedent'
+import { XMLBuilder } from 'fast-xml-parser'
 import { type SimpleWorkItem, fetchWorkItem, searchWorkItems } from './api.js'
 
 export type Settings = {
     url: string
     accessToken: string
 }
+
+const xmlBuilder = new XMLBuilder({ format: true })
 
 const checkSettings = (settings: Settings) => {
     const missingKeys = ['url', 'accessToken'].filter(key => !(key in settings))
@@ -31,19 +35,21 @@ const wiToItem = (workItem: SimpleWorkItem): Item => ({
         },
     },
     ai: {
-        content:
-            `The following represents contents of the Azure DevOps WorkItem ${workItem.id}: ` +
-            JSON.stringify({
-                workItem: {
-                    id: workItem.id,
-                    state: workItem.fields.state,
-                    assignedTo: workItem.fields.assignedTo,
-                    type: workItem.fields.type,
-                    url: workItem.url,
-                    description: workItem.fields.description,
-                    tags: workItem.fields.tags,
-                },
-            }),
+        content: dedent`
+            The following represents contents of the Azure DevOps Work Item ${workItem.id}.  
+            Use it to check if it helps.
+            Ignore it if it is not relevant.
+
+            ${xmlBuilder.build({
+                id: workItem.id,
+                state: workItem.fields.state,
+                assignedTo: workItem.fields.assignedTo,
+                type: workItem.fields.type,
+                url: workItem.url,
+                description: workItem.fields.description,
+                tags: workItem.fields.tags,
+            })}
+            `,
     },
 })
 
@@ -69,9 +75,9 @@ const azureDevOps: Provider = {
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
         checkSettings(settings)
 
-        const key = (params.mention?.data as { key: string }).key
+        const id = (params.mention?.data as { id: string }).id
 
-        const workItem = await fetchWorkItem(key, settings)
+        const workItem = await fetchWorkItem(id, settings)
 
         if (!workItem) {
             return []

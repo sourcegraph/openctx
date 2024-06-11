@@ -1,14 +1,14 @@
 {
-  "name": "@openctx/azure-devops",
+  "name": "@openctx/azure-devops-workitems",
   "private": false,
   "version": "0.0.1",
   "description": "Azure DevOps (OpenCtx provider)",
   "license": "Apache-2.0",
-  "homepage": "https://openctx.org/docs/providers/azure-devops",
+  "homepage": "https://openctx.org/docs/providers/azure-devops-workitems",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/azure-devops"
+    "directory": "provider/azure-devops-workitems"
   },
   "type": "module",
   "main": "dist/bundle.js",
@@ -24,6 +24,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@openctx/provider": "workspace:*"
+    "@openctx/provider": "workspace:*",
+    "dedent": "^1.5.3",
+    "fast-xml-parser": "^4.4.0",
+    "striptags": "^3.2.0"
   }
 }

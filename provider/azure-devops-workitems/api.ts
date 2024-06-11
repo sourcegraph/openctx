@@ -1,5 +1,6 @@
+import striptags from 'striptags'
 import type { Settings } from './index.ts'
-import type { WorkItem, WorkItemQueryResult } from './types.js'
+import type { AzDevArrayResponse, WorkItem, WorkItemQueryResult } from './types.js'
 
 const DEFAULT_API_VERSION = '5.0'
 const NUMBER_OF_ISSUES_TO_FETCH = 10
@@ -35,6 +36,7 @@ export interface SimpleWorkItem {
 
 const authHeaders = (settings: Settings) => ({
     Authorization: `Basic ${Buffer.from(`:${settings.accessToken}`).toString('base64')}`,
+    'content-type': 'application/json',
 })
 
 const buildUrl = (settings: Settings, path: string, searchParams: Record<string, string> = {}) => {
@@ -48,10 +50,14 @@ export const searchWorkItems = async (
     query: string | undefined,
     settings: Settings
 ): Promise<MinimalWorkItem[]> => {
+    let searchId = Number(query)
+    if (Number.isNaN(searchId)) {
+        searchId = 0
+    }
     const wiql = query
         ? `SELECT  [System.Id]
 FROM workitems
-WHERE ([System.Title] Contains '${query}' OR [System.Description]  Contains '${query}')
+WHERE ([System.Title] Contains '${query}' OR [System.Description] Contains '${query}' OR [System.Id] = ${searchId})
 ORDER BY [System.ChangedDate] DESC
 `
         : `SELECT  [System.Id]
@@ -59,22 +65,24 @@ FROM workitems
 WHERE ([System.AssignedTo] = @Me OR [System.CreatedBy] = @Me OR [System.ChangedBy] = @Me)
 ORDER BY [System.ChangedDate] DESC
 `
-    const queryResponse = await fetch(
-        buildUrl(settings, '_apis/wit/wiql', {
+
+    const queryUrl = buildUrl(settings, '/_apis/wit/wiql', {
+        'api-version': DEFAULT_API_VERSION,
+        $top: `${NUMBER_OF_ISSUES_TO_FETCH}`,
+    })
+    console.log(`Calling Azure DevOps API: ${queryUrl}`)
+    const queryResponse = await fetch(queryUrl, {
+        method: 'POST',
+        headers: authHeaders(settings),
+        body: JSON.stringify({
             query: wiql,
-            'api-version': DEFAULT_API_VERSION,
-            $top: `${NUMBER_OF_ISSUES_TO_FETCH}`,
         }),
-        {
-            method: 'POST',
-            headers: authHeaders(settings),
-        }
-    )
+    })
     if (!queryResponse.ok) {
         throw new Error(
-            `Error fetching Azure DevOps query (${queryResponse.status} ${
-                queryResponse.statusText
-            }): ${await queryResponse.text()}`
+            `Error fetching Azure DevOps query (${queryResponse?.status} ${
+                queryResponse?.statusText
+            }): ${await queryResponse?.text()}`
         )
     }
 
@@ -92,53 +100,47 @@ ORDER BY [System.ChangedDate] DESC
             WorkItemFields.WorkItemType,
             WorkItemFields.Description,
         ]
-
-        const workItemsResponse = await fetch(
-            buildUrl(settings, '_apis/wit/workitems', {
-                'api-version': DEFAULT_API_VERSION,
-                fields: fields.join(','),
-                ids: workItemIds.join(','),
-            }),
-            {
-                method: 'GET',
-                headers: authHeaders(settings),
-            }
-        )
+        const wiUrl = buildUrl(settings, '/_apis/wit/workitems', {
+            'api-version': DEFAULT_API_VERSION,
+            fields: fields.join(','),
+            ids: workItemIds.join(','),
+        })
+        console.log(`Calling Azure DevOps API: ${wiUrl}`)
+        const workItemsResponse = await fetch(wiUrl, {
+            method: 'GET',
+            headers: authHeaders(settings),
+        })
 
         if (!workItemsResponse.ok) {
             throw new Error(
-                `Error fetching Azure DevOps work items (${workItemsResponse.status} ${
-                    workItemsResponse.statusText
-                }): ${await workItemsResponse.text()}`
+                `Error fetching Azure DevOps work items (${workItemsResponse?.status} ${
+                    workItemsResponse?.statusText
+                }): ${await workItemsResponse?.text()}`
             )
         }
 
-        const workItems = (await workItemsResponse.json()) as WorkItem[]
+        const workItems = (await workItemsResponse.json()) as AzDevArrayResponse<WorkItem>
 
         return (
-            workItems?.map(item => {
+            workItems?.value?.map(item => {
                 const workItemId = item.id?.toString() ?? ''
                 const { type, title, description } = getWorkItemData(item?.fields)
                 return {
                     id: workItemId,
                     description: description,
-                    title: `[${type}] ${title}`,
+                    title: `[${type} ${workItemId}] ${title}`,
                     url: buildUrl(settings, `/_workitems/edit/${workItemId}`).toString(),
                 }
             }) || []
         )
     }
-
     return []
 }
 
 export const fetchWorkItem = async (
-    workItemId: string,
+    workItemId: string | number,
     settings: Settings
 ): Promise<SimpleWorkItem | null> => {
-    // Remove a potential AB# prefix from workItemId
-    const itemId = workItemId.replace('AB#', '')
-
     const fields = [
         WorkItemFields.Id,
         WorkItemFields.Title,
@@ -149,22 +151,22 @@ export const fetchWorkItem = async (
         WorkItemFields.Description,
     ]
 
-    const workItemResponse = await fetch(
-        buildUrl(settings, `_apis/wit/workitems/${itemId}`, {
-            'api-version': DEFAULT_API_VERSION,
-            fields: fields.join(','),
-        }),
-        {
-            method: 'GET',
-            headers: authHeaders(settings),
-        }
-    )
+    const url = buildUrl(settings, `/_apis/wit/workitems/${workItemId}`, {
+        'api-version': DEFAULT_API_VERSION,
+        fields: fields.join(','),
+    })
+
+    console.log(`Calling Azure DevOps API: ${url}`)
+    const workItemResponse = await fetch(url, {
+        method: 'GET',
+        headers: authHeaders(settings),
+    })
 
     if (!workItemResponse.ok) {
         throw new Error(
-            `Error fetching Azure DevOps work item (${workItemResponse.status} ${
-                workItemResponse.statusText
-            }): ${await workItemResponse.text()}`
+            `Error fetching Azure DevOps work item (${workItemResponse?.status} ${
+                workItemResponse?.statusText
+            }): ${await workItemResponse?.text()}`
         )
     }
 
@@ -173,24 +175,28 @@ export const fetchWorkItem = async (
     const { type, title, tags, description, state, assignedTo } = getWorkItemData(workItem?.fields)
 
     return {
-        id: itemId,
+        id: String(workItemId),
         fields: {
             description: description,
             tags: tags.split(';'),
-            title: `[${type}] ${title}`,
+            title: `[${type} ${workItemId}] ${title}`,
             state: state,
             assignedTo: assignedTo,
             type: type,
         },
-        url: buildUrl(settings, `/_workitems/edit/${itemId}`).toString(),
+        url: buildUrl(settings, `/_workitems/edit/${workItemId}`).toString(),
     }
 }
+
 function getWorkItemData(fields?: { [key: string]: any }) {
     const type = fields?.[WorkItemFields.WorkItemType] ?? ''
     const title = fields?.[WorkItemFields.Title] ?? ''
     const state = fields?.[WorkItemFields.State] ?? ''
-    const assignedTo = fields?.[WorkItemFields.AssignedTo] ?? ''
-    const description = fields?.[WorkItemFields.Description] ?? ''
+    const assignedTo =
+        fields?.[WorkItemFields.AssignedTo]?.displayName ??
+        fields?.[WorkItemFields.AssignedTo]?.uniqueName ??
+        ''
+    const description = striptags(fields?.[WorkItemFields.Description] ?? '')
     const tags = fields?.[WorkItemFields.Tags] ?? ''
     return { type, title, state, assignedTo, tags, description }
 }
