@@ -168,8 +168,15 @@ describe('pprof', () => {
         expect(execSync).toHaveBeenCalledWith(tt.want)
     })
 
-    test('top (CPU)', () => {
-        const outputCpu = `File: pprof-example
+    type TopParseTest = {
+        name: string
+        stdout: string
+        want: TopOutput
+    }
+    test.each<TopParseTest>([
+        {
+            name: 'cpu',
+            stdout: `File: pprof-example
 Type: cpu
 Time: Jun 1, 2024 at 10:56pm (CEST)
 Duration: 8.39s, Total samples = 13.02s (155.11%)
@@ -181,28 +188,66 @@ Showing top 3 nodes out of 7
         flat  flat%   sum%        cum   cum%
         0.03s  0.23%  0.23%      6.38s 49.00%  main.main
         5.59s 42.93% 43.16%      6.21s 47.70%  main.Run
-        0.63s  4.84% 48.00%      0.63s  4.84%  pkg/list.(*L).Init`
-
+        0.63s  4.84% 48.00%      0.63s  4.84%  pkg/list.(*L).Init`,
+            want: {
+                file: 'pprof-example',
+                type: 'cpu',
+                unit: 's',
+                nodes: [
+                    { function: 'main.main', flat: 0.03, flatPerc: 0.23, cum: 6.38, cumPerc: 49 },
+                    { function: 'main.Run', flat: 5.59, flatPerc: 42.93, cum: 6.21, cumPerc: 47.7 },
+                    {
+                        function: 'pkg/list.(*L).Init',
+                        flat: 0.63,
+                        flatPerc: 4.84,
+                        cum: 0.63,
+                        cumPerc: 4.84,
+                    },
+                ],
+            },
+        },
+        {
+            name: 'memory',
+            stdout: `File: pprof-example
+Type: inuse_space
+Time: May 31, 2024 at 7:35pm (CEST)
+Active filters:
+    show=main\.
+Showing nodes accounting for 116.43MB, 100% of 116.43MB total
+        flat  flat%   sum%        cum   cum%
+        0.43MB  0.23%  0.23%      6.38MB 49.00%  main.main
+        77.4MB 42.93% 43.16%      6.21MB 47.70%  main.Run
+        10.0MB  4.84% 48.00%      10.0MB  4.84%  pkg/list.(*L).Init`,
+            want: {
+                file: 'pprof-example',
+                type: 'inuse_space',
+                unit: 'MB',
+                nodes: [
+                    { function: 'main.main', flat: 0.43, flatPerc: 0.23, cum: 6.38, cumPerc: 49 },
+                    { function: 'main.Run', flat: 77.4, flatPerc: 42.93, cum: 6.21, cumPerc: 47.7 },
+                    {
+                        function: 'pkg/list.(*L).Init',
+                        flat: 10.0,
+                        flatPerc: 4.84,
+                        cum: 10.0,
+                        cumPerc: 4.84,
+                    },
+                ],
+            },
+        },
+    ])('parsing top output ($name)', (tt: TopParseTest) => {
         const tool: PprofTool = 'go tool pprof'
         const topOptions: TopOptions = { package: 'main' }
-        execSyncMock.mockReturnValueOnce(buffer(outputCpu))
+        execSyncMock.mockReturnValueOnce(buffer(tt.stdout))
 
         const pprof = new Pprof(tool)
         pprof.setSources({ report: '/path/to/report.pprof' })
 
         const top = pprof.top(topOptions)
 
-        expect(top).toStrictEqual<TopOutput>({
-            file: 'pprof-example',
-            type: 'cpu',
-            unit: 's',
-            nodes: [
-                { function: 'main.main', flat: 0.03, flatPerc: 0.23, cum: 6.38, cumPerc: 49 },
-                { function: 'main.Run', flat: 5.59, flatPerc: 42.93, cum: 6.21, cumPerc: 47.7 },
-                { function: 'pkg/list.(*L).Init', flat: 0.63, flatPerc: 4.84, cum: 0.63, cumPerc: 4.84 },
-            ],
-        })
+        expect(top).toStrictEqual<TopOutput>(tt.want)
     })
+
     test.todo('list')
 })
 
