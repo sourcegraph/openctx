@@ -183,6 +183,7 @@ export interface Node {
 }
 
 export interface ListOutput {
+    /** Raw output of `pprof -list`. */
     raw: string
 }
 
@@ -229,12 +230,20 @@ export class Pprof {
 
     private topCmd(options: TopOptions): string {
         const { report, binary } = this.sources
+        const opt: TopOptions = {
+            ...options,
+            sort: options.sort ?? 'cum',
+            excludeInline: options.excludeInline ?? true,
+        }
 
-        let cmd = this.tool + ` -top -show="${options.package}\\."`
-        cmd += options.sort ? ` -${options.sort}` : ' -cum'
+        let cmd = this.tool + ` -top -show="${options.package}\\." -${opt.sort}`
 
-        if (options.excludeInline === undefined || options.excludeInline === true) {
+        if (opt.excludeInline) {
             cmd += ' -noinlines'
+        }
+
+        if (options.nodeCount) {
+            cmd += ` -nodecount=${options.nodeCount}`
         }
 
         // Standalone `pprof` is not able to parse a Go binary, so it ignores it altogether.
@@ -284,9 +293,9 @@ export class Pprof {
         }
 
         return {
-            type: reportType ? reportType[1] || 'cpu' : '',
+            type: reportType ? reportType[1] ?? 'cpu' : '',
             file: binaryName ? binaryName[1] : undefined,
-            unit: unit || 's',
+            unit: unit ?? 's',
             nodes: nodes,
         }
     }
