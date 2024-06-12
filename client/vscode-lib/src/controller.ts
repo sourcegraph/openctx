@@ -17,8 +17,7 @@ import { createCodeLensProvider } from './ui/editor/codeLens.js'
 import { createHoverProvider } from './ui/editor/hover.js'
 import { createShowFileItemsList } from './ui/fileItemsList.js'
 import { createStatusBarItem } from './ui/statusBarItem.js'
-import { createErrorReporter } from './util/errorReporter.js'
-import { createErrorWaiter } from './util/errorWaiter.js'
+import { ErrorReporterController, UserAction } from './util/errorReporter.js'
 import { importProvider } from './util/importHelpers.js'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
 
@@ -103,105 +102,99 @@ export function createController({
         providers,
     })
 
-    // Pause for 10 seconds if we get 5 errors in a row.
-    const errorDelay = 10 * 1000
-    const errorThreshold = 5
-    const errorWaiterMeta = createErrorWaiter(errorDelay, errorThreshold)
-    const errorWaiterMentions = createErrorWaiter(errorDelay, errorThreshold)
-    const errorWaiterItems = createErrorWaiter(errorDelay, errorThreshold)
-    const errorWaiterAnnotations = createErrorWaiter(errorDelay, errorThreshold)
-    disposables.push(errorWaiterMeta, errorWaiterMentions, errorWaiterItems, errorWaiterAnnotations)
+    const showErrorNotification = async (providerUri: string | undefined, error: any) => {
+        // TODO(keegan) try convert providerUri to a meta.name and an "Open
+        // Settings" action.
+        const message = providerUri
+            ? `Error from OpenCtx provider ${providerUri}: ${error}`
+            : `Error from OpenCtx: ${error}`
+        const OPEN_LOG = 'Open Log'
+        const action = await vscode.window.showErrorMessage(message, {
+            title: OPEN_LOG,
+        } satisfies vscode.MessageItem)
+        if (action?.title === OPEN_LOG) {
+            outputChannel.show()
+        }
+    }
 
-    const errorReporterMeta = createErrorReporter(
-        outputChannel,
-        errorWaiterMeta,
-        'OpenCtx provider failed initializing.'
-    )
-    const errorReporterMentions = createErrorReporter(
-        outputChannel,
-        errorWaiterMentions,
-        'OpenCtx provider failed to fetch mentions.'
-    )
-    const errorReporterItems = createErrorReporter(
-        outputChannel,
-        errorWaiterItems,
-        'OpenCtx provider failed to hydrate mention items.'
-    )
-    const errorReporterAnnotations = createErrorReporter(
-        outputChannel,
-        errorWaiterAnnotations,
-        'OpenCtx provider failed to get annotations.'
-    )
+    // errorReporter contains a lot of logic and state on how we notify and log
+    // errors, as well as state around if we should turn off a feature (see
+    // skipIfImplicitAction)
+    const errorReporter = new ErrorReporterController(showErrorNotification, (error: any) => {
+        outputChannel.appendLine(error)
+    })
+    disposables.push(errorReporter)
+
+    // Note: We distingiush between an explicit user action and an implicit
+    // one. Explicit user actions should always run and return errors.
+    // Implicit actions may not run if they are erroring a lot. Currently only
+    // annotations is implicit.
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeMeta(params: MetaParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiterMeta.ok()) {
-                return of([])
-            }
-            return client
-                .metaChanges(params, errorReporterMeta.withObserveOpts(opts))
-                .pipe(errorReporterMeta.tapAndCatch)
+        observeMeta(params: MetaParams, optsInput?: ProviderMethodOptions) {
+            const { opts, tapAndCatch } = errorReporter.getForObservable(UserAction.Explicit, optsInput)
+            return client.metaChanges(params, opts).pipe(tapAndCatch)
         },
         async meta(params: MetaParams, optsInput?: ProviderMethodOptions) {
-            if (!errorWaiterMeta.ok()) {
-                return []
-            }
-            const { opts, onfinally } = errorReporterMeta.withPromiseOpts(optsInput)
+            const { opts, onfinally } = errorReporter.getForPromise(UserAction.Explicit, optsInput)
             return client.meta(params, opts).finally(onfinally)
         },
-        observeMentions(params: MentionsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiterMentions.ok()) {
-                return of([])
-            }
-            return client
-                .mentionsChanges(params, errorReporterMentions.withObserveOpts(opts))
-                .pipe(errorReporterMentions.tapAndCatch)
+        observeMentions(params: MentionsParams, optsInput?: ProviderMethodOptions) {
+            const { opts, tapAndCatch } = errorReporter.getForObservable(UserAction.Explicit, optsInput)
+            return client.mentionsChanges(params, opts).pipe(tapAndCatch)
         },
         async mentions(params: MentionsParams, optsInput?: ProviderMethodOptions) {
-            if (!errorWaiterMentions.ok()) {
-                return []
-            }
-            const { opts, onfinally } = errorReporterMentions.withPromiseOpts(optsInput)
+            const { opts, onfinally } = errorReporter.getForPromise(UserAction.Explicit, optsInput)
             return client.mentions(params, opts).finally(onfinally)
         },
-        observeItems(params: ItemsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiterItems.ok()) {
-                return of([])
-            }
-            return client
-                .itemsChanges(params, errorReporterItems.withObserveOpts(opts))
-                .pipe(errorReporterItems.tapAndCatch)
+        observeItems(params: ItemsParams, optsInput?: ProviderMethodOptions) {
+            const { opts, tapAndCatch } = errorReporter.getForObservable(UserAction.Explicit, optsInput)
+            return client.itemsChanges(params, opts).pipe(tapAndCatch)
         },
         async items(params: ItemsParams, optsInput?: ProviderMethodOptions) {
-            if (!errorWaiterItems.ok()) {
-                return []
-            }
-            const { opts, onfinally } = errorReporterItems.withPromiseOpts(optsInput)
+            const { opts, onfinally } = errorReporter.getForPromise(UserAction.Explicit, optsInput)
             return client.items(params, opts).finally(onfinally)
         },
 
-        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc) || !errorWaiterAnnotations.ok()) {
+        observeAnnotations(doc: vscode.TextDocument, optsInput?: ProviderMethodOptions) {
+            if (ignoreDoc(doc)) {
                 return of([])
             }
+
+            const { skipIfImplicitAction, opts, tapAndCatch } = errorReporter.getForObservable(
+                UserAction.Implicit,
+                optsInput
+            )
+            if (skipIfImplicitAction) {
+                return of([])
+            }
+
             return client
                 .annotationsChanges(
                     {
                         uri: doc.uri.toString(),
                         content: doc.getText(),
                     },
-                    errorReporterAnnotations.withObserveOpts(opts)
+                    opts
                 )
-                .pipe(errorReporterAnnotations.tapAndCatch)
+                .pipe(tapAndCatch)
         },
         async annotations(doc: vscode.TextDocument, optsInput?: ProviderMethodOptions) {
-            if (ignoreDoc(doc) || !errorWaiterAnnotations.ok()) {
+            if (ignoreDoc(doc)) {
                 return []
             }
-            const { opts, onfinally } = errorReporterAnnotations.withPromiseOpts(optsInput)
+
+            const { skipIfImplicitAction, opts, onfinally } = errorReporter.getForPromise(
+                UserAction.Implicit,
+                optsInput
+            )
+            if (skipIfImplicitAction) {
+                return []
+            }
+
             return client
                 .annotations(
                     {

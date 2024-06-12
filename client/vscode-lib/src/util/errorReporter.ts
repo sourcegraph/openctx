@@ -1,93 +1,221 @@
 import type { ProviderMethodOptions } from '@openctx/client'
 import { type Observable, type UnaryFunction, catchError, of, pipe, tap } from 'rxjs'
-import * as vscode from 'vscode'
-import type { ErrorWaiter } from './errorWaiter.js'
+import type * as vscode from 'vscode'
+import { type ErrorWaiter, createErrorWaiter } from './errorWaiter.js'
 
 const MIN_TIME_SINCE_LAST_ERROR = 1000 * 60 * 15 /* 15 min */
 
-interface PromiseErrorHook {
+/**
+ * The users action affects our behaviour around reporting, so we explicitly
+ * tell ErrorReporter the intent.
+ */
+export enum UserAction {
+    /**
+     * Implicit actions will not report if an error has recently been shown.
+     * If they error a lot we will skip the operation.
+     */
+    Implicit = 0,
+    /**
+     * Explicit actions will always report if an error happens.
+     */
+    Explicit = 1,
+}
+
+/**
+ * What is returned from both getForObservable and getForPromise.
+ */
+interface ErrorReporterCommon {
+    /** true if we should "disable" this action due to too many errors. */
+    skipIfImplicitAction: boolean
+    /**
+     * opts that should be passed onto the provider. Will be the original opts
+     * with an errorHook set.
+     */
     opts: ProviderMethodOptions
+}
+
+interface ErrorReporterObservable extends ErrorReporterCommon {
+    tapAndCatch: UnaryFunction<any, any>
+}
+
+interface ErrorReporterPromise extends ErrorReporterCommon {
     onfinally: () => void
 }
 
-interface ErrorReporter {
-    tapAndCatch: UnaryFunction<any, any>
-    /**
-     * Returns opts with errorHook set so we report swallowed errors. This
-     * should be used on observables.
-     *
-     * The client will swallow errors so aggregation works. This calls the
-     * same functions our observable error catchers would also call.
-     */
-    withObserveOpts: (opts?: ProviderMethodOptions) => ProviderMethodOptions
-    /**
-     * Returns opts with errorHook set so we report swallowed errors.
-     * Additionally returns an onfinally function to be used on the promise.
-     *
-     * The client will swallow errors so aggregation works. This calls the
-     * same functions our observable error catchers would also call.
-     */
-    withPromiseOpts: (opts?: ProviderMethodOptions) => PromiseErrorHook
-}
+/**
+ * ErrorReporterController contains state and logic for how we report errors. We
+ * want to report errors per providerUri as well as avoid spamming the user with
+ * errors.
+ */
+export class ErrorReporterController implements vscode.Disposable {
+    private errorWaiters = new Map<string, ErrorWaiter>()
+    private errorNotificationVisible = new Set<string>()
 
-export function createErrorReporter(
-    outputChannel: vscode.OutputChannel,
-    errorWaiter: ErrorWaiter,
-    errorNotificationMessage: string
-): ErrorReporter {
-    const errorTapObserver = {
-        next(): void {
-            errorWaiter.gotError(false)
-        },
-        error(): void {
-            // Show an error notification unless we've recently shown one (to avoid annoying
-            // the user).
-            const shouldNotify = errorWaiter.timeSinceLastError() > MIN_TIME_SINCE_LAST_ERROR
-            if (shouldNotify) {
-                showErrorNotification(outputChannel, errorNotificationMessage)
-            }
+    constructor(
+        private showErrorNotification: (providerUri: string | undefined, error: any) => Thenable<any>,
+        private errorLog: (error: any) => void
+    ) {}
 
-            errorWaiter.gotError(true)
-        },
-    }
-    const errorCatcher = <T = any>(error: any): Observable<T[]> => {
-        outputChannel.appendLine(error)
-        return of([])
+    /**
+     * returns an opts with an errorHook aswell as tapAndCatch to pipe your
+     * observable into.
+     */
+    public getForObservable(
+        userAction: UserAction,
+        opts?: ProviderMethodOptions
+    ): ErrorReporterObservable {
+        const errorReporter = this.getErrorReporter(userAction, opts)
+        const tapper = () => {
+            errorReporter.onValue(undefined)
+            errorReporter.report()
+        }
+        const errorCatcher = <T = any>(error: any): Observable<T[]> => {
+            errorReporter.onError(undefined, error)
+            errorReporter.report()
+            return of([])
+        }
+        return {
+            skipIfImplicitAction: errorReporter.skipIfImplicitAction,
+            tapAndCatch: pipe(tap(tapper), catchError(errorCatcher)),
+            opts: withErrorHook(opts, (providerUri, error) => {
+                errorReporter.onError(providerUri, error)
+                errorReporter.report()
+            }),
+        }
     }
 
-    return {
-        tapAndCatch: pipe(tap(errorTapObserver), catchError(errorCatcher)),
-        withObserveOpts: (opts?: ProviderMethodOptions): ProviderMethodOptions => {
-            // TODO(keegan) because we swallow errors observers errorTapObserver
-            // will always mark success.
-            return withErrorHook(opts, (_providerUri, err) => {
-                errorCatcher(err)
-                errorTapObserver.error()
-            })
-        },
-        withPromiseOpts: (opts?: ProviderMethodOptions): PromiseErrorHook => {
-            // For promises we aggregate the errors for a single call and when
-            // the promise is complete we update errorTapObserver with success
-            // or failure. This is to prevent spamming errors if multiple
-            // providers have issues.
-            const errors: any[] = []
-            return {
-                opts: withErrorHook(opts, (_providerUri, err) => {
-                    errorCatcher(err)
-                    errorTapObserver.error()
-                }),
-                onfinally: () => {
-                    if (errors.length === 0) {
-                        errorTapObserver.next()
-                        return
-                    }
+    /**
+     * returns an opts with an errorHook aswell as onfinally function to use
+     * with the promise you return.
+     */
+    public getForPromise(userAction: UserAction, opts?: ProviderMethodOptions): ErrorReporterPromise {
+        const errorReporter = this.getErrorReporter(userAction, opts)
+        return {
+            skipIfImplicitAction: errorReporter.skipIfImplicitAction,
+            onfinally: () => {
+                errorReporter.report()
+            },
+            opts: withErrorHook(opts, (providerUri, error) => {
+                errorReporter.onError(providerUri, error)
+            }),
+        }
+    }
 
-                    const err = errors.length === 1 ? errors[0] : new AggregateError(errors)
-                    errorCatcher(err)
-                    errorTapObserver.error()
-                },
+    /**
+     * getErrorReporter implements the core reporting state that is shared
+     * between errorHook, promise and observables. It takes cares to:
+     *
+     * - Aggregate errors to only report once
+     * - Associate errors with a specific providerUri
+     * - Decide if a notification should be shown.
+     */
+    private getErrorReporter(userAction: UserAction, opts?: ProviderMethodOptions) {
+        // If we are unsure of which providerUri to associate a report with,
+        // we use this URI.
+        const defaultProviderUri = opts?.providerUri ?? ''
+
+        // We can have multiple providers fail in a call, so we store the
+        // errors per provider to correctly report back to the user.
+        const errorByUri = new Map<string, any[]>()
+
+        // onValue is called when we have succeeded
+        const onValue = (providerUri: string | undefined) => {
+            providerUri = providerUri ?? defaultProviderUri
+            // If we get a value signal we had no errors for this providerUri
+            errorByUri.set(providerUri, [])
+        }
+
+        // onError is called each time we see an error.
+        const onError = (providerUri: string | undefined, error: any) => {
+            // Append to errors for this providerUri
+            providerUri = providerUri ?? defaultProviderUri
+            const errors = errorByUri.get(providerUri) ?? []
+            errors.push(error)
+            errorByUri.set(providerUri, errors)
+
+            // Always log the error.
+            this.errorLog(error)
+        }
+
+        // report takes the seen errors so far and decides if they should be
+        // reported.
+        const report = () => {
+            // We may not have reported a value or error for
+            // defaultProviderUri, so add an empty list so we clear it out.
+            if (!errorByUri.has(defaultProviderUri)) {
+                errorByUri.set(defaultProviderUri, [])
             }
-        },
+
+            for (const [providerUri, errors] of errorByUri.entries()) {
+                const hasError = errors.length > 0
+
+                const errorWaiter = this.getErrorWaiter(providerUri)
+                errorWaiter.gotError(hasError)
+
+                // From here on out it is about notifying for an error
+                if (!hasError) {
+                    continue
+                }
+
+                // Show an error notification unless we've recently shown one
+                // (to avoid annoying the user).
+                const shouldNotify =
+                    userAction === UserAction.Explicit ||
+                    errorWaiter.timeSinceLastError() > MIN_TIME_SINCE_LAST_ERROR
+                if (shouldNotify) {
+                    const error = errors.length === 1 ? errors[0] : new AggregateError(errors)
+                    this.maybeShowErrorNotification(providerUri, error)
+                }
+            }
+
+            // Clear out seen errors so that report may be called again.
+            // This is necessary for observables.
+            errorByUri.clear()
+        }
+
+        return {
+            skipIfImplicitAction: !this.getErrorWaiter(defaultProviderUri).ok(),
+            onValue,
+            onError,
+            report,
+        }
+    }
+
+    private getErrorWaiter(providerUri: string): ErrorWaiter {
+        let errorWaiter = this.errorWaiters.get(providerUri)
+        if (errorWaiter) {
+            return errorWaiter
+        }
+
+        // Pause for 10 seconds if we get 5 errors in a row.
+        const errorDelay = 10 * 1000
+        const errorThreshold = 5
+        errorWaiter = createErrorWaiter(errorDelay, errorThreshold)
+        this.errorWaiters.set(providerUri, errorWaiter)
+        return errorWaiter
+    }
+
+    private maybeShowErrorNotification(providerUri: string, error: any) {
+        // We store the notification thenable so we can tell if the last
+        // notification for providerUri is still showing.
+        if (this.errorNotificationVisible.has(providerUri)) {
+            return
+        }
+        this.errorNotificationVisible.add(providerUri)
+        const onfinally = () => this.errorNotificationVisible.delete(providerUri)
+
+        // If providerUri is the empty string communicate that via undefined
+        this.showErrorNotification(providerUri === '' ? undefined : providerUri, error).then(
+            onfinally,
+            onfinally
+        )
+    }
+
+    public dispose() {
+        for (const errorWaiter of this.errorWaiters.values()) {
+            errorWaiter.dispose()
+        }
+        this.errorWaiters.clear()
     }
 }
 
@@ -105,17 +233,4 @@ function withErrorHook(
             errorHook(providerUri, err)
         },
     }
-}
-
-function showErrorNotification(outputChannel: vscode.OutputChannel, errorMessage: string): void {
-    const OPEN_LOG = 'Open Log'
-    vscode.window
-        .showErrorMessage(errorMessage, {
-            title: OPEN_LOG,
-        } satisfies vscode.MessageItem)
-        .then(action => {
-            if (action?.title === OPEN_LOG) {
-                outputChannel.show()
-            }
-        })
 }
