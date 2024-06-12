@@ -2,6 +2,7 @@ import { execSync } from 'child_process'
 import { type Dirent, type PathLike, accessSync, readdirSync } from 'fs'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
+    type ListOutput,
     Pprof,
     type PprofTool,
     type TopOptions,
@@ -248,7 +249,33 @@ Showing nodes accounting for 116.43MB, 100% of 116.43MB total
         expect(top).toStrictEqual<TopOutput>(tt.want)
     })
 
-    test.todo('list')
+    test('list', () => {
+        const stdout = `Total: 116.43MB
+ROUTINE ======================== main.buildDiamond in /Users/johndoe/go/src/local/pprof-example/main.go
+            0    49.57MB (flat, cum) 42.57% of Total
+            .          .    108:func buildDiamond(cfgraph *CFG, start int) int {
+            .          .    109:   bb0 := start
+            .    11.50MB    110:   NewBasicBlockEdge(cfgraph, bb0, bb0+1)
+            .    21.06MB    111:   NewBasicBlockEdge(cfgraph, bb0, bb0+2)
+            .    13.50MB    112:   NewBasicBlockEdge(cfgraph, bb0+1, bb0+3)
+            .     3.50MB    113:   NewBasicBlockEdge(cfgraph, bb0+2, bb0+3)
+            .          .    114:
+            .          .    115:   return bb0 + 3
+            .          .    116:}
+            .          .    117:
+            .          .    118:func buildConnect(cfgraph *CFG, start int, end int) {`
+        execSyncMock.mockReturnValueOnce(buffer(stdout))
+        const pprof = new Pprof('pprof')
+        pprof.setSources({ report: 'report.mprof', binary: './mybinary' })
+
+        const list = pprof.list('example.(*Thing).Do')
+
+        expect(execSyncMock).toHaveBeenCalledOnce()
+        expect(execSync).toHaveBeenCalledWith(
+            `pprof -list "example\\.\\(\\*Thing\\)\\.Do" ./mybinary report.mprof`
+        )
+        expect(list).toStrictEqual<ListOutput>({ raw: stdout })
+    })
 })
 
 function buffer(s: string): Buffer {

@@ -3,12 +3,13 @@ import type {
     Annotation,
     AnnotationsParams,
     AnnotationsResult,
+    Item,
     MetaParams,
     MetaResult,
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
-import { escapeSpecial, parseGolang } from './parser.js'
+import { parseGolang } from './parser.js'
 import { type Node, findReportPath as findPprofSources, getPprof } from './pprof.js'
 
 /**
@@ -61,21 +62,31 @@ const pprof: Provider = {
 
         const anns: Annotation[] = []
 
-        // TODO(1): turn Func[] into a Record<string, Func> for faster lookups.
-        // TODO(2): do not escape pprofRegex, delay it until it's used in `pprof -list`.
-        // This way we do not need to do the awkward conversion of `node.function` to match it.
+        // TODO(1): turn Func[] into a Record<string, Func> for faster lookups (top output should be ordered, funcs don't need to).
         for (const func of content.funcs) {
             top.nodes.forEach((node: Node, i: number) => {
-                if (func.pprofRegex !== escapeSpecial(node.function)) {
+                if (func.pprofRegex !== node.function) {
                     return
+                }
+
+                let item: Item = {
+                    title: `[#${i + 1}] ${top.type}: ${node.cum}${top.unit}, ${node.cumPerc}% (cum)`,
+                }
+
+                const list = pprof.list(node.function)
+                if (list) {
+                    item = {
+                        ...item,
+                        ai: {
+                            content: "Output of 'pprof -list' command for this function:\n" + list.raw,
+                        },
+                    }
                 }
 
                 anns.push({
                     uri: params.uri,
                     range: func.range,
-                    item: {
-                        title: `[#${i + 1}] CPU Time: ${node.cum}${top.unit}, ${node.cumPerc}% (cum)`,
-                    },
+                    item: item,
                 })
             })
         }
