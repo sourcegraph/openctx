@@ -57,7 +57,7 @@ export function parseGolang(source: string): Contents | null {
                         start: { line: i, character: start },
                         end: { line: i, character: end },
                     },
-                    pprofRegex: escapeSpecial(`${pkg}.${func}`),
+                    pprofRegex: `${pkg}.${func}`,
                 })
                 break
             }
@@ -87,7 +87,7 @@ export function parseGolang(source: string): Contents | null {
                         start: { line: i, character: start },
                         end: { line: i, character: end },
                     },
-                    pprofRegex: escapeSpecial(`${pkg}.(${receiver}).${func}`),
+                    pprofRegex: `${pkg}.(${receiver}).${func}`,
                     receiver: receiver,
                 })
                 break
@@ -96,13 +96,4 @@ export function parseGolang(source: string): Contents | null {
     }
 
     return result
-}
-
-/**
- * Escape all special regex characters in a string.
- * @param s string
- * @returns string
- */
-export function escapeSpecial(s: string): string {
-    return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }

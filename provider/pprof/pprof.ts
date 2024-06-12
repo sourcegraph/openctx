@@ -182,6 +182,10 @@ export interface Node {
     cumPerc: number
 }
 
+export interface ListOutput {
+    raw: string
+}
+
 /**
  * Pprof is a wrapper for working with `pprof` CLI.
  */
@@ -213,7 +217,11 @@ export class Pprof {
             return null
         }
 
-        if (out === null || out.includes('no such file or directory')) {
+        if (
+            out === null ||
+            out.includes('no such file or directory') ||
+            out.includes('Show expression matched no samples')
+        ) {
             return null
         }
 
@@ -230,6 +238,8 @@ export class Pprof {
             cmd += ' -noinlines'
         }
 
+        // Standalone `pprof` is not able to parse a Go binary, so it ignores it altogether.
+        // Should we omit it from the command in case this.tool === 'pprof' ?
         if (binary) {
             cmd += ` ${binary}`
         }
@@ -277,4 +287,55 @@ export class Pprof {
             nodes: nodes,
         }
     }
+
+    /**
+     * list fetches the detailed line-by-line breakdown of the function's resource consumption.
+     * @param funcRegex fully-qualified function name. That includes both the package name and the name of the struct if the function is a method.
+     * E.g. `example.MyFunction` or `example.(*ReceiverStruct).MyMethod`.
+     * @returns raw `-list` output
+     */
+    public list(funcRegex: string): ListOutput | null {
+        if (!this.sources.report) {
+            return null
+        }
+
+        const cmd = this.listCmd(funcRegex)
+
+        let out: string | null = null
+        try {
+            out = execSync(cmd).toString('utf-8').trim()
+        } catch (e) {
+            return null
+        }
+
+        if (
+            out === null ||
+            out.includes('no such file or directory') ||
+            out.includes('no matches found for regexp')
+        ) {
+            return null
+        }
+        return { raw: out }
+    }
+
+    private listCmd(funcRegex: string): string {
+        const { report, binary } = this.sources
+
+        let cmd = this.tool + ` -list "${escapeSpecial(funcRegex)}"`
+        if (binary) {
+            cmd += ` ${binary}`
+        }
+        cmd += ` ${report}`
+
+        return cmd
+    }
+}
+
+/**
+ * Escape all special regex characters in a string.
+ * @param s string
+ * @returns string
+ */
+function escapeSpecial(s: string): string {
+    return s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&')
 }
