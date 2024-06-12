@@ -61,36 +61,32 @@ const pprof: Provider = {
         }
 
         const anns: Annotation[] = []
+        top.nodes.forEach((node: Node, i: number) => {
+            const func = content.funcs[node.function]
+            if (!func) {
+                return
+            }
 
-        // TODO(1): turn Func[] into a Record<string, Func> for faster lookups (top output should be ordered, funcs don't need to).
-        for (const func of content.funcs) {
-            top.nodes.forEach((node: Node, i: number) => {
-                if (func.pprofRegex !== node.function) {
-                    return
+            let item: Item = {
+                title: `[#${i + 1}] ${top.type}: ${node.cum}${top.unit}, ${node.cumPerc}% (cum)`,
+            }
+
+            const list = pprof.list(node.function)
+            if (list) {
+                item = {
+                    ...item,
+                    ai: {
+                        content: "Output of 'pprof -list' command for this function:\n" + list.raw,
+                    },
                 }
+            }
 
-                let item: Item = {
-                    title: `[#${i + 1}] ${top.type}: ${node.cum}${top.unit}, ${node.cumPerc}% (cum)`,
-                }
-
-                const list = pprof.list(node.function)
-                if (list) {
-                    item = {
-                        ...item,
-                        ai: {
-                            content: "Output of 'pprof -list' command for this function:\n" + list.raw,
-                        },
-                    }
-                }
-
-                anns.push({
-                    uri: params.uri,
-                    range: func.range,
-                    item: item,
-                })
+            anns.push({
+                uri: params.uri,
+                range: func.range,
+                item: item,
             })
-        }
-
+        })
         return anns
     },
 }
