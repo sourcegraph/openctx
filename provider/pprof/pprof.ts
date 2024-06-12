@@ -13,10 +13,10 @@ import { matchGlob } from '@openctx/provider'
  *  5.59s 42.93% 43.16%      6.21s 47.70%  container/list.(*List).Init
  * ```
  *
- * @see https://regex101.com/r/26v9rd/1
+ * @see https://regex101.com/r/hP9plv/1
  */
 const topNodeRegex =
-    /^ +(?<flat>[\d\\.]+)(?<unit>\w) +(?<flatPerc>[\d\\.]+)% +(?:[\d\\.]+)% +(?<cum>[\d\\.]+)(?:\w) +(?<cumPerc>[\d\\.]+)% +(?<func>[\w\\.\\(\\*\\)\\/]+)/
+    /^ +(?<flat>[\d\\.]+)(?<unit>\w+) +(?<flatPerc>[\d\\.]+)% +(?:[\d\\.]+)% +(?<cum>[\d\\.]+)(?:\w+) +(?<cumPerc>[\d\\.]+)% +(?<func>[\w\\.\\(\\*\\)\\/]+)/
 
 /**
  * PprofTool is a CLI tool for reading and visualizing profile reports.
@@ -271,7 +271,7 @@ export class Pprof {
         }
 
         return {
-            type: reportType ? reportType[1] || 'cpu' : 'cpu',
+            type: reportType ? reportType[1] || 'cpu' : '',
             file: binaryName ? binaryName[1] : undefined,
             unit: unit || 's',
             nodes: nodes,
