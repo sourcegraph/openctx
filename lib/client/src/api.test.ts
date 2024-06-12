@@ -55,7 +55,12 @@ const DUMMY_CLIENT: ProviderClient = {
 }
 
 describe('observeItems', () => {
-    const OPTS: Parameters<typeof observeItems>[2] = { emitPartial: false }
+    const OPTS: Parameters<typeof observeItems>[2] = {
+        emitPartial: false,
+        errorHook: (providerUri, err) => {
+            throw new Error('unexpected error from ' + providerUri + ' ' + err)
+        },
+    }
 
     test('simple', () => {
         testScheduler().run(({ cold, expectObservable }) => {
@@ -128,6 +133,15 @@ describe('observeItems', () => {
     })
 
     test('provider error', () => {
+        let errorHookCalled = 0
+        const optsExpectingError = {
+            ...OPTS,
+            errorHook: (providerUri: string, err: any) => {
+                errorHookCalled++
+                expect(providerUri).toBe('a')
+                expect(err.message).toBe('erroringProvider')
+            },
+        }
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
                 uri: 'a',
@@ -168,7 +182,7 @@ describe('observeItems', () => {
                         ],
                     }),
                     FIXTURE_ITEMS_PARAMS,
-                    OPTS
+                    optsExpectingError
                 )
             ).toBe('a', {
                 a: [fixtureItem('b', 'a')],
@@ -176,6 +190,7 @@ describe('observeItems', () => {
                 c: [fixtureItem('b', 'c')],
             } satisfies Record<string, Item[]>)
         })
+        expect(errorHookCalled).toBe(1)
     })
 
     test('config changes', () => {
@@ -301,6 +316,15 @@ describe('observeAnnotations', () => {
     })
 
     test('provider error', () => {
+        let errorHookCalled = 0
+        const optsExpectingError = {
+            ...OPTS,
+            errorHook: (providerUri: string, err: any) => {
+                errorHookCalled++
+                expect(providerUri).toBe('a')
+                expect(err.message).toBe('erroringProvider')
+            },
+        }
         testScheduler().run(({ cold, expectObservable }) => {
             const erroringProvider: ProviderClientWithSettings = {
                 uri: 'a',
@@ -341,7 +365,7 @@ describe('observeAnnotations', () => {
                         ],
                     }),
                     FIXTURE_ANNOTATIONS_PARAMS,
-                    OPTS
+                    optsExpectingError
                 )
             ).toBe('a', {
                 a: [fixtureAnn('b', 'a')],
@@ -349,6 +373,7 @@ describe('observeAnnotations', () => {
                 c: [fixtureAnn('b', 'c')],
             } satisfies Record<string, Annotation[]>)
         })
+        expect(errorHookCalled).toBe(1)
     })
 
     test('config changes', () => {

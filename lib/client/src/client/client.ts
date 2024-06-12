@@ -116,6 +116,28 @@ export interface AuthInfo {
 }
 
 /**
+ * Options that affect the behaviour of every method on Client that calls out
+ * to an underlying provider.
+ */
+export interface ProviderMethodOptions {
+    /**
+     * If providerUri is set only providers matching providerUri will be called.
+     * Otherwise all providers are called and the results are aggregated.
+     */
+    providerUri?: string
+
+    /**
+     * If set will be called each time a provider returns an error. Errors are
+     * only logged in the OpenCtx client since we do not want a badly configured
+     * provider causing all to fail. This allows a caller to do have other
+     * behaviours on failure.
+     *
+     * If errorHook is set console.error will not be called on the error.
+     */
+    errorHook?(providerUri: string, error: any): void
+}
+
+/**
  * An OpenCtx client, used by client applications (such as editors, code browsers, etc.) to manage
  * OpenCtx providers and items.
  *
@@ -130,7 +152,7 @@ export interface Client<R extends Range> {
      * RxJS), but it means that the client needs to manually poll for updated item kinds if
      * freshness is important.
      */
-    meta(params: MetaParams, providerUri?: string): Promise<EachWithProviderUri<MetaResult[]>>
+    meta(params: MetaParams, opts?: ProviderMethodOptions): Promise<EachWithProviderUri<MetaResult[]>>
 
     /**
      * Observe information about the configured providers.
@@ -138,7 +160,10 @@ export interface Client<R extends Range> {
      * The returned observable streams information as it is received from the providers and
      * continues passing along any updates until unsubscribed.
      */
-    metaChanges(params: MetaParams, providerUri?: string): Observable<EachWithProviderUri<MetaResult[]>>
+    metaChanges(
+        params: MetaParams,
+        opts?: ProviderMethodOptions
+    ): Observable<EachWithProviderUri<MetaResult[]>>
 
     /**
      * Get the candidate items returned by the configured providers.
@@ -148,7 +173,10 @@ export interface Client<R extends Range> {
      * like RxJS), but it means that the client needs to manually poll for updated items if
      * freshness is important.
      */
-    mentions(params: MentionsParams, providerUri?: string): Promise<EachWithProviderUri<MentionsResult>>
+    mentions(
+        params: MentionsParams,
+        opts?: ProviderMethodOptions
+    ): Promise<EachWithProviderUri<MentionsResult>>
 
     /**
      * Observe OpenCtx candidate items from the configured providers.
@@ -158,7 +186,7 @@ export interface Client<R extends Range> {
      */
     mentionsChanges(
         params: MentionsParams,
-        providerUri?: string
+        opts?: ProviderMethodOptions
     ): Observable<EachWithProviderUri<MentionsResult>>
 
     /**
@@ -169,7 +197,7 @@ export interface Client<R extends Range> {
      * RxJS), but it means that the client needs to manually poll for updated items if freshness is
      * important.
      */
-    items(params: ItemsParams, providerUri?: string): Promise<EachWithProviderUri<ItemsResult>>
+    items(params: ItemsParams, opts?: ProviderMethodOptions): Promise<EachWithProviderUri<ItemsResult>>
 
     /**
      * Observe OpenCtx items from the configured providers.
@@ -177,7 +205,10 @@ export interface Client<R extends Range> {
      * The returned observable streams items as they are received from the providers and continues
      * passing along any updates until unsubscribed.
      */
-    itemsChanges(params: ItemsParams, providerUri?: string): Observable<EachWithProviderUri<ItemsResult>>
+    itemsChanges(
+        params: ItemsParams,
+        opts?: ProviderMethodOptions
+    ): Observable<EachWithProviderUri<ItemsResult>>
 
     /**
      * Get the annotations returned by the configured providers for the given resource.
@@ -189,7 +220,7 @@ export interface Client<R extends Range> {
      */
     annotations(
         params: AnnotationsParams,
-        providerUri?: string
+        opts?: ProviderMethodOptions
     ): Promise<EachWithProviderUri<Annotation<R>[]>>
 
     /**
@@ -200,7 +231,7 @@ export interface Client<R extends Range> {
      */
     annotationsChanges(
         params: AnnotationsParams,
-        providerUri?: string
+        opts?: ProviderMethodOptions
     ): Observable<EachWithProviderUri<Annotation<R>[]>>
 
     /**
@@ -294,8 +325,9 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
 
     const filterProviders = (
         providersObservable: Observable<ProviderClientWithSettings[]>,
-        uri?: string
+        opts: Pick<ProviderMethodOptions, 'providerUri'>
     ): Observable<ProviderClientWithSettings[]> => {
+        const uri = opts.providerUri
         if (!uri) {
             return providersObservable
         }
@@ -305,90 +337,74 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         )
     }
 
+    type ChangesOpts = ProviderMethodOptions & ObserveOptions
+
     const metaChanges = (
         params: MetaParams,
-        { emitPartial }: ObserveOptions,
-        providerUri?: string
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<MetaResult[]>> => {
-        return observeMeta(
-            filterProviders(providerClientsWithSettings(undefined), providerUri),
-            params,
-            {
-                logger: env.logger,
-                emitPartial,
-            }
-        )
+        return observeMeta(filterProviders(providerClientsWithSettings(undefined), opts), params, {
+            ...opts,
+            logger: env.logger,
+        })
     }
 
     const mentionsChanges = (
         params: MentionsParams,
-        { emitPartial }: ObserveOptions,
-        providerUri?: string
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<MentionsResult>> => {
-        return observeMentions(
-            filterProviders(providerClientsWithSettings(undefined), providerUri),
-            params,
-            {
-                logger: env.logger,
-                emitPartial,
-            }
-        )
+        return observeMentions(filterProviders(providerClientsWithSettings(undefined), opts), params, {
+            ...opts,
+            logger: env.logger,
+        })
     }
 
     const itemsChanges = (
         params: ItemsParams,
-        { emitPartial }: ObserveOptions,
-        providerUri?: string
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<ItemsResult>> => {
-        return observeItems(
-            filterProviders(providerClientsWithSettings(undefined), providerUri),
-            params,
-            {
-                logger: env.logger,
-                emitPartial,
-            }
-        )
+        return observeItems(filterProviders(providerClientsWithSettings(undefined), opts), params, {
+            ...opts,
+            logger: env.logger,
+        })
     }
 
     const annotationsChanges = (
         params: AnnotationsParams,
-        { emitPartial }: ObserveOptions,
-        providerUri?: string
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<Annotation<R>[]>> => {
         return observeAnnotations(
-            filterProviders(providerClientsWithSettings(params.uri), providerUri),
+            filterProviders(providerClientsWithSettings(params.uri), opts),
             params,
             {
+                ...opts,
                 logger: env.logger,
                 makeRange: env.makeRange,
-                emitPartial,
             }
         )
     }
 
     return {
-        meta: (params, providerUri) =>
-            firstValueFrom(metaChanges(params, { emitPartial: false }, providerUri), {
+        meta: (params, opts) =>
+            firstValueFrom(metaChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
-        metaChanges: (params, providerUri) => metaChanges(params, { emitPartial: true }, providerUri),
-        mentions: (params, providerUri) =>
-            firstValueFrom(mentionsChanges(params, { emitPartial: false }, providerUri), {
+        metaChanges: (params, opts) => metaChanges(params, { ...opts, emitPartial: true }),
+        mentions: (params, opts) =>
+            firstValueFrom(mentionsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
-        mentionsChanges: (params, providerUri) =>
-            mentionsChanges(params, { emitPartial: true }, providerUri),
-        items: (params, providerUri) =>
-            firstValueFrom(itemsChanges(params, { emitPartial: false }, providerUri), {
+        mentionsChanges: (params, opts) => mentionsChanges(params, { ...opts, emitPartial: true }),
+        items: (params, opts) =>
+            firstValueFrom(itemsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
-        itemsChanges: (params, providerUri) => itemsChanges(params, { emitPartial: true }, providerUri),
-        annotations: (params, providerUri) =>
-            firstValueFrom(annotationsChanges(params, { emitPartial: false }, providerUri), {
+        itemsChanges: (params, opts) => itemsChanges(params, { ...opts, emitPartial: true }),
+        annotations: (params, opts) =>
+            firstValueFrom(annotationsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
-        annotationsChanges: (params, providerUri) =>
-            annotationsChanges(params, { emitPartial: true }, providerUri),
+        annotationsChanges: (params, opts) => annotationsChanges(params, { ...opts, emitPartial: true }),
         dispose() {
             for (const sub of subscriptions) {
                 sub.unsubscribe()

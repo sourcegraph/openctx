@@ -10,6 +10,10 @@ export function esmToCommonJS(esm: string): string {
     // Convert import statements.
     let cjs = esm.replace(/(?<=^|\b)import\s+(\w+)\s+from\s+['"](.+)['"]/gm, "const $1 = require('$2');")
     cjs = cjs.replace(
+        /(?<=^|\b)import\s+\{\s+([\w\d]+)\s+as\s+([\w\d]+)\s+\}\s+from\s+['"](.+)['"]/gm,
+        "const $2 = require('$3').$1;"
+    )
+    cjs = cjs.replace(
         /(?<=^|\b)import\s*\{\s*([\w\s,]+)\s*\}\s+from\s+['"](.+)['"]/gm,
         "const { $1} = require('$2');"
     )

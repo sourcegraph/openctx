@@ -22,7 +22,7 @@ import {
     startWith,
     tap,
 } from 'rxjs'
-import type { ClientEnv } from './client/client.js'
+import type { ClientEnv, ProviderMethodOptions } from './client/client.js'
 import type { ProviderClient } from './providerClient/createProviderClient.js'
 
 /**
@@ -48,7 +48,7 @@ export interface ProviderClientWithSettings {
     settings: ProviderSettings
 }
 
-export interface ObserveOptions {
+export interface ObserveOptions extends Pick<ProviderMethodOptions, 'errorHook'> {
     /**
      * Emit partial results immediately. If `false`, wait for all providers to return an initial
      * result before emitting. If the caller is consuming the result as a Promise (with only one
@@ -69,7 +69,7 @@ export type EachWithProviderUri<T extends unknown[]> = ((T extends readonly (inf
 function observeProviderCall<R>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     fn: (provider: ProviderClientWithSettings) => Observable<R[] | null>,
-    { emitPartial, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    { emitPartial, errorHook, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
 ): Observable<EachWithProviderUri<R[]>> {
     return providerClients.pipe(
         mergeMap(providerClients =>
@@ -81,7 +81,11 @@ function observeProviderCall<R>(
                                   emitPartial ? startWith(null) : tap(),
                                   catchError(error => {
                                       logger?.(`failed to call provider: ${error}`)
-                                      console.error(error)
+                                      if (errorHook) {
+                                          errorHook(uri, error)
+                                      } else {
+                                          console.error(error)
+                                      }
                                       return of(null)
                                   })
                               )
@@ -109,13 +113,13 @@ function observeProviderCall<R>(
 export function observeMeta(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: MetaParams,
-    { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
 ): Observable<EachWithProviderUri<MetaResult[]>> {
     return observeProviderCall<MetaResult>(
         providerClients,
         ({ providerClient, settings }) =>
             from(providerClient.meta(params, settings)).pipe(map(result => [result])),
-        { logger, emitPartial }
+        opts
     )
 }
 
@@ -125,12 +129,12 @@ export function observeMeta(
 export function observeMentions(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: MentionsParams,
-    { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
 ): Observable<EachWithProviderUri<MentionsResult>> {
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) => from(providerClient.mentions(params, settings)),
-        { logger, emitPartial }
+        opts
     )
 }
 
@@ -140,12 +144,12 @@ export function observeMentions(
 export function observeItems(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: ItemsParams,
-    { logger, emitPartial }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
 ): Observable<EachWithProviderUri<ItemsResult>> {
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) => from(providerClient.items(params, settings)),
-        { logger, emitPartial }
+        opts
     )
 }
 
@@ -155,7 +159,12 @@ export function observeItems(
 export function observeAnnotations<R extends Range>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: AnnotationsParams,
-    { logger, makeRange, emitPartial }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & ObserveOptions
+    {
+        logger,
+        makeRange,
+        emitPartial,
+        errorHook,
+    }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & ObserveOptions
 ): Observable<EachWithProviderUri<Annotation<R>[]>> {
     return observeProviderCall(
         providerClients,
@@ -180,7 +189,7 @@ export function observeAnnotations<R extends Range>(
                         : null
                 )
             ),
-        { logger, emitPartial }
+        { logger, emitPartial, errorHook }
     )
 }
 

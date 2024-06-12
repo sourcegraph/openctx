@@ -33,7 +33,7 @@ async function subcommandMeta(client: Client<Range>, args: string[]): Promise<vo
         usageFatal('Error: invalid args')
     }
     const [providerUri] = args
-    const meta = await client.meta({}, providerUri)
+    const meta = await client.meta({}, { providerUri })
 
     if (process.env.OUTPUT_JSON) {
         console.log(JSON.stringify(meta, null, 2))
@@ -56,7 +56,7 @@ async function subcommandMentions(client: Client<Range>, args: string[]): Promis
     }
     const [query, providerUri] = args
 
-    const mentions = await client.mentions({ query }, providerUri)
+    const mentions = await client.mentions({ query }, { providerUri })
 
     if (process.env.OUTPUT_JSON) {
         console.log(JSON.stringify(mentions, null, 2))
@@ -81,7 +81,7 @@ async function subcommandItems(client: Client<Range>, args: string[]): Promise<v
         mention = JSON.parse(mentionJSON)
     }
 
-    const items = await client.items({ message, mention }, providerUri)
+    const items = await client.items({ message, mention }, { providerUri })
     printItems(items)
 }
 
@@ -91,9 +91,9 @@ async function subcommandMentionItems(client: Client<Range>, args: string[]): Pr
     }
     const [query, itemIndex, providerUri] = args
 
-    const mentions = await client.mentions({ query }, providerUri)
-    const mention = mentions[parseInt(itemIndex ?? 0)]
-    const items = await client.items({ mention }, mention.providerUri)
+    const mentions = await client.mentions({ query }, { providerUri })
+    const mention = mentions[Number.parseInt(itemIndex ?? 0)]
+    const items = await client.items({ mention }, { providerUri: mention.providerUri })
     printItems(items)
 }
 
