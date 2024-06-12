@@ -68,7 +68,7 @@ const pprof: Provider = {
             }
 
             let item: Item = {
-                title: `[#${i + 1}] ${top.type}: ${node.cum}${top.unit}, ${node.cumPerc}% (cum)`,
+                title: `pprof ${top.type}: ${node.cum}${top.unit}, ${node.cumPerc}% (#${i + 1}, cum)`,
             }
 
             const list = pprof.list(node.function)
