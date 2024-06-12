@@ -158,6 +158,12 @@ describe('pprof', () => {
             opts: { package: 'main', excludeInline: false },
             want: `go tool pprof -top -show="main\\." -cum report.pprof`,
         },
+        {
+            name: 'limit node count',
+            tool: 'go tool pprof',
+            opts: { package: 'main', nodeCount: 2 },
+            want: `go tool pprof -top -show="main\\." -cum -noinlines -nodecount=2 report.pprof`,
+        },
     ])('top command ($name)', (tt: TopCmdTest) => {
         execSyncMock.mockReturnValueOnce(buffer(''))
         const pprof = new Pprof(tt.tool)
