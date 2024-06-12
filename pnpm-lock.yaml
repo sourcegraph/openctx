@@ -492,6 +492,21 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
 
+  provider/azure-devops-workitems:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+      dedent:
+        specifier: ^1.5.3
+        version: 1.5.3
+      fast-xml-parser:
+        specifier: ^4.4.0
+        version: 4.4.0
+      striptags:
+        specifier: ^3.2.0
+        version: 3.2.0
+
   provider/confluence:
     dependencies:
       '@openctx/provider':
@@ -13777,6 +13792,10 @@ packages:
     dependencies:
       js-tokens: 8.0.3
     dev: true
+
+  /striptags@3.2.0:
+    resolution: {integrity: sha512-g45ZOGzHDMe2bdYMdIvdAfCQkCTDMGBazSw1ypMowwGIee7ZQ5dU0rBJ8Jqgl+jAKIv4dbeE1jscZq9wid1Tkw==}
+    dev: false
 
   /strnum@1.0.5:
     resolution: {integrity: sha512-J8bbNyKKXl5qYcR36TIO8W3mVGVHrmmxsd5PAItGkmyzwJvybiw2IVq5nqd0i4LSNSkB/sx9VHllbfFdr9k1JA==}
