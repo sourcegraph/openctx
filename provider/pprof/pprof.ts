@@ -202,7 +202,6 @@ export class Pprof {
         this.sources = sources
     }
 
-    // TODO: return raw output
     top(options: TopOptions): TopOutput | null {
         if (!this.sources.report) {
             return null
@@ -271,6 +270,10 @@ export class Pprof {
                 unit = node.unit
             }
 
+            // Should we include the raw output here the way we do in list()?
+            // It may include entries for other functions in the same package
+            // which are declared in different files, which might be a useful
+            // information to Cody.
             nodes.push({
                 function: node.func,
                 flat: parseFloat(node.flat),

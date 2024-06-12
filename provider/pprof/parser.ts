@@ -6,14 +6,17 @@ const methodRegex = /^func \(\w+ (\*)?(\w+)\) (\w+)(?:\()/m
 
 export interface Contents {
     package: string
-    funcs: Func[]
+    
+    /** The key for each function is its fully-qualified name, e.g. example.MyFunc or example.(*Thing).MyMethod,
+     * as they are unique within the file.
+    */
+    funcs: Record<string, Func>
 }
 
 /** Func is a Go function or method with additional metadata to help locate it in the file and filter for in in `pprof`.  */
 export interface Func {
     name: string
     range: Range
-    pprofRegex: string
     receiver?: string
 }
 
@@ -25,7 +28,7 @@ export function parseGolang(source: string): Contents | null {
     const pkg = pkgMatch[1]
     const result: Contents = {
         package: pkg,
-        funcs: [],
+        funcs: {},
     }
 
     const lines = source.split('\n')
@@ -51,14 +54,13 @@ export function parseGolang(source: string): Contents | null {
                 const start = 5 // "func ".length
                 const { func, end } = readFuncName(start)
 
-                result.funcs.push({
+                result.funcs[`${pkg}.${func}`] = {
                     name: func,
                     range: {
                         start: { line: i, character: start },
                         end: { line: i, character: end },
                     },
-                    pprofRegex: `${pkg}.${func}`,
-                })
+                }
                 break
             }
             case methodRegex.test(line): {
@@ -81,15 +83,14 @@ export function parseGolang(source: string): Contents | null {
                 const start = rparen + 2
                 const { func, end } = readFuncName(start)
 
-                result.funcs.push({
+                result.funcs[`${pkg}.(${receiver}).${func}`] = {
                     name: func,
                     range: {
                         start: { line: i, character: start },
                         end: { line: i, character: end },
                     },
-                    pprofRegex: `${pkg}.(${receiver}).${func}`,
                     receiver: receiver,
-                })
+                }
                 break
             }
         }
