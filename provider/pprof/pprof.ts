@@ -97,11 +97,11 @@ export function findReportPath(currentDir: string, options: SearchOptions): Ppro
             if (matchBinary(fullPath)) {
                 sources.binary = fullPath
             }
-            }
+        }
 
-            // Note, that by breaking the loop after finding the report we assume that the binary
-            // is located in in the same directories or in one of the directories we've searched before.
-            // Which is a rather fair assumption.
+        // Note, that by breaking the loop after finding the report we assume that the binary
+        // is located in in the same directories or in one of the directories we've searched before.
+        // Which is a rather fair assumption.
         if (sources.report || reachedRoot(searchDir) || searchDir === '/') {
             break
         }
