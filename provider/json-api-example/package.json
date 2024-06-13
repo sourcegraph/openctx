@@ -1,21 +1,18 @@
 {
-  "name": "@openctx/provider-hello-world",
-  "version": "0.0.13",
-  "description": "Hello World (OpenCtx provider)",
+  "name": "@openctx/provider-json-api-example",
+  "version": "0.0.1",
+  "description": "JSON API Example (OpenCtx provider)",
   "license": "Apache-2.0",
-  "homepage": "https://openctx.org/docs/providers/hello-world",
+  "homepage": "https://openctx.org/docs/providers/json-api-example",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/hello-world"
+    "url": "https://github.com/sourcegraph/json-api-example",
+    "directory": "provider/json-api-example"
   },
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/index.js",
-    "dist/index.d.ts"
-  ],
+  "files": ["dist/bundle.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
@@ -26,3 +23,4 @@
     "@openctx/provider": "workspace:*"
   }
 }
+  
