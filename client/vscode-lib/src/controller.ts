@@ -44,12 +44,14 @@ export interface Controller {
 
 export function createController({
     secrets: secretsInput,
+    extensionId,
     outputChannel,
     getAuthInfo,
     features,
     providers,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
+    extensionId: string
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
@@ -102,21 +104,6 @@ export function createController({
         providers,
     })
 
-    const showErrorNotification = async (providerUri: string | undefined, error: any) => {
-        // TODO(keegan) try convert providerUri to a meta.name and an "Open
-        // Settings" action.
-        const message = providerUri
-            ? `Error from OpenCtx provider ${providerUri}: ${error}`
-            : `Error from OpenCtx: ${error}`
-        const OPEN_LOG = 'Open Log'
-        const action = await vscode.window.showErrorMessage(message, {
-            title: OPEN_LOG,
-        } satisfies vscode.MessageItem)
-        if (action?.title === OPEN_LOG) {
-            outputChannel.show()
-        }
-    }
-
     const errorLog = (error: any) => {
         console.error(error)
         outputChannel.appendLine(error)
@@ -125,7 +112,10 @@ export function createController({
     // errorReporter contains a lot of logic and state on how we notify and log
     // errors, as well as state around if we should turn off a feature (see
     // skipIfImplicitAction)
-    const errorReporter = new ErrorReporterController(showErrorNotification, errorLog)
+    const errorReporter = new ErrorReporterController(
+        createErrorNotifier(outputChannel, extensionId),
+        errorLog
+    )
     disposables.push(errorReporter)
 
     // Note: We distingiush between an explicit user action and an implicit
@@ -246,4 +236,34 @@ function ignoreDoc(doc: vscode.TextDocument): boolean {
 
 function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
+}
+
+function createErrorNotifier(outputChannel: vscode.OutputChannel, extensionId: string) {
+    const actionItems = [
+        {
+            title: 'Show Logs',
+            do: () => {
+                outputChannel.show()
+            },
+        },
+        {
+            title: 'Open Settings',
+            do: () => {
+                vscode.commands.executeCommand('workbench.action.openSettings', {
+                    query: `@ext:${extensionId} openctx.providers`,
+                })
+            },
+        },
+    ] satisfies (vscode.MessageItem & { do: () => void })[]
+
+    return async (providerUri: string | undefined, error: any) => {
+        // TODO(keegan) try convert providerUri to a meta.name
+        const message = providerUri
+            ? `Error from OpenCtx provider ${providerUri}: ${error}`
+            : `Error from OpenCtx: ${error}`
+        const action = await vscode.window.showErrorMessage(message, ...actionItems)
+        if (action) {
+            action.do()
+        }
+    }
 }
