@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-hello-world",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Hello World (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/hello-world",
@@ -12,10 +12,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/index.js",
-    "dist/index.d.ts"
-  ],
+  "files": ["dist/index.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
