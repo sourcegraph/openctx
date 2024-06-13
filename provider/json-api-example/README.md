@@ -18,7 +18,7 @@
 
 ## Context included
 
-- Vehicle data, with films the vehicle featured in
+- Vehicle data
 
 ## Development
 
