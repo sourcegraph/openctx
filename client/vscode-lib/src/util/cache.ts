@@ -1,5 +1,3 @@
-import * as timersPromises from 'timers/promises'
-
 export class Cache<T> {
     private cache: Map<string, { value: T }> = new Map()
     private ttlMs: number
@@ -32,16 +30,18 @@ export async function bestEffort<T>(
         delay: number
     }
 ): Promise<T> {
-    const ac = new AbortController()
-    const timeout = timersPromises.setTimeout(opts.delay, opts.defaultValue, {
-        ref: false,
-        signal: ac.signal,
+    let id: ReturnType<typeof setTimeout> | undefined
+    const timeout = new Promise<T>((resolve, _) => {
+        id = setTimeout(resolve, opts.delay, opts.defaultValue)
+        id.unref()
     })
     try {
         return await Promise.race([promise, timeout])
     } catch {
         return opts.defaultValue
     } finally {
-        ac.abort()
+        if (id) {
+            clearTimeout(id)
+        }
     }
 }
