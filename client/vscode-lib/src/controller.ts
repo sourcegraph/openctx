@@ -281,7 +281,7 @@ function createErrorNotifier(
     return async (providerUri: string | undefined, error: any) => {
         const name = await getName(providerUri)
         const message = name
-            ? `Error from OpenCtx provider ${name}: ${error}`
+            ? `Error from OpenCtx provider "${name}": ${error}`
             : `Error from OpenCtx: ${error}`
         const action = await vscode.window.showErrorMessage(message, ...actionItems)
         if (action) {
