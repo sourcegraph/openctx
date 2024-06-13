@@ -78,7 +78,7 @@ export function findReportPath(currentDir: string, options: SearchOptions): Ppro
     const sources: PprofSources = {}
     let searchDir = currentDir
 
-    Search: while (true) {
+    while (true) {
         let contents: string[] = []
         try {
             contents = readdirSync(searchDir)
@@ -88,23 +88,21 @@ export function findReportPath(currentDir: string, options: SearchOptions): Ppro
 
         for (const file of contents) {
             const fullPath = join(searchDir, file)
+            if (!sources.report && matchReport(fullPath)) {
+                sources.report = fullPath
+            }
+
+            // The search favours the binary that's closest to the report file,
+            // as `sources.binary` will be overwritten with the more recent matches.
             if (matchBinary(fullPath)) {
                 sources.binary = fullPath
+            }
             }
 
             // Note, that by breaking the loop after finding the report we assume that the binary
             // is located in in the same directories or in one of the directories we've searched before.
             // Which is a rather fair assumption.
-            // The search also favours the binary that's closest to the report file,
-            // as `sources.binary` will be overwritten with the more recent matches.
-
-            if (matchReport(fullPath)) {
-                sources.report = fullPath
-                break Search
-            }
-        }
-
-        if (reachedRoot(searchDir) || searchDir === '/') {
+        if (sources.report || reachedRoot(searchDir) || searchDir === '/') {
             break
         }
         searchDir = dirname(searchDir)
