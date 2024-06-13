@@ -98,8 +98,15 @@ describe('pprof', () => {
     })
 
     test('find binary (exists in the same directory)', () => {
-        // File 'mybinary' exists in every directory, but only /root/mybinary/mybinary is executable
-        readdirSyncMock.mockReturnValue(['mybinary', 'test.yaml', 'README.md'] as unknown as Dirent[])
+        readdirSyncMock.mockImplementation(((s: string): string[] => {
+            switch (s) {
+                case '/root/mybinary':
+                    return ['report.pprof', 'mybinary']
+                default:
+                    // File 'mybinary' exists in every directory, but only /root/mybinary/mybinary is executable
+                    return ['README.md', 'mybinary']
+            }
+        }) as unknown as typeof readdirSync)
         accessSyncMock.mockImplementation((file: PathLike, mode?: number): void => {
             if (!(file as string).endsWith('/mybinary')) {
                 throw new Error('not a binary')
