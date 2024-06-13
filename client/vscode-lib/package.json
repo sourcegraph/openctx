@@ -19,7 +19,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "tsc --build --clean && pnpm run build"
   },
   "dependencies": {
     "@openctx/client": "workspace:*",
