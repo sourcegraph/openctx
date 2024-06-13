@@ -94,12 +94,7 @@ const IntegrationsList: FunctionComponent<{
 }> = ({ title, type, items, className }) => (
     <div className={clsx('flex flex-wrap items-start gap-4 sm:flex-nowrap', className)}>
         <h2 className="mt-[7px] shrink-0 whitespace-nowrap text-right text-xs sm:w-[120px] lg:text-sm">
-            <Link
-                href={`/${type}`}
-                className="font-bold text-foreground no-underline underline-offset-4 hover:underline"
-            >
-                {title}
-            </Link>
+            {title}
         </h2>
         <ul className="flex flex-wrap items-center gap-2">
             {items.map(item => (
