@@ -186,5 +186,3 @@ switch (subcommand) {
     default:
         usageFatal(`Error: unrecognized subcommand ${JSON.stringify(subcommand)}`)
 }
-
-process.exit(0)
