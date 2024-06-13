@@ -53,6 +53,10 @@ export interface MetaResult {
      */
     mentions?: {
         /**
+         * The label that is shown when a user wants to query mentions. For example `Search...` or `Paste Linear URL`.
+         */
+        label?: string
+        /**
          * The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.
          */
         selectors?: MentionSelector[]
