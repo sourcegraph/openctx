@@ -6,10 +6,10 @@ const methodRegex = /^func \(\w+ (\*)?(\w+)\) (\w+)(?:\()/m
 
 export interface Contents {
     package: string
-    
+
     /** The key for each function is its fully-qualified name, e.g. example.MyFunc or example.(*Thing).MyMethod,
      * as they are unique within the file.
-    */
+     */
     funcs: Record<string, Func>
 }
 
