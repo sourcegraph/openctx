@@ -17,6 +17,7 @@ import { createCodeLensProvider } from './ui/editor/codeLens.js'
 import { createHoverProvider } from './ui/editor/hover.js'
 import { createShowFileItemsList } from './ui/fileItemsList.js'
 import { createStatusBarItem } from './ui/statusBarItem.js'
+import { Cache, bestEffort } from './util/cache.js'
 import { ErrorReporterController, UserAction } from './util/errorReporter.js'
 import { importProvider } from './util/importHelpers.js'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
@@ -113,7 +114,7 @@ export function createController({
     // errors, as well as state around if we should turn off a feature (see
     // skipIfImplicitAction)
     const errorReporter = new ErrorReporterController(
-        createErrorNotifier(outputChannel, extensionId),
+        createErrorNotifier(outputChannel, extensionId, client),
         errorLog
     )
     disposables.push(errorReporter)
@@ -238,7 +239,28 @@ function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
 }
 
-function createErrorNotifier(outputChannel: vscode.OutputChannel, extensionId: string) {
+function createErrorNotifier(
+    outputChannel: vscode.OutputChannel,
+    extensionId: string,
+    client: Pick<VSCodeClient, 'meta'>
+) {
+    // Fetching the name can be slow or fail. So we use a cache + timeout when
+    // getting the name of a provider.
+    const nameCache = new Cache<string>({ ttlMs: 10 * 1000 })
+    const getName = async (providerUri: string | undefined) => {
+        if (providerUri === undefined) {
+            return undefined
+        }
+        const fill = async () => {
+            const meta = await bestEffort(client.meta({}, { providerUri: providerUri }), {
+                defaultValue: [],
+                delay: 250,
+            })
+            return meta.pop()?.name ?? providerUri
+        }
+        return await nameCache.getOrFill(providerUri, fill)
+    }
+
     const actionItems = [
         {
             title: 'Show Logs',
@@ -257,9 +279,9 @@ function createErrorNotifier(outputChannel: vscode.OutputChannel, extensionId: s
     ] satisfies (vscode.MessageItem & { do: () => void })[]
 
     return async (providerUri: string | undefined, error: any) => {
-        // TODO(keegan) try convert providerUri to a meta.name
-        const message = providerUri
-            ? `Error from OpenCtx provider ${providerUri}: ${error}`
+        const name = await getName(providerUri)
+        const message = name
+            ? `Error from OpenCtx provider ${name}: ${error}`
             : `Error from OpenCtx: ${error}`
         const action = await vscode.window.showErrorMessage(message, ...actionItems)
         if (action) {
