@@ -25,9 +25,10 @@ const provider: Provider = {
         }
     },
 
-    async mentions(params: MentionsParams): Promise<MentionsResult> {
+    async mentions(params: MentionsParams, settings: ProviderSettings): Promise<MentionsResult> {
         const endpoint = 'https://swapi.dev/api/vehicles'
         const url = params.query ? `${endpoint}?search=${encodeURIComponent(params.query)}` : endpoint
+
         return fetch(url)
             .then(response => response.json() as Promise<{ results: Vehicle[] }>)
             .then(data => {
