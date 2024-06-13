@@ -117,12 +117,15 @@ export function createController({
         }
     }
 
+    const errorLog = (error: any) => {
+        console.error(error)
+        outputChannel.appendLine(error)
+    }
+
     // errorReporter contains a lot of logic and state on how we notify and log
     // errors, as well as state around if we should turn off a feature (see
     // skipIfImplicitAction)
-    const errorReporter = new ErrorReporterController(showErrorNotification, (error: any) => {
-        outputChannel.appendLine(error)
-    })
+    const errorReporter = new ErrorReporterController(showErrorNotification, errorLog)
     disposables.push(errorReporter)
 
     // Note: We distingiush between an explicit user action and an implicit
