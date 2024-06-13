@@ -17,7 +17,7 @@ export const providerImplementation = {
         return {
             // We don't provide any annotations for now.
             name: 'Sentry Issues',
-            mentions: {},
+            mentions: { label: 'Paste a URL...' },
             annotations: {
                 selectors: [],
             },

@@ -8,6 +8,53 @@ import devdocs, { type Settings } from './index.js'
 const INTEGRATION = !!process.env.INTEGRATION
 
 describe('devdocs', () => {
+    test('meta', () => {
+        expect(devdocs.meta({}, {})).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (css, html, http, javascript, dom)' },
+        })
+
+        expect(
+            devdocs.meta(
+                {},
+                {
+                    urls: [
+                        'https://devdocs.io/angular~16/',
+                        'https://devdocs.io/css/',
+                        'https://devdocs.io/typescript/',
+                    ],
+                }
+            )
+        ).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (angular~16, css, typescript)' },
+        })
+
+        expect(devdocs.meta({}, { urls: ['https://devdocs.io/go/'] })).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (go)' },
+        })
+    })
+
+    test('meta malformed', () => {
+        expect(
+            devdocs.meta(
+                {},
+                {
+                    urls: [
+                        'https://devdocs.io/go',
+                        'https://github.com/sourcegraph/openctx/pull/152',
+                        'hello world',
+                        '',
+                    ],
+                }
+            )
+        ).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (go, 152)' },
+        })
+    })
+
     test('test page type', async () => {
         const fixturesDir = path.join(__dirname, '__fixtures__')
         const settings = {
