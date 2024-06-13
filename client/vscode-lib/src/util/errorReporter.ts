@@ -1,5 +1,5 @@
 import type { ProviderMethodOptions } from '@openctx/client'
-import { type Observable, type UnaryFunction, catchError, of, pipe, tap } from 'rxjs'
+import { type Observable, catchError, of, tap } from 'rxjs'
 import type * as vscode from 'vscode'
 import { type ErrorWaiter, createErrorWaiter } from './errorWaiter.js'
 
@@ -22,27 +22,6 @@ export enum UserAction {
 }
 
 /**
- * What is returned from both getForObservable and getForPromise.
- */
-interface ErrorReporterCommon {
-    /** true if we should "disable" this action due to too many errors. */
-    skipIfImplicitAction: boolean
-    /**
-     * opts that should be passed onto the provider. Will be the original opts
-     * with an errorHook set.
-     */
-    opts: ProviderMethodOptions
-}
-
-interface ErrorReporterObservable extends ErrorReporterCommon {
-    tapAndCatch: UnaryFunction<any, any>
-}
-
-interface ErrorReporterPromise extends ErrorReporterCommon {
-    onfinally: () => void
-}
-
-/**
  * ErrorReporterController contains state and logic for how we report errors. We
  * want to report errors per providerUri as well as avoid spamming the user with
  * errors.
@@ -57,47 +36,53 @@ export class ErrorReporterController implements vscode.Disposable {
     ) {}
 
     /**
-     * returns an opts with an errorHook aswell as tapAndCatch to pipe your
-     * observable into.
+     * wraps providerMethod to ensure it reports errors to the user.
      */
-    public getForObservable(
+    public wrapObservable<T, R>(
         userAction: UserAction,
-        opts?: ProviderMethodOptions
-    ): ErrorReporterObservable {
-        const errorReporter = this.getErrorReporter(userAction, opts)
-        const tapper = () => {
-            errorReporter.onValue(undefined)
-            errorReporter.report()
-        }
-        const errorCatcher = <T = any>(error: any): Observable<T[]> => {
-            errorReporter.onError(undefined, error)
-            errorReporter.report()
-            return of([])
-        }
-        return {
-            skipIfImplicitAction: errorReporter.skipIfImplicitAction,
-            tapAndCatch: pipe(tap(tapper), catchError(errorCatcher)),
-            opts: withErrorHook(opts, (providerUri, error) => {
+        providerMethod: (params: T, opts?: ProviderMethodOptions) => Observable<R>
+    ) {
+        return (params: T, opts?: ProviderMethodOptions) => {
+            const errorReporter = this.getErrorReporter(userAction, opts)
+            if (errorReporter.skip) {
+                return of([])
+            }
+
+            const tapper = () => {
+                errorReporter.onValue(undefined)
+                errorReporter.report()
+            }
+            const errorCatcher = <T = any>(error: any): Observable<T[]> => {
+                errorReporter.onError(undefined, error)
+                errorReporter.report()
+                return of([])
+            }
+
+            opts = withErrorHook(opts, (providerUri, error) => {
                 errorReporter.onError(providerUri, error)
                 errorReporter.report()
-            }),
+            })
+
+            return providerMethod(params, opts).pipe(tap(tapper), catchError(errorCatcher))
         }
     }
 
     /**
-     * returns an opts with an errorHook aswell as onfinally function to use
-     * with the promise you return.
+     * wraps providerMethod to ensure it reports errors to the user.
      */
-    public getForPromise(userAction: UserAction, opts?: ProviderMethodOptions): ErrorReporterPromise {
-        const errorReporter = this.getErrorReporter(userAction, opts)
-        return {
-            skipIfImplicitAction: errorReporter.skipIfImplicitAction,
-            onfinally: () => {
-                errorReporter.report()
-            },
-            opts: withErrorHook(opts, (providerUri, error) => {
+    public wrapPromise<T, R>(
+        userAction: UserAction,
+        providerMethod: (params: T, opts?: ProviderMethodOptions) => Promise<R>
+    ) {
+        return async (params: T, opts?: ProviderMethodOptions) => {
+            const errorReporter = this.getErrorReporter(userAction, opts)
+            if (errorReporter.skip) {
+                return []
+            }
+            opts = withErrorHook(opts, (providerUri, error) => {
                 errorReporter.onError(providerUri, error)
-            }),
+            })
+            return providerMethod(params, opts).finally(() => errorReporter.report())
         }
     }
 
@@ -174,7 +159,7 @@ export class ErrorReporterController implements vscode.Disposable {
         }
 
         return {
-            skipIfImplicitAction: !this.getErrorWaiter(defaultProviderUri).ok(),
+            skip: userAction === UserAction.Implicit && !this.getErrorWaiter(defaultProviderUri).ok(),
             onValue,
             onError,
             report,

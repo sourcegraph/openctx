@@ -1,9 +1,6 @@
 import {
     type AuthInfo,
     type Client,
-    type ItemsParams,
-    type MentionsParams,
-    type MetaParams,
     type ProviderMethodOptions,
     type Range,
     createClient,
@@ -127,80 +124,49 @@ export function createController({
     // Note: the client swallows errors, so the observable methods will report
     // internal errors but the behaviour around skipping is poor.
 
+    const clientAnnotations = errorReporter.wrapPromise(UserAction.Implicit, client.annotations)
+    const clientAnnotationsChanges = errorReporter.wrapObservable(
+        UserAction.Implicit,
+        client.annotationsChanges
+    )
+
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeMeta(params: MetaParams, optsInput?: ProviderMethodOptions) {
-            const { opts, tapAndCatch } = errorReporter.getForObservable(UserAction.Explicit, optsInput)
-            return client.metaChanges(params, opts).pipe(tapAndCatch)
-        },
-        async meta(params: MetaParams, optsInput?: ProviderMethodOptions) {
-            const { opts, onfinally } = errorReporter.getForPromise(UserAction.Explicit, optsInput)
-            return client.meta(params, opts).finally(onfinally)
-        },
-        observeMentions(params: MentionsParams, optsInput?: ProviderMethodOptions) {
-            const { opts, tapAndCatch } = errorReporter.getForObservable(UserAction.Explicit, optsInput)
-            return client.mentionsChanges(params, opts).pipe(tapAndCatch)
-        },
-        async mentions(params: MentionsParams, optsInput?: ProviderMethodOptions) {
-            const { opts, onfinally } = errorReporter.getForPromise(UserAction.Explicit, optsInput)
-            return client.mentions(params, opts).finally(onfinally)
-        },
-        observeItems(params: ItemsParams, optsInput?: ProviderMethodOptions) {
-            const { opts, tapAndCatch } = errorReporter.getForObservable(UserAction.Explicit, optsInput)
-            return client.itemsChanges(params, opts).pipe(tapAndCatch)
-        },
-        async items(params: ItemsParams, optsInput?: ProviderMethodOptions) {
-            const { opts, onfinally } = errorReporter.getForPromise(UserAction.Explicit, optsInput)
-            return client.items(params, opts).finally(onfinally)
-        },
+        meta: errorReporter.wrapPromise(UserAction.Explicit, client.meta),
+        observeMeta: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
 
-        observeAnnotations(doc: vscode.TextDocument, optsInput?: ProviderMethodOptions) {
+        mentions: errorReporter.wrapPromise(UserAction.Explicit, client.mentions),
+        observeMentions: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
+
+        items: errorReporter.wrapPromise(UserAction.Explicit, client.items),
+        observeItems: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
+
+        async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
+            if (ignoreDoc(doc)) {
+                return []
+            }
+            return await clientAnnotations(
+                {
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                },
+                opts
+            )
+        },
+        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
             if (ignoreDoc(doc)) {
                 return of([])
             }
 
-            const { skipIfImplicitAction, opts, tapAndCatch } = errorReporter.getForObservable(
-                UserAction.Implicit,
-                optsInput
+            return clientAnnotationsChanges(
+                {
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                },
+                opts
             )
-            if (skipIfImplicitAction) {
-                return of([])
-            }
-
-            return client
-                .annotationsChanges(
-                    {
-                        uri: doc.uri.toString(),
-                        content: doc.getText(),
-                    },
-                    opts
-                )
-                .pipe(tapAndCatch)
-        },
-        async annotations(doc: vscode.TextDocument, optsInput?: ProviderMethodOptions) {
-            if (ignoreDoc(doc)) {
-                return []
-            }
-
-            const { skipIfImplicitAction, opts, onfinally } = errorReporter.getForPromise(
-                UserAction.Implicit,
-                optsInput
-            )
-            if (skipIfImplicitAction) {
-                return []
-            }
-
-            return client
-                .annotations(
-                    {
-                        uri: doc.uri.toString(),
-                        content: doc.getText(),
-                    },
-                    opts
-                )
-                .finally(onfinally)
         },
     }
 
