@@ -129,6 +129,9 @@ export function createController({
     // one. Explicit user actions should always run and return errors.
     // Implicit actions may not run if they are erroring a lot. Currently only
     // annotations is implicit.
+    //
+    // Note: the client swallows errors, so the observable methods will report
+    // internal errors but the behaviour around skipping is poor.
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
