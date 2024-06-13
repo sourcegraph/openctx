@@ -132,7 +132,8 @@ export interface ProviderMethodOptions {
      * provider causing all to fail. This allows a caller to do have other
      * behaviours on failure.
      *
-     * If errorHook is set console.error will not be called on the error.
+     * If errorHook is set console.error and the logger will not be called on
+     * the error.
      */
     errorHook?(providerUri: string, error: any): void
 }

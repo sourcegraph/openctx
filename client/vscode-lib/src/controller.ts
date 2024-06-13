@@ -1,26 +1,12 @@
 import {
     type AuthInfo,
     type Client,
-    type ItemsParams,
-    type MentionsParams,
-    type MetaParams,
     type ProviderMethodOptions,
     type Range,
     createClient,
 } from '@openctx/client'
 import type { ImportedProviderConfiguration } from '@openctx/client/src/configuration.js'
-import {
-    type Observable,
-    type TapObserver,
-    catchError,
-    combineLatest,
-    from,
-    isObservable,
-    map,
-    mergeMap,
-    of,
-    tap,
-} from 'rxjs'
+import { type Observable, combineLatest, from, isObservable, map, mergeMap, of } from 'rxjs'
 import * as vscode from 'vscode'
 import { getClientConfiguration } from './configuration.js'
 import { type ExtensionApiForTesting, createApiForTesting } from './testing.js'
@@ -28,11 +14,12 @@ import { createCodeLensProvider } from './ui/editor/codeLens.js'
 import { createHoverProvider } from './ui/editor/hover.js'
 import { createShowFileItemsList } from './ui/fileItemsList.js'
 import { createStatusBarItem } from './ui/statusBarItem.js'
-import { createErrorWaiter } from './util/errorWaiter.js'
+import { Cache, bestEffort } from './util/cache.js'
+import { ErrorReporterController, UserAction } from './util/errorReporter.js'
 import { importProvider } from './util/importHelpers.js'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
 
-export type VSCodeClient = Client<vscode.Range>
+type VSCodeClient = Client<vscode.Range>
 
 export interface Controller {
     observeMeta: VSCodeClient['metaChanges']
@@ -51,18 +38,18 @@ export interface Controller {
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
         opts?: ProviderMethodOptions
     ): ReturnType<VSCodeClient['annotations']>
-
-    client: Client<vscode.Range>
 }
 
 export function createController({
     secrets: secretsInput,
+    extensionId,
     outputChannel,
     getAuthInfo,
     features,
     providers,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
+    extensionId: string
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
@@ -96,10 +83,6 @@ export function createController({
     const statusBarItem = features.statusBar ? createStatusBarItem() : null
     if (statusBarItem) disposables.push(statusBarItem)
 
-    // Pause for 10 seconds if we get 5 errors in a row.
-    const errorWaiter = createErrorWaiter(10 * 1000, 5)
-    disposables.push(errorWaiter)
-
     const client = createClient<vscode.Range>({
         configuration: resource => {
             // TODO(sqs): support multi-root somehow. this currently only takes config from the 1st root.
@@ -119,90 +102,52 @@ export function createController({
         providers,
     })
 
-    const errorTapObserver: Partial<TapObserver<any>> = {
-        next(): void {
-            errorWaiter.gotError(false)
-        },
-        error(): void {
-            // Show an error notification unless we've recently shown one (to avoid annoying
-            // the user).
-            const shouldNotify = errorWaiter.timeSinceLastError() > 1000 * 60 * 15 /* 15 min */
-            if (shouldNotify) {
-                showErrorNotification(outputChannel)
-            }
-
-            errorWaiter.gotError(true)
-        },
-    }
-    const errorCatcher = <T = any>(error: any): Observable<T[]> => {
+    const errorLog = (error: any) => {
+        console.error(error)
         outputChannel.appendLine(error)
-        return of([])
     }
+
+    // errorReporter contains a lot of logic and state on how we notify and log
+    // errors, as well as state around if we should turn off a feature (see
+    // skipIfImplicitAction)
+    const errorReporter = new ErrorReporterController(
+        createErrorNotifier(outputChannel, extensionId, client),
+        errorLog
+    )
+    disposables.push(errorReporter)
+
+    // Note: We distingiush between an explicit user action and an implicit
+    // one. Explicit user actions should always run and return errors.
+    // Implicit actions may not run if they are erroring a lot. Currently only
+    // annotations is implicit.
+    //
+    // Note: the client swallows errors, so the observable methods will report
+    // internal errors but the behaviour around skipping is poor.
+
+    const clientAnnotations = errorReporter.wrapPromise(UserAction.Implicit, client.annotations)
+    const clientAnnotationsChanges = errorReporter.wrapObservable(
+        UserAction.Implicit,
+        client.annotationsChanges
+    )
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
-        observeMeta(params: MetaParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
-                return of([])
-            }
-            return client.metaChanges(params, opts).pipe(tap(errorTapObserver), catchError(errorCatcher))
-        },
-        async meta(params: MetaParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
-                return []
-            }
-            return client.meta(params, opts)
-        },
-        observeMentions(params: MentionsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
-                return of([])
-            }
-            return client
-                .mentionsChanges(params, opts)
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
-        },
-        async mentions(params: MentionsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
-                return []
-            }
-            return client.mentions(params, opts)
-        },
-        observeItems(params: ItemsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
-                return of([])
-            }
-            return client
-                .itemsChanges(params, opts)
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
-        },
-        async items(params: ItemsParams, opts?: ProviderMethodOptions) {
-            if (!errorWaiter.ok()) {
-                return []
-            }
-            return client.items(params, opts)
-        },
+        meta: errorReporter.wrapPromise(UserAction.Explicit, client.meta),
+        observeMeta: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
 
-        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc) || !errorWaiter.ok()) {
-                return of([])
-            }
-            return client
-                .annotationsChanges(
-                    {
-                        uri: doc.uri.toString(),
-                        content: doc.getText(),
-                    },
-                    opts
-                )
-                .pipe(tap(errorTapObserver), catchError(errorCatcher))
-        },
+        mentions: errorReporter.wrapPromise(UserAction.Explicit, client.mentions),
+        observeMentions: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
+
+        items: errorReporter.wrapPromise(UserAction.Explicit, client.items),
+        observeItems: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
+
         async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc) || !errorWaiter.ok()) {
+            if (ignoreDoc(doc)) {
                 return []
             }
-            return client.annotations(
+            return await clientAnnotations(
                 {
                     uri: doc.uri.toString(),
                     content: doc.getText(),
@@ -210,8 +155,19 @@ export function createController({
                 opts
             )
         },
+        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
+            if (ignoreDoc(doc)) {
+                return of([])
+            }
 
-        client,
+            return clientAnnotationsChanges(
+                {
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                },
+                opts
+            )
+        },
     }
 
     if (features.annotations) {
@@ -249,15 +205,53 @@ function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
 }
 
-function showErrorNotification(outputChannel: vscode.OutputChannel): void {
-    const OPEN_LOG = 'Open Log'
-    vscode.window
-        .showErrorMessage('OpenCtx items failed.', {
-            title: OPEN_LOG,
-        } satisfies vscode.MessageItem)
-        .then(action => {
-            if (action?.title === OPEN_LOG) {
+function createErrorNotifier(
+    outputChannel: vscode.OutputChannel,
+    extensionId: string,
+    client: Pick<VSCodeClient, 'meta'>
+) {
+    // Fetching the name can be slow or fail. So we use a cache + timeout when
+    // getting the name of a provider.
+    const nameCache = new Cache<string>({ ttlMs: 10 * 1000 })
+    const getName = async (providerUri: string | undefined) => {
+        if (providerUri === undefined) {
+            return undefined
+        }
+        const fill = async () => {
+            const meta = await bestEffort(client.meta({}, { providerUri: providerUri }), {
+                defaultValue: [],
+                delay: 250,
+            })
+            return meta.pop()?.name ?? providerUri
+        }
+        return await nameCache.getOrFill(providerUri, fill)
+    }
+
+    const actionItems = [
+        {
+            title: 'Show Logs',
+            do: () => {
                 outputChannel.show()
-            }
-        })
+            },
+        },
+        {
+            title: 'Open Settings',
+            do: () => {
+                vscode.commands.executeCommand('workbench.action.openSettings', {
+                    query: `@ext:${extensionId} openctx.providers`,
+                })
+            },
+        },
+    ] satisfies (vscode.MessageItem & { do: () => void })[]
+
+    return async (providerUri: string | undefined, error: any) => {
+        const name = await getName(providerUri)
+        const message = name
+            ? `Error from OpenCtx provider "${name}": ${error}`
+            : `Error from OpenCtx: ${error}`
+        const action = await vscode.window.showErrorMessage(message, ...actionItems)
+        if (action) {
+            action.do()
+        }
+    }
 }

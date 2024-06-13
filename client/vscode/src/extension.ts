@@ -6,8 +6,10 @@ import { getAuthInfo, secretsChanges } from './authInfo.js'
  * Start the extension, watching all relevant configuration and secrets for changes.
  */
 export function activate(
-    context: Pick<vscode.ExtensionContext, 'secrets' | 'subscriptions'>
+    context: Pick<vscode.ExtensionContext, 'extension' | 'secrets' | 'subscriptions'>
 ): ExtensionApiForTesting | null {
+    const extensionId = context.extension.id
+
     const outputChannel = vscode.window.createOutputChannel('OpenCtx')
     context.subscriptions.push(outputChannel)
 
@@ -20,6 +22,7 @@ export function activate(
         disposable: disposable1,
     } = createController({
         secrets,
+        extensionId,
         outputChannel,
         getAuthInfo,
         features: {
