@@ -22,3 +22,11 @@ This sample provider is not configurable.
 - [Source code](https://sourcegraph.com/github.com/sourcegraph/openctx/-/tree/provider/hello-world)
 - [Docs](https://openctx.org/docs/providers/hello-world)
 - License: Apache 2.0
+
+### Local Testing
+
+1. Clone the repo
+1. `pnpm install`
+1. `pnpm -C provider/hello-world bundle --watch` to automatically recompile on changes
+1. Run `echo file://$(pwd)/provider/hello-world/dist/bundle.js` and use that URL in your OpenCtx instead of `"https://openctx.org/npm/@openctx/provider-hello-world"`
+1. Reload your OpenCtx client
