@@ -61,6 +61,7 @@ const INTEGRATIONS: IntegrationItem[] = [
     { name: 'DevDocs', type: 'provider', slug: 'devdocs' },
     { name: 'Confluence', type: 'provider', slug: 'confluence' },
     { name: 'Jira', type: 'provider', slug: 'jira' },
+    { name: 'GitHub', type: 'provider', slug: 'github' },
     { name: 'Azure DevOps Work Items', type: 'provider', slug: 'azure-devops-workitems' },
     { name: 'Linear Issues', type: 'provider', slug: 'linear-issues' },
     { name: 'Linear Docs', type: 'provider', slug: 'linear-docs' },
