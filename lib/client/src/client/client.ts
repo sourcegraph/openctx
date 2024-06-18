@@ -16,6 +16,7 @@ import {
     type Unsubscribable,
     catchError,
     combineLatest,
+    concatMap,
     distinctUntilChanged,
     firstValueFrom,
     from,
@@ -23,6 +24,8 @@ import {
     mergeMap,
     of,
     shareReplay,
+    take,
+    timer,
 } from 'rxjs'
 import {
     type Annotation,
@@ -98,6 +101,12 @@ export interface ClientEnv<R extends Range> {
      * by runtimes that need to pre-bundle providers.
      */
     importProvider?: (uri: string) => Promise<{ default: Provider }>
+
+    /**
+     * If set will load in the OpenCtx providers after the delay. If not set,
+     * providers are lazily loaded.
+     */
+    preloadDelay?: number
 
     /**
      * @internal
@@ -383,6 +392,13 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 makeRange: env.makeRange,
             }
         )
+    }
+
+    if (env.preloadDelay !== undefined) {
+        const preload = timer(env.preloadDelay)
+            .pipe(concatMap(() => providerClientsWithSettings(undefined)))
+            .pipe(take(1))
+        subscriptions.push(preload.subscribe())
     }
 
     return {

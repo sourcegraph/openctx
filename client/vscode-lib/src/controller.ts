@@ -47,6 +47,7 @@ export function createController({
     getAuthInfo,
     features,
     providers,
+    preloadDelay,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
     extensionId: string
@@ -54,6 +55,7 @@ export function createController({
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
     providers?: ImportedProviderConfiguration[]
+    preloadDelay?: number
 }): {
     controller: Controller
     apiForTesting: ExtensionApiForTesting
@@ -100,6 +102,7 @@ export function createController({
         logger: message => outputChannel.appendLine(message),
         importProvider,
         providers,
+        preloadDelay,
     })
 
     const errorLog = (error: any) => {
