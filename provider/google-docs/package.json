@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-google-docs",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Google Docs context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
