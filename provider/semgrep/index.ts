@@ -58,7 +58,7 @@ function aiPrompt(finding: Finding): string {
 
 const semgrep: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
-        return { name: 'Semgrep', mentions: {} }
+        return { name: 'Semgrep', mentions: { label: 'Paste a URL...' } }
     },
 
     items(params: ItemsParams, settings: Settings): ItemsResult {

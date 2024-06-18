@@ -24,8 +24,7 @@ describe('Semgrep provider', () => {
     test('meta', () => {
         const meta = semgrep.meta({}, settings)
 
-        expect(meta).toBeDefined()
-        expect(meta).toEqual({ name: 'Semgrep', mentions: {} })
+        expect(meta).toStrictEqual({ name: 'Semgrep', mentions: { label: 'Paste a URL...' } })
     })
 
     test('items', async () => {

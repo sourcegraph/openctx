@@ -158,26 +158,11 @@ Logger: N/A`
 describe('provider.meta', () => {
     test('returns expected meta result', async () => {
         const metaResult = providerImplementation.meta()
-        expect(metaResult).toEqual({
+        expect(metaResult).toStrictEqual({
             name: 'Sentry Issues',
-            mentions: {},
+            mentions: { label: 'Paste a URL...' },
             annotations: { selectors: [] },
         })
-    })
-
-    test('returns empty selector', async () => {
-        const metaResult = providerImplementation.meta()
-        expect(metaResult.annotations?.selectors).toHaveLength(0)
-    })
-
-    test('returns correct name', async () => {
-        const metaResult = providerImplementation.meta()
-        expect(metaResult.name).toBe('Sentry Issues')
-    })
-
-    test('returns correct features', async () => {
-        const metaResult = providerImplementation.meta()
-        expect(metaResult.mentions).toEqual({})
     })
 })
 

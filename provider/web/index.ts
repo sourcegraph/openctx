@@ -14,7 +14,7 @@ const urlFetcher: Provider = {
     meta(): MetaResult {
         return {
             name: 'Web URLs',
-            mentions: {},
+            mentions: { label: 'Paste a URL...' },
             annotations: { selectors: [] },
         }
     },

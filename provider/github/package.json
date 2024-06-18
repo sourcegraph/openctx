@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-github",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "GitHub OpenCtx provider",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/github",

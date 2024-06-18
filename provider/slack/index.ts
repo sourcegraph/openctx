@@ -15,7 +15,7 @@ let slackClient: undefined | SlackClient = undefined
 
 const slackContext = {
     meta(): MetaResult {
-        return { name: 'Slack', mentions: {} }
+        return { name: 'Slack', mentions: { label: 'Search by channel name...' } }
     },
 
     async initializeSlackClient(settingsInput: Settings) {
