@@ -1,6 +1,6 @@
 {
   "name": "@openctx/protocol",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "OpenCtx client/provider protocol",
   "license": "Apache-2.0",
   "repository": {
