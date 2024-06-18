@@ -8,6 +8,11 @@ import devdocs, { type Settings } from './index.js'
 const INTEGRATION = !!process.env.INTEGRATION
 
 describe('devdocs', () => {
+    const fixturesDir = path.join(__dirname, '__fixtures__')
+    const fixturesSettings = {
+        urls: [url.pathToFileURL(fixturesDir).toString()],
+    }
+
     test('meta', () => {
         expect(devdocs.meta({}, {})).toEqual({
             name: 'DevDocs',
@@ -55,12 +60,16 @@ describe('devdocs', () => {
         })
     })
 
-    test('test page type', async () => {
-        const fixturesDir = path.join(__dirname, '__fixtures__')
-        const settings = {
-            urls: [url.pathToFileURL(fixturesDir).toString()],
-        }
+    test('empty query returns results', async () => {
+        const settings = fixturesSettings
 
+        const mentions = await devdocs.mentions!({ query: '' }, settings)
+        expect(mentions).toBeInstanceOf(Array)
+        expect(mentions).toBeTruthy()
+    })
+
+    test('test page type', async () => {
+        const settings = fixturesSettings
         const mentionPath = path.join(fixturesDir, 'strconv', 'index')
         const item = await expectMentionItem({ query: 'strconv' }, settings, {
             title: 'strconv',
@@ -85,11 +94,7 @@ describe('devdocs', () => {
     })
 
     test('test hash type', async () => {
-        const fixturesDir = path.join(__dirname, '__fixtures__')
-        const settings = {
-            urls: [url.pathToFileURL(fixturesDir).toString()],
-        }
-
+        const settings = fixturesSettings
         const mentionURL = url.pathToFileURL(path.join(fixturesDir, 'io', 'index'))
         mentionURL.hash = '#TeeReader'
 
@@ -138,11 +143,7 @@ describe('devdocs', () => {
     })
 
     test('missing documentation has no results', async () => {
-        const fixturesDir = path.join(__dirname, '__fixtures__')
-        const settings = {
-            urls: [url.pathToFileURL(fixturesDir).toString()],
-        }
-
+        const settings = fixturesSettings
         const mentions = await devdocs.mentions!({ query: 'abortcontroller' }, settings)
         expect(mentions).toHaveLength(0)
     })

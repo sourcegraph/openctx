@@ -48,11 +48,11 @@ const devdocs: Provider<Settings> = {
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        const query = params.query?.toLowerCase()
-        if (!query) {
+        if (params.query === undefined) {
             return []
         }
 
+        const query = params.query.toLowerCase()
         const urls = settings.urls ?? DEFAULT_URLS
 
         const indexes = await Promise.all(urls.map(url => getMentionIndex(url)))
