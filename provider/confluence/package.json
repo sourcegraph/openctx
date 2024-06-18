@@ -1,7 +1,7 @@
 {
   "name": "@openctx/provider-confluence",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Confluence (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/confluence",
@@ -13,7 +13,10 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
@@ -24,4 +27,3 @@
     "@openctx/provider": "workspace:*"
   }
 }
-  
