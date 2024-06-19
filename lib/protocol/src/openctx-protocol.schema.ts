@@ -80,6 +80,10 @@ export interface Mention {
      */
     title: string
     /**
+     * An optional label used to display the selected mention item in the input. For example the label can be the basename for a file whereas the title can be the whole file path used to list the item in mentions list
+     */
+    label?: string
+    /**
      * An item description.
      */
     description?: string

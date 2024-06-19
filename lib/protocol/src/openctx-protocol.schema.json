@@ -216,6 +216,10 @@
           "description": "A descriptive title.",
           "type": "string"
         },
+        "label": {
+          "description": "An optional label used to display the selected mention item in the input. For example the label can be the basename for a file whereas the title can be the whole file path used to list the item in mentions list",
+          "type": "string"
+        },
         "description": {
           "description": "An item description.",
           "type": "string"
