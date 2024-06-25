@@ -53,7 +53,7 @@ const linearIssues: Provider<Settings> = {
             const response = await linearApiRequest(viewerIssuesQuery, variables, settingsInput)
 
             const createdIssues = response.data.viewer.createdIssues.nodes as Issue[]
-            const assignedIssues = response.data.viewer.createdIssues.nodes as Issue[]
+            const assignedIssues = response.data.viewer.assignedIssues.nodes as Issue[]
             issues = dedupeWith([...assignedIssues, ...createdIssues], 'url')
         }
 
