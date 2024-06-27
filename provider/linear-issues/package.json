@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-linear-issues",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Linear Issues context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc --build",
     "bundle:watch": "pnpm run bundle --watch",
-    "bundle": "esbuild --main-fields=module,main --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "bundle": "esbuild --main-fields=module,main --external:vscode --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js index.ts",
     "prepublishOnly": "tsc --build --clean && pnpm run --silent bundle",
     "test": "vitest",
     "auth": "node --no-warnings=ExperimentalWarning --es-module-specifier-resolution=node --loader ts-node/esm/transpile-only auth.ts"
@@ -32,6 +32,7 @@
     "server-destroy": "^1.0.1"
   },
   "devDependencies": {
-    "@types/server-destroy": "^1.0.3"
+    "@types/server-destroy": "^1.0.3",
+    "@types/vscode": "^1.85.0"
   }
 }

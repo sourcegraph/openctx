@@ -627,6 +627,9 @@ importers:
       '@types/server-destroy':
         specifier: ^1.0.3
         version: 1.0.3
+      '@types/vscode':
+        specifier: ^1.85.0
+        version: 1.85.0
 
   provider/links:
     dependencies:
