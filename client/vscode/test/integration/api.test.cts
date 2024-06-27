@@ -2,7 +2,7 @@ import * as assert from 'assert'
 import path from 'path'
 import type { ClientConfiguration } from '@openctx/client'
 import type { ExtensionApiForTesting } from '@openctx/vscode-lib'
-import { copyFile } from 'fs/promises'
+import { copyFile } from 'node:fs/promises'
 import { before } from 'mocha'
 import * as vscode from 'vscode'
 

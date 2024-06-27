@@ -4,7 +4,7 @@
 
 import path from 'path'
 import { pathToFileURL } from 'url'
-import { readFile } from 'fs/promises'
+import { readFile } from 'node:fs/promises'
 import { compile as compileJSONSchema } from 'json-schema-to-typescript'
 
 async function generateSchema(schemaPath: string, preamble?: string): Promise<void> {
