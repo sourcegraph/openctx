@@ -9,6 +9,7 @@ import type { ImportedProviderConfiguration } from '@openctx/client/src/configur
 import { type Observable, combineLatest, from, isObservable, map, mergeMap, of } from 'rxjs'
 import * as vscode from 'vscode'
 import { getClientConfiguration } from './configuration.js'
+import { initializeOpenCtxGlobal } from './global.js'
 import { type ExtensionApiForTesting, createApiForTesting } from './testing.js'
 import { createCodeLensProvider } from './ui/editor/codeLens.js'
 import { createHoverProvider } from './ui/editor/hover.js'
@@ -61,6 +62,8 @@ export function createController({
     apiForTesting: ExtensionApiForTesting
     disposable: vscode.Disposable
 } {
+    initializeOpenCtxGlobal()
+
     const disposables: vscode.Disposable[] = []
 
     const globalConfigurationChanges = observeWorkspaceConfigurationChanges('openctx')

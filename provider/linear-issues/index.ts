@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs'
+import { readFile } from 'node:fs/promises'
 import type {
     ItemsParams,
     ItemsResult,
@@ -108,13 +108,13 @@ const linearIssues: Provider<Settings> = {
 
 export default linearIssues
 
-function getAccessToken(settings: Settings): string {
+async function getAccessToken(settings: Settings): Promise<string> {
     if (settings?.accessToken) {
         return settings.accessToken
     }
 
     if (settings.userCredentialsPath) {
-        const userCredentialsString = readFileSync(settings.userCredentialsPath, 'utf-8')
+        const userCredentialsString = await readFile(settings.userCredentialsPath, 'utf-8')
         const userCredentials = JSON.parse(userCredentialsString) as Partial<UserCredentials>
 
         if (!userCredentials.access_token) {
@@ -122,6 +122,11 @@ function getAccessToken(settings: Settings): string {
         }
 
         return userCredentials.access_token
+    }
+
+    const vscodeAccessToken = await getAccessTokenLinearConnect()
+    if (vscodeAccessToken) {
+        return vscodeAccessToken
     }
 
     throw new Error(
@@ -134,7 +139,7 @@ async function linearApiRequest(
     variables: object,
     settings: Settings
 ): Promise<{ data: any }> {
-    const accessToken = getAccessToken(settings)
+    const accessToken = await getAccessToken(settings)
     const response = await fetch('https://api.linear.app/graphql', {
         method: 'POST',
         headers: {
@@ -155,6 +160,53 @@ async function linearApiRequest(
     }
 
     return json
+}
+
+const LINEAR_AUTHENTICATION_EXTENSION_ID = 'linear.linear-connect'
+const LINEAR_AUTHENTICATION_PROVIDER_ID = 'linear'
+const LINEAR_AUTHENTICATION_SCOPES = ['read']
+
+function vscodeAPI() {
+    // dynamic imports don't work in node + vscode due
+    // https://github.com/microsoft/vscode-loader/issues/36 vscode-lib however
+    // will sneakily set the vscode import to a global for us.
+    if (!('openctx' in global)) {
+        return undefined
+    }
+    const openctx = (global as any).openctx
+    if (!openctx.vscode) {
+        return undefined
+    }
+    return openctx.vscode as typeof import('vscode')
+}
+
+async function getAccessTokenLinearConnect(): Promise<string | undefined> {
+    const vscode = vscodeAPI()
+    if (!vscode) {
+        return undefined
+    }
+
+    const ext = vscode.extensions.getExtension(LINEAR_AUTHENTICATION_EXTENSION_ID)
+    if (!ext) {
+        vscode.window.showWarningMessage(
+            'Cody requires the Linear Connect extension to be installed and activated.'
+        )
+        await vscode.commands.executeCommand('workbench.extensions.action.showExtensionsWithIds', [
+            [LINEAR_AUTHENTICATION_EXTENSION_ID],
+        ])
+    }
+
+    const session = await vscode.authentication.getSession(
+        LINEAR_AUTHENTICATION_PROVIDER_ID,
+        LINEAR_AUTHENTICATION_SCOPES,
+        { createIfNone: true }
+    )
+
+    if (!session) {
+        throw new Error(`We weren't able to log you into Linear when trying to open the issue.`)
+    }
+
+    return session.accessToken
 }
 
 function parseIssueIDFromURL(urlStr: string): string | undefined {

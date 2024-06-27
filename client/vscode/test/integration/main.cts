@@ -1,7 +1,7 @@
-import { tmpdir } from 'os'
-import * as path from 'path'
+import { mkdir, mkdtemp, rm } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import * as path from 'node:path'
 import { runTests } from '@vscode/test-electron'
-import { mkdir, mkdtemp, rm } from 'fs/promises'
 
 async function main(): Promise<void> {
     // When run, this script's filename is `client/vscode/dist/tsc/test/integration/main.js`, so

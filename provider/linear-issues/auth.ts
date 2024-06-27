@@ -1,9 +1,9 @@
+import http from 'http'
 // Identical to provider/linear-docs/auth.ts.
 // Keep the duplicate for now to keep things simple.
-import { readFileSync, writeFileSync } from 'fs'
-import http from 'http'
-import path from 'path'
-import url, { fileURLToPath } from 'url'
+import { readFileSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
+import url, { fileURLToPath } from 'node:url'
 import open from 'open'
 import destroyer from 'server-destroy'
 

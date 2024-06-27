@@ -2,9 +2,9 @@
  * Generates TypeScript types for a JSON Schema.
  */
 
-import path from 'path'
-import { pathToFileURL } from 'url'
-import { readFile } from 'fs/promises'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { compile as compileJSONSchema } from 'json-schema-to-typescript'
 
 async function generateSchema(schemaPath: string, preamble?: string): Promise<void> {

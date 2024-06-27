@@ -1,4 +1,4 @@
-import path from 'path'
+import path from 'node:path'
 import type { ClientConfiguration } from '@openctx/client'
 import * as vscode from 'vscode'
 
