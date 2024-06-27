@@ -1,8 +1,8 @@
-import * as assert from 'assert'
-import path from 'path'
+import * as assert from 'node:assert'
+import { copyFile } from 'node:fs/promises'
+import path from 'node:path'
 import type { ClientConfiguration } from '@openctx/client'
 import type { ExtensionApiForTesting } from '@openctx/vscode-lib'
-import { copyFile } from 'node:fs/promises'
 import { before } from 'mocha'
 import * as vscode from 'vscode'
 
