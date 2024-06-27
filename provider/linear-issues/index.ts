@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import type {
     ItemsParams,
     ItemsResult,
@@ -8,7 +9,6 @@ import type {
 } from '@openctx/provider'
 import dedent from 'dedent'
 import { XMLBuilder } from 'fast-xml-parser'
-import { readFile } from 'fs/promises'
 
 import type { UserCredentials } from './auth.js'
 

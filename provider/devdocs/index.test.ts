@@ -1,5 +1,5 @@
-import path from 'path'
-import url from 'url'
+import path from 'node:path'
+import url from 'node:url'
 import type { Item, Mention, MentionsParams } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import devdocs, { type Settings } from './index.js'

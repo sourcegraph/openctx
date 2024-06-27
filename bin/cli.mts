@@ -1,7 +1,7 @@
 #!/usr/bin/env -S node --experimental-modules --experimental-network-imports --no-warnings
-import { readFileSync } from 'fs'
-import path from 'path'
-import { pathToFileURL } from 'url'
+import { readFileSync } from 'node:fs'
+import path from 'node:path'
+import { pathToFileURL } from 'node:url'
 import {
     type Client,
     type ClientConfiguration,

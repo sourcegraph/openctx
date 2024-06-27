@@ -1,5 +1,5 @@
-import url from 'url'
-import fs from 'fs/promises'
+import fs from 'node:fs/promises'
+import url from 'node:url'
 
 /** Format of the file found at a location like https://devdocs.io/docs/go/index.json */
 interface Index {
