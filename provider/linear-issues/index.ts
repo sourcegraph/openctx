@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs'
 import type {
     ItemsParams,
     ItemsResult,
@@ -9,6 +8,7 @@ import type {
 } from '@openctx/provider'
 import dedent from 'dedent'
 import { XMLBuilder } from 'fast-xml-parser'
+import { readFile } from 'fs/promises'
 
 import type { UserCredentials } from './auth.js'
 
@@ -108,13 +108,13 @@ const linearIssues: Provider<Settings> = {
 
 export default linearIssues
 
-function getAccessToken(settings: Settings): string {
+async function getAccessToken(settings: Settings): Promise<string> {
     if (settings?.accessToken) {
         return settings.accessToken
     }
 
     if (settings.userCredentialsPath) {
-        const userCredentialsString = readFileSync(settings.userCredentialsPath, 'utf-8')
+        const userCredentialsString = await readFile(settings.userCredentialsPath, 'utf-8')
         const userCredentials = JSON.parse(userCredentialsString) as Partial<UserCredentials>
 
         if (!userCredentials.access_token) {
@@ -134,7 +134,7 @@ async function linearApiRequest(
     variables: object,
     settings: Settings
 ): Promise<{ data: any }> {
-    const accessToken = getAccessToken(settings)
+    const accessToken = await getAccessToken(settings)
     const response = await fetch('https://api.linear.app/graphql', {
         method: 'POST',
         headers: {
