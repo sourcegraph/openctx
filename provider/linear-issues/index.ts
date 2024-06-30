@@ -144,7 +144,8 @@ async function linearApiRequest(
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
+            // API keys don't need Bearer prefix (unlike oauth)
+            Authorization: accessToken.startsWith('lin_api_') ? accessToken : `Bearer ${accessToken}`,
         },
         body: JSON.stringify({ query, variables }),
     })
