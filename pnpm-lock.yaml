@@ -584,6 +584,12 @@ importers:
         specifier: workspace:*
         version: link:../../lib/provider
 
+  provider/json-api-example:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+
   provider/linear-docs:
     dependencies:
       '@openctx/provider':
