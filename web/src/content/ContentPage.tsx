@@ -6,6 +6,8 @@ import {
     type PageContextForContentPage,
     useContentPageComponent,
 } from './contentPages.tsx'
+import DOMPurify from 'dompurify'
+
 
 export const ContentPage: FunctionComponent<{ content: ContentPages }> = ({ content }) => {
     const pageContext = usePageContext() as PageContext & PageContextForContentPage
@@ -20,7 +22,7 @@ export const ContentPage: FunctionComponent<{ content: ContentPages }> = ({ cont
                 </div>
             ) : pageContext.contentPageHtml ? (
                 // biome-ignore lint/security/noDangerouslySetInnerHtml: The input value does not come from the user.
-                <div dangerouslySetInnerHTML={{ __html: pageContext.contentPageHtml }} />
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(pageContext.contentPageHtml.toString()) }} />
             ) : null}
         </div>
     )
