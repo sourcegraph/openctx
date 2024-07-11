@@ -6,7 +6,8 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-
+import { JSDOM } from 'jsdom';
+import DOMPurify from 'dompurify';
 /**
  * An OpenCtx provider that fetches the content of a URL and provides it as an item.
  */
@@ -101,13 +102,20 @@ async function fetchContentForURLContextItem(
         .replace(/\s(?:class|style)=["'][^"']*["']/gi, '')
         .replace(/\sdata-[\w-]+(=["'][^"']*["'])?/gi, '')
 
-    // TODO(sqs): Arbitrarily trim the response text to avoid overflowing the context window for the
+ // Create a JSDOM instance to use with DOMPurify
+const window = new JSDOM('').window;
+const DOMPurifyInstance = DOMPurify(window);
+
+// Sanitize the content using DOMPurify
+const sanitizedContent = DOMPurifyInstance.sanitize(bodyWithoutTags);
+
+   // TODO(sqs): Arbitrarily trim the response text to avoid overflowing the context window for the
     // LLM. Ideally we would make the prompt builder prioritize this context item over other context
     // because it is explicitly from the user.
     const MAX_LENGTH = 14000
-    return bodyWithoutTags.length > MAX_LENGTH
-        ? `${bodyWithoutTags.slice(0, MAX_LENGTH)}... (web page content was truncated)`
-        : bodyWithoutTags
+    return sanitizedContent.length > MAX_LENGTH
+        ? `${sanitizedContent.slice(0, MAX_LENGTH)}... (web page content was truncated)`
+        : sanitizedContent
 }
 
 /**
