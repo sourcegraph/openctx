@@ -31,6 +31,7 @@
     { "path": "provider/hello-world" },
     { "path": "provider/links" },
     { "path": "provider/notion" },
+    { "path": "provider/postgres" },
     { "path": "provider/prometheus" },
     { "path": "provider/sourcegraph-search" },
     { "path": "provider/storybook" },
