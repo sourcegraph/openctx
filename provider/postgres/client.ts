@@ -20,7 +20,7 @@ export class PostgresClient {
     >`
         SELECT table_name, column_name, data_type, character_maximum_length, column_default, is_nullable
         FROM information_schema.columns
-        where table_schema = '${schema}'`;
+        where table_schema = '${this.sql.unsafe(schema)}'`;
 
     const schemaDDL = this.schemaToDDL(res);
 
@@ -73,12 +73,12 @@ export class PostgresClient {
     await this.initializeSchemas();
   }
 
-  private async initializeSchemas(): Promise<string[]> {
+  private async initializeSchemas() {
     const schemas = await this.sql`
       select schema_name
         from information_schema.schemata;
     `;
     console.log({ schemas });
-    return schemas.map((schema) => schema.schema_name);
+    this.schemas = schemas.map((schema) => schema.schema_name);
   }
 }
