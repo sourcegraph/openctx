@@ -16,6 +16,7 @@ import {
     type Unsubscribable,
     catchError,
     combineLatest,
+    concatMap,
     distinctUntilChanged,
     firstValueFrom,
     from,
@@ -23,6 +24,8 @@ import {
     mergeMap,
     of,
     shareReplay,
+    take,
+    timer,
 } from 'rxjs'
 import {
     type Annotation,
@@ -100,6 +103,12 @@ export interface ClientEnv<R extends Range> {
     importProvider?: (uri: string) => Promise<{ default: Provider }>
 
     /**
+     * If set will load in the OpenCtx providers after the delay. If not set,
+     * providers are lazily loaded.
+     */
+    preloadDelay?: number
+
+    /**
      * @internal
      */
     __mock__?: ClientMocks
@@ -132,7 +141,8 @@ export interface ProviderMethodOptions {
      * provider causing all to fail. This allows a caller to do have other
      * behaviours on failure.
      *
-     * If errorHook is set console.error will not be called on the error.
+     * If errorHook is set console.error and the logger will not be called on
+     * the error.
      */
     errorHook?(providerUri: string, error: any): void
 }
@@ -382,6 +392,13 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 makeRange: env.makeRange,
             }
         )
+    }
+
+    if (env.preloadDelay !== undefined) {
+        const preload = timer(env.preloadDelay)
+            .pipe(concatMap(() => providerClientsWithSettings(undefined)))
+            .pipe(take(1))
+        subscriptions.push(preload.subscribe())
     }
 
     return {

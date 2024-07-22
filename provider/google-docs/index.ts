@@ -32,7 +32,7 @@ const NUMBER_OF_DOCUMENTS_TO_FETCH = 10
  */
 const googleDocs: Provider<Settings> = {
     meta(): MetaResult {
-        return { name: 'Google Docs', mentions: {} }
+        return { name: 'Google Docs', mentions: { label: 'Search by title or paste a URL...' } }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {

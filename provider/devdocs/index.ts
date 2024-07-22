@@ -3,6 +3,7 @@ import type {
     ItemsResult,
     MentionsParams,
     MentionsResult,
+    MetaParams,
     MetaResult,
     Provider,
 } from '@openctx/provider'
@@ -37,19 +38,21 @@ export type Settings = {
  * An OpenCtx provider that fetches the content of a [DevDocs](https://devdocs.io/) entry.
  */
 const devdocs: Provider<Settings> = {
-    meta(): MetaResult {
+    meta(_params: MetaParams, settings: Settings): MetaResult {
+        const urls = settings.urls ?? DEFAULT_URLS
+        const slugs = urls.map(u => u.match(/\/([^/]*)\/?$/)?.at(1)).filter(Boolean)
         return {
             name: 'DevDocs',
-            mentions: {},
+            mentions: { label: `Search docs... (${slugs.join(', ')})` },
         }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
-        const query = params.query?.toLowerCase()
-        if (!query) {
+        if (params.query === undefined) {
             return []
         }
 
+        const query = params.query.toLowerCase()
         const urls = settings.urls ?? DEFAULT_URLS
 
         const indexes = await Promise.all(urls.map(url => getMentionIndex(url)))

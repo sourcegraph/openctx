@@ -17,9 +17,9 @@ describe('googleDocs', () => {
     }
 
     test('meta', async () => {
-        expect(await googleDocs.meta({}, SETTINGS)).toEqual({
+        expect(await googleDocs.meta({}, SETTINGS)).toStrictEqual({
             name: 'Google Docs',
-            mentions: {},
+            mentions: { label: 'Search by title or paste a URL...' },
         })
     })
 })

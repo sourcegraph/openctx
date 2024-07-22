@@ -1,6 +1,6 @@
 {
   "name": "@openctx/vscode-lib",
-  "version": "0.0.8",
+  "version": "0.0.13",
   "description": "OpenCtx library for VS Code extensions",
   "license": "Apache-2.0",
   "repository": {
@@ -19,7 +19,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
-    "test": "vitest"
+    "test": "vitest",
+    "prepublishOnly": "tsc --build --clean && pnpm run build"
   },
   "dependencies": {
     "@openctx/client": "workspace:*",

@@ -55,7 +55,10 @@ const wiToItem = (workItem: SimpleWorkItem): Item => ({
 
 const azureDevOps: Provider = {
     meta(): MetaResult {
-        return { name: 'Azure DevOps Work Items', mentions: {} }
+        return {
+            name: 'Azure DevOps Work Items',
+            mentions: { label: 'Search by title, description or id...' },
+        }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {

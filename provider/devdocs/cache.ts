@@ -15,7 +15,8 @@ export class Cache<T> {
         const value = await fill()
 
         this.cache.set(key, { value })
-        setTimeout(() => this.cache.delete(key), this.timeoutMS)
+        const timeout = setTimeout(() => this.cache.delete(key), this.timeoutMS)
+        timeout.unref()
 
         return value
     }

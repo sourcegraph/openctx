@@ -1,7 +1,9 @@
-import type { FunctionComponent } from 'react'
+import { usePageContext } from 'vike-react/usePageContext'
 
-export const Page: FunctionComponent<{ is404: boolean }> = ({ is404 }) =>
-    is404 ? (
+export function Page() {
+    const pageContext = usePageContext()
+
+    return pageContext.is404 ? (
         <>
             <h1>404 Page Not Found</h1>
             <p>This page could not be found.</p>
@@ -12,3 +14,4 @@ export const Page: FunctionComponent<{ is404: boolean }> = ({ is404 }) =>
             <p>Something went wrong.</p>
         </>
     )
+}

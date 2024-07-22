@@ -1,6 +1,6 @@
 import type * as vscode from 'vscode'
 
-interface ErrorWaiter extends vscode.Disposable {
+export interface ErrorWaiter extends vscode.Disposable {
     ok(): boolean
     timeSinceLastError(): number
     gotError(isError: boolean): void

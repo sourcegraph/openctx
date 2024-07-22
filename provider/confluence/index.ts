@@ -24,7 +24,7 @@ const checkSettings = (settings: Settings) => {
 
 const confluenceProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
-        return { name: 'Confluence Pages', mentions: {} }
+        return { name: 'Confluence Pages', mentions: { label: 'Search by page title...' } }
     },
 
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {

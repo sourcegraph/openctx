@@ -8,7 +8,7 @@ export const githubProvider: Provider<Settings> = {
     meta(): MetaResult {
         return {
             name: 'Github PRs & Issues',
-            mentions: {},
+            mentions: { label: 'Search issues and pull requests...' },
         }
     },
 

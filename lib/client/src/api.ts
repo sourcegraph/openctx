@@ -80,10 +80,10 @@ function observeProviderCall<R>(
                               .pipe(
                                   emitPartial ? startWith(null) : tap(),
                                   catchError(error => {
-                                      logger?.(`failed to call provider: ${error}`)
                                       if (errorHook) {
                                           errorHook(uri, error)
                                       } else {
+                                          logger?.(`failed to call provider: ${error}`)
                                           console.error(error)
                                       }
                                       return of(null)

@@ -1,5 +1,5 @@
-import path from 'path'
-import url from 'url'
+import path from 'node:path'
+import url from 'node:url'
 import type { Item, Mention, MentionsParams } from '@openctx/provider'
 import { describe, expect, test } from 'vitest'
 import devdocs, { type Settings } from './index.js'
@@ -8,12 +8,68 @@ import devdocs, { type Settings } from './index.js'
 const INTEGRATION = !!process.env.INTEGRATION
 
 describe('devdocs', () => {
-    test('test page type', async () => {
-        const fixturesDir = path.join(__dirname, '__fixtures__')
-        const settings = {
-            urls: [url.pathToFileURL(fixturesDir).toString()],
-        }
+    const fixturesDir = path.join(__dirname, '__fixtures__')
+    const fixturesSettings = {
+        urls: [url.pathToFileURL(fixturesDir).toString()],
+    }
 
+    test('meta', () => {
+        expect(devdocs.meta({}, {})).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (css, html, http, javascript, dom)' },
+        })
+
+        expect(
+            devdocs.meta(
+                {},
+                {
+                    urls: [
+                        'https://devdocs.io/angular~16/',
+                        'https://devdocs.io/css/',
+                        'https://devdocs.io/typescript/',
+                    ],
+                }
+            )
+        ).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (angular~16, css, typescript)' },
+        })
+
+        expect(devdocs.meta({}, { urls: ['https://devdocs.io/go/'] })).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (go)' },
+        })
+    })
+
+    test('meta malformed', () => {
+        expect(
+            devdocs.meta(
+                {},
+                {
+                    urls: [
+                        'https://devdocs.io/go',
+                        'https://github.com/sourcegraph/openctx/pull/152',
+                        'hello world',
+                        '',
+                    ],
+                }
+            )
+        ).toEqual({
+            name: 'DevDocs',
+            mentions: { label: 'Search docs... (go, 152)' },
+        })
+    })
+
+    test('empty query returns results', async () => {
+        const settings = fixturesSettings
+
+        const mentions = await devdocs.mentions!({ query: '' }, settings)
+        expect(mentions).toBeInstanceOf(Array)
+        expect(mentions).toBeTruthy()
+    })
+
+    test('test page type', async () => {
+        const settings = fixturesSettings
         const mentionPath = path.join(fixturesDir, 'strconv', 'index')
         const item = await expectMentionItem({ query: 'strconv' }, settings, {
             title: 'strconv',
@@ -38,11 +94,7 @@ describe('devdocs', () => {
     })
 
     test('test hash type', async () => {
-        const fixturesDir = path.join(__dirname, '__fixtures__')
-        const settings = {
-            urls: [url.pathToFileURL(fixturesDir).toString()],
-        }
-
+        const settings = fixturesSettings
         const mentionURL = url.pathToFileURL(path.join(fixturesDir, 'io', 'index'))
         mentionURL.hash = '#TeeReader'
 
@@ -91,11 +143,7 @@ describe('devdocs', () => {
     })
 
     test('missing documentation has no results', async () => {
-        const fixturesDir = path.join(__dirname, '__fixtures__')
-        const settings = {
-            urls: [url.pathToFileURL(fixturesDir).toString()],
-        }
-
+        const settings = fixturesSettings
         const mentions = await devdocs.mentions!({ query: 'abortcontroller' }, settings)
         expect(mentions).toHaveLength(0)
     })
