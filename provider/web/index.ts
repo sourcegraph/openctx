@@ -6,8 +6,8 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import { JSDOM } from 'jsdom';
 import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
 /**
  * An OpenCtx provider that fetches the content of a URL and provides it as an item.
  */
