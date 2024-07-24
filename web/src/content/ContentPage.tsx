@@ -20,7 +20,6 @@ export const ContentPage: FunctionComponent<{ content: ContentPages }> = ({ cont
                     <ContentPageComponent />
                 </div>
             ) : pageContext.contentPageHtml ? (
-                // biome-ignore lint/security/noDangerouslySetInnerHtml: The input value does not come from the user.
                 <div
                     dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(pageContext.contentPageHtml.toString()),
