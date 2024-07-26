@@ -49,6 +49,15 @@ export interface MetaResult {
      */
     name: string
     /**
+     * Configuration for providing context items.
+     */
+    items?: {
+        /**
+         * The list of regex patterns for matching with a query for which the provider can return context items
+         */
+        querySelectors?: QuerySelector[]
+    }
+    /**
      * Configuration for the mentions feature.
      */
     mentions?: {

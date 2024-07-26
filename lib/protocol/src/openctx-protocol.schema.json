@@ -104,6 +104,18 @@
         }
       }
     },
+    "QuerySelector": {
+      "description": "List of regex patterns matching the query for which the provider can return context items.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pattern"],
+      "properties": {
+        "pattern": {
+          "description": "The regex pattern matching the query for which the provider can return context items",
+          "type": "string"
+        }
+      }
+    },
     "MetaParams": {
       "type": "object",
       "additionalProperties": false,
@@ -146,6 +158,21 @@
         "name": {
           "description": "The name of the provider.",
           "type": "string"
+        },
+        "items": {
+          "description": "Configuration for providing context items.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "querySelectors": {
+              "description": "The list of regex patterns for matching with a query for which the provider can return context items",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/QuerySelector"
+              },
+              "tsType": "QuerySelector[]"
+            }
+          }
         },
         "mentions": {
           "description": "Configuration for the mentions feature.",
