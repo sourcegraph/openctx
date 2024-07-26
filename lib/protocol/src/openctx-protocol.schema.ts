@@ -10,6 +10,7 @@ export type Protocol =
     | MetaParams
     | MetaResult
     | Mention
+    | MessageSelector
     | MentionSelector
     | AnnotationSelector
     | MentionsParams
@@ -48,6 +49,15 @@ export interface MetaResult {
      * The name of the provider.
      */
     name: string
+    /**
+     * Configuration for providing context items.
+     */
+    items?: {
+        /**
+         * The list of regex patterns for matching with a message for which the provider can return context items
+         */
+        messageSelectors?: MessageSelector[]
+    }
     /**
      * Configuration for the mentions feature.
      */
@@ -90,6 +100,15 @@ export interface Mention {
     data?: {
         [k: string]: unknown | undefined
     }
+}
+/**
+ * List of regex patterns matching a message for which the provider can return context items.
+ */
+export interface MessageSelector {
+    /**
+     * The regex pattern matching a message for which the provider can return context items
+     */
+    pattern: string
 }
 /**
  * List of regex patterns matching the mention text for which the provider can return mentions.
