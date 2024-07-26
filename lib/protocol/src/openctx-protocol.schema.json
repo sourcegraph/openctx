@@ -27,6 +27,9 @@
       "$ref": "#/definitions/Mention"
     },
     {
+      "$ref": "#/definitions/MessageSelector"
+    },
+    {
       "$ref": "#/definitions/MentionSelector"
     },
     {
@@ -104,14 +107,14 @@
         }
       }
     },
-    "QuerySelector": {
-      "description": "List of regex patterns matching the query for which the provider can return context items.",
+    "MessageSelector": {
+      "description": "List of regex patterns matching a message for which the provider can return context items.",
       "type": "object",
       "additionalProperties": false,
       "required": ["pattern"],
       "properties": {
         "pattern": {
-          "description": "The regex pattern matching the query for which the provider can return context items",
+          "description": "The regex pattern matching a message for which the provider can return context items",
           "type": "string"
         }
       }
@@ -164,13 +167,13 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "querySelectors": {
-              "description": "The list of regex patterns for matching with a query for which the provider can return context items",
+            "messageSelectors": {
+              "description": "The list of regex patterns for matching with a message for which the provider can return context items",
               "type": "array",
               "items": {
-                "$ref": "#/definitions/QuerySelector"
+                "$ref": "#/definitions/MessageSelector"
               },
-              "tsType": "QuerySelector[]"
+              "tsType": "MessageSelector[]"
             }
           }
         },
