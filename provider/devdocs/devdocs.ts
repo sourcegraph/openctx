@@ -29,7 +29,8 @@ export async function fetchIndex(devdocsURL: string): Promise<Index> {
     }
 
     // Transform path of baseURL from /{slug}/ to /docs/{slug}/index.json
-    const indexURL = new URL(`/docs${baseURL.pathname}index.json`, baseURL)
+    const indexURL = new URL(`${baseURL.pathname}index.json`, baseURL)
+    indexURL.host = 'documents.devdocs.io' // this subdomain allows cross-origin requests
     const response = await fetch(indexURL.toString())
     const index = JSON.parse(await response.text())
 
