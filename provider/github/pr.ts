@@ -9,7 +9,7 @@ export async function fetchPR(
     githubClient: GithubClient,
     owner: string,
     repoName: string,
-    number: number
+    number: number,
 ): Promise<PR | null> {
     try {
         const pr = await githubClient.request('GET /repos/{owner}/{repo}/pulls/{pull_number}', {
@@ -29,7 +29,7 @@ const xmlBuilder = new XMLBuilder({
 
 export async function getPullRequestItems(
     client: GithubClient,
-    { owner, repoName, pr }: { owner: string; repoName: string; pr: PR }
+    { owner, repoName, pr }: { owner: string; repoName: string; pr: PR },
 ): Promise<ItemsResult> {
     const [diff, comments, reviewComments] = await Promise.all([
         client

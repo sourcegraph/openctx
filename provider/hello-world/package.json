@@ -12,10 +12,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/index.js",
-    "dist/index.d.ts"
-  ],
+  "files": ["dist/index.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

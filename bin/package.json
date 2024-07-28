@@ -14,9 +14,7 @@
   "bin": {
     "openctx": "dist/cli.mjs"
   },
-  "files": [
-    "dist/cli.mjs"
-  ],
+  "files": ["dist/cli.mjs"],
   "scripts": {
     "openctx": "pnpm run --silent bundle && node --no-warnings=ExperimentalWarning --experimental-network-imports dist/cli.mjs",
     "bundle": "tsc --build && esbuild --log-level=error --platform=node --bundle --outdir=dist --format=esm --out-extension:.js=.mjs cli.mts",

@@ -33,11 +33,11 @@ export interface Controller {
     items: VSCodeClient['items']
 
     observeAnnotations(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>
+        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
     ): ReturnType<VSCodeClient['annotationsChanges']>
     annotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-        opts?: ProviderMethodOptions
+        opts?: ProviderMethodOptions,
     ): ReturnType<VSCodeClient['annotations']>
 }
 
@@ -75,7 +75,7 @@ export function createController({
     // Watch for changes that could possibly affect configuration. This is overbroad because it does
     // not specify a config scope.
     const configOrSecretsChanged = toEventEmitter(
-        combineLatest([globalConfigurationChanges, secrets]).pipe(map(() => undefined))
+        combineLatest([globalConfigurationChanges, secrets]).pipe(map(() => undefined)),
     )
     disposables.push(configOrSecretsChanged)
 
@@ -95,7 +95,7 @@ export function createController({
                 ? vscode.Uri.parse(resource)
                 : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
-                map(() => getClientConfiguration(scope))
+                map(() => getClientConfiguration(scope)),
             )
         },
         authInfo: getAuthInfo
@@ -118,7 +118,7 @@ export function createController({
     // skipIfImplicitAction)
     const errorReporter = new ErrorReporterController(
         createErrorNotifier(outputChannel, extensionId, client),
-        errorLog
+        errorLog,
     )
     disposables.push(errorReporter)
 
@@ -133,7 +133,7 @@ export function createController({
     const clientAnnotations = errorReporter.wrapPromise(UserAction.Implicit, client.annotations)
     const clientAnnotationsChanges = errorReporter.wrapObservable(
         UserAction.Implicit,
-        client.annotationsChanges
+        client.annotationsChanges,
     )
 
     /**
@@ -158,7 +158,7 @@ export function createController({
                     uri: doc.uri.toString(),
                     content: doc.getText(),
                 },
-                opts
+                opts,
             )
         },
         observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
@@ -171,7 +171,7 @@ export function createController({
                     uri: doc.uri.toString(),
                     content: doc.getText(),
                 },
-                opts
+                opts,
             )
         },
     }
@@ -189,7 +189,7 @@ export function createController({
             hoverProvider,
             quickPickCommand,
             vscode.languages.registerCodeLensProvider({ scheme: '*' }, codeLensProvider),
-            vscode.languages.registerHoverProvider({ scheme: '*' }, hoverProvider)
+            vscode.languages.registerHoverProvider({ scheme: '*' }, hoverProvider),
         )
     }
 
@@ -214,7 +214,7 @@ function makeRange(range: Range): vscode.Range {
 function createErrorNotifier(
     outputChannel: vscode.OutputChannel,
     extensionId: string,
-    client: Pick<VSCodeClient, 'meta'>
+    client: Pick<VSCodeClient, 'meta'>,
 ) {
     // Fetching the name can be slow or fail. So we use a cache + timeout when
     // getting the name of a provider.

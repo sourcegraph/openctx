@@ -10,14 +10,14 @@ function validateSettings(settings: Settings): Required<Settings> {
     const googleOAuthClient = settings.googleOAuthClient
     if (!googleOAuthClient) {
         throw new Error(
-            'must provide a Google OAuth client configuration in the `googleOAuthClient` settings field'
+            'must provide a Google OAuth client configuration in the `googleOAuthClient` settings field',
         )
     }
 
     const googleOAuthCredentials = settings.googleOAuthCredentials
     if (!googleOAuthCredentials) {
         throw new Error(
-            'must provide a Google OAuth credentials configuration in the `googleOAuthCredentials` settings field'
+            'must provide a Google OAuth credentials configuration in the `googleOAuthCredentials` settings field',
         )
     }
 

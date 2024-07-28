@@ -11,7 +11,7 @@ import type { ProviderTransport, ProviderTransportOptions } from './createTransp
 
 export function createHttpTransport(
     providerUri: string,
-    { authInfo, logger }: Pick<ProviderTransportOptions, 'authInfo' | 'logger'>
+    { authInfo, logger }: Pick<ProviderTransportOptions, 'authInfo' | 'logger'>,
 ): ProviderTransport {
     logger = scopedLogger(logger, 'http')
 
@@ -45,7 +45,7 @@ export function createHttpTransport(
                     error.cause ? `cause=${error.cause}` : null,
                 ]
                     .filter(s => s)
-                    .join(' ')}`
+                    .join(' ')}`,
             )
         }
 
@@ -56,7 +56,7 @@ export function createHttpTransport(
         try {
             const { result, error } = (await resp.json()) as ResponseMessage
             logger?.(
-                `${req.method} response: result=${JSON.stringify(result)} error=${JSON.stringify(error)}`
+                `${req.method} response: result=${JSON.stringify(result)} error=${JSON.stringify(error)}`,
             )
             if (error) {
                 throw new Error(
@@ -66,7 +66,7 @@ export function createHttpTransport(
                         `error.code=${error.code}`,
                         `error.message=${JSON.stringify(error.message)}`,
                         `error.data=${JSON.stringify(error.data)}`,
-                    ].join(' ')}`
+                    ].join(' ')}`,
                 )
             }
             if (!result) {
@@ -79,7 +79,7 @@ export function createHttpTransport(
                     `providerUri=${providerUri}`,
                     `method=${req.method}`,
                     `error=${JSON.stringify('message' in error ? error.message : error)}`,
-                ].join(' ')}`
+                ].join(' ')}`,
             )
         }
     }

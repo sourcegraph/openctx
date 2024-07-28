@@ -27,7 +27,7 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
                 entry.subscription.unsubscribe()
                 codeLensByDoc.delete(doc.uri.toString())
             }
-        })
+        }),
     )
     disposables.push({
         dispose: () => {
@@ -49,10 +49,10 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
             const observable = controller.observeAnnotations(doc).pipe(
                 map(anns =>
                     prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
-                        annotationCodeLens(doc, item, showHover)
-                    )
+                        annotationCodeLens(doc, item, showHover),
+                    ),
                 ),
-                shareReplay({ bufferSize: 1, refCount: true })
+                shareReplay({ bufferSize: 1, refCount: true }),
             )
             const subscription = observable.subscribe({
                 next: () => changeCodeLenses.fire(),
@@ -80,7 +80,7 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
 function annotationCodeLens(
     doc: vscode.TextDocument,
     ann: AnnotationWithRichRange<vscode.Range>,
-    showHover: ReturnType<typeof createShowHoverCommand>
+    showHover: ReturnType<typeof createShowHoverCommand>,
 ): CodeLens {
     const range = ann.range ?? new vscode.Range(0, 0, 0, 0)
     return {
@@ -100,7 +100,7 @@ function annotationCodeLens(
 function createShowHoverCommand(): {
     createCommandArgs: (
         uri: vscode.Uri,
-        pos: vscode.Position
+        pos: vscode.Position,
     ) => Pick<vscode.Command, 'command' | 'arguments'>
 } & vscode.Disposable {
     const COMMAND_ID = 'openctx._showHover'
@@ -113,7 +113,7 @@ function createShowHoverCommand(): {
             }
             editor.selections = [new vscode.Selection(pos, pos)]
             void vscode.commands.executeCommand('editor.action.showHover')
-        }
+        },
     )
     return {
         createCommandArgs(uri, pos) {

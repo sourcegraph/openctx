@@ -4,13 +4,13 @@
     "sourceMap": true,
     "rootDir": ".",
     "outDir": "dist/tsc",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["src"],
   "exclude": ["dist", "testadata"],
   "references": [
     {
-      "path": "../../lib/client",
-    },
-  ],
+      "path": "../../lib/client"
+    }
+  ]
 }

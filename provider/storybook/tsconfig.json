@@ -11,5 +11,5 @@
   },
   "include": ["*.ts"],
   "exclude": ["dist", "vitest.config.ts"],
-  "references": [{ "path": "../../lib/provider" }],
+  "references": [{ "path": "../../lib/provider" }]
 }

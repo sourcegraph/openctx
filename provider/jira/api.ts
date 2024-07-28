@@ -30,7 +30,7 @@ const buildUrl = (settings: Settings, path: string, searchParams: Record<string,
 
 export const searchIssues = async (
     query: string | undefined,
-    settings: Settings
+    settings: Settings,
 ): Promise<IssuePickerItem[]> => {
     const pickerResponse = await fetch(
         buildUrl(settings, '/rest/api/2/issue/picker', {
@@ -39,13 +39,13 @@ export const searchIssues = async (
         {
             method: 'GET',
             headers: authHeaders(settings),
-        }
+        },
     )
     if (!pickerResponse.ok) {
         throw new Error(
             `Error fetching recent JIRA issues (${pickerResponse.status} ${
                 pickerResponse.statusText
-            }): ${await pickerResponse.text()}`
+            }): ${await pickerResponse.text()}`,
         )
     }
 
@@ -77,13 +77,13 @@ export const fetchIssue = async (issueId: string, settings: Settings): Promise<I
         {
             method: 'GET',
             headers: authHeaders(settings),
-        }
+        },
     )
     if (!issueResponse.ok) {
         throw new Error(
             `Error fetching JIRA issue (${issueResponse.status} ${
                 issueResponse.statusText
-            }): ${await issueResponse.text()}`
+            }): ${await issueResponse.text()}`,
         )
     }
 

@@ -44,7 +44,7 @@ describe('createTransport', () => {
 
         test('providerBaseUri', () =>
             expectProviderTransport(
-                createTransport('esmProvider.js', { providerBaseUri: testdataFileUri('') })
+                createTransport('esmProvider.js', { providerBaseUri: testdataFileUri('') }),
             ))
     })
 
@@ -63,7 +63,7 @@ describe('createTransport', () => {
                         },
                         name: 'foo',
                     } satisfies MetaResult,
-                } satisfies ResponseMessage)
+                } satisfies ResponseMessage),
             )
             const provider = createTransport('https://example.com/openctx', {})
             await expectProviderTransport(provider)

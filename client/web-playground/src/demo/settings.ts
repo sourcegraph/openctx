@@ -40,7 +40,7 @@ async function getProviders(): Promise<Record<string, ProviderSettings | boolean
 
     const providerModules = import.meta.glob<boolean, string, { default: string }>(
         '../../../../provider/*/index.ts',
-        { query: '?url' }
+        { query: '?url' },
     )
     for (const [path, urlModule] of Object.entries(providerModules)) {
         const providerUri = new URL((await urlModule()).default, import.meta.url).toString()

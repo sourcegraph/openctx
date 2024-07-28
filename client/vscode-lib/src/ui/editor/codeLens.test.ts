@@ -34,7 +34,7 @@ vi.mock(
             workspace: {
                 onDidCloseTextDocument: vi.fn(),
             },
-        }) satisfies RecursivePartial<typeof vscode>
+        }) satisfies RecursivePartial<typeof vscode>,
 )
 
 function fixtureAnn(label: string): EachWithProviderUri<Annotation<vscode.Range>[]>[0] {
@@ -72,7 +72,7 @@ describe('createCodeLensProvider', () => {
                     return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
                         a: [fixtureAnn('a')],
                     })
-                }
+                },
             )
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
                 a: [
@@ -85,7 +85,7 @@ describe('createCodeLensProvider', () => {
             } satisfies Record<string, vscode.CodeLens[] | null>)
         })
         expect(
-            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken)
+            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken),
         ).toStrictEqual([
             {
                 isResolved: true,
@@ -124,7 +124,7 @@ describe('createCodeLensProvider', () => {
             } satisfies Record<string, vscode.CodeLens[] | null>)
         })
         expect(
-            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken)
+            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken),
         ).toStrictEqual([
             {
                 isResolved: true,
@@ -147,7 +147,7 @@ describe('createCodeLensProvider', () => {
                             item: { title: 'A', ui: { hover: { text: 'D' } } },
                         },
                     ],
-                })
+                }),
             )
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
                 a: [
@@ -185,7 +185,7 @@ describe('createCodeLensProvider', () => {
                             presentationHints: ['prefer-link-over-detail'],
                         },
                     ],
-                })
+                }),
             )
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
                 a: [

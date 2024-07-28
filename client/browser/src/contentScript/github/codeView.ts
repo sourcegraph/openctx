@@ -16,7 +16,7 @@ import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openC
  */
 export function injectOnGitHubCodeView(
     location: URL,
-    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>
+    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>,
 ): Observable<void> {
     // All GitHub code view URLs contain `/blob/` in the path. (But not all URLs with `/blob/` are code
     // views, so we still need to check for the presence of DOM elements below. For example, there
@@ -57,7 +57,7 @@ export function injectOnGitHubCodeView(
                         console.count('significantCodeViewChanges count')
                         console.log(viewState)
                         console.groupEnd()
-                    })
+                    }),
                 ),
             ]).pipe(
                 tap(([anns]) => {
@@ -70,9 +70,9 @@ export function injectOnGitHubCodeView(
                         console.timeEnd('redraw')
                     }
                 }),
-                map(() => undefined)
+                map(() => undefined),
             )
-        })
+        }),
     )
 }
 
@@ -98,7 +98,7 @@ function redraw(anns: Annotation[]): void {
         if (!lineNumberStr) {
             throw new Error('unable to determine line number')
         }
-        const line = parseInt(lineNumberStr, 10) - 1
+        const line = Number.parseInt(lineNumberStr, 10) - 1
 
         const lineAnns = byLine.find(i => i.line === line)?.anns
         if (lineAnns !== undefined) {
@@ -123,7 +123,7 @@ function redraw(anns: Annotation[]): void {
             const chipList = createChipList(
                 styledChipListParams({
                     annotations: anns,
-                })
+                }),
             )
             lineEl.append(chipList)
         }
@@ -194,13 +194,13 @@ function isElementInViewport(el: HTMLElement): boolean {
 
 function lineNumbersFromReactFileLines(reactFileLineEls: HTMLElement[]): number[] {
     return reactFileLineEls
-        .map(el => (el.dataset.lineNumber ? parseInt(el.dataset.lineNumber, 10) - 1 : null))
+        .map(el => (el.dataset.lineNumber ? Number.parseInt(el.dataset.lineNumber, 10) - 1 : null))
         .filter((line): line is number => line !== null)
 }
 
 function getReactFileLine(lineNumber: number): HTMLDivElement {
     const el = document.querySelector<HTMLDivElement>(
-        `.react-file-line[data-line-number="${lineNumber + 1}"]`
+        `.react-file-line[data-line-number="${lineNumber + 1}"]`,
     )
     if (!el) {
         throw new Error(`no .react-file-line for line number ${lineNumber}`)

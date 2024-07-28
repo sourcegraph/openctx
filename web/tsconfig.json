@@ -10,13 +10,13 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": ["src", "pages", "renderer", "content", "pages/**/*.mdx", "content/**/*.mdx"],
   "exclude": ["src/server"],
   "references": [
     { "path": "./tsconfig.node.json" },
     { "path": "./src/server/tsconfig.json" },
-    { "path": "../client/web-playground" },
-  ],
+    { "path": "../client/web-playground" }
+  ]
 }

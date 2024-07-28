@@ -3,7 +3,7 @@ import * as vscode from 'vscode'
 
 export function observeWorkspaceConfigurationChanges(
     section: string,
-    scope?: vscode.ConfigurationScope
+    scope?: vscode.ConfigurationScope,
 ): Observable<void> {
     return new Observable(observer => {
         const disposable = vscode.workspace.onDidChangeConfiguration(e => {
@@ -17,7 +17,7 @@ export function observeWorkspaceConfigurationChanges(
 }
 
 export function toEventEmitter<T>(
-    observable: Observable<T>
+    observable: Observable<T>,
 ): vscode.EventEmitter<T> & vscode.Disposable {
     const emitter = new vscode.EventEmitter<T>()
     const sub = observable.subscribe({ next: v => emitter.fire(v) })

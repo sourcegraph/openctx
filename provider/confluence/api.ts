@@ -41,7 +41,7 @@ export const listPages = async (settings: Settings, query?: string): Promise<Pag
         throw new Error(
             `Error searching content (${response.status} ${
                 response.statusText
-            }): ${await response.text()}`
+            }): ${await response.text()}`,
         )
     }
 
@@ -81,7 +81,7 @@ export const getPage = async (settings: Settings, id: string): Promise<Page> => 
 
     if (!response.ok) {
         throw new Error(
-            `Error getting content (${response.status} ${response.statusText}): ${await response.text()}`
+            `Error getting content (${response.status} ${response.statusText}): ${await response.text()}`,
         )
     }
 

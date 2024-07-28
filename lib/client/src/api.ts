@@ -69,7 +69,7 @@ export type EachWithProviderUri<T extends unknown[]> = ((T extends readonly (inf
 function observeProviderCall<R>(
     providerClients: Observable<ProviderClientWithSettings[]>,
     fn: (provider: ProviderClientWithSettings) => Observable<R[] | null>,
-    { emitPartial, errorHook, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    { emitPartial, errorHook, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions,
 ): Observable<EachWithProviderUri<R[]>> {
     return providerClients.pipe(
         mergeMap(providerClients =>
@@ -87,23 +87,23 @@ function observeProviderCall<R>(
                                           console.error(error)
                                       }
                                       return of(null)
-                                  })
+                                  }),
                               )
                               .pipe(
                                   map(items =>
-                                      (items || []).map(item => ({ ...item, providerUri: uri }))
-                                  )
-                              )
-                      )
+                                      (items || []).map(item => ({ ...item, providerUri: uri })),
+                                  ),
+                              ),
+                      ),
                   )
-                : of([])
+                : of([]),
         ),
         map(result => result.filter((v): v is EachWithProviderUri<R[]> => v !== null).flat()),
         tap(items => {
             if (LOG_VERBOSE) {
                 logger?.(`got ${items.length} results: ${JSON.stringify(items)}`)
             }
-        })
+        }),
     )
 }
 
@@ -113,13 +113,13 @@ function observeProviderCall<R>(
 export function observeMeta(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: MetaParams,
-    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions,
 ): Observable<EachWithProviderUri<MetaResult[]>> {
     return observeProviderCall<MetaResult>(
         providerClients,
         ({ providerClient, settings }) =>
             from(providerClient.meta(params, settings)).pipe(map(result => [result])),
-        opts
+        opts,
     )
 }
 
@@ -129,12 +129,12 @@ export function observeMeta(
 export function observeMentions(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: MentionsParams,
-    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions,
 ): Observable<EachWithProviderUri<MentionsResult>> {
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) => from(providerClient.mentions(params, settings)),
-        opts
+        opts,
     )
 }
 
@@ -144,12 +144,12 @@ export function observeMentions(
 export function observeItems(
     providerClients: Observable<ProviderClientWithSettings[]>,
     params: ItemsParams,
-    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions
+    opts: Pick<ClientEnv<never>, 'logger'> & ObserveOptions,
 ): Observable<EachWithProviderUri<ItemsResult>> {
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) => from(providerClient.items(params, settings)),
-        opts
+        opts,
     )
 }
 
@@ -164,7 +164,7 @@ export function observeAnnotations<R extends Range>(
         makeRange,
         emitPartial,
         errorHook,
-    }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & ObserveOptions
+    }: Pick<ClientEnv<R>, 'logger' | 'makeRange'> & ObserveOptions,
 ): Observable<EachWithProviderUri<Annotation<R>[]>> {
     return observeProviderCall(
         providerClients,
@@ -186,10 +186,10 @@ export function observeAnnotations<R extends Range>(
                                       (a.range?.start.character ?? 0) - (b.range?.start.character ?? 0)
                                   )
                               })
-                        : null
-                )
+                        : null,
+                ),
             ),
-        { logger, emitPartial, errorHook }
+        { logger, emitPartial, errorHook },
     )
 }
 

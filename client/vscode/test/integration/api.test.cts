@@ -24,13 +24,13 @@ suite('API', () => {
             debug: true,
             providers: {
                 [vscode.Uri.file(
-                    path.join(openctxDir, 'provider/hello-world/dist/index.js')
+                    path.join(openctxDir, 'provider/hello-world/dist/index.js'),
                 ).toString()]: true,
             },
         })
         assert.deepEqual(
             (await api.items({})).map(item => item.title),
-            ['✨ Hello, world!']
+            ['✨ Hello, world!'],
         )
     })
 
@@ -46,7 +46,7 @@ suite('API', () => {
             const origProviderPath = path.join(
                 openctxDir,
                 'lib/client/src/providerClient/transport/testdata',
-                providerFilename
+                providerFilename,
             )
 
             const providerPath = path.join(scratchDir, providerFilename)
@@ -62,7 +62,7 @@ suite('API', () => {
 
             assert.deepEqual(
                 (await api.meta({})).map(meta => meta.name),
-                ['foo']
+                ['foo'],
             )
         })
     }

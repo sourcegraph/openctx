@@ -9,7 +9,7 @@ import match from 'picomatch/lib/picomatch.js'
  * docs for the selector specification.
  */
 export function matchSelectors(
-    selectors: AnnotationSelector[] | undefined
+    selectors: AnnotationSelector[] | undefined,
 ): (params: AnnotationsParams) => boolean {
     if (selectors === undefined) {
         return ALWAYS_TRUE

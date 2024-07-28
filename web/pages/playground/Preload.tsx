@@ -11,7 +11,7 @@ export const Preload: FunctionComponent = () => (
                 <img key={url} src={url} alt="" />
             ) : as === 'script' ? (
                 <script key={url} src={url.replace('https+js', 'https')} type="module" async={true} />
-            ) : null
+            ) : null,
         )}
     </div>
 )

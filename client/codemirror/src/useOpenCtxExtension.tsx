@@ -29,7 +29,7 @@ export function useOpenCtxExtension({
                                           chipClassName="octx-chip"
                                           popoverClassName="octx-chip-popover"
                                       />
-                                  </IndentationWrapper>
+                                  </IndentationWrapper>,
                               )
                               return {
                                   destroy() {
@@ -40,6 +40,6 @@ export function useOpenCtxExtension({
                       }),
                   ]
                 : [],
-        [visibility, anns]
+        [visibility, anns],
     )
 }

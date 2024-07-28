@@ -3,13 +3,13 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["src"],
   "exclude": ["dist"],
   "references": [
     {
-      "path": "../../lib/client",
-    },
-  ],
+      "path": "../../lib/client"
+    }
+  ]
 }

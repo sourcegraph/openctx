@@ -14,7 +14,7 @@ interface Chunk {
 
 export async function searchForFileChunks(
     graphqlClient: GraphQLClient,
-    query: string
+    query: string,
 ): Promise<Chunk[] | Error> {
     const results = await graphqlClient
         .fetchSourcegraphAPI<APIResponse<SearchResponse>>(SEARCH_QUERY, {
@@ -30,7 +30,7 @@ export async function searchForFileChunks(
                     return result.chunkMatches.map(chunkMatch => {
                         const lineRange = chunkMatchContentToLineRange(
                             chunkMatch.content,
-                            chunkMatch.contentStart.line
+                            chunkMatch.contentStart.line,
                         )
                         return {
                             url: `${url}?L${lineRange}`,
@@ -41,7 +41,7 @@ export async function searchForFileChunks(
                         } satisfies Chunk
                     })
                 })
-            })
+            }),
         )
     return results
 }

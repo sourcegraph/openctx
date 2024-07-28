@@ -12,7 +12,7 @@ class BlockWidget extends WidgetType {
     constructor(
         private readonly anns: Annotation[],
         private readonly indent: string | undefined,
-        private readonly config: OpenCtxDecorationsConfig
+        private readonly config: OpenCtxDecorationsConfig,
     ) {
         super()
     }
@@ -43,7 +43,7 @@ class BlockWidget extends WidgetType {
 function computeDecorations(
     state: EditorState,
     anns: Annotation[],
-    config: OpenCtxDecorationsConfig
+    config: OpenCtxDecorationsConfig,
 ): DecorationSet {
     const builder = new RangeSetBuilder<Decoration>()
 
@@ -66,7 +66,7 @@ function computeDecorations(
             line.from,
             Decoration.widget({
                 widget: new BlockWidget(anns, indent, config),
-            })
+            }),
         )
     }
 

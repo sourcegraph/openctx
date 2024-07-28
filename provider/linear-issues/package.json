@@ -11,10 +11,7 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist/bundle.js",
-    "dist/index.d.ts"
-  ],
+  "files": ["dist/bundle.js", "dist/index.d.ts"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

@@ -66,7 +66,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
                 makeRange: r => r,
                 logger: console.error,
             }),
-        [settings]
+        [settings],
     )
 
     const [error, setError] = useState<string>()
@@ -80,12 +80,12 @@ export const AnnotatedEditor: React.FunctionComponent<{
                               next: () => setError(undefined),
                               error: error => setError(error.message ?? `${error}`),
                           }),
-                          catchError(() => of([]))
+                          catchError(() => of([])),
                       )
                     : NEVER,
-            [client, value, resourceUri]
+            [client, value, resourceUri],
         ),
-        []
+        [],
     )
 
     const octxExtension = useOpenCtxExtension({
@@ -94,7 +94,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
     })
     const extensions = useMemo(
         () => [javascript({ jsx: true, typescript: true }), octxExtension],
-        [octxExtension]
+        [octxExtension],
     )
 
     return (
@@ -122,7 +122,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
                             searchKeymap: false,
                         },
                     },
-                    codeMirrorProps
+                    codeMirrorProps,
                 )}
             />
         </section>

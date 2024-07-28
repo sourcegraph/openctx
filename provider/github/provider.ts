@@ -102,7 +102,7 @@ export function parseQuery(query = ''): { owner: string; repoName: string; numbe
             if (!['issues', 'pull'].includes(kind)) {
                 return null
             }
-            return { owner, repoName, number: parseInt(numberText) }
+            return { owner, repoName, number: Number.parseInt(numberText) }
         }
     } catch {
         let [_, owner, repoName, kind, numberText] = query.split('/')
@@ -113,11 +113,11 @@ export function parseQuery(query = ''): { owner: string; repoName: string; numbe
             if (query.includes(':')) {
                 const [owner, repoName] = query.substring(0, query.lastIndexOf(':')).split('/')
                 const [_, numberText] = query.split(':')
-                return { owner, repoName, number: parseInt(numberText) }
+                return { owner, repoName, number: Number.parseInt(numberText) }
             }
             return null
         }
-        return { owner, repoName, number: parseInt(numberText) }
+        return { owner, repoName, number: Number.parseInt(numberText) }
     }
 
     return null

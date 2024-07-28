@@ -6,7 +6,7 @@ import { content } from './content.ts'
 const onBeforeRenderContent = createOnBeforeRender(content)
 
 export const onBeforeRender: OnBeforeRenderAsync = async (
-    pageContext
+    pageContext,
 ): ReturnType<OnBeforeRenderAsync> => {
     const slug = slugFromPageContext(pageContext)
     if (slug === 'index') {

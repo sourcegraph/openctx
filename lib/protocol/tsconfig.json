@@ -2,8 +2,8 @@
   "extends": "../../.config/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist",
+    "outDir": "dist"
   },
   "include": ["src"],
-  "references": [{ "path": "../schema" }],
+  "references": [{ "path": "../schema" }]
 }

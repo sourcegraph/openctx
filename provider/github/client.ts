@@ -29,7 +29,7 @@ export class GithubClient {
         req: E,
         params: E extends keyof Endpoints
             ? Endpoints[E]['parameters'] & RequestParameters
-            : RequestParameters
+            : RequestParameters,
     ): Promise<Endpoints[E]['response']['data']> {
         const response = await this.octokit.request(req, params)
 

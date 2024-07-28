@@ -28,7 +28,7 @@ export const octxDarkTheme = EditorView.theme(
             border: 'none',
         },
     },
-    { dark: true }
+    { dark: true },
 )
 
 const chalky = 'hsl(225, 72%, 70%)'
@@ -74,7 +74,7 @@ export const octxHighlightStyle = syntaxHighlighting(
         { tag: [t.atom, t.bool, t.special(t.variableName)], color: whiskey },
         { tag: [t.processingInstruction, t.string, t.inserted], color: sage },
         { tag: t.invalid, color: invalid },
-    ])
+    ]),
 )
 
 export const octxTheme: Extension = [octxDarkTheme, octxHighlightStyle]

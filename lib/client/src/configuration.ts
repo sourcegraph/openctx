@@ -33,7 +33,7 @@ export interface ImportedProviderConfiguration {
  */
 export function configurationFromUserInput(
     raw: ConfigurationUserInput,
-    providers: ImportedProviderConfiguration[] = []
+    providers: ImportedProviderConfiguration[] = [],
 ): Configuration {
     return {
         enable: raw.enable ?? true,
@@ -49,11 +49,11 @@ export function configurationFromUserInput(
 }
 
 function providersFromUserInput(
-    providers: ConfigurationUserInput['providers']
+    providers: ConfigurationUserInput['providers'],
 ): Configuration['providers'] {
     return Object.entries(providers ?? [])
         .map(([providerUri, settings]) =>
-            settings ? { providerUri, settings: settings === true ? {} : settings } : null
+            settings ? { providerUri, settings: settings === true ? {} : settings } : null,
         )
         .filter((v): v is Configuration['providers'][number] => v !== null)
         .sort((a, b) => a.providerUri.localeCompare(b.providerUri))

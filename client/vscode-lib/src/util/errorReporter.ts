@@ -32,7 +32,7 @@ export class ErrorReporterController implements vscode.Disposable {
 
     constructor(
         private showErrorNotification: (providerUri: string | undefined, error: any) => Thenable<any>,
-        private errorLog: (error: any) => void
+        private errorLog: (error: any) => void,
     ) {}
 
     /**
@@ -40,7 +40,7 @@ export class ErrorReporterController implements vscode.Disposable {
      */
     public wrapObservable<T, R>(
         userAction: UserAction,
-        providerMethod: (params: T, opts?: ProviderMethodOptions) => Observable<R>
+        providerMethod: (params: T, opts?: ProviderMethodOptions) => Observable<R>,
     ) {
         return (params: T, opts?: ProviderMethodOptions) => {
             const errorReporter = this.getErrorReporter(userAction, opts)
@@ -72,7 +72,7 @@ export class ErrorReporterController implements vscode.Disposable {
      */
     public wrapPromise<T, R>(
         userAction: UserAction,
-        providerMethod: (params: T, opts?: ProviderMethodOptions) => Promise<R>
+        providerMethod: (params: T, opts?: ProviderMethodOptions) => Promise<R>,
     ) {
         return async (params: T, opts?: ProviderMethodOptions) => {
             const errorReporter = this.getErrorReporter(userAction, opts)
@@ -192,7 +192,7 @@ export class ErrorReporterController implements vscode.Disposable {
         // If providerUri is the empty string communicate that via undefined
         this.showErrorNotification(providerUri === '' ? undefined : providerUri, error).then(
             onfinally,
-            onfinally
+            onfinally,
         )
     }
 
@@ -206,7 +206,7 @@ export class ErrorReporterController implements vscode.Disposable {
 
 function withErrorHook(
     opts: ProviderMethodOptions | undefined,
-    errorHook: (providerUri: string, err: any) => void
+    errorHook: (providerUri: string, err: any) => void,
 ): ProviderMethodOptions {
     const parent = opts?.errorHook
     return {

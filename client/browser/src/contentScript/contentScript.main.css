@@ -8,7 +8,7 @@
     font-family: system-ui, sans-serif;
 }
 
-html[data-color-mode='light'] {
+html[data-color-mode="light"] {
     & .octx-chip {
         background: #00000011;
         border: solid 1px #00000019;
@@ -24,7 +24,7 @@ html[data-color-mode='light'] {
     }
 }
 
-html[data-color-mode='dark'] {
+html[data-color-mode="dark"] {
     & .octx-chip {
         background: #ffffff3a;
         border: solid 1px #ffffff55;

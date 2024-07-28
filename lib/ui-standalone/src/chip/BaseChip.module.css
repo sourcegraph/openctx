@@ -25,7 +25,7 @@
     z-index: 1;
     /* Just in case `pointer-events: none` is set on a parent. */
     pointer-events: auto;
-    content: '';
+    content: "";
 }
 
 .popover {

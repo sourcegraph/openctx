@@ -21,8 +21,8 @@ describe('parseSentryURL', () => {
         })
         expect(
             parseSentryURL(
-                'https://example.sentry.io/issues/9876543210/?project=1234567&query=is%3Aunresolved+issue.priority%3A%5Bhigh%2C+medium%5D&referrer=issue-stream&statsPeriod=14d&stream_index=0'
-            )
+                'https://example.sentry.io/issues/9876543210/?project=1234567&query=is%3Aunresolved+issue.priority%3A%5Bhigh%2C+medium%5D&referrer=issue-stream&statsPeriod=14d&stream_index=0',
+            ),
         ).toEqual({
             organizationId: 'example',
             issueId: '9876543210',
@@ -217,7 +217,7 @@ describe('provider.mentions', () => {
         const params = { query: 'https://sentry.io/issues/123' }
         const settings = {}
         await expect(providerImplementation.mentions(params, settings)).rejects.toThrow(
-            'Must provide a Sentry API token in the `apiToken` settings field, or a path to a file with the token in the `apiTokenPath` settings field.'
+            'Must provide a Sentry API token in the `apiToken` settings field, or a path to a file with the token in the `apiTokenPath` settings field.',
         )
     })
 

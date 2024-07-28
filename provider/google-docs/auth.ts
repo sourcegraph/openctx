@@ -1,6 +1,6 @@
-import http from 'http'
-import type { AddressInfo } from 'net'
 import { readFileSync } from 'node:fs'
+import http from 'node:http'
+import type { AddressInfo } from 'node:net'
 import url from 'node:url'
 import dedent from 'dedent'
 import { OAuth2Client } from 'google-auth-library'

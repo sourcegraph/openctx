@@ -47,7 +47,7 @@ export const FakeEditorWindow: FunctionComponent<{ className?: string }> = ({ cl
         className={clsx(
             'min-h-[622px] rounded-lg border border-[hsla(276,50%,27%,1)] shadow-2xl shadow-muted',
             styles.container,
-            className
+            className,
         )}
     >
         <header className="flex flex-wrap justify-between gap-4 rounded-t-lg border-b border-[hsla(276,50%,27%,0.7)] bg-[hsla(276,72%,6%,1)] p-2 text-sm">
@@ -76,6 +76,7 @@ const noop = (): void => {}
 
 const AnnotatedEditor: typeof _AnnotatedEditor = props => (
     <ClientOnlySync
+        // biome-ignore lint/correctness/useExhaustiveDependencies:
         component={useCallback(() => <_AnnotatedEditor {...props} />, [props])}
         initial={<div className="p-3" />}
     />

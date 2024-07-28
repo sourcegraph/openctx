@@ -4,7 +4,7 @@
     "rootDir": ".",
     "outDir": "dist",
     "noEmit": true,
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
-  "include": ["*.ts", "release.mts", "build.mts"],
+  "include": ["*.ts", "release.mts", "build.mts"]
 }

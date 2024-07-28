@@ -51,10 +51,10 @@ const DEFAULT_CONFIG: ClientConfiguration = {
 
 export const configurationStringChanges: Observable<string> = observeStorageKey(
     'sync',
-    'configuration'
+    'configuration',
 ).pipe(
     map(c => c ?? { jsonc: JSON.stringify(DEFAULT_CONFIG, null, 2) }),
-    map(({ jsonc: jsoncStr }) => jsoncStr)
+    map(({ jsonc: jsoncStr }) => jsoncStr),
 )
 
 export const configurationChanges: Observable<ClientConfiguration> = configurationStringChanges.pipe(
@@ -67,5 +67,5 @@ export const configurationChanges: Observable<ClientConfiguration> = configurati
             console.error('Error parsing configuration (as JSONC):', errors)
         }
         return obj
-    })
+    }),
 )

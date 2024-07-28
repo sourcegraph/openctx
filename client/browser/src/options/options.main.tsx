@@ -12,5 +12,5 @@ document.body.append(root)
 ReactDOM.createRoot(root).render(
     <React.StrictMode>
         <OptionsPage />
-    </React.StrictMode>
+    </React.StrictMode>,
 )

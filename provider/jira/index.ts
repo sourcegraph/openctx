@@ -68,7 +68,7 @@ const jiraProvider: Provider = {
                 uri: item.url,
                 description: item.summaryText,
                 data: { key: item.key },
-            }))
+            })),
         )
     },
 
@@ -92,8 +92,8 @@ const jiraProvider: Provider = {
             subtasks.map(subtask =>
                 fetchIssue(subtask.key, settings).then(childIssue => {
                     return childIssue ? issueToItem(childIssue) : null
-                })
-            )
+                }),
+            ),
         )
 
         const items = [issueToItem(issue), ...childIssues.filter((item): item is Item => item !== null)]

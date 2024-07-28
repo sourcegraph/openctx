@@ -5,7 +5,7 @@ export class SourcegraphGraphQLAPIClient {
 
     public async fetchSourcegraphAPI<T>(
         query: string,
-        variables: Record<string, any> = {}
+        variables: Record<string, any> = {},
     ): Promise<T | Error> {
         const headers = new Headers()
         headers.set('Content-Type', 'application/json; charset=utf-8')

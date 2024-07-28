@@ -85,11 +85,11 @@ function callBackgroundMethodReturningObservable(method: string, args: unknown[]
  * Create a proxy for an Observable-returning background API method.
  */
 export function proxyBackgroundMethodReturningObservable<M extends keyof BackgroundApi>(
-    method: M
+    method: M,
 ): BackgroundApi[M] {
     if (isBackground) {
         throw new Error(
-            'tried to call background service worker function from background service worker itself'
+            'tried to call background service worker function from background service worker itself',
         )
     }
     return (...args: any[]) =>
@@ -108,7 +108,7 @@ export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubsc
 
     const handler = (
         { streamId, method, args }: RequestMessage,
-        sender: browser.runtime.MessageSender
+        sender: browser.runtime.MessageSender,
     ): Promise<void> => {
         if (streamId === undefined) {
             throw new Error('non-Observable-returning RPC calls are not yet implemented')
