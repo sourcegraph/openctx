@@ -1,9 +1,13 @@
 body {
-    font-family: system-ui, sans-serif;
+    font-family: sans-serif;
 }
 
 * {
     box-sizing: border-box;
+}
+
+:root {
+    --spacing: 0.5rem;
 }
 
 .container {
@@ -20,30 +24,32 @@ body {
     background-color: Canvas;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: calc(2 * var(--spacing));
     border-bottom: solid 1px ButtonBorder;
-    padding: 0.75rem 1rem;
+    padding: var(--spacing);
 }
 
 .header h1 {
     margin: 0;
-    font-size: 1.25rem;
-    fill: currentColor;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    font-size: unset;
 }
 
 .header nav {
     display: flex;
-    gap: 0.75rem;
-}
+    gap: var(--spacing);
 
-.header nav a {
-    font-size: 90%;
-    font-family: monospace;
+    ul {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li a {
+            padding: calc(0.25 * var(--spacing));
+        }
+    }
 }
 
 .main {
@@ -55,15 +61,35 @@ body {
 
 .main > :first-child {
     border-right: solid 8px black;
+    resize: horizontal;
+}
+
+.view-container {
+    /* Support resizing the panel. */
+    flex: 1 0;
+    &:first-child {
+        flex: 0 0 auto;
+    }
+
+    min-width: 25%;
+    max-width: 75%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.view-container-content {
+    padding: var(--spacing);
+}
+
+.view-container-header {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing);
+    min-height: 2.5rem;
 }
 
 .editor {
     flex: 1;
     overflow: hidden;
-}
-
-.editor-container {
-    width: 50%;
-    display: flex;
-    flex-direction: column;
 }
