@@ -2,13 +2,13 @@ import { type FunctionComponent, useCallback, useEffect, useState } from 'react'
 import { SettingsEditor } from '../SettingsEditor.js'
 import styles from './DemoApp.module.css'
 import { DemoEditor } from './DemoEditor.js'
-import { DemoMentionConsole } from './DemoMentionConsole.js'
+import { DemoMentionsConsole } from './DemoMentionsConsole.js'
 import { getDefaultSettings } from './settings.js'
 
 const SETTINGS_LOCALSTORAGE_KEY = 'openctx-playground-settings'
 
 const SETTINGS_EDITOR_ID = 'settings-editor'
-const SETTINGS_EDITOR_WIDTH_LOCALSTORAGE_KEY = 'openctx-playground-settings-editor-width'
+const SETTINGS_EDITOR_PANEL_SIZE_LOCALSTORAGE_KEY = 'openctx-playground-settings-editor-width'
 
 export const DemoApp: FunctionComponent = () => {
     const [settings, setSettings] = useState<string | undefined>(
@@ -24,10 +24,11 @@ export const DemoApp: FunctionComponent = () => {
         localStorage.setItem(SETTINGS_LOCALSTORAGE_KEY, settings)
         setSettings(settings)
 
-        // Also save the width of the settings editor.
-        const width = document.getElementById(SETTINGS_EDITOR_ID)?.offsetWidth
-        if (width !== undefined) {
-            localStorage.setItem(SETTINGS_EDITOR_WIDTH_LOCALSTORAGE_KEY, String(width))
+        // Also save the size of the settings editor. This should be done after resizing, but this
+        // is an easy hack.
+        const panelSize = document.getElementById(SETTINGS_EDITOR_ID)?.offsetHeight
+        if (panelSize !== undefined) {
+            localStorage.setItem(SETTINGS_EDITOR_PANEL_SIZE_LOCALSTORAGE_KEY, String(panelSize))
         }
     }, [])
     const onResetSettingsClick = useCallback(() => {
@@ -35,10 +36,10 @@ export const DemoApp: FunctionComponent = () => {
         getDefaultSettings().then(setSettings).catch(console.error)
     }, [])
     useEffect(() => {
-        const width = localStorage.getItem(SETTINGS_EDITOR_WIDTH_LOCALSTORAGE_KEY)
+        const panelSize = localStorage.getItem(SETTINGS_EDITOR_PANEL_SIZE_LOCALSTORAGE_KEY)
         const settingsEditor = document.getElementById(SETTINGS_EDITOR_ID)
-        if (width !== null && settingsEditor) {
-            settingsEditor.style.width = width + 'px'
+        if (panelSize !== null && settingsEditor) {
+            settingsEditor.style.height = panelSize + 'px'
         }
     }, [])
 
@@ -72,7 +73,8 @@ export const DemoApp: FunctionComponent = () => {
                     codeMirrorProps={{
                         theme: 'dark',
                         height: '100%',
-                        style: { height: '100%', fontSize: '90%' },
+                        width: '100%',
+                        style: { height: '100%', fontSize: '80%' },
                         className: styles.editor,
                     }}
                     headerChildren={
@@ -82,7 +84,7 @@ export const DemoApp: FunctionComponent = () => {
                     }
                 />
                 {view === 'mentions' ? (
-                    <DemoMentionConsole
+                    <DemoMentionsConsole
                         settings={settings}
                         className={`${styles.viewContainer}`}
                         headerClassName={styles.viewContainerHeader}

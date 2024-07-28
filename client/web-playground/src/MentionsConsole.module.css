@@ -1,0 +1,49 @@
+[cmdk-root] {
+    border: solid 1px ButtonBorder;
+    background: Canvas;
+}
+
+[cmdk-group]:not(:last-child) {
+    border-bottom: solid 1px GrayText !important;
+}
+
+[cmdk-item] {
+    cursor: default;
+    padding: calc(0.5 * var(--spacing));
+    &[aria-selected="true"] {
+        background-color: SelectedItem;
+        color: SelectedItemText !important;
+    }
+}
+
+[cmdk-empty],
+[cmdk-loading],
+[cmdk-group-heading] {
+    padding: calc(0.75 * var(--spacing)) !important;
+}
+
+.content {
+    overflow: auto;
+}
+
+.prompt-editor {
+    border: solid 1px ButtonBorder !important;
+
+    --vscode-inputOption-activeForeground: ButtonText;
+    --vscode-inputOption-activeBackground: color-mix(in lch, SelectedItem 30%, Highlight);
+    --vscode-inputOption-activeBorder: SelectedItem;
+}
+
+.details {
+    summary {
+        cursor: pointer;
+        color: GrayText;
+        font-size: 80%;
+    }
+    > :not(summary) {
+        border: solid 1px ButtonBorder;
+        padding: var(--spacing);
+        max-width: 100%;
+        overflow: auto;
+    }
+}
