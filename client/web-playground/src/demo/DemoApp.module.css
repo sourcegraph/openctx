@@ -13,6 +13,8 @@ body {
 .container {
     display: flex;
     flex-direction: column;
+    gap: calc(0.25 * var(--spacing));
+    width: 100vw;
     height: 100vh;
     overflow: hidden;
 }
@@ -32,7 +34,7 @@ body {
 
 .header h1 {
     margin: 0;
-    font-size: unset;
+    font-size: 1rem;
 }
 
 .header nav {
@@ -53,15 +55,18 @@ body {
 }
 
 .main {
-    background-color: black;
+    background-color: Canvas;
     flex: 1;
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
     overflow: hidden;
+    gap: var(--spacing);
 }
 
 .main > :first-child {
-    border-right: solid 8px black;
-    resize: horizontal;
+    border-bottom: solid 1px ButtonBorder;
+    resize: vertical;
 }
 
 .view-container {
@@ -71,8 +76,8 @@ body {
         flex: 0 0 auto;
     }
 
-    min-width: 25%;
-    max-width: 75%;
+    min-height: 25%;
+    max-height: 75%;
     display: flex;
     flex-direction: column;
     overflow: hidden;

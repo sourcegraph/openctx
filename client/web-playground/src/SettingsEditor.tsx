@@ -34,7 +34,7 @@ export const SettingsEditor: React.FunctionComponent<{
     const { status, error } = useMemo(() => {
         try {
             JSON.parse(value)
-            return { status: 'Valid', error: false }
+            return { status: '', error: false }
         } catch {
             return { status: 'Invalid JSON', error: true }
         }
