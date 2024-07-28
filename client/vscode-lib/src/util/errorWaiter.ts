@@ -50,11 +50,10 @@ export function createErrorWaiter(delay: number, errorCountThreshold: number): E
             if (!timeoutHandle) {
                 return
             }
-            if ('unref' in timeoutHandle) {
+            if (typeof timeoutHandle !== 'number' && 'unref' in timeoutHandle) {
                 timeoutHandle.unref()
-            } else if (typeof timeoutHandle === 'number') {
-                clearTimeout(timeoutHandle)
             }
+            clearTimeout(timeoutHandle)
         },
     }
 }
