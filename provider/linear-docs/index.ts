@@ -112,14 +112,14 @@ function getAccessToken(settings: Settings): string {
     }
 
     throw new Error(
-        'must provide a Linear user credentials path in the `userCredentialsPath` settings field or an accessToken in the linearClientOptions'
+        'must provide a Linear user credentials path in the `userCredentialsPath` settings field or an accessToken in the linearClientOptions',
     )
 }
 
 async function linearApiRequest(
     query: string,
     variables: object,
-    settings: Settings
+    settings: Settings,
 ): Promise<{ data: any }> {
     const accessToken = getAccessToken(settings)
     const response = await fetch('https://api.linear.app/graphql', {
@@ -134,7 +134,7 @@ async function linearApiRequest(
     if (!response.ok) {
         const errorBody = await response.text()
         console.error(
-            `Linear API request failed: ${response.status} - ${response.statusText}\n${errorBody}`
+            `Linear API request failed: ${response.status} - ${response.statusText}\n${errorBody}`,
         )
         throw new Error(`Linear API request failed: ${response.statusText}`)
     }

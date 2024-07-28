@@ -30,6 +30,6 @@ export interface BackgroundApi extends Pick<Client<Range>, 'annotationsChanges'>
 export type BackgroundApiHandlers = {
     [M in keyof BackgroundApi]: (
         args: Parameters<BackgroundApi[M]>,
-        sender: browser.runtime.MessageSender
+        sender: browser.runtime.MessageSender,
     ) => ReturnType<BackgroundApi[M]>
 }

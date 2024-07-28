@@ -107,8 +107,8 @@ function printItems(items: Item[]): void {
                 console.log(
                     `   - hover.text: ${truncate(
                         item.ui.hover?.text.trim().replace(/(\s|\n)+/g, ' '),
-                        100
-                    )}`
+                        100,
+                    )}`,
                 )
             }
             if (item.ai?.content) {
@@ -157,7 +157,7 @@ try {
     config = loadConfig()
 } catch (e) {
     usageFatal(
-        'Error: invalid OPENCTX_CONFIG env var. Must be one of:\n- JSON object of config\n- Path to JSON config\n- Provider URI\n- Path to provider bundle'
+        'Error: invalid OPENCTX_CONFIG env var. Must be one of:\n- JSON object of config\n- Path to JSON config\n- Provider URI\n- Path to provider bundle',
     )
 }
 

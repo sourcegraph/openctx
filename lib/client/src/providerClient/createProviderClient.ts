@@ -48,7 +48,7 @@ export interface ProviderClientOptions
 export function createProviderClient(
     providerUri: string,
     { logger, ...options }: ProviderClientOptions = {},
-    provider?: Provider
+    provider?: Provider,
 ): ProviderClient {
     logger = scopedLogger(logger, `providerClient(${providerUri})`)
 
@@ -65,7 +65,7 @@ export function createProviderClient(
         },
         async mentions(
             params: MentionsParams,
-            settings: ProviderSettings
+            settings: ProviderSettings,
         ): Promise<MentionsResult | null> {
             try {
                 return (await transport.mentions?.(params, settings)) || null
@@ -84,7 +84,7 @@ export function createProviderClient(
         },
         async annotations(
             params: AnnotationsParams,
-            settings: ProviderSettings
+            settings: ProviderSettings,
         ): Promise<AnnotationsResult | null> {
             let match: (params: AnnotationsParams) => boolean | undefined
             try {
@@ -105,8 +105,8 @@ export function createProviderClient(
             if (!capable) {
                 logger?.(
                     `skipping items for ${JSON.stringify(
-                        params.uri
-                    )} because it did not match the provider's selector`
+                        params.uri,
+                    )} because it did not match the provider's selector`,
                 )
                 return null
             }

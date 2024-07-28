@@ -12,7 +12,7 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
         args: Parameters<ProviderTransport[M]>,
         fn: (
             ...args: Parameters<ProviderTransport[M]>
-        ) => Promise<Awaited<ReturnType<ProviderTransport[M]>>>
+        ) => Promise<Awaited<ReturnType<ProviderTransport[M]>>>,
     ): Promise<Awaited<ReturnType<ProviderTransport[M]>>> {
         const fullKey = `${String(method)}:${JSON.stringify(args)}`
         const entry = cache.get(fullKey) as Awaited<ReturnType<ProviderTransport[M]>> | undefined
@@ -30,13 +30,13 @@ export function cachedTransport(provider: ProviderTransport): ProviderTransport 
             cachedMethodCall('meta', args, (params, settings) => provider.meta(params, settings)),
         mentions: (...args) =>
             cachedMethodCall('mentions', args, (params, settings) =>
-                provider.mentions(params, settings)
+                provider.mentions(params, settings),
             ),
         items: (...args) =>
             cachedMethodCall('items', args, (params, settings) => provider.items(params, settings)),
         annotations: (...args) =>
             cachedMethodCall('annotations', args, (params, settings) =>
-                provider.annotations(params, settings)
+                provider.annotations(params, settings),
             ),
         dispose: () => {
             cache.clear()

@@ -23,7 +23,7 @@ function parseUri(link: string): { deployment: string; finding: number } | null 
     if (url.hostname.includes('semgrep.dev')) {
         try {
             const [d, f] = url.pathname.split('/orgs/')[1].split('/findings/')
-            return { deployment: d, finding: parseInt(f) }
+            return { deployment: d, finding: Number.parseInt(f) }
         } catch (err) {
             return null
         }

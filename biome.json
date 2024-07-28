@@ -8,17 +8,15 @@
     "rules": {
       "recommended": true,
       "nursery": {
-        "useExportType": "error",
-        "useImportType": "error",
-        "useGroupedTypeImport": "error",
-        "noUnusedImports": "error",
-        "noUnusedPrivateClassMembers": "error",
-        "noInvalidUseBeforeDeclaration": "error",
-        "noUselessTernary": "error",
         "noDuplicateJsonKeys": "error"
       },
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedPrivateClassMembers": "error"
+      },
       "suspicious": {
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noExportsInTest": "off"
       },
       "style": {
         "noNonNullAssertion": "off",
@@ -38,15 +36,40 @@
       "semicolons": "asNeeded",
       "quoteStyle": "single",
       "arrowParentheses": "asNeeded",
-      "trailingComma": "es5"
+      "trailingCommas": "all"
+    }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true
+    },
+    "formatter": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": true
     }
   },
   "files": {
-    "ignore": ["node_modules/", "out/", "dist/", "testdata/", ".vscode-test/", ".vscode-test-web/"]
+    "ignore": [
+      "node_modules/",
+      "out/",
+      "dist/",
+      "testdata/",
+      ".vscode-test/",
+      ".vscode-test-web/",
+      "package.json"
+    ]
   },
   "overrides": [
     {
-      "include": [".vscode/*.json"],
+      "include": ["./.vscode/*.json", "tsconfig.json"],
       "json": {
         "parser": {
           "allowComments": true,

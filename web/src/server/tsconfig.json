@@ -5,8 +5,8 @@
     "moduleResolution": "Node16",
     "rootDir": ".",
     "outDir": "dist",
-    "composite": true,
+    "composite": true
   },
   "include": ["*.ts"],
-  "exclude": ["dist"],
+  "exclude": ["dist"]
 }

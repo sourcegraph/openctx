@@ -36,7 +36,7 @@ describe('fetchIssue', () => {
         global.fetch = mockFetch
 
         await expect(fetchIssue('token', 'org', '123')).rejects.toThrowError(
-            'Failed to fetch issue 123 from org: 500 Internal Server Error'
+            'Failed to fetch issue 123 from org: 500 Internal Server Error',
         )
     })
 
@@ -56,7 +56,7 @@ describe('fetchIssue', () => {
         global.fetch = mockFetch
 
         await expect(fetchIssue('token', 'org', '123', 10)).rejects.toThrowError(
-            'The operation was aborted'
+            'The operation was aborted',
         )
     })
 })

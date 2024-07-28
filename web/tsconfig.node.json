@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "composite": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["*.config.ts", "postcss.config.js"],
+  "include": ["*.config.ts", "postcss.config.js"]
 }

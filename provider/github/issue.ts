@@ -9,7 +9,7 @@ export async function fetchIssue(
     githubClient: GithubClient,
     owner: string,
     repoName: string,
-    number: number
+    number: number,
 ): Promise<Issue | null> {
     try {
         const issue = await githubClient.request('GET /repos/{owner}/{repo}/issues/{issue_number}', {
@@ -29,7 +29,7 @@ const xmlBuilder = new XMLBuilder({
 
 export async function getIssueItems(
     client: GithubClient,
-    { owner, repoName, issue }: { owner: string; repoName: string; issue: Issue }
+    { owner, repoName, issue }: { owner: string; repoName: string; issue: Issue },
 ): Promise<ItemsResult> {
     const comments = await client
         .request('GET /repos/{owner}/{repo}/issues/{issue_number}/comments', {

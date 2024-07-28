@@ -10,5 +10,5 @@
   },
   "include": ["src"],
   "exclude": ["dist"],
-  "references": [{ "path": "../protocol" }, { "path": "../provider" }, { "path": "../schema" }],
+  "references": [{ "path": "../protocol" }, { "path": "../provider" }, { "path": "../schema" }]
 }

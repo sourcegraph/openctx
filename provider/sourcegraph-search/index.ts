@@ -37,7 +37,7 @@ const sourcegraphSearch: Provider = {
         }
 
         const url = `${graphqlClient.endpoint}/search?q=${encodeURIComponent(
-            query.sourcegraphQuery
+            query.sourcegraphQuery,
         )}&patternType=literal`
 
         return [

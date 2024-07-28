@@ -4,16 +4,16 @@
     "rootDir": "src",
     "outDir": "dist",
     "jsx": "react-jsx",
-    "lib": ["DOM"],
+    "lib": ["DOM"]
   },
   "include": ["src"],
   "exclude": ["dist"],
   "references": [
     {
-      "path": "../../lib/client",
+      "path": "../../lib/client"
     },
     {
-      "path": "../../lib/ui-react",
-    },
-  ],
+      "path": "../../lib/ui-react"
+    }
+  ]
 }

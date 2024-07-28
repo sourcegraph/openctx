@@ -82,7 +82,7 @@ export function createOnBeforeRender(content: ContentPages): OnBeforeRenderAsync
                         ? renderToString(
                               <MDXProvider components={MDX_COMPONENTS}>
                                   <MDXContent />
-                              </MDXProvider>
+                              </MDXProvider>,
                           )
                         : undefined,
                 contentPageInfos: infos,
@@ -113,8 +113,8 @@ async function getAllContentPageInfos(content: ContentPages): Promise<ContentPag
             load().then(mdxModule => ({
                 slug: contentPagePathToSlug(path, content.fsPath),
                 ...(mdxModule as { info: Omit<ContentPageInfo, 'slug'> }).info,
-            }))
-        )
+            })),
+        ),
     )
 }
 
@@ -127,17 +127,17 @@ async function getContentPage(content: ContentPages, slug: string): Promise<Cont
             .filter(
                 (res): res is PromiseRejectedResult =>
                     res.status === 'rejected' &&
-                    !String(res.reason).includes('Unknown variable dynamic import')
+                    !String(res.reason).includes('Unknown variable dynamic import'),
             )
             .map(res => res.reason)
         if (unexpectedErrors.length > 0) {
             throw new Error(
-                `unexpected errors in getContentPage(${slug}): ${unexpectedErrors.join(', ')}`
+                `unexpected errors in getContentPage(${slug}): ${unexpectedErrors.join(', ')}`,
             )
         }
 
         const fulfilledResult = allResults.find(
-            (value): value is PromiseFulfilledResult<unknown> => value.status === 'fulfilled'
+            (value): value is PromiseFulfilledResult<unknown> => value.status === 'fulfilled',
         )
         if (!fulfilledResult) {
             throw render(404)
@@ -161,13 +161,13 @@ export function slugFromPageContext(pageContext: PageContext): string {
 
 export function useContentPageComponent(
     content: ContentPages,
-    pageContext: PageContext & PageContextForContentPage
+    pageContext: PageContext & PageContextForContentPage,
 ): ComponentType | undefined {
     const slug = slugFromPageContext(pageContext)
 
     const [component, setComponent] = useState<ComponentType | undefined>(() =>
         // Server page render.
-        'contentPageComponent' in pageContext ? pageContext.contentPageComponent : undefined
+        'contentPageComponent' in pageContext ? pageContext.contentPageComponent : undefined,
     )
     useEffect(() => {
         if ('contentPageComponent' in pageContext) {

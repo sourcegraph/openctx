@@ -35,8 +35,8 @@ var histogram = promauto.NewHistogram(prometheus.HistogramOpts{
     Buckets: prometheus.LinearBuckets(-3, .1, 61),
 })`.trim(),
                 },
-                SETTINGS
-            )
+                SETTINGS,
+            ),
         ).toEqual<AnnotationsResult>([
             {
                 uri: 'file:///a/b.go',

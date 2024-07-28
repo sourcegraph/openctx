@@ -3,13 +3,13 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "lib": ["DOM"],
+    "lib": ["DOM"]
   },
   "include": ["*.ts"],
   "exclude": ["dist"],
   "references": [
     {
-      "path": "../",
-    },
-  ],
+      "path": "../"
+    }
+  ]
 }

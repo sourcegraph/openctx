@@ -11,7 +11,7 @@ export class ExtensionStorageSubject<T extends keyof LocalStorageItems>
 {
     constructor(
         private key: T,
-        defaultValue: LocalStorageItems[T]
+        defaultValue: LocalStorageItems[T],
     ) {
         super(subscriber => {
             subscriber.next(this.value)

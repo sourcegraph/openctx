@@ -4,9 +4,9 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "dist",
-    "lib": ["ESNext", "DOM"],
+    "lib": ["ESNext", "DOM"]
   },
   "include": ["*.ts"],
   "exclude": ["dist", "mocks", "*.test.*", "vitest.config.ts"],
-  "references": [{ "path": "../../lib/provider" }],
+  "references": [{ "path": "../../lib/provider" }]
 }

@@ -19,7 +19,7 @@ describe('configurationFromUserInput', () => {
                     'https://example.com/c': false,
                     'https://example.com/a': {},
                 },
-            })
+            }),
         ).toStrictEqual<Configuration>({
             enable: false,
             debug: true,

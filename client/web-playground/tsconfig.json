@@ -17,6 +17,6 @@
     { "path": "../codemirror" },
     { "path": "../../lib/client" },
     { "path": "../../lib/ui-react" },
-    { "path": "../../provider/links" },
-  ],
+    { "path": "../../provider/links" }
+  ]
 }

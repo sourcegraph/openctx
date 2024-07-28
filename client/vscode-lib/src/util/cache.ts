@@ -28,7 +28,7 @@ export async function bestEffort<T>(
     opts: {
         defaultValue: T
         delay: number
-    }
+    },
 ): Promise<T> {
     let id: ReturnType<typeof setTimeout> | undefined
     const timeout = new Promise<T>((resolve, _) => {

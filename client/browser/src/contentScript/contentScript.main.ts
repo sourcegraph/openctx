@@ -23,8 +23,8 @@ const INJECTORS: Injector[] = [injectOnGitHubCodeView, injectOnGitHubPullRequest
 const subscription = locationChanges
     .pipe(
         mergeMap(location =>
-            combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges)))
-        )
+            combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges))),
+        ),
     )
     .subscribe()
 window.addEventListener('unload', () => subscription.unsubscribe())
@@ -38,6 +38,6 @@ function annotationsChanges(params: AnnotationsParams): Observable<Annotation[]>
             console.count('itemsChanges count')
             console.log(items)
             console.groupEnd()
-        })
+        }),
     )
 }

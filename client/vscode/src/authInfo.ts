@@ -27,7 +27,7 @@ export function secretsChanges(secrets: vscode.SecretStorage): {
             if (e.key.startsWith(SECRET_STORAGE_KEY_PREFIX)) {
                 subject.next(secrets)
             }
-        })
+        }),
     )
 
     disposables.push(
@@ -37,7 +37,7 @@ export function secretsChanges(secrets: vscode.SecretStorage): {
             }
             await vscode.window.showInformationMessage('Cleared OpenCtx authentication.')
             promptedForAuthInfo.clear() // reset prompts
-        })
+        }),
     )
 
     return { disposable: vscode.Disposable.from(...disposables), observable: subject }
@@ -45,7 +45,7 @@ export function secretsChanges(secrets: vscode.SecretStorage): {
 
 export async function getAuthInfo(
     secrets: vscode.SecretStorage,
-    providerUri: string
+    providerUri: string,
 ): Promise<AuthInfo | null> {
     const hostname = new URL(providerUri).hostname
     if (!HOSTNAMES_NEEDING_ACCESS_TOKENS.includes(hostname)) {
@@ -67,7 +67,7 @@ const promptedForAuthInfo = new Map<URL['hostname'], boolean>()
 
 async function promptForAuthInfo(
     secrets: vscode.SecretStorage,
-    hostname: string
+    hostname: string,
 ): Promise<string | undefined> {
     const alreadyPrompted = promptedForAuthInfo.get(hostname)
     if (alreadyPrompted) {

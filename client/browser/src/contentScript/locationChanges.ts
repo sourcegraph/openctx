@@ -31,5 +31,5 @@ export const locationChanges: Observable<URL> = new Observable<URL>(observer => 
     emitCurrentLocation()
 }).pipe(
     distinctUntilChanged((a, b) => a.toString() === b.toString()),
-    debugTap(url => console.log('locationChanges', url.toString()))
+    debugTap(url => console.log('locationChanges', url.toString())),
 )

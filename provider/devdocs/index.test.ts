@@ -28,8 +28,8 @@ describe('devdocs', () => {
                         'https://devdocs.io/css/',
                         'https://devdocs.io/typescript/',
                     ],
-                }
-            )
+                },
+            ),
         ).toEqual({
             name: 'DevDocs',
             mentions: { label: 'Search docs... (angular~16, css, typescript)' },
@@ -52,8 +52,8 @@ describe('devdocs', () => {
                         'hello world',
                         '',
                     ],
-                }
-            )
+                },
+            ),
         ).toEqual({
             name: 'DevDocs',
             mentions: { label: 'Search docs... (go, 152)' },
@@ -76,7 +76,7 @@ describe('devdocs', () => {
             uri: url.pathToFileURL(mentionPath).toString(),
         })
         expect(item.ai?.content).toContain(
-            'Package strconv implements conversions to and from string representations of basic data types.'
+            'Package strconv implements conversions to and from string representations of basic data types.',
         )
     })
     test.runIf(INTEGRATION)('integration test page type', async () => {
@@ -89,7 +89,7 @@ describe('devdocs', () => {
             uri: 'https://devdocs.io/go/strconv/index',
         })
         expect(item.ai?.content).toContain(
-            'Package strconv implements conversions to and from string representations of basic data types.'
+            'Package strconv implements conversions to and from string representations of basic data types.',
         )
     })
 
@@ -114,7 +114,7 @@ describe('devdocs', () => {
                 '}\n' +
                 '\n' +
                 '</pre><p>Output:</p><pre class="output" data-language="go">some io.Reader stream to be read\n' +
-                '</pre>'
+                '</pre>',
         )
     })
     test.runIf(INTEGRATION)('integration test hash type', async () => {
@@ -138,7 +138,7 @@ describe('devdocs', () => {
                 '}\n' +
                 '\n' +
                 '</pre><p>Output:</p><pre class="output" data-language="go">some io.Reader stream to be read\n' +
-                '</pre>'
+                '</pre>',
         )
     })
 
@@ -166,7 +166,7 @@ describe('devdocs', () => {
 async function expectMentionItem(
     params: MentionsParams,
     settings: Settings,
-    mention: Mention
+    mention: Mention,
 ): Promise<Item> {
     const mentions = await devdocs.mentions!(params, settings)
     expect(mentions).toContainEqual(mention)

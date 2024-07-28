@@ -27,7 +27,7 @@ export async function run(): Promise<void> {
                     reject(new Error(`${failures} tests failed.`))
                 }
                 resolve()
-            })
+            }),
         )
     } catch (error) {
         console.error(error)

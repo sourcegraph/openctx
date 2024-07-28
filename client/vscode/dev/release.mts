@@ -1,4 +1,4 @@
-import { execFileSync } from 'child_process'
+import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -26,8 +26,8 @@ const packageJSONVersion = semver.valid(packageJSONVersionString)
 if (!packageJSONVersion) {
     console.error(
         `Invalid version in package.json: ${JSON.stringify(
-            packageJSONVersionString
-        )}. Versions must be valid semantic version strings.`
+            packageJSONVersionString,
+        )}. Versions must be valid semantic version strings.`,
     )
     process.exit(1)
 }
@@ -44,8 +44,8 @@ function validateReleaseType(releaseType: string | undefined): asserts releaseTy
     if (!releaseType || !Object.values(ReleaseType).includes(releaseType as ReleaseType)) {
         console.error(
             `Invalid release type ${JSON.stringify(releaseType)}. Valid values are: ${JSON.stringify(
-                Object.values(ReleaseType)
-            )}. Specify a a release type in the RELEASE_TYPE env var.`
+                Object.values(ReleaseType),
+            )}. Specify a a release type in the RELEASE_TYPE env var.`,
         )
         process.exit(1)
     }
@@ -92,7 +92,7 @@ execFileSync(
     ],
     {
         stdio: 'inherit',
-    }
+    },
 )
 
 // Publish the extension.
@@ -112,7 +112,7 @@ if (dryRun) {
         {
             env: { ...process.env, VSCE_PAT: tokens.vscode },
             stdio: 'inherit',
-        }
+        },
     )
 
     // Publish to the Open VSX Registry.
@@ -128,7 +128,7 @@ if (dryRun) {
         ],
         {
             stdio: 'inherit',
-        }
+        },
     )
 }
 

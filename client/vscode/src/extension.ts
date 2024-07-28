@@ -6,7 +6,7 @@ import { getAuthInfo, secretsChanges } from './authInfo.js'
  * Start the extension, watching all relevant configuration and secrets for changes.
  */
 export function activate(
-    context: Pick<vscode.ExtensionContext, 'extension' | 'secrets' | 'subscriptions'>
+    context: Pick<vscode.ExtensionContext, 'extension' | 'secrets' | 'subscriptions'>,
 ): ExtensionApiForTesting | null {
     const extensionId = context.extension.id
 

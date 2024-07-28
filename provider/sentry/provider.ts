@@ -33,7 +33,7 @@ export const providerImplementation = {
         const accessToken = await getSentryAccessToken(settings)
         if (accessToken === null) {
             throw new Error(
-                'Must provide a Sentry API token in the `apiToken` settings field, or a path to a file with the token in the `apiTokenPath` settings field.'
+                'Must provide a Sentry API token in the `apiToken` settings field, or a path to a file with the token in the `apiTokenPath` settings field.',
             )
         }
 

@@ -3,16 +3,16 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "lib": ["DOM", "ESNext"],
+    "lib": ["DOM", "ESNext"]
   },
   "include": ["src"],
   "exclude": ["dist"],
   "references": [
     {
-      "path": "../schema",
+      "path": "../schema"
     },
     {
-      "path": "../ui-common",
-    },
-  ],
+      "path": "../ui-common"
+    }
+  ]
 }

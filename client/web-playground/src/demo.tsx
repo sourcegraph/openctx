@@ -6,5 +6,5 @@ import { DemoApp } from './demo/DemoApp.js'
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
     <React.StrictMode>
         <DemoApp />
-    </React.StrictMode>
+    </React.StrictMode>,
 )

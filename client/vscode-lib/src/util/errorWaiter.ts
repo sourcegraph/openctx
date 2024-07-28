@@ -36,7 +36,7 @@ export function createErrorWaiter(delay: number, errorCountThreshold: number): E
                     delay,
                     'ms before retrying.',
                     errorCount,
-                    errorCountThreshold
+                    errorCountThreshold,
                 )
                 if (timeoutHandle === undefined) {
                     timeoutHandle = setTimeout(() => {

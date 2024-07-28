@@ -13,7 +13,7 @@ export interface OpenCtxDecorationsConfig {
             indent: string | undefined
 
             anns: Annotation[]
-        }
+        },
     ) => { destroy?: () => void }
 
     visibility: boolean

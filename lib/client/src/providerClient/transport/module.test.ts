@@ -23,7 +23,7 @@ describe('fetchProviderSource', () => {
         })
 
         await expect(fetchProviderSource('https://example.com/a.js')).rejects.toThrow(
-            /invalid Content-Type/
+            /invalid Content-Type/,
         )
     })
 

@@ -48,7 +48,7 @@ const buildUrl = (settings: Settings, path: string, searchParams: Record<string,
 
 export const searchWorkItems = async (
     query: string | undefined,
-    settings: Settings
+    settings: Settings,
 ): Promise<MinimalWorkItem[]> => {
     let searchId = Number(query)
     if (Number.isNaN(searchId)) {
@@ -82,7 +82,7 @@ ORDER BY [System.ChangedDate] DESC
         throw new Error(
             `Error fetching Azure DevOps query (${queryResponse?.status} ${
                 queryResponse?.statusText
-            }): ${await queryResponse?.text()}`
+            }): ${await queryResponse?.text()}`,
         )
     }
 
@@ -115,7 +115,7 @@ ORDER BY [System.ChangedDate] DESC
             throw new Error(
                 `Error fetching Azure DevOps work items (${workItemsResponse?.status} ${
                     workItemsResponse?.statusText
-                }): ${await workItemsResponse?.text()}`
+                }): ${await workItemsResponse?.text()}`,
             )
         }
 
@@ -139,7 +139,7 @@ ORDER BY [System.ChangedDate] DESC
 
 export const fetchWorkItem = async (
     workItemId: string | number,
-    settings: Settings
+    settings: Settings,
 ): Promise<SimpleWorkItem | null> => {
     const fields = [
         WorkItemFields.Id,
@@ -165,7 +165,7 @@ export const fetchWorkItem = async (
         throw new Error(
             `Error fetching Azure DevOps work item (${workItemResponse?.status} ${
                 workItemResponse?.statusText
-            }): ${await workItemResponse?.text()}`
+            }): ${await workItemResponse?.text()}`,
         )
     }
 

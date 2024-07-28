@@ -33,7 +33,7 @@ export interface ProviderTransportOptions
  */
 export function createTransport(
     providerUri: string,
-    options: ProviderTransportOptions
+    options: ProviderTransportOptions,
 ): ProviderTransport {
     function doResolveProvider(providerUri: string): ProviderTransport {
         let url = new URL(providerUri, options.providerBaseUri)

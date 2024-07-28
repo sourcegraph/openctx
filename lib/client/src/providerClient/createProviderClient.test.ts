@@ -20,7 +20,7 @@ describe('createProviderClient', () => {
 
         // File URI that satisfies the provider's selector.
         expect(
-            await pc.annotations({ uri: 'file:///foo', content: 'A\nB\nC\nD' }, settings)
+            await pc.annotations({ uri: 'file:///foo', content: 'A\nB\nC\nD' }, settings),
         ).toStrictEqual<AnnotationsResult | null>([
             {
                 uri: 'file:///foo',
@@ -31,7 +31,7 @@ describe('createProviderClient', () => {
 
         // File URI that does NOT satisfy the provider's selector.
         expect(
-            await pc.annotations({ uri: 'file:///xxx', content: 'A' }, settings)
+            await pc.annotations({ uri: 'file:///xxx', content: 'A' }, settings),
         ).toStrictEqual<AnnotationsResult | null>(null)
     })
 
@@ -47,7 +47,7 @@ describe('createProviderClient', () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('metaThrow.js'), { logger })
             await expect(pc.annotations({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow(
-                'metaThrow'
+                'metaThrow',
             )
             expect(logger.mock.lastCall?.[0]).toContain('Error: metaThrow')
         })
@@ -63,7 +63,7 @@ describe('createProviderClient', () => {
             const logger = vi.fn((() => {}) as Logger)
             const pc = createProviderClient(testdataFileUri('methodsThrow.js'), { logger })
             await expect(pc.annotations({ uri: 'file:///f', content: 'A' }, {})).rejects.toThrow(
-                'annotationsThrow'
+                'annotationsThrow',
             )
             expect(logger.mock.lastCall?.[0]).toContain('Error: annotationsThrow')
         })

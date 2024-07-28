@@ -13,7 +13,7 @@
           "type": "docs",
           "preview": true,
           "path": "**/*.ts?(x)",
-          "pattern": "eventLogger\\.",
+          "pattern": "eventLogger\\."
         },
         {
           "title": "CSS in client/web",
@@ -21,23 +21,23 @@
           "type": "docs",
           "preview": true,
           "path": "**/*.ts?(x)",
-          "pattern": "^import styles from",
+          "pattern": "^import styles from"
         },
         {
           "title": "Bazel at Sourcegraph",
           "url": "https://docs.sourcegraph.com/dev/background-information/bazel#bazel-at-sourcegraph",
           "type": "docs",
           "preview": true,
-          "path": "**/{BUILD.bazel,*.bzl,*.bazelrc,WORKSPACE}",
+          "path": "**/{BUILD.bazel,*.bzl,*.bazelrc,WORKSPACE}"
         },
         {
           "title": "View all Storybooks",
           "url": "https://www.chromatic.com/library?appId=5f0f381c0e50750022dc6bf7",
           "type": "docs",
           "description": "On Chromatic",
-          "path": "**/{*.{stories,story}.ts?(x),.storybook/**}",
-        },
-      ],
-    },
-  },
+          "path": "**/{*.{stories,story}.ts?(x),.storybook/**}"
+        }
+      ]
+    }
+  }
 }
