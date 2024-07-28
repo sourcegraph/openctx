@@ -16,7 +16,7 @@ export class Cache<T> {
 
         this.cache.set(key, { value })
         const timeout = setTimeout(() => this.cache.delete(key), this.ttlMs)
-        timeout.unref()
+        if (typeof timeout !== 'number' && 'unref' in timeout) timeout.unref()
 
         return value
     }
@@ -33,7 +33,7 @@ export async function bestEffort<T>(
     let id: ReturnType<typeof setTimeout> | undefined
     const timeout = new Promise<T>((resolve, _) => {
         id = setTimeout(resolve, opts.delay, opts.defaultValue)
-        id.unref()
+        if (typeof id !== 'number' && 'unref' in id) id.unref()
     })
     try {
         return await Promise.race([promise, timeout])
