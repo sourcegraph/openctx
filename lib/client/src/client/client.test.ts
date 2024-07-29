@@ -1,6 +1,6 @@
-import type { AnnotationsParams, ItemsParams } from '@openctx/protocol'
+import type { AnnotationsParams, ItemsParams, MetaResult } from '@openctx/protocol'
 import type { Item, Range } from '@openctx/schema'
-import { firstValueFrom, of } from 'rxjs'
+import { Observable, firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
 import type { Annotation, EachWithProviderUri } from '../api.js'
@@ -43,6 +43,37 @@ function createTestClient(
 describe('Client', () => {
     const testScheduler = (): TestScheduler =>
         new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
+
+    describe('meta', () => {
+        test('metaChanges__asyncGenerator', async () => {
+            const client = createTestClient({
+                configuration: () =>
+                    new Observable(observer => {
+                        observer.next({ enable: false, providers: {} })
+                        observer.next({
+                            enable: true,
+                            providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '1' } },
+                        })
+                        observer.next({
+                            enable: true,
+                            providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' } },
+                        })
+                        observer.complete()
+                    }),
+            })
+
+            const values: EachWithProviderUri<MetaResult[]>[] = []
+            const signal = new AbortController().signal
+            for await (const value of client.metaChanges__asyncGenerator({}, {}, signal)) {
+                values.push(value)
+            }
+            expect(values).toStrictEqual<typeof values>([
+                [],
+                [{ name: 'simpleMeta-1', providerUri: testdataFileUri('simpleMeta.js') }],
+                [{ name: 'simpleMeta-2', providerUri: testdataFileUri('simpleMeta.js') }],
+            ])
+        })
+    })
 
     describe('items', () => {
         test('with providers', async () => {

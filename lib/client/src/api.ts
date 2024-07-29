@@ -15,6 +15,7 @@ import {
     catchError,
     combineLatest,
     defer,
+    distinctUntilChanged,
     from,
     map,
     mergeMap,
@@ -99,6 +100,7 @@ function observeProviderCall<R>(
                 : of([]),
         ),
         map(result => result.filter((v): v is EachWithProviderUri<R[]> => v !== null).flat()),
+        distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
         tap(items => {
             if (LOG_VERBOSE) {
                 logger?.(`got ${items.length} results: ${JSON.stringify(items)}`)

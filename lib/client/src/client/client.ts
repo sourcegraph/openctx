@@ -45,6 +45,7 @@ import {
 } from '../configuration.js'
 import type { Logger } from '../logger.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
+import { observableToAsyncGenerator } from './util.js'
 
 /**
  * Hooks for the OpenCtx {@link Client} to access information about the environment, such as the
@@ -174,6 +175,20 @@ export interface Client<R extends Range> {
         params: MetaParams,
         opts?: ProviderMethodOptions,
     ): Observable<EachWithProviderUri<MetaResult[]>>
+
+    /**
+     * Watch information about the configured providers using an async generator.
+     *
+     * The returned observable streams information as it is received from the providers and
+     * continues passing along any updates until {@link signal} is aborted.
+     *
+     * @internal
+     */
+    metaChanges__asyncGenerator(
+        params: MetaParams,
+        opts?: ProviderMethodOptions,
+        signal?: AbortSignal,
+    ): AsyncGenerator<EachWithProviderUri<MetaResult[]>>
 
     /**
      * Get the candidate items returned by the configured providers.
@@ -406,6 +421,8 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 defaultValue: [],
             }),
         metaChanges: (params, opts) => metaChanges(params, { ...opts, emitPartial: true }),
+        metaChanges__asyncGenerator: (params, opts, signal) =>
+            observableToAsyncGenerator(metaChanges(params, { ...opts, emitPartial: true }), signal),
         mentions: (params, opts) =>
             firstValueFrom(mentionsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
