@@ -25,12 +25,15 @@ type VSCodeClient = Client<vscode.Range>
 export interface Controller {
     observeMeta: VSCodeClient['metaChanges']
     meta: VSCodeClient['meta']
+    metaChanges__asyncGenerator: VSCodeClient['metaChanges__asyncGenerator']
 
     observeMentions: VSCodeClient['mentionsChanges']
     mentions: VSCodeClient['mentions']
+    mentionsChanges__asyncGenerator: VSCodeClient['mentionsChanges__asyncGenerator']
 
     observeItems: VSCodeClient['itemsChanges']
     items: VSCodeClient['items']
+    itemsChanges__asyncGenerator: VSCodeClient['itemsChanges__asyncGenerator']
 
     observeAnnotations(
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
@@ -39,6 +42,11 @@ export interface Controller {
         doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
         opts?: ProviderMethodOptions,
     ): ReturnType<VSCodeClient['annotations']>
+    annotationsChanges__asyncGenerator(
+        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
+        opts?: ProviderMethodOptions,
+        signal?: AbortSignal,
+    ): ReturnType<VSCodeClient['annotationsChanges__asyncGenerator']>
 }
 
 export function createController({
@@ -135,6 +143,10 @@ export function createController({
         UserAction.Implicit,
         client.annotationsChanges,
     )
+    const clientAnnotationsChanges__asyncGenerator = errorReporter.wrapAsyncGenerator(
+        UserAction.Implicit,
+        client.annotationsChanges__asyncGenerator,
+    )
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
@@ -142,12 +154,24 @@ export function createController({
     const controller: Controller = {
         meta: errorReporter.wrapPromise(UserAction.Explicit, client.meta),
         observeMeta: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
+        metaChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
+            UserAction.Explicit,
+            client.metaChanges__asyncGenerator,
+        ),
 
         mentions: errorReporter.wrapPromise(UserAction.Explicit, client.mentions),
         observeMentions: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
+        mentionsChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
+            UserAction.Explicit,
+            client.mentionsChanges__asyncGenerator,
+        ),
 
         items: errorReporter.wrapPromise(UserAction.Explicit, client.items),
         observeItems: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
+        itemsChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
+            UserAction.Explicit,
+            client.itemsChanges__asyncGenerator,
+        ),
 
         async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
             if (ignoreDoc(doc)) {
@@ -173,6 +197,28 @@ export function createController({
                 },
                 opts,
             )
+        },
+        async *annotationsChanges__asyncGenerator(
+            doc: vscode.TextDocument,
+            opts?: ProviderMethodOptions,
+            signal?: AbortSignal,
+        ) {
+            if (ignoreDoc(doc)) {
+                return
+            }
+
+            const g = clientAnnotationsChanges__asyncGenerator(
+                {
+                    uri: doc.uri.toString(),
+                    content: doc.getText(),
+                },
+                opts,
+                signal,
+            )
+            for await (const v of g) {
+                yield v
+            }
+            return
         },
     }
 

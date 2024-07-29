@@ -45,6 +45,7 @@ import {
 } from '../configuration.js'
 import type { Logger } from '../logger.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
+import { observableToAsyncGenerator } from './util.js'
 
 /**
  * Hooks for the OpenCtx {@link Client} to access information about the environment, such as the
@@ -176,11 +177,25 @@ export interface Client<R extends Range> {
     ): Observable<EachWithProviderUri<MetaResult[]>>
 
     /**
-     * Get the candidate items returned by the configured providers.
+     * Observe information about the configured providers using an async generator.
+     *
+     * The returned generator streams information as it is received from the providers and continues
+     * passing along any updates until {@link signal} is aborted.
+     *
+     * @internal
+     */
+    metaChanges__asyncGenerator(
+        params: MetaParams,
+        opts?: ProviderMethodOptions,
+        signal?: AbortSignal,
+    ): AsyncGenerator<EachWithProviderUri<MetaResult[]>>
+
+    /**
+     * Get the mentions returned by the configured providers.
      *
      * It does not continue to listen for changes, as {@link Client.mentionsChanges} does. Using
      * {@link Client.Mentions} is simpler and does not require use of observables (with a library
-     * like RxJS), but it means that the client needs to manually poll for updated items if
+     * like RxJS), but it means that the client needs to manually poll for updated mentions if
      * freshness is important.
      */
     mentions(
@@ -189,15 +204,29 @@ export interface Client<R extends Range> {
     ): Promise<EachWithProviderUri<MentionsResult>>
 
     /**
-     * Observe OpenCtx candidate items from the configured providers.
+     * Observe OpenCtx mentions from the configured providers.
      *
-     * The returned observable streams candidate items as they are received from the providers and
+     * The returned observable streams mentions as they are received from the providers and
      * continues passing along any updates until unsubscribed.
      */
     mentionsChanges(
         params: MentionsParams,
         opts?: ProviderMethodOptions,
     ): Observable<EachWithProviderUri<MentionsResult>>
+
+    /**
+     * Observe OpenCtx mentions from the configured providers using an async generator.
+     *
+     * The returned generator streams mentions as they are received from the providers and continues
+     * passing along any updates until {@link signal} is aborted.
+     *
+     * @internal
+     */
+    mentionsChanges__asyncGenerator(
+        params: MentionsParams,
+        opts?: ProviderMethodOptions,
+        signal?: AbortSignal,
+    ): AsyncGenerator<EachWithProviderUri<MentionsResult>>
 
     /**
      * Get the items returned by the configured providers.
@@ -219,6 +248,21 @@ export interface Client<R extends Range> {
         params: ItemsParams,
         opts?: ProviderMethodOptions,
     ): Observable<EachWithProviderUri<ItemsResult>>
+
+    /**
+     * Observe OpenCtx items from the configured providers for the given resource using an async
+     * generator.
+     *
+     * The returned generator streams items as they are received from the providers and continues
+     * passing along any updates until {@link signal} is aborted.
+     *
+     * @internal
+     */
+    itemsChanges__asyncGenerator(
+        params: ItemsParams,
+        opts?: ProviderMethodOptions,
+        signal?: AbortSignal,
+    ): AsyncGenerator<EachWithProviderUri<ItemsResult>>
 
     /**
      * Get the annotations returned by the configured providers for the given resource.
@@ -243,6 +287,21 @@ export interface Client<R extends Range> {
         params: AnnotationsParams,
         opts?: ProviderMethodOptions,
     ): Observable<EachWithProviderUri<Annotation<R>[]>>
+
+    /**
+     * Observe OpenCtx annotations from the configured providers for the given resource using an
+     * async generator.
+     *
+     * The returned generator streams annotations as they are received from the providers and
+     * continues passing along any updates until {@link signal} is aborted.
+     *
+     * @internal
+     */
+    annotationsChanges__asyncGenerator(
+        params: AnnotationsParams,
+        opts?: ProviderMethodOptions,
+        signal?: AbortSignal,
+    ): AsyncGenerator<EachWithProviderUri<Annotation<R>[]>>
 
     /**
      * Dispose of the client and release all resources.
@@ -406,21 +465,32 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 defaultValue: [],
             }),
         metaChanges: (params, opts) => metaChanges(params, { ...opts, emitPartial: true }),
+        metaChanges__asyncGenerator: (params, opts, signal) =>
+            observableToAsyncGenerator(metaChanges(params, { ...opts, emitPartial: true }), signal),
         mentions: (params, opts) =>
             firstValueFrom(mentionsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
         mentionsChanges: (params, opts) => mentionsChanges(params, { ...opts, emitPartial: true }),
+        mentionsChanges__asyncGenerator: (params, opts, signal) =>
+            observableToAsyncGenerator(mentionsChanges(params, { ...opts, emitPartial: true }), signal),
         items: (params, opts) =>
             firstValueFrom(itemsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
         itemsChanges: (params, opts) => itemsChanges(params, { ...opts, emitPartial: true }),
+        itemsChanges__asyncGenerator: (params, opts, signal) =>
+            observableToAsyncGenerator(itemsChanges(params, { ...opts, emitPartial: true }), signal),
         annotations: (params, opts) =>
             firstValueFrom(annotationsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
         annotationsChanges: (params, opts) => annotationsChanges(params, { ...opts, emitPartial: true }),
+        annotationsChanges__asyncGenerator: (params, opts, signal) =>
+            observableToAsyncGenerator(
+                annotationsChanges(params, { ...opts, emitPartial: true }),
+                signal,
+            ),
         dispose() {
             for (const sub of subscriptions) {
                 sub.unsubscribe()
