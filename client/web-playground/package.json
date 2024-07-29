@@ -27,7 +27,7 @@
     "@openctx/provider-links": "workspace:*",
     "@openctx/provider-storybook": "workspace:*",
     "@openctx/ui-react": "workspace:*",
-    "@sourcegraph/prompt-editor": "*",
+    "@sourcegraph/prompt-editor": "link:../../../cody/lib/prompt-editor",
     "@uiw/react-codemirror": "^4.22.1",
     "cmdk": "^1.0.0",
     "observable-hooks": "^4.2.3",

@@ -351,7 +351,7 @@ importers:
         specifier: workspace:*
         version: link:../../lib/ui-react
       '@sourcegraph/prompt-editor':
-        specifier: '*'
+        specifier: link:../../../cody/lib/prompt-editor
         version: link:../../../cody/lib/prompt-editor
       '@uiw/react-codemirror':
         specifier: ^4.22.1
@@ -533,6 +533,12 @@ importers:
       node-html-parser:
         specifier: ^6.1.13
         version: 6.1.13
+
+  provider/git:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
 
   provider/github:
     dependencies:
