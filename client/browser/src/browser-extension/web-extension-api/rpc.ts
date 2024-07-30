@@ -21,7 +21,7 @@ interface RequestMessage {
     /**
      * The method arguments.
      */
-    args: any[]
+    args: unknown[]
 }
 
 interface ResponseMessage {
@@ -39,7 +39,7 @@ interface ResponseMessage {
     /**
      * For non-stream responses or for `next`/`error` stream events, the data.
      */
-    data?: any
+    data?: unknown
 }
 
 // This function generates a unique ID for each message stream.
