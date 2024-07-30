@@ -5,6 +5,7 @@ export function createMockController(): MockedObject<Controller> {
     return {
         observeMeta: vi.fn(),
         meta: vi.fn(),
+        metaChanges__asyncGenerator: vi.fn(),
         observeMentions: vi.fn(),
         mentions: vi.fn(),
         observeItems: vi.fn(),

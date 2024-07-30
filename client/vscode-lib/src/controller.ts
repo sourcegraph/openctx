@@ -25,6 +25,7 @@ type VSCodeClient = Client<vscode.Range>
 export interface Controller {
     observeMeta: VSCodeClient['metaChanges']
     meta: VSCodeClient['meta']
+    metaChanges__asyncGenerator: VSCodeClient['metaChanges__asyncGenerator']
 
     observeMentions: VSCodeClient['mentionsChanges']
     mentions: VSCodeClient['mentions']
@@ -142,6 +143,10 @@ export function createController({
     const controller: Controller = {
         meta: errorReporter.wrapPromise(UserAction.Explicit, client.meta),
         observeMeta: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
+        metaChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
+            UserAction.Explicit,
+            client.metaChanges__asyncGenerator,
+        ),
 
         mentions: errorReporter.wrapPromise(UserAction.Explicit, client.mentions),
         observeMentions: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs'
 import { describe, expect, test } from 'vitest'
-import { observableToAsyncGenerator } from './util.ts'
+import { observableToAsyncGenerator } from './util.js'
 
 describe('observableToAsyncGenerator', () => {
     test('observable that emits and completes', async () => {

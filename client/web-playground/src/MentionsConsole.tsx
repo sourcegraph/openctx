@@ -68,17 +68,16 @@ export const MentionsConsole: FunctionComponent<{
                     })),
                 }
             },
-            getMentionProvidersMetadata: async () => {
-                const providers = await client.meta({}, {})
-                return {
-                    providers: providers
+            mentionProviders: async function* (signal) {
+                for await (const providers of client.metaChanges__asyncGenerator({}, {}, signal)) {
+                    yield providers
                         .filter(provider => provider.mentions)
                         .map(({ name, providerUri, mentions }) => ({
                             title: name,
                             id: providerUri,
                             queryLabel: mentions?.label ?? 'Search...',
                             emptyLabel: 'No results',
-                        })),
+                        }))
                 }
             },
         }),

@@ -173,7 +173,7 @@ export interface Client<R extends Range> {
      */
     metaChanges(
         params: MetaParams,
-        opts?: ProviderMethodOptions,
+        opts?: ProviderMethodOptions
     ): Observable<EachWithProviderUri<MetaResult[]>>
 
     /**
@@ -187,7 +187,7 @@ export interface Client<R extends Range> {
     metaChanges__asyncGenerator(
         params: MetaParams,
         opts?: ProviderMethodOptions,
-        signal?: AbortSignal,
+        signal?: AbortSignal
     ): AsyncGenerator<EachWithProviderUri<MetaResult[]>>
 
     /**
@@ -200,7 +200,7 @@ export interface Client<R extends Range> {
      */
     mentions(
         params: MentionsParams,
-        opts?: ProviderMethodOptions,
+        opts?: ProviderMethodOptions
     ): Promise<EachWithProviderUri<MentionsResult>>
 
     /**
@@ -211,7 +211,7 @@ export interface Client<R extends Range> {
      */
     mentionsChanges(
         params: MentionsParams,
-        opts?: ProviderMethodOptions,
+        opts?: ProviderMethodOptions
     ): Observable<EachWithProviderUri<MentionsResult>>
 
     /**
@@ -232,7 +232,7 @@ export interface Client<R extends Range> {
      */
     itemsChanges(
         params: ItemsParams,
-        opts?: ProviderMethodOptions,
+        opts?: ProviderMethodOptions
     ): Observable<EachWithProviderUri<ItemsResult>>
 
     /**
@@ -245,7 +245,7 @@ export interface Client<R extends Range> {
      */
     annotations(
         params: AnnotationsParams,
-        opts?: ProviderMethodOptions,
+        opts?: ProviderMethodOptions
     ): Promise<EachWithProviderUri<Annotation<R>[]>>
 
     /**
@@ -256,7 +256,7 @@ export interface Client<R extends Range> {
      */
     annotationsChanges(
         params: AnnotationsParams,
-        opts?: ProviderMethodOptions,
+        opts?: ProviderMethodOptions
     ): Observable<EachWithProviderUri<Annotation<R>[]>>
 
     /**
@@ -279,7 +279,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     const debug = from(env.configuration()).pipe(
         map(config => configurationFromUserInput(config).debug),
         distinctUntilChanged(),
-        shareReplay(1),
+        shareReplay(1)
     )
     subscriptions.push(debug.subscribe())
     const logger: Logger = message => {
@@ -300,7 +300,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                         config = { ...config, providers: {} }
                     }
                     return configurationFromUserInput(config, env.providers)
-                }),
+                })
             )
             .pipe(
                 mergeMap(configuration =>
@@ -320,36 +320,36 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                                         importProvider: env.importProvider,
                                                     },
                                                     env.providers?.find(
-                                                        provider => provider.providerUri === providerUri,
-                                                    )?.provider,
+                                                        provider => provider.providerUri === providerUri
+                                                    )?.provider
                                                 ),
                                           settings,
                                       })),
                                       catchError(error => {
                                           logger(
-                                              `Error creating provider client for ${providerUri}: ${error}`,
+                                              `Error creating provider client for ${providerUri}: ${error}`
                                           )
                                           return of(null)
-                                      }),
-                                  ),
-                              ),
+                                      })
+                                  )
+                              )
                           )
-                        : of([]),
+                        : of([])
                 ),
 
                 // Filter out null clients.
                 map(providerClients =>
                     providerClients.filter(
                         (providerClient): providerClient is ProviderClientWithSettings =>
-                            providerClient !== null,
-                    ),
-                ),
+                            providerClient !== null
+                    )
+                )
             )
     }
 
     const filterProviders = (
         providersObservable: Observable<ProviderClientWithSettings[]>,
-        opts: Pick<ProviderMethodOptions, 'providerUri'>,
+        opts: Pick<ProviderMethodOptions, 'providerUri'>
     ): Observable<ProviderClientWithSettings[]> => {
         const uri = opts.providerUri
         if (!uri) {
@@ -357,7 +357,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         }
 
         return providersObservable.pipe(
-            map(providers => providers.filter(provider => provider.uri === uri)),
+            map(providers => providers.filter(provider => provider.uri === uri))
         )
     }
 
@@ -365,7 +365,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
 
     const metaChanges = (
         params: MetaParams,
-        opts: ChangesOpts,
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<MetaResult[]>> => {
         return observeMeta(filterProviders(providerClientsWithSettings(undefined), opts), params, {
             ...opts,
@@ -375,7 +375,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
 
     const mentionsChanges = (
         params: MentionsParams,
-        opts: ChangesOpts,
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<MentionsResult>> => {
         return observeMentions(filterProviders(providerClientsWithSettings(undefined), opts), params, {
             ...opts,
@@ -385,7 +385,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
 
     const itemsChanges = (
         params: ItemsParams,
-        opts: ChangesOpts,
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<ItemsResult>> => {
         return observeItems(filterProviders(providerClientsWithSettings(undefined), opts), params, {
             ...opts,
@@ -395,7 +395,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
 
     const annotationsChanges = (
         params: AnnotationsParams,
-        opts: ChangesOpts,
+        opts: ChangesOpts
     ): Observable<EachWithProviderUri<Annotation<R>[]>> => {
         return observeAnnotations(
             filterProviders(providerClientsWithSettings(params.uri), opts),
@@ -404,7 +404,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 ...opts,
                 logger: env.logger,
                 makeRange: env.makeRange,
-            },
+            }
         )
     }
 
@@ -455,7 +455,7 @@ function createProviderPool(): {
     getOrCreate: (
         key: ProviderCacheKey,
         env: Pick<ClientEnv<any>, 'providerBaseUri' | 'logger' | 'importProvider'>,
-        provider?: Provider,
+        provider?: Provider
     ) => ProviderClient
 } {
     function cacheKey(key: ProviderCacheKey): string {
@@ -483,7 +483,7 @@ function createProviderPool(): {
                     logger: env.logger,
                     importProvider: env.importProvider,
                 },
-                provider,
+                provider
             )
             cache.set(cacheKey(key), c)
             return c
