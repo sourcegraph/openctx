@@ -70,6 +70,46 @@ export class ErrorReporterController implements vscode.Disposable {
     /**
      * wraps providerMethod to ensure it reports errors to the user.
      */
+    public wrapAsyncGenerator<T, R>(
+        userAction: UserAction,
+        providerMethod: (
+            params: T,
+            opts?: ProviderMethodOptions,
+            signal?: AbortSignal,
+        ) => AsyncGenerator<R>,
+    ) {
+        const getErrorReporter = this.getErrorReporter.bind(this)
+        return async function* (
+            params: T,
+            opts?: ProviderMethodOptions,
+            signal?: AbortSignal,
+        ): AsyncGenerator<R> {
+            const errorReporter = getErrorReporter(userAction, opts)
+            if (errorReporter.skip) {
+                return
+            }
+
+            opts = withErrorHook(opts, (providerUri, error) => {
+                errorReporter.onError(providerUri, error)
+                errorReporter.report()
+            })
+
+            try {
+                for await (const value of providerMethod(params, opts, signal)) {
+                    errorReporter.onValue(undefined)
+                    errorReporter.report()
+                    yield value
+                }
+            } catch (error) {
+                errorReporter.onError(undefined, error)
+                errorReporter.report()
+            }
+        }
+    }
+
+    /**
+     * wraps providerMethod to ensure it reports errors to the user.
+     */
     public wrapPromise<T, R>(
         userAction: UserAction,
         providerMethod: (params: T, opts?: ProviderMethodOptions) => Promise<R>,
