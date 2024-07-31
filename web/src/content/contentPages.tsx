@@ -84,9 +84,9 @@ export function createOnBeforeRender(content: ContentPages): OnBeforeRenderAsync
                               renderToString(
                                   <MDXProvider components={MDX_COMPONENTS}>
                                       <MDXContent />
-                                  </MDXProvider>
+                                  </MDXProvider>,
                               ),
-                              { RETURN_TRUSTED_TYPE: true }
+                              { RETURN_TRUSTED_TYPE: true },
                           )
                         : undefined,
                 contentPageInfos: infos,
