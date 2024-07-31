@@ -96,7 +96,7 @@ declare namespace browser.bookmarks {
                   query?: string
                   url?: string
                   title?: string
-              }
+              },
     ): Promise<BookmarkTreeNode[]>
     function update(id: string, changes: { title: string; url: string }): Promise<BookmarkTreeNode>
 
@@ -108,7 +108,7 @@ declare namespace browser.bookmarks {
                 parentId: string
                 index: number
                 node: BookmarkTreeNode
-            }
+            },
         ) => void
     >
     const onChanged: CallbackEventEmitter<
@@ -117,7 +117,7 @@ declare namespace browser.bookmarks {
             changeInfo: {
                 title: string
                 url?: string
-            }
+            },
         ) => void
     >
     const onMoved: CallbackEventEmitter<
@@ -128,7 +128,7 @@ declare namespace browser.bookmarks {
                 index: number
                 oldParentId: string
                 oldIndex: number
-            }
+            },
         ) => void
     >
 }
@@ -297,7 +297,7 @@ declare namespace browser.menus {
             type?: ItemType
             visible?: boolean
         },
-        callback?: () => void
+        callback?: () => void,
     ): number | string
 
     function getTargetElement(targetElementId: number): object | null
@@ -322,7 +322,7 @@ declare namespace browser.menus {
             title?: string
             type?: ItemType
             visible?: boolean
-        }
+        },
     ): Promise<void>
 
     const onClicked: CallbackEventEmitter<(info: OnClickData, tab: tabs.Tab) => void>
@@ -356,7 +356,7 @@ declare namespace browser.contextualIdentities {
             name: string
             color: IdentityColor
             icon: IdentityIcon
-        }
+        },
     ): Promise<ContextualIdentity>
     function remove(cookieStoreId: string): Promise<ContextualIdentity | null>
 }
@@ -430,7 +430,7 @@ declare namespace browser.contentScripts {
     }
 
     function register(
-        contentScriptOptions: RegisteredContentScriptOptions
+        contentScriptOptions: RegisteredContentScriptOptions,
     ): Promise<RegisteredContentScript>
 }
 
@@ -1210,12 +1210,12 @@ declare namespace browser.runtime {
 
     function sendMessage(
         message: any,
-        options?: { includeTlsChannelId?: boolean; toProxyScript?: boolean }
+        options?: { includeTlsChannelId?: boolean; toProxyScript?: boolean },
     ): Promise<any>
     function sendMessage(
         extensionId: string,
         message: any,
-        options?: { includeTlsChannelId?: boolean; toProxyScript?: boolean }
+        options?: { includeTlsChannelId?: boolean; toProxyScript?: boolean },
     ): Promise<any>
 
     function sendNativeMessage(application: string, message: object): Promise<object | void>
@@ -1427,7 +1427,7 @@ declare namespace browser.tabs {
     function duplicate(tabId: number): Promise<Tab>
     function executeScript(
         tabId: number | undefined,
-        details: extensionTypes.InjectDetails
+        details: extensionTypes.InjectDetails,
     ): Promise<object[]>
     function get(tabId: number): Promise<Tab>
     // deprecated: function getAllInWindow(): x;
@@ -1442,7 +1442,7 @@ declare namespace browser.tabs {
     // }): Promise<browser.windows.Window>;
     function insertCSS(
         tabId: number | undefined,
-        details: extensionTypes.InjectDetailsCSS
+        details: extensionTypes.InjectDetailsCSS,
     ): Promise<void>
     function removeCSS(tabId: number | undefined, details: extensionTypes.InjectDetails): Promise<void>
     function move(
@@ -1450,7 +1450,7 @@ declare namespace browser.tabs {
         moveProperties: {
             windowId?: number
             index: number
-        }
+        },
     ): Promise<Tab | Tab[]>
     function print(): Promise<void>
     function printPreview(): Promise<void>
@@ -1476,12 +1476,12 @@ declare namespace browser.tabs {
     function reload(tabId?: number, reloadProperties?: { bypassCache?: boolean }): Promise<void>
     function remove(tabIds: number | number[]): Promise<void>
     function saveAsPDF(
-        pageSettings: PageSettings
+        pageSettings: PageSettings,
     ): Promise<'saved' | 'replaced' | 'canceled' | 'not_saved' | 'not_replaced'>
     function sendMessage<T = any, U = object>(
         tabId: number,
         message: T,
-        options?: { frameId?: number }
+        options?: { frameId?: number },
     ): Promise<U | void>
     // deprecated: function sendRequest(): x;
     function setZoom(tabId: number | undefined, zoomFactor: number): Promise<void>
@@ -1511,7 +1511,7 @@ declare namespace browser.tabs {
             attachInfo: {
                 newWindowId: number
                 newPosition: number
-            }
+            },
         ) => void
     >
     const onCreated: EventEmitter<Tab>
@@ -1521,7 +1521,7 @@ declare namespace browser.tabs {
             detachInfo: {
                 oldWindowId: number
                 oldPosition: number
-            }
+            },
         ) => void
     >
     const onHighlighted: EventEmitter<{ windowId: number; tabIds: number[] }>
@@ -1532,7 +1532,7 @@ declare namespace browser.tabs {
                 windowId: number
                 fromIndex: number
                 toIndex: number
-            }
+            },
         ) => void
     >
     const onRemoved: CallbackEventEmitter<
@@ -1541,7 +1541,7 @@ declare namespace browser.tabs {
             removeInfo: {
                 windowId: number
                 isWindowClosing: boolean
-            }
+            },
         ) => void
     >
     const onReplaced: CallbackEventEmitter<(addedTabId: number, removedTabId: number) => void>
@@ -1558,7 +1558,7 @@ declare namespace browser.tabs {
                 title?: string
                 url?: string
             },
-            tab: Tab
+            tab: Tab,
         ) => void
     >
     const onZoomChanged: EventEmitter<{
@@ -1607,7 +1607,7 @@ declare namespace browser.webNavigation {
             callback: (arg: T) => void,
             filter?: {
                 url: events.UrlFilter[]
-            }
+            },
         ) => void
         removeListener: (callback: (arg: T) => void) => void
         hasListener: (callback: (arg: T) => void) => boolean
@@ -1743,7 +1743,7 @@ declare namespace browser.webRequest {
         addListener: (
             callback: (arg: T) => void,
             filter: RequestFilter,
-            extraInfoSpec?: U[]
+            extraInfoSpec?: U[],
         ) => BlockingResponse | Promise<BlockingResponse>
         removeListener: (callback: (arg: T) => void) => void
         hasListener: (callback: (arg: T) => void) => boolean
@@ -1953,7 +1953,7 @@ declare namespace browser.windows {
         getInfo?: {
             populate?: boolean
             windowTypes?: WindowType[]
-        }
+        },
     ): Promise<Window>
 
     function getCurrent(getInfo?: { populate?: boolean; windowTypes?: WindowType[] }): Promise<Window>
@@ -1991,7 +1991,7 @@ declare namespace browser.windows {
             focused?: boolean
             drawAttention?: boolean
             state?: WindowState
-        }
+        },
     ): Promise<Window>
 
     function remove(windowId: number): Promise<void>

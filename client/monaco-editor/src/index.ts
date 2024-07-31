@@ -61,8 +61,8 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
                 OPEN_URL_COMMAND,
                 (_accessor: unknown, url: string | monaco.Uri) => {
                     window.open(url.toString(), '_blank')
-                }
-            )
+                },
+            ),
         )
 
         disposables.push(
@@ -83,7 +83,7 @@ export function createExtension(client: Client<MonacoRange>): MonacoExtension {
                         dispose: () => {},
                     }
                 },
-            })
+            }),
         )
 
         return {

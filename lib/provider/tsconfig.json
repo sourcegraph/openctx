@@ -2,9 +2,9 @@
   "extends": "../../.config/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist",
+    "outDir": "dist"
   },
   "include": ["src"],
   "exclude": ["dist"],
-  "references": [{ "path": "../protocol" }, { "path": "../schema" }],
+  "references": [{ "path": "../protocol" }, { "path": "../schema" }]
 }

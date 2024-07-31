@@ -5,7 +5,7 @@ import { Observable } from 'rxjs'
  * The handler will always return `void`.
  */
 export const fromBrowserEvent = <F extends (...args: any[]) => void>(
-    emitter: browser.CallbackEventEmitter<F>
+    emitter: browser.CallbackEventEmitter<F>,
 ): Observable<Parameters<F>> =>
     // Do not use fromEventPattern() because of https://github.com/ReactiveX/rxjs/issues/4736
     new Observable(subscriber => {

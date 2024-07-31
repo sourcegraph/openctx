@@ -10,13 +10,13 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
                 controller.observeAnnotations(doc).pipe(
                     map(anns => {
                         const containedByAnns = anns?.filter(ann =>
-                            (ann.range ?? ZERO_RANGE).contains(pos)
+                            (ann.range ?? ZERO_RANGE).contains(pos),
                         )
                         return containedByAnns && containedByAnns.length > 0
                             ? createHover(containedByAnns)
                             : null
-                    })
-                )
+                    }),
+                ),
             )
         },
         dispose() {

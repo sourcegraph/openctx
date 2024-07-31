@@ -79,8 +79,8 @@ describe('observeItems', () => {
                         ],
                     }),
                     FIXTURE_ITEMS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a', { a: [fixtureItem('a', 'a')] } satisfies Record<string, Item[]>)
         })
     })
@@ -93,8 +93,8 @@ describe('observeItems', () => {
                         a: [],
                     }),
                     FIXTURE_ITEMS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a', { a: [] } satisfies Record<string, Item[]>)
         })
     })
@@ -124,8 +124,8 @@ describe('observeItems', () => {
                         ],
                     }),
                     FIXTURE_ITEMS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a', {
                 a: [fixtureItem('a', 'a'), fixtureItem('b', 'b')],
             } satisfies Record<string, Item[]>)
@@ -182,8 +182,8 @@ describe('observeItems', () => {
                         ],
                     }),
                     FIXTURE_ITEMS_PARAMS,
-                    optsExpectingError
-                )
+                    optsExpectingError,
+                ),
             ).toBe('a', {
                 a: [fixtureItem('b', 'a')],
                 b: [],
@@ -228,8 +228,8 @@ describe('observeItems', () => {
                         ],
                     }),
                     FIXTURE_ITEMS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a-b', {
                 a: [fixtureItem('a', 'a')],
                 b: [fixtureItem('a', 'a'), fixtureItem('b', 'b')],
@@ -258,8 +258,8 @@ describe('observeAnnotations', () => {
                         ],
                     }),
                     FIXTURE_ANNOTATIONS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a', { a: [fixtureAnn('a', 'a')] } satisfies Record<
                 string,
                 EachWithProviderUri<Annotation[]>
@@ -275,8 +275,8 @@ describe('observeAnnotations', () => {
                         a: [],
                     }),
                     FIXTURE_ANNOTATIONS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a', { a: [] } satisfies Record<string, Annotation[]>)
         })
     })
@@ -306,8 +306,8 @@ describe('observeAnnotations', () => {
                         ],
                     }),
                     FIXTURE_ANNOTATIONS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a', { a: [fixtureAnn('a', 'a'), fixtureAnn('b', 'b')] } satisfies Record<
                 string,
                 Annotation[]
@@ -365,8 +365,8 @@ describe('observeAnnotations', () => {
                         ],
                     }),
                     FIXTURE_ANNOTATIONS_PARAMS,
-                    optsExpectingError
-                )
+                    optsExpectingError,
+                ),
             ).toBe('a', {
                 a: [fixtureAnn('b', 'a')],
                 b: [],
@@ -412,8 +412,8 @@ describe('observeAnnotations', () => {
                         ],
                     }),
                     FIXTURE_ANNOTATIONS_PARAMS,
-                    OPTS
-                )
+                    OPTS,
+                ),
             ).toBe('a-b', {
                 a: [fixtureAnn('a', 'a')],
                 b: [fixtureAnn('a', 'a'), fixtureAnn('b', 'b')],

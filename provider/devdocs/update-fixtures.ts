@@ -28,7 +28,7 @@ async function main() {
     index.entries = index.entries.filter(
         entry =>
             entry.name.toLowerCase().includes('teereader') ||
-            entry.name.toLowerCase().includes('strconv')
+            entry.name.toLowerCase().includes('strconv'),
     )
     await writeFixture('index.json', JSON.stringify(index))
 

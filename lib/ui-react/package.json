@@ -11,14 +11,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "src",
-    "!**/*.test.*",
-    "!**/*.story.*",
-    "!dist/**/*.ts?(x)",
-    "dist/**/*.d.ts"
-  ],
+  "files": ["dist", "src", "!**/*.test.*", "!**/*.story.*", "!dist/**/*.ts?(x)", "dist/**/*.d.ts"],
   "sideEffects": false,
   "scripts": {
     "prebuild": "mkdir -p dist && cp -R src/* dist/ && find dist/ -name '*.tsx' -delete",

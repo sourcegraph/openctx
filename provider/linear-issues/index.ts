@@ -130,14 +130,14 @@ async function getAccessToken(settings: Settings): Promise<string> {
     }
 
     throw new Error(
-        'must provide a Linear user credentials path in the `userCredentialsPath` settings field or an accessToken in the linearClientOptions'
+        'must provide a Linear user credentials path in the `userCredentialsPath` settings field or an accessToken in the linearClientOptions',
     )
 }
 
 async function linearApiRequest(
     query: string,
     variables: object,
-    settings: Settings
+    settings: Settings,
 ): Promise<{ data: any }> {
     const accessToken = await getAccessToken(settings)
     const response = await fetch('https://api.linear.app/graphql', {
@@ -190,7 +190,7 @@ async function getAccessTokenLinearConnect(): Promise<string | undefined> {
     const ext = vscode.extensions.getExtension(LINEAR_AUTHENTICATION_EXTENSION_ID)
     if (!ext) {
         vscode.window.showWarningMessage(
-            'Cody requires the Linear Connect extension to be installed and activated.'
+            'Cody requires the Linear Connect extension to be installed and activated.',
         )
         await vscode.commands.executeCommand('workbench.extensions.action.showExtensionsWithIds', [
             [LINEAR_AUTHENTICATION_EXTENSION_ID],
@@ -200,7 +200,7 @@ async function getAccessTokenLinearConnect(): Promise<string | undefined> {
     const session = await vscode.authentication.getSession(
         LINEAR_AUTHENTICATION_PROVIDER_ID,
         LINEAR_AUTHENTICATION_SCOPES,
-        { createIfNone: true }
+        { createIfNone: true },
     )
 
     if (!session) {

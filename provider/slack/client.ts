@@ -28,7 +28,7 @@ export class SlackClient {
 
     public async contextCandidatesFromRecentThreads(
         channelId: string | undefined,
-        limit = 10
+        limit = 10,
     ): Promise<ItemsResult> {
         if (!channelId) {
             return []
@@ -85,13 +85,13 @@ export class SlackClient {
         channelId: string | undefined,
         query: string,
         channelCandidatesLimit = 10,
-        workspaceCandidatesLimit = 2
+        workspaceCandidatesLimit = 2,
     ): Promise<ItemsResult> {
         const searchResults = await this.getContextFromSlackSearchApi(
             channelId,
             query,
             channelCandidatesLimit,
-            workspaceCandidatesLimit
+            workspaceCandidatesLimit,
         )
         if (!searchResults) {
             return []
@@ -145,7 +145,7 @@ export class SlackClient {
         channelId: string | undefined,
         query: string,
         channelLimit: number,
-        workspaceLimit: number
+        workspaceLimit: number,
     ) {
         if (channelId) {
             const [channelSearchResults, workspaceSearchResults] = await Promise.all([
@@ -277,7 +277,7 @@ export class SlackClient {
                 if (user.id && (user.profile?.display_name || user.profile?.real_name)) {
                     this.useridMapping.set(
                         user.id,
-                        user.profile?.real_name || user.profile?.display_name || ''
+                        user.profile?.real_name || user.profile?.display_name || '',
                     )
                 }
             }

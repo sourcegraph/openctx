@@ -9,7 +9,7 @@ type PRect = Partial<DOMRect> & {
 
 export function getPopoverDimensions(
     targetEl: HTMLElement,
-    popoverEl: HTMLElement
+    popoverEl: HTMLElement,
 ): { top: string; left: string } {
     return positionTopStart(targetEl.getBoundingClientRect(), popoverEl.getBoundingClientRect())
 }
@@ -30,7 +30,7 @@ function getCollisions(
     targetRect: PRect,
     popoverRect: PRect,
     offsetLeft = 0,
-    offsetBottom = 0
+    offsetBottom = 0,
 ): {
     directionRight: boolean
     directionLeft: boolean

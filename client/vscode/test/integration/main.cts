@@ -18,7 +18,7 @@ async function main(): Promise<void> {
         'tsc',
         'test',
         'integration',
-        'index.cjs'
+        'index.cjs',
     )
 
     let exitCode: number

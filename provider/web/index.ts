@@ -52,7 +52,7 @@ async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<Items
     try {
         const content = await fetchContentForURLContextItem(
             url,
-            timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined
+            timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined,
         )
 
         if (content === null) {
@@ -74,7 +74,7 @@ async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<Items
 
 async function fetchContentForURLContextItem(
     urlStr: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
 ): Promise<string | null> {
     const url = new URL(urlStr)
     if (url.protocol !== 'http:' && url.protocol !== 'https:') {

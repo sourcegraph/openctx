@@ -22,7 +22,7 @@ describe('prepareAnnotationsForPresentation', () => {
                     },
                     item: { title: '2' },
                 },
-            ])
+            ]),
         ).toEqual<ReturnType<typeof prepareAnnotationsForPresentation>>([
             {
                 uri: 'file:///f',

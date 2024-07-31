@@ -71,7 +71,7 @@ const azureDevOps: Provider = {
                 uri: item.url,
                 description: item.description,
                 data: { id: item.id },
-            }))
+            })),
         )
     },
 

@@ -6,5 +6,5 @@ import './main.css'
 ReactDOM.createRoot(document.querySelector('#root') as HTMLElement).render(
     <React.StrictMode>
         <DemoApp />
-    </React.StrictMode>
+    </React.StrictMode>,
 )

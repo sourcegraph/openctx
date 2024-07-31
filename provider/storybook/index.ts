@@ -61,7 +61,7 @@ const storybook: Provider<Settings> = {
             if (component) {
                 const { matches, ranges } = firstSubmatchMatches(
                     /export const (\w+): Story/d,
-                    contentLines
+                    contentLines,
                 )
                 for (const [i, story] of matches.entries()) {
                     const storyName = getStoryNameAlias(story, params.content)
@@ -84,7 +84,7 @@ const storybook: Provider<Settings> = {
             // Component file.
             const { matches, ranges } = firstSubmatchMatches(
                 /export const ([A-Z]\w+): (?:(?:React\.)?FC|FunctionComponent|Component|SFC)\b/d,
-                contentLines
+                contentLines,
             )
             for (const [i, component] of matches.entries()) {
                 const storyTitle = getStoryComponentTitleForReactComponent(params.uri, component)

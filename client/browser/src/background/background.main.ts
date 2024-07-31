@@ -23,8 +23,8 @@ function getBuiltinProvider(uri: string): Provider {
     if (!mod) {
         throw new Error(
             `Only HTTP endpoint providers and the following built-in providers are supported: ${Object.keys(
-                BUILTIN_PROVIDER_MODULES
-            ).join(', ')}. See https://openctx.org/docs/clients/browser-extension#known-issues.`
+                BUILTIN_PROVIDER_MODULES,
+            ).join(', ')}. See https://openctx.org/docs/clients/browser-extension#known-issues.`,
         )
     }
     return mod
@@ -44,7 +44,7 @@ function main(): void {
     subscriptions.add(
         addMessageListenersForBackgroundApi({
             annotationsChanges: (...args) => client.annotationsChanges(...args),
-        })
+        }),
     )
 
     self.addEventListener('unload', () => subscriptions.unsubscribe(), { once: true })

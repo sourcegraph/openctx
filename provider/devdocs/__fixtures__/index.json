@@ -8,7 +8,11 @@
     { "name": "strconv.AppendFloat()", "path": "strconv/index#AppendFloat", "type": "strconv" },
     { "name": "strconv.AppendInt()", "path": "strconv/index#AppendInt", "type": "strconv" },
     { "name": "strconv.AppendQuote()", "path": "strconv/index#AppendQuote", "type": "strconv" },
-    { "name": "strconv.AppendQuoteRune()", "path": "strconv/index#AppendQuoteRune", "type": "strconv" },
+    {
+      "name": "strconv.AppendQuoteRune()",
+      "path": "strconv/index#AppendQuoteRune",
+      "type": "strconv"
+    },
     {
       "name": "strconv.AppendQuoteRuneToASCII()",
       "path": "strconv/index#AppendQuoteRuneToASCII",
@@ -41,8 +45,16 @@
     { "name": "strconv.IsPrint()", "path": "strconv/index#IsPrint", "type": "strconv" },
     { "name": "strconv.Itoa()", "path": "strconv/index#Itoa", "type": "strconv" },
     { "name": "strconv.NumError", "path": "strconv/index#NumError", "type": "strconv" },
-    { "name": "strconv.NumError.Error()", "path": "strconv/index#NumError.Error", "type": "strconv" },
-    { "name": "strconv.NumError.Unwrap()", "path": "strconv/index#NumError.Unwrap", "type": "strconv" },
+    {
+      "name": "strconv.NumError.Error()",
+      "path": "strconv/index#NumError.Error",
+      "type": "strconv"
+    },
+    {
+      "name": "strconv.NumError.Unwrap()",
+      "path": "strconv/index#NumError.Unwrap",
+      "type": "strconv"
+    },
     { "name": "strconv.ParseBool()", "path": "strconv/index#ParseBool", "type": "strconv" },
     { "name": "strconv.ParseComplex()", "path": "strconv/index#ParseComplex", "type": "strconv" },
     { "name": "strconv.ParseFloat()", "path": "strconv/index#ParseFloat", "type": "strconv" },
@@ -62,7 +74,11 @@
       "type": "strconv"
     },
     { "name": "strconv.QuoteToASCII()", "path": "strconv/index#QuoteToASCII", "type": "strconv" },
-    { "name": "strconv.QuoteToGraphic()", "path": "strconv/index#QuoteToGraphic", "type": "strconv" },
+    {
+      "name": "strconv.QuoteToGraphic()",
+      "path": "strconv/index#QuoteToGraphic",
+      "type": "strconv"
+    },
     { "name": "strconv.Unquote()", "path": "strconv/index#Unquote", "type": "strconv" },
     { "name": "strconv.UnquoteChar()", "path": "strconv/index#UnquoteChar", "type": "strconv" }
   ],

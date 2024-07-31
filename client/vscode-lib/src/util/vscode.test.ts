@@ -23,7 +23,7 @@ export function createRange(
     startLine: number,
     startCharacter: number,
     endLine: number,
-    endCharacter: number
+    endCharacter: number,
 ): vscode.Range {
     return {
         start: {

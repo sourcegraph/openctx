@@ -3,12 +3,12 @@ import type { ProviderTransport, ProviderTransportOptions } from './createTransp
 
 export function createModuleTransport(
     providerUri: string,
-    { importProvider }: Pick<ProviderTransportOptions, 'importProvider'>
+    { importProvider }: Pick<ProviderTransportOptions, 'importProvider'>,
 ): ProviderTransport {
     return lazyProvider(
         (importProvider ? importProvider(providerUri) : import(/* @vite-ignore */ providerUri)).then(
-            mod => providerFromModule(mod)
-        )
+            mod => providerFromModule(mod),
+        ),
     )
 }
 
@@ -17,7 +17,7 @@ export async function fetchProviderSource(providerUri: string): Promise<string> 
 
     if (!resp.ok) {
         throw new Error(
-            `OpenCtx remote provider module URL ${providerUri} responded with HTTP error ${resp.status} ${resp.statusText}`
+            `OpenCtx remote provider module URL ${providerUri} responded with HTTP error ${resp.status} ${resp.statusText}`,
         )
     }
     const contentType = resp.headers.get('Content-Type')?.trim()?.replace(/;.*$/, '')
@@ -29,8 +29,8 @@ export async function fetchProviderSource(providerUri: string): Promise<string> 
     ) {
         throw new Error(
             `OpenCtx remote provider module URL ${providerUri} reported invalid Content-Type ${JSON.stringify(
-                contentType
-            )} (expected "text/javascript" or "text/plain")`
+                contentType,
+            )} (expected "text/javascript" or "text/plain")`,
         )
     }
 

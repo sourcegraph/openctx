@@ -12,11 +12,7 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "README.md",
-    "dist",
-    "!**/*.test.*"
-  ],
+  "files": ["README.md", "dist", "!**/*.test.*"],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

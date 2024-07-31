@@ -20,13 +20,13 @@
     "generate": "pnpm run --recursive generate",
     "check": "pnpm run -s biome && pnpm run -s check:css",
     "check:css": "stylelint --quiet --cache '**/*.css'",
-    "biome": "biome check --apply --error-on-warnings .",
+    "biome": "biome check --write --error-on-warnings .",
     "test": "vitest",
     "test:unit": "vitest run",
     "test:integration": "pnpm -C vscode test:integration"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.5.3",
+    "@biomejs/biome": "1.8.3",
     "@storybook/addon-essentials": "^7.6.7",
     "@storybook/html": "^7.6.7",
     "@storybook/html-vite": "^7.6.7",

@@ -21,7 +21,7 @@ export function styledChipListParams(
     params: Omit<
         Parameters<typeof createChipList>[0],
         'className' | 'chipClassName' | 'popoverClassName'
-    >
+    >,
 ): Parameters<typeof createChipList>[0] {
     return {
         ...params,

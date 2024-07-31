@@ -78,10 +78,10 @@
     @apply text-sm font-semibold text-foreground-em;
 }
 .wrapper code:not(:global(.ch-code-scroll-parent))::before {
-    content: '`';
+    content: "`";
 }
 .wrapper code:not(:global(.ch-code-scroll-parent))::after {
-    content: '`';
+    content: "`";
 }
 
 .wrapper hr {

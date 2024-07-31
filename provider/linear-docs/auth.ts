@@ -1,7 +1,7 @@
-import http from 'http'
 // Identical to provider/linear-issues/auth.ts.
 // Keep the duplicate for now to keep things simple.
 import { readFileSync, writeFileSync } from 'node:fs'
+import http from 'node:http'
 import path from 'node:path'
 import url, { fileURLToPath } from 'node:url'
 import open from 'open'

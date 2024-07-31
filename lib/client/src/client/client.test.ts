@@ -31,7 +31,7 @@ function fixtureAnn(label: string): Annotation {
 }
 
 function createTestClient(
-    env: Partial<ClientEnv<Range>> & Required<Pick<ClientEnv<Range>, 'configuration'>>
+    env: Partial<ClientEnv<Range>> & Required<Pick<ClientEnv<Range>, 'configuration'>>,
 ): Client<Range> {
     return createClient<Range>({
         authInfo: () => of(null),
@@ -86,7 +86,7 @@ describe('Client', () => {
                                     ]),
                             }),
                         },
-                    }).itemsChanges(FIXTURE_ITEMS_PARAMS)
+                    }).itemsChanges(FIXTURE_ITEMS_PARAMS),
                 ).toBe('(0a)', {
                     '0': [],
                     a: [{ ...fixtureItem('a'), providerUri: testdataFileUri('simple.js') }],
@@ -134,7 +134,7 @@ describe('Client', () => {
                         __mock__: {
                             getProviderClient: () => ({ annotations: () => of([fixtureAnn('a')]) }),
                         },
-                    }).annotationsChanges(FIXTURE_ANNOTATIONS_PARAMS)
+                    }).annotationsChanges(FIXTURE_ANNOTATIONS_PARAMS),
                 ).toBe('(0a)', {
                     '0': [],
                     a: [{ ...fixtureAnn('a'), providerUri: testdataFileUri('simple.js') }],

@@ -104,19 +104,19 @@ body {
         font-family: InterVariable;
         font-style: normal;
         font-weight: 100 900;
-        src: url('/Inter-roman.var.woff2') format('woff2');
+        src: url("/Inter-roman.var.woff2") format("woff2");
     }
 
     @font-face {
         font-family: InterVariable;
         font-style: italic;
         font-weight: 100 900;
-        src: url('/Inter-italic.var.woff2') format('woff2');
+        src: url("/Inter-italic.var.woff2") format("woff2");
     }
 
     @font-face {
-        font-family: 'Fira Code VF';
+        font-family: "Fira Code VF";
         font-weight: 300 700;
-        src: url('/FiraCode.woff2') format('woff2');
+        src: url("/FiraCode.woff2") format("woff2");
     }
 }

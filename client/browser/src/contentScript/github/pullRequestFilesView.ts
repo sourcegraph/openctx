@@ -26,7 +26,7 @@ import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openC
  */
 export function injectOnGitHubPullRequestFilesView(
     location: URL,
-    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>
+    annotationsChanges: (params: AnnotationsParams) => Observable<Annotation[]>,
 ): Observable<void> {
     // All GitHub PR file view URLs contain `/pull/` and `/files` in the path.
     if (!location.pathname.includes('/pull/') && !location.pathname.endsWith('/files')) {
@@ -56,12 +56,12 @@ export function injectOnGitHubPullRequestFilesView(
                                     console.error(error)
                                 }
                             }),
-                            map(() => undefined)
-                        )
-                    )
+                            map(() => undefined),
+                        ),
+                    ),
             )
         }),
-        map(() => undefined)
+        map(() => undefined),
     )
 }
 
@@ -72,7 +72,7 @@ function getChipListElementsAtEndOfLine(lineEl: HTMLElement): HTMLElement[] {
         lineEl.childNodes.item(lineEl.childNodes.length - 2) as ChildNode | undefined,
         lineEl.childNodes.item(lineEl.childNodes.length - 1) as ChildNode | undefined,
     ].filter((el): el is HTMLElement =>
-        Boolean(el instanceof HTMLElement && el.classList.contains(LINE_CHIPS_CLASSNAME))
+        Boolean(el instanceof HTMLElement && el.classList.contains(LINE_CHIPS_CLASSNAME)),
     )
 }
 
@@ -95,7 +95,7 @@ function redraw(file: DiffViewFileVersionData, anns: Annotation[]): void {
         const chipList = createChipList(
             styledChipListParams({
                 annotations: lineItems,
-            })
+            }),
         )
         lineEl.append(chipList)
     }
@@ -125,12 +125,12 @@ const clicksThatInvalidateDiffViewData: Observable<void> = fromEvent(document.bo
                 for (const el of els) {
                     el.classList.add('octx-seen')
                 }
-            })
-        )
+            }),
+        ),
     ),
 
     map(() => undefined),
-    debugTap(() => console.log('clicksThatInvalidateDiffViewData'))
+    debugTap(() => console.log('clicksThatInvalidateDiffViewData')),
 )
 
 interface DiffViewData {

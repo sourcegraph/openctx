@@ -33,7 +33,7 @@ describe('storybook', () => {
                     thumbnail_width: 400,
                     thumbnail_height: 300,
                 }),
-                ['404 Not Found', { status: 404 }]
+                ['404 Not Found', { status: 404 }],
             )
             expect(
                 await storybook.annotations?.(
@@ -49,8 +49,8 @@ export const Foo: Story = {}
 export const Bar: Story = {}
 `,
                     },
-                    SETTINGS
-                )
+                    SETTINGS,
+                ),
             ).toEqual<AnnotationsResult>([
                 {
                     uri: 'file:///a/b.story.tsx',

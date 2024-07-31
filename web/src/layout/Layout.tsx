@@ -31,7 +31,7 @@ export const Layout: FunctionComponent<{ children: ReactNode }> = ({ children })
                 <main
                     className={clsx(
                         'md:min-h-[80vh]',
-                        pageContext.config.layoutClassName === 'wide' ? '' : normalLayoutClassName
+                        pageContext.config.layoutClassName === 'wide' ? '' : normalLayoutClassName,
                     )}
                 >
                     {children}

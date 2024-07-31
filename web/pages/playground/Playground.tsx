@@ -21,7 +21,7 @@ const _Playground: FunctionComponent<{ className?: string }> = ({ className }) =
         <div
             className={clsx(
                 'mx-auto flex max-w-screen-lg flex-col gap-5 xl:max-w-screen-2xl xl:flex-row-reverse xl:gap-0',
-                className
+                className,
             )}
         >
             <AnnotatedEditor
@@ -52,6 +52,7 @@ const _Playground: FunctionComponent<{ className?: string }> = ({ className }) =
 
 export const Playground: typeof _Playground = props => (
     <ClientOnlySync
+        // biome-ignore lint/correctness/useExhaustiveDependencies:
         component={useCallback(() => <_Playground {...props} />, [props])}
         initial={
             <div className="mt-64 text-center text-sm font-bold text-muted-foreground">Loading...</div>

@@ -4,19 +4,19 @@
     "rootDir": "src",
     "outDir": "dist",
     "jsx": "react-jsx",
-    "lib": ["DOM", "ESNext"],
+    "lib": ["DOM", "ESNext"]
   },
   "include": ["src"],
   "exclude": ["dist"],
   "references": [
     {
-      "path": "../schema",
+      "path": "../schema"
     },
     {
-      "path": "../ui-standalone",
+      "path": "../ui-standalone"
     },
     {
-      "path": "../ui-common",
-    },
-  ],
+      "path": "../ui-common"
+    }
+  ]
 }

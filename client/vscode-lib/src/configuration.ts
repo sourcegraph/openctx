@@ -8,7 +8,7 @@ import * as vscode from 'vscode'
  */
 export function getClientConfiguration(
     scope?: vscode.ConfigurationScope,
-    __mock__getConfiguration?: typeof vscode.workspace.getConfiguration
+    __mock__getConfiguration?: typeof vscode.workspace.getConfiguration,
 ): ClientConfiguration & { debug?: boolean } {
     const config = (__mock__getConfiguration ?? vscode.workspace.getConfiguration)('openctx', scope)
     return {
@@ -27,7 +27,7 @@ export function getClientConfiguration(
  */
 function resolveProviderUrisInConfig(
     config: vscode.WorkspaceConfiguration,
-    scope?: vscode.ConfigurationScope
+    scope?: vscode.ConfigurationScope,
 ): ClientConfiguration['providers'] {
     const info = config.inspect<ClientConfiguration['providers']>('providers')
     if (!info) {
@@ -42,7 +42,7 @@ function resolveProviderUrisInConfig(
      */
     function rewriteProviderRelativeFilePaths(
         providers: ClientConfiguration['providers'],
-        fromUri?: vscode.Uri
+        fromUri?: vscode.Uri,
     ): ClientConfiguration['providers'] {
         if (!providers || !fromUri) {
             return undefined
@@ -60,7 +60,7 @@ function resolveProviderUrisInConfig(
                         .toString()
                 }
                 return [providerUri, settings]
-            })
+            }),
         )
     }
 
@@ -84,7 +84,7 @@ function resolveProviderUrisInConfig(
     if (info.workspaceFolderValue) {
         Object.assign(
             merged,
-            rewriteProviderRelativeFilePaths(info.workspaceFolderValue, workspaceFolderSettingsFileUri)
+            rewriteProviderRelativeFilePaths(info.workspaceFolderValue, workspaceFolderSettingsFileUri),
         )
     }
     if (info.defaultLanguageValue) {
@@ -96,7 +96,7 @@ function resolveProviderUrisInConfig(
     if (info.workspaceLanguageValue && workspaceFile) {
         Object.assign(
             merged,
-            rewriteProviderRelativeFilePaths(info.workspaceLanguageValue, workspaceFile)
+            rewriteProviderRelativeFilePaths(info.workspaceLanguageValue, workspaceFile),
         )
     }
     if (info.workspaceFolderLanguageValue) {
@@ -104,8 +104,8 @@ function resolveProviderUrisInConfig(
             merged,
             rewriteProviderRelativeFilePaths(
                 info.workspaceFolderLanguageValue,
-                workspaceFolderSettingsFileUri
-            )
+                workspaceFolderSettingsFileUri,
+            ),
         )
     }
 

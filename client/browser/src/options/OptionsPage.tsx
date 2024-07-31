@@ -43,7 +43,7 @@ export const OptionsPage: FunctionComponent = () => {
                     })
             }
         },
-        [configuration, pendingConfig]
+        [configuration, pendingConfig],
     )
 
     const isDirty = pendingConfig !== undefined && pendingConfig !== configuration
@@ -65,7 +65,7 @@ export const OptionsPage: FunctionComponent = () => {
                 onSubmit(event)
             }
         },
-        [formDisabled, isDirty, onSubmit]
+        [formDisabled, isDirty, onSubmit],
     )
 
     return (

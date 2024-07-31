@@ -18,7 +18,7 @@ export const storage: {
     onChanged: browser.CallbackEventEmitter<
         (
             changes: browser.storage.ChangeDict<ExtensionStorageItems[typeof areaName]>,
-            areaName: browser.storage.AreaName
+            areaName: browser.storage.AreaName,
         ) => void
     >
 } = globalThis.browser && browser.storage
@@ -28,7 +28,7 @@ export const observeStorageKey = <
     K extends keyof ExtensionStorageItems[A],
 >(
     areaName: A,
-    key: K
+    key: K,
 ): Observable<ExtensionStorageItems[A][K] | undefined> => {
     if (platform !== 'chrome-extension' && areaName === 'managed') {
         // Accessing managed storage throws an error on Firefox and on Safari.
@@ -38,8 +38,8 @@ export const observeStorageKey = <
         // Start with current value of the item
         defer(() =>
             from(
-                (storage[areaName] as browser.storage.StorageArea<ExtensionStorageItems[A]>).get(key)
-            ).pipe(map(items => (items as ExtensionStorageItems[A])[key]))
+                (storage[areaName] as browser.storage.StorageArea<ExtensionStorageItems[A]>).get(key),
+            ).pipe(map(items => (items as ExtensionStorageItems[A])[key])),
         ),
         // Emit every new value from change events that affect that item
         fromBrowserEvent(storage.onChanged).pipe(
@@ -47,12 +47,12 @@ export const observeStorageKey = <
             map(([changes]) => changes),
             filter(
                 (
-                    changes
+                    changes,
                 ): changes is {
                     [k in K]: browser.storage.StorageChange<ExtensionStorageItems[A][K]>
-                } => Object.prototype.hasOwnProperty.call(changes, key)
+                } => Object.prototype.hasOwnProperty.call(changes, key),
             ),
-            map(changes => changes[key].newValue)
-        )
+            map(changes => changes[key].newValue),
+        ),
     )
 }

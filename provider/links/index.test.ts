@@ -38,8 +38,8 @@ describe('links', () => {
                     uri: 'file:///a/b.ts',
                     content: '0foo0\nbar\nbaz\n1foo1',
                 },
-                SETTINGS
-            )
+                SETTINGS,
+            ),
         ).toEqual<AnnotationsResult>([
             {
                 uri: 'file:///a/b.ts',
@@ -81,8 +81,8 @@ describe('links', () => {
         expect(
             links.annotations?.(
                 { uri: 'file:///a/b.ts', content: 'log.Print(foo, b/a+r)' },
-                settingsWithCaptureGroups
-            )
+                settingsWithCaptureGroups,
+            ),
         ).toEqual<AnnotationsResult>([
             {
                 uri: 'file:///a/b.ts',

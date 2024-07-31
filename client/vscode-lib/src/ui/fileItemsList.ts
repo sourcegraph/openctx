@@ -50,7 +50,7 @@ async function showQuickPick(controller: Controller): Promise<void> {
             vscode.window.showErrorMessage('Error loading OpenCtx annotations')
             disposeAll()
         },
-        () => disposeAll()
+        () => disposeAll(),
     )
     disposables.push({ dispose: () => subscription.unsubscribe() })
 
@@ -60,14 +60,14 @@ async function showQuickPick(controller: Controller): Promise<void> {
             if (activeItem?.ann?.range) {
                 editor.revealRange(
                     activeItem.ann.range,
-                    vscode.TextEditorRevealType.InCenterIfOutsideViewport
+                    vscode.TextEditorRevealType.InCenterIfOutsideViewport,
                 )
                 editor.selection = new vscode.Selection(
                     activeItem.ann.range.start,
-                    activeItem.ann.range.end
+                    activeItem.ann.range.end,
                 )
             }
-        })
+        }),
     )
 
     disposables.push(
@@ -81,7 +81,7 @@ async function showQuickPick(controller: Controller): Promise<void> {
             }
             quickPick.hide()
             disposeAll()
-        })
+        }),
     )
 
     disposables.push(
@@ -90,14 +90,14 @@ async function showQuickPick(controller: Controller): Promise<void> {
                 vscode.commands.executeCommand('vscode.open', e.item.ann.item.url)
             }
             disposeAll()
-        })
+        }),
     )
 
     disposables.push(
         quickPick.onDidHide(() => {
             disposeAll()
             subscription.unsubscribe()
-        })
+        }),
     )
 }
 
@@ -118,7 +118,7 @@ function toQuickPickItems(anns: Annotation<vscode.Range>[]): QuickPickItem[] {
         })
     }
     return qpItems.sort((a, b) =>
-        (a.ann.range ?? ZERO_RANGE).start.compareTo((b.ann.range ?? ZERO_RANGE).start)
+        (a.ann.range ?? ZERO_RANGE).start.compareTo((b.ann.range ?? ZERO_RANGE).start),
     )
 }
 

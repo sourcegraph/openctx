@@ -24,7 +24,7 @@ export function createStatusBarItem(): vscode.Disposable {
             if (e.affectsConfiguration('openctx.enable')) {
                 update()
             }
-        })
+        }),
     )
     update()
     statusItem.show()

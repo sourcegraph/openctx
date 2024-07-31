@@ -94,7 +94,7 @@ export async function fetchIssue(
     sentryToken: string,
     organizationId: string,
     issueId: string,
-    timeoutMS = 5000
+    timeoutMS = 5000,
 ): Promise<Issue | null> {
     const abortController = new AbortController()
     setTimeout(() => abortController.abort(), timeoutMS)
@@ -106,14 +106,14 @@ export async function fetchIssue(
                 Authorization: `Bearer ${sentryToken}`,
             },
             signal: abortController.signal,
-        }
+        },
     )
     if (!resp.ok) {
         if (resp.status === 404) {
             return null
         }
         throw new Error(
-            `Failed to fetch issue ${issueId} from ${organizationId}: ${resp.status} ${resp.statusText}`
+            `Failed to fetch issue ${issueId} from ${organizationId}: ${resp.status} ${resp.statusText}`,
         )
     }
     return (await resp.json()) as Issue

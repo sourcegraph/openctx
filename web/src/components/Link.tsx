@@ -17,6 +17,6 @@ export const Link = forwardRef<HTMLAnchorElement, Props>(
                 {...props}
             />
         )
-    }
+    },
 )
 Link.displayName = 'Link'
