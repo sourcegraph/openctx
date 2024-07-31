@@ -115,6 +115,7 @@ export function createController({
         providers,
         preloadDelay,
     })
+    disposables.push(client)
 
     const errorLog = (error: any) => {
         console.error(error)
