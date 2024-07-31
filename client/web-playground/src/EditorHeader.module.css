@@ -1,13 +1,14 @@
 .header {
     display: flex;
-    gap: 1rem;
+    gap: calc(2 * var(--spacing));
     align-items: baseline;
-    padding: 0.25rem 0;
 }
 
 .header h1 {
     margin: 0;
     white-space: nowrap;
+    font-size: unset;
+    font-weight: semibold;
 }
 
 .status {

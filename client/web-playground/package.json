@@ -27,11 +27,14 @@
     "@openctx/provider-links": "workspace:*",
     "@openctx/provider-storybook": "workspace:*",
     "@openctx/ui-react": "workspace:*",
+    "@sourcegraph/prompt-editor": "^0.0.1",
     "@uiw/react-codemirror": "^4.22.1",
+    "cmdk": "^1.0.0",
     "observable-hooks": "^4.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "vscode-uri": "^3.0.8"
   },
   "devDependencies": {
     "@types/react": "^18",

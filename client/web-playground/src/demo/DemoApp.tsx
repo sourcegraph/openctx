@@ -1,88 +1,109 @@
-import { type FunctionComponent, useEffect, useState } from 'react'
-import { AnnotatedEditor } from '../AnnotatedEditor.js'
+import { type FunctionComponent, useCallback, useEffect, useState } from 'react'
 import { SettingsEditor } from '../SettingsEditor.js'
 import styles from './DemoApp.module.css'
+import { DemoEditor } from './DemoEditor.js'
+import { DemoMentionsConsole } from './DemoMentionsConsole.js'
 import { getDefaultSettings } from './settings.js'
 
-const SAMPLE_FILES = [
-    'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/client/web/src/auth/SignInPage.story.tsx',
-    'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/client/web/src/auth/SignInPage.tsx',
-    'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/internal/repos/github.go',
-    'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/internal/licensing/telemetryexport.go',
-    'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/client/BUILD.bazel',
-]
+const SETTINGS_LOCALSTORAGE_KEY = 'openctx-playground-settings'
+
+const SETTINGS_EDITOR_ID = 'settings-editor'
+const SETTINGS_EDITOR_PANEL_SIZE_LOCALSTORAGE_KEY = 'openctx-playground-settings-editor-width'
 
 export const DemoApp: FunctionComponent = () => {
-    const [settings, setSettings] = useState<string>()
+    const [settings, setSettings] = useState<string | undefined>(
+        localStorage.getItem(SETTINGS_LOCALSTORAGE_KEY) ?? undefined,
+    )
 
     useEffect(() => {
+        if (settings === undefined) {
+            getDefaultSettings().then(setSettings).catch(console.error)
+        }
+    }, [settings])
+    const onSettingsChange = useCallback((settings: string) => {
+        localStorage.setItem(SETTINGS_LOCALSTORAGE_KEY, settings)
+        setSettings(settings)
+
+        // Also save the size of the settings editor. This should be done after resizing, but this
+        // is an easy hack.
+        const panelSize = document.getElementById(SETTINGS_EDITOR_ID)?.offsetHeight
+        if (panelSize !== undefined) {
+            localStorage.setItem(SETTINGS_EDITOR_PANEL_SIZE_LOCALSTORAGE_KEY, String(panelSize))
+        }
+    }, [])
+    const onResetSettingsClick = useCallback(() => {
+        localStorage.removeItem(SETTINGS_LOCALSTORAGE_KEY)
         getDefaultSettings().then(setSettings).catch(console.error)
     }, [])
-
-    const fileId = window.location.search?.replace(/^\?/, '') || DEFAULT_FILE_ID
-    const [fileContent, setFileContent] = useState<string>()
     useEffect(() => {
-        fetchFileContent(fileId)
-            .then(setFileContent)
-            .catch(error => setFileContent(`Failed to fetch file content: ${error}`))
-    }, [fileId])
+        const panelSize = localStorage.getItem(SETTINGS_EDITOR_PANEL_SIZE_LOCALSTORAGE_KEY)
+        const settingsEditor = document.getElementById(SETTINGS_EDITOR_ID)
+        if (panelSize !== null && settingsEditor) {
+            settingsEditor.style.height = panelSize + 'px'
+        }
+    }, [])
 
-    return settings && fileContent ? (
+    const params = new URLSearchParams(window.location.search)
+
+    const view: 'mentions' | 'annotations' =
+        params.get('view') === 'annotations' ? 'annotations' : 'mentions'
+
+    return settings ? (
         <div className={styles.container}>
             <header className={styles.header}>
                 <h1>OpenCtx playground</h1>
                 <nav>
-                    {SAMPLE_FILES.map(id => (
-                        <a key={id} href={`/?${id}`}>
-                            {id.slice(id.lastIndexOf('/') + 1)}
-                        </a>
-                    ))}
+                    <ul>
+                        <li>
+                            <a href="?view=mentions">Mentions</a>
+                        </li>
+                        <li>
+                            <a href="?view=annotations">Annotations</a>
+                        </li>
+                    </ul>
                 </nav>
             </header>
             <main className={styles.main}>
                 <SettingsEditor
+                    id={SETTINGS_EDITOR_ID}
                     value={settings}
-                    onChange={setSettings}
-                    className={styles.editorContainer}
+                    onChange={onSettingsChange}
+                    className={styles.viewContainer}
+                    headerClassName={styles.viewContainerHeader}
                     codeMirrorProps={{
                         theme: 'dark',
                         height: '100%',
-                        style: { height: '100%', fontSize: '90%' },
+                        width: '100%',
+                        style: { height: '100%', fontSize: '80%' },
                         className: styles.editor,
                     }}
+                    headerChildren={
+                        <button type="reset" onClick={onResetSettingsClick}>
+                            Reset to defaults
+                        </button>
+                    }
                 />
-                <AnnotatedEditor
-                    resourceUri={`file:///${fileId}`}
-                    value={fileContent}
-                    onChange={setFileContent}
-                    settings={settings}
-                    className={styles.editorContainer}
-                    codeMirrorProps={{
-                        theme: 'dark',
-                        height: '100%',
-                        style: { height: '100%', fontSize: '90%' },
-                        className: styles.editor,
-                    }}
-                />
+                {view === 'mentions' ? (
+                    <DemoMentionsConsole
+                        settings={settings}
+                        className={`${styles.viewContainer}`}
+                        headerClassName={styles.viewContainerHeader}
+                        contentClassName={styles.viewContainerContent}
+                    />
+                ) : (
+                    <DemoEditor
+                        settings={settings}
+                        className={styles.viewContainer}
+                        headerClassName={styles.viewContainerHeader}
+                        codeMirrorProps={{
+                            theme: 'dark',
+                            height: '100%',
+                            style: { height: '100%', fontSize: '90%' },
+                            className: styles.editor,
+                        }}
+                    />
+                )}
             </main>
         </div>
     ) : null
-}
-
-const DEFAULT_FILE_ID =
-    'github.com/sourcegraph/sourcegraph@1f857814717cf5afdb128eb005df93df5b81cc2a/client/web/src/auth/SignInPage.tsx'
-
-async function fetchFileContent(fileId: string): Promise<string> {
-    const localStorageKey = `fileContent:${fileId}`
-
-    const item = localStorage.getItem(localStorageKey)
-    if (item !== null) {
-        return item
-    }
-
-    const fileUrl = `https://cdn.jsdelivr.net/gh/${fileId.replace(/^github\.com\//, '')}`
-    const resp = await fetch(fileUrl)
-    const content = await resp.text()
-    localStorage.setItem(localStorageKey, content)
-    return content
 }
