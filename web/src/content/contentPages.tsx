@@ -1,12 +1,11 @@
 import { MDXProvider } from '@mdx-js/react'
+import DOMPurify from 'dompurify'
 import { type ComponentType, useEffect, useState } from 'react'
 import { renderToString } from 'react-dom/server'
 import { render } from 'vike/abort'
 import type { OnBeforePrerenderStartSync, OnBeforeRenderAsync, PageContext } from 'vike/types'
 import type { PageContextForTitle } from '../../renderer/+title.ts'
 import { MDX_COMPONENTS } from '../components/content/MdxComponents.tsx'
-import DOMPurify from 'dompurify'
-
 
 export interface ConfigForContentPages {
     title: (pageContext: PageContext) => string
@@ -82,13 +81,13 @@ export function createOnBeforeRender(content: ContentPages): OnBeforeRenderAsync
                 contentPageHtml:
                     typeof window === 'undefined'
                         ? DOMPurify.sanitize(
-                            renderToString(
-                                <MDXProvider components={MDX_COMPONENTS}>
-                                    <MDXContent />
-                                </MDXProvider>
-                            ),
-                            { RETURN_TRUSTED_TYPE: true }
-                        )
+                              renderToString(
+                                  <MDXProvider components={MDX_COMPONENTS}>
+                                      <MDXContent />
+                                  </MDXProvider>
+                              ),
+                              { RETURN_TRUSTED_TYPE: true }
+                          )
                         : undefined,
                 contentPageInfos: infos,
                 pageTitle: info?.title,
