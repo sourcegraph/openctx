@@ -1,6 +1,6 @@
 {
   "name": "@openctx/client",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "OpenCtx client library",
   "license": "Apache-2.0",
   "repository": {
