@@ -481,7 +481,13 @@ importers:
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
+      dompurify:
+        specifier: ^3.1.6
+        version: 3.1.6
     devDependencies:
+      '@types/dompurify':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@types/react':
         specifier: 18.2.37
         version: 18.2.37
@@ -8425,12 +8431,7 @@ packages:
     resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
     engines: {node: '>=0.11'}
     dependencies:
-<<<<<<< HEAD
-      '@babel/runtime': 7.23.5
-=======
       '@babel/runtime': 7.23.9
-    dev: true
->>>>>>> dcca29e (pnpm build)
 
   /debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
