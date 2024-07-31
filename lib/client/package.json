@@ -1,6 +1,6 @@
 {
   "name": "@openctx/client",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "OpenCtx client library",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,12 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src", "!**/*.test.*", "!**/testdata/**"],
+  "files": [
+    "dist",
+    "src",
+    "!**/*.test.*",
+    "!**/testdata/**"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
