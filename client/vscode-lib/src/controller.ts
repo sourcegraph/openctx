@@ -1,6 +1,7 @@
 import {
     type AuthInfo,
     type Client,
+    type ClientConfiguration,
     type ProviderMethodOptions,
     type Range,
     createClient,
@@ -56,6 +57,7 @@ export function createController({
     getAuthInfo,
     features,
     providers,
+    mergeConfiguration,
     preloadDelay,
 }: {
     secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
@@ -64,6 +66,7 @@ export function createController({
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
     providers?: ImportedProviderConfiguration[]
+    mergeConfiguration?: (configuration: ClientConfiguration) => Promise<ClientConfiguration>
     preloadDelay?: number
 }): {
     controller: Controller
@@ -87,8 +90,13 @@ export function createController({
     )
     disposables.push(configOrSecretsChanged)
 
+    const getConfiguration = async (scope?: vscode.ConfigurationScope) => {
+        const config = getClientConfiguration(scope)
+        return mergeConfiguration ? await mergeConfiguration(config) : config
+    }
+
     const toggleEnableCommand = vscode.commands.registerCommand('openctx.toggleEnable', async () => {
-        const currentValue = getClientConfiguration().enable
+        const currentValue = (await getConfiguration()).enable
         await vscode.workspace.getConfiguration('openctx').update('enable', !currentValue)
     })
     disposables.push(toggleEnableCommand)
@@ -103,7 +111,7 @@ export function createController({
                 ? vscode.Uri.parse(resource)
                 : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
-                map(() => getClientConfiguration(scope)),
+                mergeMap(() => from(getConfiguration(scope))),
             )
         },
         authInfo: getAuthInfo
