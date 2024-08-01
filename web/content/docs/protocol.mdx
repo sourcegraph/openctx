@@ -46,34 +46,79 @@ interface MetaParams {
 
 ```typescript
 interface MetaResult {
-  /**
-   * Selects the scope in which this provider should be called.
-   *
-   * If one or more selectors are given, all must be satisfied for the
-   * provider to be called. If undefined, the provider is called on all resources.
-   * If empty, the provider is never invoked.
-   */
-  selector?: Selector[]
+    /**
+     * The name of the provider.
+     */
+    name: string
+    /**
+     * Configuration for providing context items.
+     */
+    items?: {
+        /**
+         * The list of regex patterns for matching with a message for which the provider can return context items
+         */
+        messageSelectors?: MessageSelector[]
+    }
+    /**
+     * Configuration for the mentions feature.
+     */
+    mentions?: {
+        /**
+         * The label that is shown when a user wants to query mentions. For example `Search...` or `Paste Linear URL`.
+         */
+        label?: string
+        /**
+         * The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.
+         */
+        selectors?: MentionSelector[]
+    }
+    /**
+     * Configuration for the annotations feature.
+     */
+    annotations?: {
+        /**
+         * A list of patterns matching the mention text for which the provider can return mentions
+         */
+        selectors?: AnnotationSelector[]
+    }
+}
+
+/**
+ * List of regex patterns matching a message for which the provider can return context items.
+ */
+interface MessageSelector {
+    /**
+     * The regex pattern matching a message for which the provider can return context items
+     */
+    pattern: string
+}
+
+/**
+ * List of regex patterns matching the mention text for which the provider can return mentions.
+ */
+interface MentionSelector {
+    /**
+     * The regex pattern matching the mention text for which the provider can return mentions
+     */
+    pattern: string
 }
 
 /**
  * Defines a scope in which a provider is called.
  *
- * To satisfy a selector, all of the selector's conditions must be met. For
- * example, if both `path` and `content` are specified, the resource must satisfy
- * both conditions.
+ * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
  */
-interface Selector {
-  /**
-   * A glob that must match the resource's hostname and path.
-   */
-  path?: string
-
-  /**
-   * A literal string that must be present in the resource's content for the
-   * provider to be called.
-   */
-  contentContains?: string
+interface AnnotationSelector {
+    /**
+     * A glob that must match the resource's hostname and path.
+     *
+     * Use `** /` before the glob to match in any parent directory. Use `/**` after the glob to match any resources under a directory. Leading slashes are stripped from the path before being matched against the glob.
+     */
+    path?: string
+    /**
+     * A literal string that must be present in the resource's content.
+     */
+    contentContains?: string
 }
 ```
 
