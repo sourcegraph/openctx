@@ -1,4 +1,4 @@
-import type { Observable } from 'rxjs'
+import { Observable } from 'rxjs'
 
 export async function* observableToAsyncGenerator<T>(
     observable: Observable<T>,
@@ -60,4 +60,40 @@ export async function* observableToAsyncGenerator<T>(
         subscription.unsubscribe()
         removeAbortListener?.()
     }
+}
+
+export function asyncGeneratorToObservable<T>(asyncGenerator: AsyncGenerator<T, void>): Observable<T> {
+    return new Observable<T>(observer => {
+        ;(async () => {
+            try {
+                for await (const value of asyncGenerator) {
+                    observer.next(value)
+                }
+                observer.complete()
+            } catch (error) {
+                observer.error(error)
+            }
+        })()
+
+        return () => {
+            // If the AsyncGenerator has a return method, call it to clean up
+            if (asyncGenerator.return) {
+                asyncGenerator.return()
+            }
+        }
+    })
+}
+
+export function isAsyncGenerator(value: any): value is AsyncGenerator<any, any, any> {
+    if (value === null || typeof value !== 'object') {
+        return false
+    }
+
+    return (
+        typeof value.next === 'function' &&
+        typeof value.throw === 'function' &&
+        typeof value.return === 'function' &&
+        typeof value[Symbol.asyncIterator] === 'function' &&
+        value[Symbol.asyncIterator]() === value
+    )
 }

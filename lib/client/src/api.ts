@@ -16,6 +16,7 @@ import {
     combineLatest,
     defer,
     distinctUntilChanged,
+    filter,
     from,
     map,
     mergeMap,
@@ -72,6 +73,14 @@ function observeProviderCall<R>(
     fn: (provider: ProviderClientWithSettings) => Observable<R[] | null>,
     { emitPartial, errorHook, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions,
 ): Observable<EachWithProviderUri<R[]>> {
+    // This sentinel value lets us avoid emitting a "fake" partial result when `emitPartial` is
+    // true. We use `combineLatest` below, which waits until all providers have emitted until it
+    // emits a value, so we need to use `startWith(null)`. But this means that upon subscription, we
+    // get a meaningless `[null, null, null, ...]` value. Using this sentinel value instead of
+    // `null` lets us detect that case and filter it out so our caller doesn't see it. But in the
+    // case where there are no providers, we still want to emit [] because that is a true result.
+    const EMIT_PARTIAL_SENTINEL: 'emit-partial-sentinel' = {} as any
+
     return providerClients.pipe(
         mergeMap(providerClients =>
             providerClients && providerClients.length > 0
@@ -79,7 +88,7 @@ function observeProviderCall<R>(
                       providerClients.map(({ uri, providerClient, settings }) =>
                           defer(() => fn({ uri, providerClient, settings }))
                               .pipe(
-                                  emitPartial ? startWith(null) : tap(),
+                                  emitPartial ? startWith(EMIT_PARTIAL_SENTINEL) : tap(),
                                   catchError(error => {
                                       if (errorHook) {
                                           errorHook(uri, error)
@@ -92,14 +101,24 @@ function observeProviderCall<R>(
                               )
                               .pipe(
                                   map(items =>
-                                      (items || []).map(item => ({ ...item, providerUri: uri })),
+                                      items === EMIT_PARTIAL_SENTINEL
+                                          ? items
+                                          : (items || []).map(item => ({ ...item, providerUri: uri })),
                                   ),
                               ),
                       ),
                   )
                 : of([]),
         ),
-        map(result => result.filter((v): v is EachWithProviderUri<R[]> => v !== null).flat()),
+        filter(
+            result =>
+                !emitPartial || result.length === 0 || result.some(v => v !== EMIT_PARTIAL_SENTINEL),
+        ),
+        map(result =>
+            result
+                .filter((v): v is EachWithProviderUri<R[]> => v !== null && v !== EMIT_PARTIAL_SENTINEL)
+                .flat(),
+        ),
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
         tap(items => {
             if (LOG_VERBOSE) {

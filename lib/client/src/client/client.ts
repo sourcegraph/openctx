@@ -20,6 +20,7 @@ import {
     distinctUntilChanged,
     firstValueFrom,
     from,
+    isObservable,
     map,
     mergeMap,
     of,
@@ -45,7 +46,7 @@ import {
 } from '../configuration.js'
 import type { Logger } from '../logger.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
-import { observableToAsyncGenerator } from './util.js'
+import { asyncGeneratorToObservable, observableToAsyncGenerator } from './util.js'
 
 /**
  * Hooks for the OpenCtx {@link Client} to access information about the environment, such as the
@@ -75,7 +76,10 @@ export interface ClientEnv<R extends Range> {
     /**
      * The list of providers already resolved and imported.
      */
-    providers?: ImportedProviderConfiguration[]
+    providers?:
+        | ImportedProviderConfiguration[]
+        | Observable<ImportedProviderConfiguration[]>
+        | (() => AsyncGenerator<ImportedProviderConfiguration[]>)
 
     /**
      * The authentication info for the provider.
@@ -337,17 +341,22 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     }
 
     function providerClientsWithSettings(resource?: string): Observable<ProviderClientWithSettings[]> {
-        return from(env.configuration(resource))
+        const providers = isObservable(env.providers)
+            ? env.providers
+            : env.providers instanceof Function
+              ? asyncGeneratorToObservable(env.providers())
+              : of(env.providers)
+        return combineLatest([env.configuration(resource), providers])
             .pipe(
-                map(config => {
+                map(([config, providers]) => {
                     if (!config.enable) {
                         config = { ...config, providers: {} }
                     }
-                    return configurationFromUserInput(config, env.providers)
+                    return [configurationFromUserInput(config, providers), providers] as const
                 }),
             )
             .pipe(
-                mergeMap(configuration =>
+                mergeMap(([configuration, providers]) =>
                     configuration.providers.length > 0
                         ? combineLatest(
                               configuration.providers.map(({ providerUri, settings }) =>
@@ -363,7 +372,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                                         logger,
                                                         importProvider: env.importProvider,
                                                     },
-                                                    env.providers?.find(
+                                                    providers?.find(
                                                         provider => provider.providerUri === providerUri,
                                                     )?.provider,
                                                 ),
