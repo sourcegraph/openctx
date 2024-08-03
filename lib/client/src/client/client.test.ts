@@ -4,7 +4,7 @@ import { Observable, firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
 import type { Annotation, EachWithProviderUri } from '../api.js'
-import type { ConfigurationUserInput } from '../configuration.js'
+import type { ConfigurationUserInput, ImportedProviderConfiguration } from '../configuration.js'
 import { type Client, type ClientEnv, createClient } from './client.js'
 
 function testdataFileUri(file: string): string {
@@ -45,6 +45,48 @@ describe('Client', () => {
         new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
     describe('meta', () => {
+        test('meta with async generator providers option', async () => {
+            const client = createTestClient({
+                configuration: () => of({}),
+                providers: async function* (): AsyncGenerator<ImportedProviderConfiguration[]> {
+                    yield [
+                        {
+                            provider: { meta: () => ({ name: 'my-provider-1' }) },
+                            providerUri: 'u1',
+                            settings: true,
+                        },
+                    ]
+                    await new Promise(resolve => setTimeout(resolve))
+                    yield [
+                        {
+                            provider: { meta: () => ({ name: 'my-provider-2' }) },
+                            providerUri: 'u2',
+                            settings: true,
+                        },
+                        {
+                            provider: { meta: () => ({ name: 'my-provider-3' }) },
+                            providerUri: 'u3',
+                            settings: true,
+                        },
+                    ]
+                },
+            })
+
+            const values: EachWithProviderUri<MetaResult[]>[] = []
+            const signal = new AbortController().signal
+            for await (const value of client.metaChanges__asyncGenerator({}, {}, signal)) {
+                values.push(value)
+            }
+            expect(values).toStrictEqual<typeof values>([
+                [{ name: 'my-provider-1', providerUri: 'u1' }],
+                [{ name: 'my-provider-2', providerUri: 'u2' }],
+                [
+                    { name: 'my-provider-2', providerUri: 'u2' },
+                    { name: 'my-provider-3', providerUri: 'u3' },
+                ],
+            ])
+        })
+
         test('metaChanges__asyncGenerator', async () => {
             const client = createTestClient({
                 configuration: () =>
@@ -54,11 +96,13 @@ describe('Client', () => {
                             enable: true,
                             providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '1' } },
                         })
-                        observer.next({
-                            enable: true,
-                            providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' } },
+                        setTimeout(() => {
+                            observer.next({
+                                enable: true,
+                                providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' } },
+                            })
+                            observer.complete()
                         })
-                        observer.complete()
                     }),
             })
 
@@ -68,7 +112,6 @@ describe('Client', () => {
                 values.push(value)
             }
             expect(values).toStrictEqual<typeof values>([
-                [],
                 [{ name: 'simpleMeta-1', providerUri: testdataFileUri('simpleMeta.js') }],
                 [{ name: 'simpleMeta-2', providerUri: testdataFileUri('simpleMeta.js') }],
             ])
@@ -118,8 +161,7 @@ describe('Client', () => {
                             }),
                         },
                     }).itemsChanges(FIXTURE_ITEMS_PARAMS),
-                ).toBe('(0a)', {
-                    '0': [],
+                ).toBe('a', {
                     a: [{ ...fixtureItem('a'), providerUri: testdataFileUri('simple.js') }],
                 } satisfies Record<string, EachWithProviderUri<Item[]>>)
             })
@@ -166,8 +208,7 @@ describe('Client', () => {
                             getProviderClient: () => ({ annotations: () => of([fixtureAnn('a')]) }),
                         },
                     }).annotationsChanges(FIXTURE_ANNOTATIONS_PARAMS),
-                ).toBe('(0a)', {
-                    '0': [],
+                ).toBe('a', {
                     a: [{ ...fixtureAnn('a'), providerUri: testdataFileUri('simple.js') }],
                 } satisfies Record<string, EachWithProviderUri<Annotation[]>>)
             })

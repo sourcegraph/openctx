@@ -65,7 +65,10 @@ export function createController({
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
-    providers?: ImportedProviderConfiguration[]
+    providers?:
+        | ImportedProviderConfiguration[]
+        | Observable<ImportedProviderConfiguration[]>
+        | (() => AsyncGenerator<ImportedProviderConfiguration[]>)
     mergeConfiguration?: (configuration: ClientConfiguration) => Promise<ClientConfiguration>
     preloadDelay?: number
 }): {
