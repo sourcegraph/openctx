@@ -32,8 +32,10 @@
     "@storybook/html-vite": "^7.6.7",
     "@storybook/react": "^7.6.7",
     "@storybook/react-vite": "^8.1.1",
+    "@types/dompurify": "^3.0.5",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20",
+    "@types/picomatch": "^2.3.4",
     "@types/semver": "^7.5.6",
     "@vitejs/plugin-react": "^4.2.1",
     "@vitest/coverage-v8": "^1.6.0",
@@ -49,7 +51,9 @@
     "vitest": "^1.6.0"
   },
   "stylelint": {
-    "extends": ["./.config/stylelintrc.json"]
+    "extends": [
+      "./.config/stylelintrc.json"
+    ]
   },
   "pnpm": {
     "packageExtensions": {
@@ -61,3 +65,4 @@
     }
   }
 }
+

@@ -22,6 +22,9 @@
         "noNonNullAssertion": "off",
         "noParameterAssign": "off",
         "useTemplate": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "off"
       }
     },
     "ignore": ["client/browser/src/types/webextension-polyfill/index.d.ts"]
