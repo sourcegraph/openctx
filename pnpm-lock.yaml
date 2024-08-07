@@ -730,6 +730,12 @@ importers:
         specifier: workspace:*
         version: link:../../lib/provider
 
+  provider/zendesk:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+
   web:
     dependencies:
       '@code-hike/mdx':
