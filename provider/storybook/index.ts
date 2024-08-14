@@ -37,7 +37,7 @@ const storybook: Provider<Settings> = {
         return {
             annotations: {
                 selectors: [
-                    { path: '**/*.story.(t|j)s?(x)' },
+                    { path: '**/*.(story|stories).(t|j)s?(x)' },
                     { path: '**/*.(t|j)s(x)', contentContains: 'react' },
                 ],
             },
@@ -53,7 +53,11 @@ const storybook: Provider<Settings> = {
         }
 
         const contentLines = params.content.split(/\r?\n/)
-        const fileKind = basename(params.uri).includes('.story.') ? 'story-file' : 'component-file'
+        const fileName = basename(params.uri)
+        const fileKind =
+            fileName.includes('.story.') || fileName.includes('.stories.')
+                ? 'story-file'
+                : 'component-file'
 
         if (fileKind === 'story-file') {
             // Story file.
