@@ -1,6 +1,6 @@
 import type { AnnotationsParams, ItemsParams, MetaResult } from '@openctx/protocol'
 import type { Item, Range } from '@openctx/schema'
-import { Observable, firstValueFrom, of } from 'rxjs'
+import { firstValueFrom, of } from 'rxjs'
 import { TestScheduler } from 'rxjs/testing'
 import { describe, expect, test } from 'vitest'
 import type { Annotation, EachWithProviderUri } from '../api.js'
@@ -45,75 +45,114 @@ describe('Client', () => {
         new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
 
     describe('meta', () => {
-        test('meta with async generator providers option', async () => {
+        test('promise', async () => {
             const client = createTestClient({
-                configuration: () => of({}),
-                providers: async function* (): AsyncGenerator<ImportedProviderConfiguration[]> {
-                    yield [
-                        {
-                            provider: { meta: () => ({ name: 'my-provider-1' }) },
-                            providerUri: 'u1',
-                            settings: true,
+                configuration: () =>
+                    Promise.resolve({
+                        enable: true,
+                        providers: {
+                            [testdataFileUri('simple.js')]: true,
                         },
-                    ]
-                    await new Promise(resolve => setTimeout(resolve))
-                    yield [
-                        {
-                            provider: { meta: () => ({ name: 'my-provider-2' }) },
-                            providerUri: 'u2',
-                            settings: true,
-                        },
-                        {
-                            provider: { meta: () => ({ name: 'my-provider-3' }) },
-                            providerUri: 'u3',
-                            settings: true,
-                        },
-                    ]
-                },
+                    }),
             })
-
-            const values: EachWithProviderUri<MetaResult[]>[] = []
-            const signal = new AbortController().signal
-            for await (const value of client.metaChanges__asyncGenerator({}, {}, signal)) {
-                values.push(value)
-            }
-            expect(values).toStrictEqual<typeof values>([
-                [{ name: 'my-provider-1', providerUri: 'u1' }],
-                [{ name: 'my-provider-2', providerUri: 'u2' }],
-                [
-                    { name: 'my-provider-2', providerUri: 'u2' },
-                    { name: 'my-provider-3', providerUri: 'u3' },
-                ],
+            expect(await client.meta({}, {})).toStrictEqual<EachWithProviderUri<MetaResult[]>>([
+                { name: 'simple', providerUri: testdataFileUri('simple.js'), annotations: {} },
             ])
         })
 
-        test('metaChanges__asyncGenerator', async () => {
-            const client = createTestClient({
-                configuration: () =>
-                    new Observable(observer => {
-                        observer.next({ enable: false, providers: {} })
-                        observer.next({
-                            enable: true,
-                            providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '1' } },
-                        })
-                        setTimeout(() => {
-                            observer.next({
-                                enable: true,
-                                providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' } },
-                            })
-                            observer.complete()
-                        })
-                    }),
+        test('simple', () => {
+            testScheduler().run(({ cold, expectObservable }) => {
+                expectObservable(
+                    createTestClient({
+                        configuration: () =>
+                            cold<ConfigurationUserInput>('a', {
+                                a: {
+                                    enable: true,
+                                    providers: {
+                                        [testdataFileUri('simple.js')]: true,
+                                    },
+                                },
+                            }),
+                        __mock__: {
+                            getProviderClient: () => ({
+                                meta: (_, settings) => of({ name: 'simple' }),
+                            }),
+                        },
+                    }).metaChanges({}, {}),
+                ).toBe('a', {
+                    a: [{ name: 'simple', providerUri: testdataFileUri('simple.js') }],
+                } satisfies Record<string, EachWithProviderUri<MetaResult[]>>)
             })
+        })
 
-            const values: EachWithProviderUri<MetaResult[]>[] = []
-            const signal = new AbortController().signal
-            for await (const value of client.metaChanges__asyncGenerator({}, {}, signal)) {
-                values.push(value)
-            }
-            expect(values).toStrictEqual<typeof values>([
-                [{ name: 'simpleMeta-1', providerUri: testdataFileUri('simpleMeta.js') }],
-                [{ name: 'simpleMeta-2', providerUri: testdataFileUri('simpleMeta.js') }],
+        test('changes', () => {
+            testScheduler().run(({ cold, expectObservable }) => {
+                expectObservable(
+                    createTestClient({
+                        authInfo: () => cold('a', { a: null }),
+                        configuration: () =>
+                            cold<ConfigurationUserInput>('a-b-c', {
+                                a: { enable: false },
+                                b: {
+                                    enable: true,
+                                    providers: {
+                                        [testdataFileUri('simpleMeta.js')]: { nameSuffix: '1' },
+                                    },
+                                },
+                                c: {
+                                    enable: true,
+                                    providers: {
+                                        [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' },
+                                    },
+                                },
+                            }),
+                        providers: cold<ImportedProviderConfiguration[]>('a', { a: [] }),
+                        __mock__: {
+                            getProviderClient: () => ({
+                                meta: (_, settings) =>
+                                    of({ name: `simpleMeta-${settings.nameSuffix}`, annotations: {} }),
+                            }),
+                        },
+                    }).metaChanges({}, {}),
+                ).toBe('a-b-c', {
+                    a: [],
+                    b: [
+                        {
+                            name: 'simpleMeta-1',
+                            providerUri: testdataFileUri('simpleMeta.js'),
+                            annotations: {},
+                        },
+                    ],
+                    c: [
+                        {
+                            name: 'simpleMeta-2',
+                            providerUri: testdataFileUri('simpleMeta.js'),
+                            annotations: {},
+                        },
+                    ],
+                } satisfies Record<string, EachWithProviderUri<MetaResult[]>>)
+            })
+        })
+
+        test('providers option', async () => {
+            const client = createTestClient({
+                configuration: () => of({ enable: true }),
+                providers: of([
+                    {
+                        provider: { meta: () => ({ name: 'my-provider-2' }) },
+                        providerUri: 'u2',
+                        settings: true,
+                    },
+                    {
+                        provider: { meta: () => ({ name: 'my-provider-3' }) },
+                        providerUri: 'u3',
+                        settings: true,
+                    },
+                ]),
+            })
+            expect(await client.meta({}, {})).toStrictEqual<EachWithProviderUri<MetaResult[]>>([
+                { name: 'my-provider-2', providerUri: 'u2' },
+                { name: 'my-provider-3', providerUri: 'u3' },
             ])
         })
     })
