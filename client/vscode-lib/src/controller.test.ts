@@ -3,13 +3,13 @@ import type { Controller } from './controller.js'
 
 export function createMockController(): MockedObject<Controller> {
     return {
-        observeMeta: vi.fn(),
+        metaChanges: vi.fn(),
         meta: vi.fn(),
-        observeMentions: vi.fn(),
+        mentionsChanges: vi.fn(),
         mentions: vi.fn(),
-        observeItems: vi.fn(),
+        itemsChanges: vi.fn(),
         items: vi.fn(),
-        observeAnnotations: vi.fn(),
+        annotationsChanges: vi.fn(),
         annotations: vi.fn(),
     }
 }

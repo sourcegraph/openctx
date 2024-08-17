@@ -1,4 +1,5 @@
 import {
+    type AnnotationsParams,
     type AuthInfo,
     type Client,
     type ClientConfiguration,
@@ -34,24 +35,18 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/obs
 
 type VSCodeClient = Client<vscode.Range>
 
-export interface Controller {
-    observeMeta: VSCodeClient['metaChanges']
-    meta: VSCodeClient['meta']
-
-    observeMentions: VSCodeClient['mentionsChanges']
-    mentions: VSCodeClient['mentions']
-
-    observeItems: VSCodeClient['itemsChanges']
-    items: VSCodeClient['items']
-
-    observeAnnotations(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-    ): ReturnType<VSCodeClient['annotationsChanges']>
-    annotations(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-        opts?: ProviderMethodOptions,
-    ): ReturnType<VSCodeClient['annotations']>
-}
+export interface Controller
+    extends Pick<
+        VSCodeClient,
+        | 'metaChanges'
+        | 'meta'
+        | 'mentionsChanges'
+        | 'mentions'
+        | 'itemsChanges'
+        | 'items'
+        | 'annotationsChanges'
+        | 'annotations'
+    > {}
 
 export function createController({
     secrets: secretsInput,
@@ -165,38 +160,25 @@ export function createController({
      */
     const controller: Controller = {
         meta: errorReporter.wrapPromise(UserAction.Explicit, client.meta),
-        observeMeta: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
+        metaChanges: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
 
         mentions: errorReporter.wrapPromise(UserAction.Explicit, client.mentions),
-        observeMentions: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
+        mentionsChanges: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
 
         items: errorReporter.wrapPromise(UserAction.Explicit, client.items),
-        observeItems: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
+        itemsChanges: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
 
-        async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc)) {
+        annotations: async (params: AnnotationsParams, opts?: ProviderMethodOptions) => {
+            if (ignoreDoc(params)) {
                 return []
             }
-            return await clientAnnotations(
-                {
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                },
-                opts,
-            )
+            return await clientAnnotations(params, opts)
         },
-        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc)) {
+        annotationsChanges(params: AnnotationsParams, opts?: ProviderMethodOptions) {
+            if (ignoreDoc(params)) {
                 return of([])
             }
-
-            return clientAnnotationsChanges(
-                {
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                },
-                opts,
-            )
+            return clientAnnotationsChanges(params, opts)
         },
     }
 
@@ -224,11 +206,11 @@ export function createController({
     }
 }
 
-function ignoreDoc(doc: vscode.TextDocument): boolean {
+function ignoreDoc(params: AnnotationsParams): boolean {
     // Ignore:
     // - documents that are not in the editor (`output` is the VS Code output channel).
-    // - very long documents
-    return doc.uri.scheme === 'output' || doc.lineCount > 5000
+    // - very large documents
+    return params.uri.startsWith('output:') || params.content.length > 1024 * 1024
 }
 
 function makeRange(range: Range): vscode.Range {

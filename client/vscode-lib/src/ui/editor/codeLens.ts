@@ -46,14 +46,16 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
                 return entry.observable
             }
 
-            const observable = controller.observeAnnotations(doc).pipe(
-                map(anns =>
-                    prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
-                        annotationCodeLens(doc, item, showHover),
+            const observable = controller
+                .annotationsChanges({ uri: doc.uri.toString(), content: doc.getText() })
+                .pipe(
+                    map(anns =>
+                        prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
+                            annotationCodeLens(doc, item, showHover),
+                        ),
                     ),
-                ),
-                shareReplay({ bufferSize: 1, refCount: true }),
-            )
+                    shareReplay({ bufferSize: 1, refCount: true }),
+                )
             const subscription = observable.subscribe({
                 next: () => changeCodeLenses.fire(),
                 error: () => changeCodeLenses.fire(),
