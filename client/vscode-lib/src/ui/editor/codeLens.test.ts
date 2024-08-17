@@ -1,4 +1,4 @@
-import type { Annotation, EachWithProviderUri, Item } from '@openctx/client'
+import type { Annotation, AnnotationsParams, EachWithProviderUri, Item } from '@openctx/client'
 import { TestScheduler } from 'rxjs/testing'
 import { type MockedObject, describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
@@ -66,14 +66,12 @@ describe('createCodeLensProvider', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeAnnotations.mockImplementation(
-                (doc: Pick<vscode.TextDocument, 'uri' | 'getText'>) => {
-                    expect(doc).toBe(doc)
-                    return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
-                        a: [fixtureAnn('a')],
-                    })
-                },
-            )
+            controller.annotationsChanges.mockImplementation((params: AnnotationsParams) => {
+                expect(params).toBe(params)
+                return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
+                    a: [fixtureAnn('a')],
+                })
+            })
             expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
                 a: [
                     {
@@ -99,8 +97,8 @@ describe('createCodeLensProvider', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeAnnotations.mockImplementation(doc => {
-                expect(doc).toBe(doc)
+            controller.annotationsChanges.mockImplementation(params => {
+                expect(params).toBe(params)
                 return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('ab', {
                     a: [fixtureAnn('a')],
                     b: [fixtureAnn('b')],
@@ -138,7 +136,7 @@ describe('createCodeLensProvider', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeAnnotations.mockImplementation(doc =>
+            controller.annotationsChanges.mockImplementation(params =>
                 cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
                     a: [
                         {
@@ -169,7 +167,7 @@ describe('createCodeLensProvider', () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
         testScheduler().run(({ cold, expectObservable }): void => {
-            controller.observeAnnotations.mockImplementation(doc =>
+            controller.annotationsChanges.mockImplementation(params =>
                 cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
                     a: [
                         {

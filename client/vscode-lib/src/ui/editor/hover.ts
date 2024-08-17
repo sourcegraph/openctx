@@ -7,7 +7,7 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
     return {
         async provideHover(doc, pos): Promise<vscode.Hover | null> {
             return firstValueFrom(
-                controller.observeAnnotations(doc).pipe(
+                controller.annotationsChanges({ uri: doc.uri.toString(), content: doc.getText() }).pipe(
                     map(anns => {
                         const containedByAnns = anns?.filter(ann =>
                             (ann.range ?? ZERO_RANGE).contains(pos),
