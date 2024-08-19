@@ -1,6 +1,6 @@
 {
   "name": "@openctx/client",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "description": "OpenCtx client library",
   "license": "Apache-2.0",
   "repository": {
@@ -17,6 +17,20 @@
     "!**/*.test.*",
     "!**/testdata/**"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./src/index": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./observable": {
+      "types": "./dist/misc/observable.d.ts",
+      "default": "./dist/misc/observable.js"
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
@@ -28,8 +42,8 @@
     "@openctx/provider": "workspace:*",
     "@openctx/schema": "workspace:*",
     "lru-cache": "^10.1.0",
-    "picomatch": "^3.0.1",
-    "rxjs": "^7.8.1"
+    "observable-fns": "^0.6.1",
+    "picomatch": "^3.0.1"
   },
   "devDependencies": {
     "@types/picomatch": "^2.3.3",

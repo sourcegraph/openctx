@@ -9,22 +9,18 @@ import type {
     ProviderSettings,
 } from '@openctx/protocol'
 import type { Annotation as AnnotationWithPlainRange, Range } from '@openctx/schema'
+import { Observable, type ObservableLike, filter, map } from 'observable-fns'
+import type { ClientEnv, ProviderMethodOptions } from './client/client.js'
 import {
-    type Observable,
-    type ObservableInput,
     catchError,
     combineLatest,
     defer,
     distinctUntilChanged,
-    filter,
-    from,
-    map,
     mergeMap,
-    of,
+    promiseOrObservableToObservable,
     startWith,
     tap,
-} from 'rxjs'
-import type { ClientEnv, ProviderMethodOptions } from './client/client.js'
+} from './misc/observable.js'
 import type { ProviderClient } from './providerClient/createProviderClient.js'
 
 /**
@@ -41,7 +37,7 @@ export interface Annotation<R extends Range = Range> extends Omit<AnnotationWith
 export type ObservableProviderClient = {
     [M in keyof ProviderClient]: (
         ...args: Parameters<Required<ProviderClient>[M]>
-    ) => ObservableInput<Awaited<ReturnType<Required<ProviderClient>[M]>>>
+    ) => ObservableLike<Awaited<ReturnType<Required<ProviderClient>[M]>>>
 }
 
 export interface ProviderClientWithSettings {
@@ -96,7 +92,7 @@ function observeProviderCall<R>(
                                           logger?.(`failed to call provider: ${error}`)
                                           console.error(error)
                                       }
-                                      return of(null)
+                                      return Observable.of(null)
                                   }),
                               )
                               .pipe(
@@ -108,9 +104,12 @@ function observeProviderCall<R>(
                               ),
                       ),
                   )
-                : of([]),
+                : Observable.of([]),
         ),
-        filter(
+        filter<
+            (typeof EMIT_PARTIAL_SENTINEL | EachWithProviderUri<R[]>)[],
+            (typeof EMIT_PARTIAL_SENTINEL | EachWithProviderUri<R[]>)[]
+        >(
             result =>
                 !emitPartial || result.length === 0 || result.some(v => v !== EMIT_PARTIAL_SENTINEL),
         ),
@@ -139,7 +138,9 @@ export function observeMeta(
     return observeProviderCall<MetaResult>(
         providerClients,
         ({ providerClient, settings }) =>
-            from(providerClient.meta(params, settings)).pipe(map(result => [result])),
+            promiseOrObservableToObservable(providerClient.meta(params, settings)).pipe(
+                map(result => [result]),
+            ),
         opts,
     )
 }
@@ -154,7 +155,8 @@ export function observeMentions(
 ): Observable<EachWithProviderUri<MentionsResult>> {
     return observeProviderCall(
         providerClients,
-        ({ providerClient, settings }) => from(providerClient.mentions(params, settings)),
+        ({ providerClient, settings }) =>
+            promiseOrObservableToObservable(providerClient.mentions(params, settings)),
         opts,
     )
 }
@@ -169,7 +171,8 @@ export function observeItems(
 ): Observable<EachWithProviderUri<ItemsResult>> {
     return observeProviderCall(
         providerClients,
-        ({ providerClient, settings }) => from(providerClient.items(params, settings)),
+        ({ providerClient, settings }) =>
+            promiseOrObservableToObservable(providerClient.items(params, settings)),
         opts,
     )
 }
@@ -190,7 +193,7 @@ export function observeAnnotations<R extends Range>(
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) =>
-            from(providerClient.annotations(params, settings)).pipe(
+            promiseOrObservableToObservable(providerClient.annotations(params, settings)).pipe(
                 map(anns =>
                     anns
                         ? anns

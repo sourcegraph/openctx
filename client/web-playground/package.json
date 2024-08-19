@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@openctx/web-playground",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "OpenCtx web playground",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org",
@@ -30,10 +30,9 @@
     "@sourcegraph/prompt-editor": "^0.0.1",
     "@uiw/react-codemirror": "^4.22.1",
     "cmdk": "^1.0.0",
-    "observable-hooks": "^4.2.3",
+    "observable-fns": "^0.6.1",
     "react": "^18",
     "react-dom": "^18",
-    "rxjs": "^7.8.1",
     "vscode-uri": "^3.0.8"
   },
   "devDependencies": {

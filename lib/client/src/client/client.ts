@@ -10,23 +10,7 @@ import type {
 import type { Provider } from '@openctx/provider'
 import type { Range } from '@openctx/schema'
 import { LRUCache } from 'lru-cache'
-import {
-    type Observable,
-    type ObservableInput,
-    type Unsubscribable,
-    catchError,
-    combineLatest,
-    concatMap,
-    distinctUntilChanged,
-    firstValueFrom,
-    from,
-    map,
-    mergeMap,
-    of,
-    shareReplay,
-    take,
-    timer,
-} from 'rxjs'
+import { Observable, type ObservableLike, map } from 'observable-fns'
 import {
     type Annotation,
     type EachWithProviderUri,
@@ -44,6 +28,19 @@ import {
     configurationFromUserInput,
 } from '../configuration.js'
 import type { Logger } from '../logger.js'
+import {
+    type Unsubscribable,
+    catchError,
+    combineLatest,
+    concatMap,
+    distinctUntilChanged,
+    firstValueFrom,
+    mergeMap,
+    promiseOrObservableToObservable,
+    shareReplay,
+    take,
+    timer,
+} from '../misc/observable.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
 
 /**
@@ -64,7 +61,9 @@ export interface ClientEnv<R extends Range> {
      * @param resource URI of the active resource (such as the currently open document in an
      * editor), or `undefined` if there is none.
      */
-    configuration(resource?: string): ObservableInput<ConfigurationUserInput>
+    configuration(
+        resource?: string,
+    ): ObservableLike<ConfigurationUserInput> | Promise<ConfigurationUserInput>
 
     /**
      * The base URI to use when resolving configured provider URIs.
@@ -74,14 +73,16 @@ export interface ClientEnv<R extends Range> {
     /**
      * The list of providers already resolved and imported.
      */
-    providers?: ObservableInput<ImportedProviderConfiguration[]>
+    providers?:
+        | ObservableLike<ImportedProviderConfiguration[]>
+        | Promise<ImportedProviderConfiguration[]>
 
     /**
      * The authentication info for the provider.
      *
      * @param provider The provider URI.
      */
-    authInfo?(provider: string): ObservableInput<AuthInfo | null>
+    authInfo?(provider: string): ObservableLike<AuthInfo | null> | Promise<AuthInfo | null>
 
     /**
      * Called to print a log message.
@@ -158,9 +159,8 @@ export interface Client<R extends Range> {
      * Get information about the configured providers, including their names and features.
      *
      * It does not continue to listen for changes, as {@link Client.metaChanges} does. Using
-     * {@link Client.meta} is simpler and does not require use of observables (with a library like
-     * RxJS), but it means that the client needs to manually poll for updated item kinds if
-     * freshness is important.
+     * {@link Client.meta} is simpler and does not require use of observables, but it means that the
+     * client needs to manually poll for updated item kinds if freshness is important.
      */
     meta(params: MetaParams, opts?: ProviderMethodOptions): Promise<EachWithProviderUri<MetaResult[]>>
 
@@ -179,9 +179,8 @@ export interface Client<R extends Range> {
      * Get the mentions returned by the configured providers.
      *
      * It does not continue to listen for changes, as {@link Client.mentionsChanges} does. Using
-     * {@link Client.Mentions} is simpler and does not require use of observables (with a library
-     * like RxJS), but it means that the client needs to manually poll for updated mentions if
-     * freshness is important.
+     * {@link Client.Mentions} is simpler and does not require use of observables, but it means that
+     * the client needs to manually poll for updated mentions if freshness is important.
      */
     mentions(
         params: MentionsParams,
@@ -203,9 +202,8 @@ export interface Client<R extends Range> {
      * Get the items returned by the configured providers.
      *
      * It does not continue to listen for changes, as {@link Client.itemsChanges} does. Using
-     * {@link Client.items} is simpler and does not require use of observables (with a library like
-     * RxJS), but it means that the client needs to manually poll for updated items if freshness is
-     * important.
+     * {@link Client.items} is simpler and does not require use of observables, but it means that
+     * the client needs to manually poll for updated items if freshness is important.
      */
     items(params: ItemsParams, opts?: ProviderMethodOptions): Promise<EachWithProviderUri<ItemsResult>>
 
@@ -224,9 +222,8 @@ export interface Client<R extends Range> {
      * Get the annotations returned by the configured providers for the given resource.
      *
      * It does not continue to listen for changes, as {@link Client.annotationsChanges} does. Using
-     * {@link Client.annotations} is simpler and does not require use of observables (with a library
-     * like RxJS), but it means that the client needs to manually poll for updated annotations if
-     * freshness is important.
+     * {@link Client.annotations} is simpler and does not require use of observables, but it means
+     * that the client needs to manually poll for updated annotations if freshness is important.
      */
     annotations(
         params: AnnotationsParams,
@@ -261,12 +258,12 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     const providerCache = createProviderPool()
 
     // Enable/disable logger based on the `debug` config.
-    const debug = from(env.configuration()).pipe(
+    const debug = promiseOrObservableToObservable(env.configuration()).pipe(
         map(config => configurationFromUserInput(config).debug),
         distinctUntilChanged(),
-        shareReplay(1),
+        shareReplay(),
     )
-    subscriptions.push(debug.subscribe())
+    subscriptions.push(debug.subscribe({}))
     const logger: Logger = message => {
         firstValueFrom(debug)
             .then(debug => {
@@ -279,8 +276,8 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
 
     function providerClientsWithSettings(resource?: string): Observable<ProviderClientWithSettings[]> {
         return combineLatest([
-            env.configuration(resource),
-            env.providers ? env.providers : of(undefined),
+            promiseOrObservableToObservable(env.configuration(resource)),
+            env.providers ? promiseOrObservableToObservable(env.providers) : Observable.of(undefined),
         ])
             .pipe(
                 map(([config, providers]) => {
@@ -295,7 +292,10 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                     configuration.providers.length > 0
                         ? combineLatest(
                               configuration.providers.map(({ providerUri, settings }) =>
-                                  (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
+                                  (env.authInfo
+                                      ? promiseOrObservableToObservable(env.authInfo(providerUri))
+                                      : Observable.of(null)
+                                  ).pipe(
                                       map(authInfo => ({
                                           uri: providerUri,
                                           providerClient: env.__mock__?.getProviderClient
@@ -317,12 +317,12 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                           logger(
                                               `Error creating provider client for ${providerUri}: ${error}`,
                                           )
-                                          return of(null)
+                                          return Observable.of(null)
                                       }),
                                   ),
                               ),
                           )
-                        : of([]),
+                        : Observable.of([]),
                 ),
 
                 // Filter out null clients.
@@ -400,7 +400,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         const preload = timer(env.preloadDelay)
             .pipe(concatMap(() => providerClientsWithSettings(undefined)))
             .pipe(take(1))
-        subscriptions.push(preload.subscribe())
+        subscriptions.push(preload.subscribe({}))
     }
 
     return {

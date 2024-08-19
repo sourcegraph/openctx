@@ -10,7 +10,7 @@ import {
     type Range,
     createClient,
 } from '@openctx/client'
-import { of } from 'rxjs'
+import { Observable } from 'observable-fns'
 
 function usageFatal(message: string): never {
     console.error(message)
@@ -162,7 +162,7 @@ try {
 }
 
 const client = createClient({
-    configuration: () => of(config),
+    configuration: () => Observable.of(config),
     providerBaseUri: import.meta.url,
     logger: message => console.error('# ' + message),
     makeRange: r => r,

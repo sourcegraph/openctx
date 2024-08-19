@@ -1,5 +1,6 @@
 import type { Annotation } from '@openctx/client'
-import { firstValueFrom, map } from 'rxjs'
+import { firstValueFrom } from '@openctx/client/observable'
+import { map } from 'observable-fns'
 import * as vscode from 'vscode'
 import type { Controller } from '../../controller.js'
 

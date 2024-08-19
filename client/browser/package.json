@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@openctx/browser-extension",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "license": "Apache-2.0",
   "scripts": {
     "dev": "vite",
@@ -17,16 +17,15 @@
     "@openctx/provider": "workspace:*",
     "@openctx/provider-hello-world": "workspace:*",
     "@openctx/provider-links": "workspace:*",
-    "@openctx/provider-storybook": "workspace:*",
     "@openctx/provider-prometheus": "workspace:*",
+    "@openctx/provider-storybook": "workspace:*",
     "@openctx/ui-standalone": "workspace:*",
     "clsx": "^2.0.0",
     "deep-equal": "^2.2.3",
     "jsonc-parser": "^3.2.0",
-    "observable-hooks": "^4.2.3",
+    "observable-fns": "^0.6.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "rxjs": "^7.8.1"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@crxjs/vite-plugin": "^1.0.14",

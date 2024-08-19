@@ -1,6 +1,7 @@
 import type { Annotation, AnnotationsParams } from '@openctx/client'
+import { EMPTY, combineLatest, debounceTime, mergeMap, startWith, tap } from '@openctx/client/observable'
 import { createChipList } from '@openctx/ui-standalone'
-import { EMPTY, Observable, combineLatest, debounceTime, map, mergeMap, startWith, tap } from 'rxjs'
+import { Observable, map } from 'observable-fns'
 import { toLineRangeStrings } from '../../shared/util/toLineRangeStrings.js'
 import { DEBUG, debugTap } from '../debug.js'
 import { withDOMElement } from '../detectElements.js'
@@ -139,7 +140,7 @@ interface GitHubCodeViewState {
  * An Observable that emits whenever the code view has a significant change to its view state (which
  * means that anything rendered on top of it needs to be re-rendered).
  */
-const significantCodeViewChanges: Observable<GitHubCodeViewState> = new Observable(observer => {
+const significantCodeViewChanges = new Observable<GitHubCodeViewState>(observer => {
     const intersectionCallback = (): void => {
         // Since our scroll position changed, reanalyze the DOM to see which lines are the new
         // boundaries and start observing those.
@@ -152,7 +153,6 @@ const significantCodeViewChanges: Observable<GitHubCodeViewState> = new Observab
         root: null, // entire viewport
         rootMargin: '40px',
     })
-    observer.add(() => intersectionObserver.disconnect())
 
     function observeBoundaryLines(): void {
         for (const line of getRenderedBoundaryLines()) {
@@ -163,7 +163,9 @@ const significantCodeViewChanges: Observable<GitHubCodeViewState> = new Observab
     // Set up initial observers.
     observeBoundaryLines()
 
-    return observer
+    return () => {
+        intersectionObserver.disconnect()
+    }
 })
 
 function getViewState(): GitHubCodeViewState {

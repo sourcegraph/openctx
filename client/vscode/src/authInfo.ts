@@ -1,5 +1,6 @@
 import type { AuthInfo } from '@openctx/client'
-import { BehaviorSubject, type Observable } from 'rxjs'
+import { startWith } from '@openctx/client/observable'
+import { type Observable, Subject } from 'observable-fns'
 import * as vscode from 'vscode'
 
 // TODO(sqs): un-hardcode
@@ -21,7 +22,8 @@ export function secretsChanges(secrets: vscode.SecretStorage): {
 } {
     const disposables: vscode.Disposable[] = []
 
-    const subject = new BehaviorSubject<vscode.SecretStorage>(secrets)
+    const subject = new Subject<vscode.SecretStorage>()
+
     disposables.push(
         secrets.onDidChange(e => {
             if (e.key.startsWith(SECRET_STORAGE_KEY_PREFIX)) {
@@ -40,7 +42,10 @@ export function secretsChanges(secrets: vscode.SecretStorage): {
         }),
     )
 
-    return { disposable: vscode.Disposable.from(...disposables), observable: subject }
+    return {
+        disposable: vscode.Disposable.from(...disposables),
+        observable: subject.pipe(startWith(secrets)),
+    }
 }
 
 export async function getAuthInfo(

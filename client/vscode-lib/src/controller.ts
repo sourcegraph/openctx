@@ -3,23 +3,18 @@ import {
     type AuthInfo,
     type Client,
     type ClientConfiguration,
+    type ImportedProviderConfiguration,
     type ProviderMethodOptions,
     type Range,
     createClient,
 } from '@openctx/client'
-import type { ImportedProviderConfiguration } from '@openctx/client/src/configuration.js'
 import {
-    type InteropObservable,
-    type Observable,
-    type ObservableInput,
     combineLatest,
-    from,
-    isObservable,
-    map,
+    isObservableOrInteropObservable,
     mergeMap,
-    of,
-} from 'rxjs'
-import { isInteropObservable } from 'rxjs/internal/util/isInteropObservable'
+    promiseToObservable,
+} from '@openctx/client/observable'
+import { Observable, type ObservableLike, map } from 'observable-fns'
 import * as vscode from 'vscode'
 import { getClientConfiguration } from './configuration.js'
 import { initializeOpenCtxGlobal } from './global.js'
@@ -60,13 +55,13 @@ export function createController({
 }: {
     secrets:
         | Observable<vscode.SecretStorage>
-        | InteropObservable<vscode.SecretStorage>
+        | ObservableLike<vscode.SecretStorage>
         | vscode.SecretStorage
     extensionId: string
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
-    providers?: ObservableInput<ImportedProviderConfiguration[]>
+    providers?: ObservableLike<ImportedProviderConfiguration[]>
     mergeConfiguration?: (configuration: ClientConfiguration) => Promise<ClientConfiguration>
     preloadDelay?: number
 }): {
@@ -80,10 +75,9 @@ export function createController({
 
     const globalConfigurationChanges = observeWorkspaceConfigurationChanges('openctx')
 
-    const secrets: Observable<vscode.SecretStorage> =
-        isObservable(secretsInput) || isInteropObservable(secretsInput)
-            ? from(secretsInput)
-            : of(secretsInput)
+    const secrets: Observable<vscode.SecretStorage> = isObservableOrInteropObservable(secretsInput)
+        ? Observable.from(secretsInput)
+        : Observable.of(secretsInput)
 
     // Watch for changes that could possibly affect configuration. This is overbroad because it does
     // not specify a config scope.
@@ -113,11 +107,12 @@ export function createController({
                 ? vscode.Uri.parse(resource)
                 : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
-                mergeMap(() => from(getConfiguration(scope))),
+                mergeMap(() => promiseToObservable(getConfiguration(scope))),
             )
         },
         authInfo: getAuthInfo
-            ? provider => secrets.pipe(mergeMap(secrets => from(getAuthInfo(secrets, provider))))
+            ? provider =>
+                  secrets.pipe(mergeMap(secrets => promiseToObservable(getAuthInfo(secrets, provider))))
             : undefined,
         makeRange,
         logger: message => outputChannel.appendLine(message),
@@ -176,7 +171,7 @@ export function createController({
         },
         annotationsChanges(params: AnnotationsParams, opts?: ProviderMethodOptions) {
             if (ignoreDoc(params)) {
-                return of([])
+                return Observable.of([])
             }
             return clientAnnotationsChanges(params, opts)
         },

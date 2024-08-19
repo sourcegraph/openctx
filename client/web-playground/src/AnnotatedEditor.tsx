@@ -1,10 +1,11 @@
 import { javascript } from '@codemirror/lang-javascript'
+import type { Annotation, Range } from '@openctx/client'
+import { NEVER, catchError, tap } from '@openctx/client/observable'
 import { useOpenCtxExtension } from '@openctx/codemirror-extension'
 import CodeMirror, { type ReactCodeMirrorProps } from '@uiw/react-codemirror'
-import { useObservableState } from 'observable-hooks'
+import { Observable } from 'observable-fns'
 import type React from 'react'
-import { type ReactNode, useMemo, useState } from 'react'
-import { NEVER, catchError, of, tap } from 'rxjs'
+import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import { EditorHeader } from './EditorHeader.js'
 import { mergeCodeMirrorProps } from './codemirror.js'
 import { useOpenCtxClient } from './useOpenCtxClient.js'
@@ -40,7 +41,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
 
     const [error, setError] = useState<string>()
 
-    const anns = useObservableState(
+    const anns = useObservableState<Annotation<Range>[]>(
         useMemo(
             () =>
                 value
@@ -49,7 +50,7 @@ export const AnnotatedEditor: React.FunctionComponent<{
                               next: () => setError(undefined),
                               error: error => setError(error.message ?? `${error}`),
                           }),
-                          catchError(() => of([])),
+                          catchError(() => Observable.of([])),
                       )
                     : NEVER,
             [client, value, resourceUri],
@@ -99,4 +100,31 @@ export const AnnotatedEditor: React.FunctionComponent<{
             />
         </section>
     )
+}
+
+function useObservableState<T>(observable: Observable<T>): T | undefined
+function useObservableState<T>(observable: Observable<T>, initialState: T): T
+function useObservableState<T>(observable: Observable<T>, initialState?: T): T | undefined {
+    const [state, setState] = useState<T | undefined>(initialState)
+    useEffect(() => {
+        let isActive = true
+        const subscription = observable.subscribe({
+            next: value => {
+                if (isActive) {
+                    setState(value)
+                }
+            },
+            error: error => {
+                if (isActive) {
+                    console.error('Error in observable:', error)
+                }
+            },
+        })
+
+        return () => {
+            isActive = false
+            subscription.unsubscribe()
+        }
+    }, [observable])
+    return state
 }

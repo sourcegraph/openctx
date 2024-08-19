@@ -79,9 +79,9 @@ importers:
       '@openctx/client':
         specifier: workspace:*
         version: link:../lib/client
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
+      observable-fns:
+        specifier: ^0.6.1
+        version: 0.6.1
     devDependencies:
       esbuild:
         specifier: ^0.21.3
@@ -119,18 +119,15 @@ importers:
       jsonc-parser:
         specifier: ^3.2.0
         version: 3.2.0
-      observable-hooks:
-        specifier: ^4.2.3
-        version: 4.2.3(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.1)
+      observable-fns:
+        specifier: ^0.6.1
+        version: 0.6.1
       react:
         specifier: ^18.2.0
         version: 18.2.0
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
     devDependencies:
       '@crxjs/vite-plugin':
         specifier: ^1.0.14
@@ -258,12 +255,12 @@ importers:
       '@openctx/vscode-lib':
         specifier: workspace:*
         version: link:../vscode-lib
+      observable-fns:
+        specifier: ^0.6.1
+        version: 0.6.1
       path-browserify:
         specifier: ^1.0.1
         version: 1.0.1
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
     devDependencies:
       '@types/glob':
         specifier: ^8.1.0
@@ -313,9 +310,9 @@ importers:
       '@openctx/ui-common':
         specifier: workspace:*
         version: link:../../lib/ui-common
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
+      observable-fns:
+        specifier: ^0.6.1
+        version: 0.6.1
     devDependencies:
       '@types/vscode':
         specifier: ^1.85.0
@@ -359,18 +356,15 @@ importers:
       cmdk:
         specifier: ^1.0.0
         version: 1.0.0(@types/react-dom@18.2.15)(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
-      observable-hooks:
-        specifier: ^4.2.3
-        version: 4.2.3(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.1)
+      observable-fns:
+        specifier: ^0.6.1
+        version: 0.6.1
       react:
         specifier: ^18
         version: 18.2.0
       react-dom:
         specifier: ^18
         version: 18.2.0(react@18.2.0)
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
       vscode-uri:
         specifier: ^3.0.8
         version: 3.0.8
@@ -396,12 +390,12 @@ importers:
       lru-cache:
         specifier: ^10.1.0
         version: 10.1.0
+      observable-fns:
+        specifier: ^0.6.1
+        version: 0.6.1
       picomatch:
         specifier: ^3.0.1
         version: 3.0.1
-      rxjs:
-        specifier: ^7.8.1
-        version: 7.8.1
     devDependencies:
       '@types/picomatch':
         specifier: ^2.3.3
@@ -6859,6 +6853,7 @@ packages:
 
   /@types/node@20.11.20:
     resolution: {integrity: sha512-7/rR21OS+fq8IyHTgtLkDK949uzsa6n8BkziAKtPVpugIkO6D+/ooXMvzXxDnZrmtXVfjb1bKQafYpb8s89LOg==}
+    requiresBuild: true
     dependencies:
       undici-types: 5.26.5
 
@@ -12397,16 +12392,8 @@ packages:
       has-symbols: 1.0.3
       object-keys: 1.1.1
 
-  /observable-hooks@4.2.3(react-dom@18.2.0)(react@18.2.0)(rxjs@7.8.1):
-    resolution: {integrity: sha512-d6fYTIU+9sg1V+CT0GhgoE/ntjIqcy9DGaYGE6ELGVP4ojaWIEsaLvL/05hLOM+AL7aySN4DCTLvj6dDF9T8XA==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-      rxjs: '>=6.0.0'
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      rxjs: 7.8.1
+  /observable-fns@0.6.1:
+    resolution: {integrity: sha512-9gRK4+sRWzeN6AOewNBTLXir7Zl/i3GB6Yl26gK4flxz8BXVpD3kt8amREmWNb0mxYOGDotvE5a4N+PtGGKdkg==}
     dev: false
 
   /ollama@0.5.6:

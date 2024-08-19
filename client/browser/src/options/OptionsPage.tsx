@@ -1,10 +1,11 @@
 import clsx from 'clsx'
-import { useObservableState } from 'observable-hooks'
+import type { Observable } from 'observable-fns'
 import {
     type ChangeEventHandler,
     type FormEventHandler,
     type FunctionComponent,
     useCallback,
+    useEffect,
     useRef,
     useState,
 } from 'react'
@@ -104,4 +105,31 @@ export const OptionsPage: FunctionComponent = () => {
             </button>
         </form>
     )
+}
+
+function useObservableState<T>(observable: Observable<T>): T | undefined
+function useObservableState<T>(observable: Observable<T>, initialState: T): T
+function useObservableState<T>(observable: Observable<T>, initialState?: T): T | undefined {
+    const [state, setState] = useState<T | undefined>(initialState)
+    useEffect(() => {
+        let isActive = true
+        const subscription = observable.subscribe({
+            next: value => {
+                if (isActive) {
+                    setState(value)
+                }
+            },
+            error: error => {
+                if (isActive) {
+                    console.error('Error in observable:', error)
+                }
+            },
+        })
+
+        return () => {
+            isActive = false
+            subscription.unsubscribe()
+        }
+    }, [observable])
+    return state
 }
