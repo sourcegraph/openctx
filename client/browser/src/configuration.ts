@@ -1,6 +1,6 @@
 import type { ClientConfiguration } from '@openctx/client'
 import { type ParseError, parse as parseJSONC } from 'jsonc-parser'
-import { type Observable, map } from 'rxjs'
+import { type Observable, map } from 'observable-fns'
 import { observeStorageKey } from './browser-extension/web-extension-api/storage.js'
 
 const DEFAULT_CONFIG: ClientConfiguration = {

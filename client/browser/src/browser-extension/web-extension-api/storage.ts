@@ -1,4 +1,5 @@
-import { type Observable, concat, defer, filter, from, map, of } from 'rxjs'
+import { concat, defer, filter, promiseToObservable } from '@openctx/client/observable'
+import { Observable, map } from 'observable-fns'
 import { platform } from '../../shared/platform.js'
 import { fromBrowserEvent } from './fromBrowserEvent.js'
 import type { LocalStorageItems, ManagedStorageItems, SyncStorageItems } from './types.js'
@@ -32,12 +33,12 @@ export const observeStorageKey = <
 ): Observable<ExtensionStorageItems[A][K] | undefined> => {
     if (platform !== 'chrome-extension' && areaName === 'managed') {
         // Accessing managed storage throws an error on Firefox and on Safari.
-        return of(undefined)
+        return Observable.of(undefined)
     }
     return concat(
         // Start with current value of the item
         defer(() =>
-            from(
+            promiseToObservable(
                 (storage[areaName] as browser.storage.StorageArea<ExtensionStorageItems[A]>).get(key),
             ).pipe(map(items => (items as ExtensionStorageItems[A])[key])),
         ),
@@ -52,7 +53,14 @@ export const observeStorageKey = <
                     [k in K]: browser.storage.StorageChange<ExtensionStorageItems[A][K]>
                 } => Object.prototype.hasOwnProperty.call(changes, key),
             ),
-            map(changes => changes[key].newValue),
+            map(
+                changes =>
+                    (
+                        changes as {
+                            [k in K]: browser.storage.StorageChange<ExtensionStorageItems[A][K]>
+                        }
+                    )[key].newValue,
+            ),
         ),
     )
 }

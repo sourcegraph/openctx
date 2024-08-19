@@ -2,12 +2,13 @@ import '../shared/polyfills'
 // ^^ import polyfills first
 
 import { createClient } from '@openctx/client'
+import type { UnsubscribableLike } from '@openctx/client/observable'
 import type { Provider } from '@openctx/provider'
 import helloWorldProvider from '@openctx/provider-hello-world'
 import linksProvider from '@openctx/provider-links'
 import prometheusProvider from '@openctx/provider-prometheus'
 import storybookProvider from '@openctx/provider-storybook'
-import { Subscription } from 'rxjs'
+import { unsubscribe } from 'observable-fns'
 import { addMessageListenersForBackgroundApi } from '../browser-extension/web-extension-api/rpc.js'
 import { configurationChanges } from '../configuration.js'
 
@@ -31,7 +32,7 @@ function getBuiltinProvider(uri: string): Provider {
 }
 
 function main(): void {
-    const subscriptions = new Subscription()
+    const subscriptions: UnsubscribableLike[] = []
 
     const client = createClient({
         configuration: () => configurationChanges,
@@ -39,15 +40,25 @@ function main(): void {
         makeRange: r => r,
         importProvider: uri => Promise.resolve({ default: getBuiltinProvider(uri) }),
     })
-    subscriptions.add(() => client.dispose())
+    subscriptions.push(() => client.dispose())
 
-    subscriptions.add(
-        addMessageListenersForBackgroundApi({
+    subscriptions.push(
+        ...addMessageListenersForBackgroundApi({
             annotationsChanges: (...args) => client.annotationsChanges(...args),
         }),
     )
 
-    self.addEventListener('unload', () => subscriptions.unsubscribe(), { once: true })
+    self.addEventListener(
+        'unload',
+        () => {
+            for (const s of subscriptions) {
+                if (s) {
+                    unsubscribe(s)
+                }
+            }
+        },
+        { once: true },
+    )
 }
 
 // Browsers log an unhandled Promise here automatically with a nice stack trace, so we don't need to

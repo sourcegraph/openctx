@@ -1,5 +1,6 @@
 import type { Annotation, AnnotationsParams, EachWithProviderUri, Item } from '@openctx/client'
-import { TestScheduler } from 'rxjs/testing'
+import { allValuesFrom } from '@openctx/client/observable'
+import { Observable } from 'observable-fns'
 import { type MockedObject, describe, expect, test, vi } from 'vitest'
 import type * as vscode from 'vscode'
 import { URI } from 'vscode-uri'
@@ -59,32 +60,30 @@ function createTestProvider(): {
 }
 
 describe('createCodeLensProvider', () => {
-    const testScheduler = (): TestScheduler =>
-        new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
-
     test('simple', async () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
-        testScheduler().run(({ cold, expectObservable }): void => {
-            controller.annotationsChanges.mockImplementation((params: AnnotationsParams) => {
-                expect(params).toBe(params)
-                return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
-                    a: [fixtureAnn('a')],
-                })
-            })
-            expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
-                a: [
-                    {
-                        isResolved: true,
-                        range: createRange(0, 0, 0, 1),
-                        command: { title: 'A', command: 'noop' },
-                    },
-                ],
-            } satisfies Record<string, vscode.CodeLens[] | null>)
+        controller.annotationsChanges.mockImplementation((params: AnnotationsParams) => {
+            expect(params).toBe(params)
+            return Observable.of<EachWithProviderUri<Annotation<vscode.Range>[]>>([fixtureAnn('a')])
         })
-        expect(
-            await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken),
-        ).toStrictEqual([
+
+        const values0 = await allValuesFrom(provider.observeCodeLenses(doc))
+        expect(values0).toStrictEqual<typeof values0>([
+            [
+                {
+                    isResolved: true,
+                    range: createRange(0, 0, 0, 1),
+                    command: { title: 'A', command: 'noop' },
+                },
+            ],
+        ])
+
+        const values1 = await provider.provideCodeLenses(
+            doc,
+            null as unknown as vscode.CancellationToken,
+        )
+        expect(values1).toStrictEqual<typeof values1>([
             {
                 isResolved: true,
                 range: createRange(0, 0, 0, 1),
@@ -96,108 +95,106 @@ describe('createCodeLensProvider', () => {
     test('multiple emissions', async () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
-        testScheduler().run(({ cold, expectObservable }): void => {
-            controller.annotationsChanges.mockImplementation(params => {
-                expect(params).toBe(params)
-                return cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('ab', {
-                    a: [fixtureAnn('a')],
-                    b: [fixtureAnn('b')],
-                })
-            })
-            expectObservable(provider.observeCodeLenses(doc)).toBe('ab', {
-                a: [
-                    {
-                        isResolved: true,
-                        range: createRange(0, 0, 0, 1),
-                        command: { title: 'A', command: 'noop' },
-                    },
-                ],
-                b: [
-                    {
-                        isResolved: true,
-                        range: createRange(0, 0, 0, 1),
-                        command: { title: 'B', command: 'noop' },
-                    },
-                ],
-            } satisfies Record<string, vscode.CodeLens[] | null>)
+
+        controller.annotationsChanges.mockImplementation(params => {
+            expect(params).toBe(params)
+            return Observable.of([fixtureAnn('a')], [fixtureAnn('b')])
         })
+        const observable = provider.observeCodeLenses(doc)
+
+        const values = await allValuesFrom(observable)
+        expect(values).toStrictEqual<typeof values>([
+            [
+                {
+                    isResolved: true,
+                    range: createRange(0, 0, 0, 1),
+                    command: { title: 'A', command: 'noop' },
+                },
+            ],
+            [
+                {
+                    isResolved: true,
+                    range: createRange(0, 0, 0, 1),
+                    command: { title: 'B', command: 'noop' },
+                },
+            ],
+        ])
+
         expect(
             await provider.provideCodeLenses(doc, null as unknown as vscode.CancellationToken),
         ).toStrictEqual([
             {
                 isResolved: true,
                 range: createRange(0, 0, 0, 1),
-                command: { title: 'B', command: 'noop' },
+                command: { title: 'A', command: 'noop' },
             },
         ])
     })
 
-    test('detail hover', () => {
+    test('detail hover', async () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
-        testScheduler().run(({ cold, expectObservable }): void => {
-            controller.annotationsChanges.mockImplementation(params =>
-                cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
-                    a: [
-                        {
-                            providerUri: 'foo',
-                            uri: 'file:///f',
-                            item: { title: 'A', ui: { hover: { text: 'D' } } },
-                        },
-                    ],
-                }),
-            )
-            expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
-                a: [
-                    {
-                        isResolved: true,
-                        range: createRange(0, 0, 0, 0),
-                        command: {
-                            title: 'A',
-                            command: 'openctx._showHover',
-                            arguments: [doc.uri, createPosition(0, 0)],
-                        },
+
+        controller.annotationsChanges.mockImplementation(() =>
+            Observable.of([
+                {
+                    providerUri: 'foo',
+                    uri: 'file:///f',
+                    item: { title: 'A', ui: { hover: { text: 'D' } } },
+                },
+            ]),
+        )
+
+        const values = await allValuesFrom(provider.observeCodeLenses(doc))
+        expect(values).toStrictEqual<typeof values>([
+            [
+                {
+                    isResolved: true,
+                    range: createRange(0, 0, 0, 0),
+                    command: {
+                        title: 'A',
+                        command: 'openctx._showHover',
+                        arguments: [doc.uri, createPosition(0, 0)],
                     },
-                ],
-            } satisfies Record<string, vscode.CodeLens[] | null>)
-        })
+                },
+            ],
+        ])
     })
 
-    test('prefer-link-over-detail', () => {
+    test('prefer-link-over-detail', async () => {
         const { controller, provider } = createTestProvider()
         const doc = mockTextDocument()
-        testScheduler().run(({ cold, expectObservable }): void => {
-            controller.annotationsChanges.mockImplementation(params =>
-                cold<EachWithProviderUri<Annotation<vscode.Range>[]>>('a', {
-                    a: [
-                        {
-                            providerUri: 'foo',
-                            uri: 'file:///f',
-                            item: {
-                                title: 'A',
-                                url: 'https://example.com',
-                                ui: {
-                                    hover: { text: 'D' },
-                                },
-                            },
-                            presentationHints: ['prefer-link-over-detail'],
-                        },
-                    ],
-                }),
-            )
-            expectObservable(provider.observeCodeLenses(doc)).toBe('a', {
-                a: [
-                    {
-                        isResolved: true,
-                        range: createRange(0, 0, 0, 0),
-                        command: {
-                            title: 'A',
-                            command: 'vscode.open',
-                            arguments: [URI.parse('https://example.com')],
+
+        controller.annotationsChanges.mockImplementation(params =>
+            Observable.of([
+                {
+                    providerUri: 'foo',
+                    uri: 'file:///f',
+                    item: {
+                        title: 'A',
+                        url: 'https://example.com',
+                        ui: {
+                            hover: { text: 'D' },
                         },
                     },
-                ],
-            } satisfies Record<string, vscode.CodeLens[] | null>)
-        })
+                    presentationHints: ['prefer-link-over-detail'],
+                },
+            ]),
+        )
+
+        const values = await allValuesFrom(provider.observeCodeLenses(doc))
+        expect(values).toStrictEqual<typeof values>([
+            [
+                {
+                    isResolved: true,
+                    range: createRange(0, 0, 0, 0),
+                    command: {
+                        title: 'A',
+                        command: 'vscode.open',
+                        arguments: [URI.parse('https://example.com')],
+                    },
+                },
+            ],
+        ])
     })
 })

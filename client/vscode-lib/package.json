@@ -1,6 +1,6 @@
 {
   "name": "@openctx/vscode-lib",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "OpenCtx library for VS Code extensions",
   "license": "Apache-2.0",
   "repository": {
@@ -25,7 +25,7 @@
   "dependencies": {
     "@openctx/client": "workspace:*",
     "@openctx/ui-common": "workspace:*",
-    "rxjs": "^7.8.1"
+    "observable-fns": "^0.6.1"
   },
   "devDependencies": {
     "@types/vscode": "^1.85.0",

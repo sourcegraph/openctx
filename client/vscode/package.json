@@ -2,7 +2,7 @@
   "name": "openctx",
   "private": true,
   "displayName": "OpenCtx",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "publisher": "sourcegraph",
   "license": "Apache-2.0",
   "icon": "resources/logomark-v0.png",
@@ -10,9 +10,9 @@
   "scripts": {
     "dev": "pnpm run -s dev:desktop",
     "dev:insiders": "pnpm run -s dev:desktop:insiders",
-    "start:dev:desktop": "NODE_ENV=development code --extensionDevelopmentPath=$PWD --disable-extension=sourcegraph.openctx --inspect-extensions=9333 --new-window test/fixtures/workspace",
+    "start:dev:desktop": "NODE_ENV=development code --extensionDevelopmentPath=$PWD --disable-extension=sourcegraph.openctx --disable-extension=sourcegraph.cody-ai --inspect-extensions=9333 --new-window test/fixtures/workspace",
     "dev:desktop": "pnpm run -s build:dev:desktop && pnpm run start:dev:desktop",
-    "dev:desktop:insiders": "pnpm run -s build:dev:desktop && NODE_ENV=development code-insiders --extensionDevelopmentPath=$PWD --disable-extension=sourcegraph.openctx --inspect-extensions=9333 --new-window . --goto ./src/controller.ts:16:5",
+    "dev:desktop:insiders": "pnpm run -s build:dev:desktop && NODE_ENV=development code-insiders --extensionDevelopmentPath=$PWD --disable-extension=sourcegraph.openctx --disable-extension=sourcegraph.cody-ai --inspect-extensions=9333 --new-window . --goto ./src/controller.ts:16:5",
     "dev:desktop:vsix": "RELEASE_TYPE=pre pnpm run -s release:dry-run && code --user-data-dir=/tmp/octx-tmp-vscode --install-extension dist/openctx.vsix && code --user-data-dir=/tmp/octx-tmp-vscode --new-window test/fixtures/workspace",
     "dev:web": "pnpm run -s build:dev:web && pnpm run -s _dev:vscode-test-web --browserType none",
     "watch:dev:web": "concurrently \"pnpm run -s watch:build:dev:web\" \"pnpm run -s _dev:vscode-test-web --browserType none\"",
@@ -35,9 +35,17 @@
     "test:e2e": "bash test/e2e.sh",
     "vscode:prepublish": "pnpm -s run build"
   },
-  "categories": ["Programming Languages", "Linters", "Snippets", "Education"],
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets",
+    "Education"
+  ],
   "preview": true,
-  "keywords": ["openctx", "metadata"],
+  "keywords": [
+    "openctx",
+    "metadata"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
@@ -53,7 +61,9 @@
   "type": "module",
   "main": "dist/extension.node.cjs",
   "browser": "dist/extension.web.js",
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "configuration": {
       "type": "object",
@@ -72,7 +82,10 @@
           "propertyNames": {
             "description": "The OpenCtx provider's URL (or relative file path).",
             "type": "string",
-            "format": ["uri", "uri-reference"]
+            "format": [
+              "uri",
+              "uri-reference"
+            ]
           },
           "additionalProperties": {
             "oneOf": [
@@ -168,15 +181,17 @@
     "untrustedWorkspaces": {
       "supported": "limited",
       "description": "OpenCtx only uses providers (configured in `openctx.providers`) from trusted workspaces because providers may execute arbitrary code.",
-      "restrictedConfigurations": ["openctx.providers"]
+      "restrictedConfigurations": [
+        "openctx.providers"
+      ]
     },
     "virtualWorkspaces": true
   },
   "dependencies": {
     "@openctx/client": "workspace:*",
     "@openctx/vscode-lib": "workspace:*",
-    "path-browserify": "^1.0.1",
-    "rxjs": "^7.8.1"
+    "observable-fns": "^0.6.1",
+    "path-browserify": "^1.0.1"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",

@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable } from 'observable-fns'
 
 /**
  * Returns an Observable for a WebExtension API event listener.
@@ -7,13 +7,12 @@ import { Observable } from 'rxjs'
 export const fromBrowserEvent = <F extends (...args: any[]) => void>(
     emitter: browser.CallbackEventEmitter<F>,
 ): Observable<Parameters<F>> =>
-    // Do not use fromEventPattern() because of https://github.com/ReactiveX/rxjs/issues/4736
-    new Observable(subscriber => {
-        const handler: any = (...args: any) => subscriber.next(args)
+    new Observable(observer => {
+        const handler: any = (...args: any) => observer.next(args)
         try {
             emitter.addListener(handler)
         } catch (error) {
-            subscriber.error(error)
+            observer.error(error)
             return undefined
         }
         return () => emitter.removeListener(handler)

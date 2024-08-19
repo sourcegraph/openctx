@@ -1,16 +1,7 @@
 import type { Annotation, AnnotationsParams } from '@openctx/client'
+import { EMPTY, combineLatest, fromEvent, mergeMap, startWith, tap } from '@openctx/client/observable'
 import { createChipList } from '@openctx/ui-standalone'
-import {
-    EMPTY,
-    type Observable,
-    combineLatest,
-    filter,
-    fromEvent,
-    map,
-    mergeMap,
-    startWith,
-    tap,
-} from 'rxjs'
+import { type Observable, filter, map } from 'observable-fns'
 import { DEBUG, debugTap } from '../debug.js'
 import { withDOMElements } from '../detectElements.js'
 import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openCtxUtil.js'

@@ -1,4 +1,5 @@
-import { Observable, Subscription, type Unsubscribable } from 'rxjs'
+import type { Unsubscribable } from '@openctx/client/observable'
+import { Observable } from 'observable-fns'
 import { isBackground } from '../../shared/env.js'
 import type { BackgroundApi } from './types.js'
 
@@ -99,12 +100,16 @@ export function proxyBackgroundMethodReturningObservable<M extends keyof Backgro
 /**
  * Set up the background service worker to handle API requests from the content script.
  */
-export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubscribable {
+export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubscribable[] {
     if (!isBackground) {
         throw new Error('must be called from background')
     }
 
-    const subscriptions = new Subscription()
+    const subscriptions: Unsubscribable[] = []
+    function removeSubscription(sub: Unsubscribable): void {
+        subscriptions.splice(subscriptions.indexOf(sub), 1)
+        sub.unsubscribe()
+    }
 
     const handler = (
         { streamId, method, args }: RequestMessage,
@@ -135,7 +140,7 @@ export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubsc
                     .sendMessage(senderTabId, { streamId, streamEvent: 'error', data: error.toString() })
                     .catch(console.error)
                 if (subscription) {
-                    subscriptions.remove(subscription)
+                    removeSubscription(subscription)
                 }
             },
             complete: () => {
@@ -143,17 +148,17 @@ export function addMessageListenersForBackgroundApi(api: BackgroundApi): Unsubsc
                     .sendMessage(senderTabId, { streamId, streamEvent: 'complete' })
                     .catch(console.error)
                 if (subscription) {
-                    subscriptions.remove(subscription)
+                    removeSubscription(subscription)
                 }
             },
         })
-        subscriptions.add(subscription)
+        subscriptions.push(subscription)
         return Promise.resolve()
     }
 
     browser.runtime.onMessage.addListener(handler)
 
-    subscriptions.add(() => browser.runtime.onMessage.removeListener(handler))
+    subscriptions.push({ unsubscribe: () => browser.runtime.onMessage.removeListener(handler) })
 
     return subscriptions
 }
