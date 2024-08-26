@@ -1,5 +1,6 @@
+import { type Unsubscribable, firstValueFrom, shareReplay } from '@openctx/client/observable'
 import { type AnnotationWithRichRange, prepareAnnotationsForPresentation } from '@openctx/ui-common'
-import { type Observable, type Subscription, firstValueFrom, map, shareReplay } from 'rxjs'
+import { type Observable, map } from 'observable-fns'
 import * as vscode from 'vscode'
 import type { Controller } from '../../controller.js'
 
@@ -18,7 +19,7 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
 
     const codeLensByDoc = new Map<
         string /* uri */,
-        { observable: Observable<CodeLens[]>; subscription: Subscription }
+        { observable: Observable<CodeLens[]>; subscription: Unsubscribable }
     >()
     disposables.push(
         vscode.workspace.onDidCloseTextDocument(doc => {
@@ -46,14 +47,16 @@ export function createCodeLensProvider(controller: Controller): vscode.CodeLensP
                 return entry.observable
             }
 
-            const observable = controller.observeAnnotations(doc).pipe(
-                map(anns =>
-                    prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
-                        annotationCodeLens(doc, item, showHover),
+            const observable = controller
+                .annotationsChanges({ uri: doc.uri.toString(), content: doc.getText() })
+                .pipe(
+                    map(anns =>
+                        prepareAnnotationsForPresentation<vscode.Range>(anns ?? []).map(item =>
+                            annotationCodeLens(doc, item, showHover),
+                        ),
                     ),
-                ),
-                shareReplay({ bufferSize: 1, refCount: true }),
-            )
+                    shareReplay(),
+                )
             const subscription = observable.subscribe({
                 next: () => changeCodeLenses.fire(),
                 error: () => changeCodeLenses.fire(),

@@ -1,10 +1,15 @@
 import type { AnnotationsParams, ItemsParams, MetaResult } from '@openctx/protocol'
 import type { Item, Range } from '@openctx/schema'
-import { Observable, firstValueFrom, of } from 'rxjs'
-import { TestScheduler } from 'rxjs/testing'
+import { Observable } from 'observable-fns'
 import { describe, expect, test } from 'vitest'
 import type { Annotation, EachWithProviderUri } from '../api.js'
-import type { ConfigurationUserInput } from '../configuration.js'
+import type { ConfigurationUserInput, ImportedProviderConfiguration } from '../configuration.js'
+import {
+    allValuesFrom,
+    firstValueFrom,
+    observableOfTimedSequence,
+    readValuesFrom,
+} from '../misc/observable.js'
 import { type Client, type ClientEnv, createClient } from './client.js'
 
 function testdataFileUri(file: string): string {
@@ -34,43 +39,126 @@ function createTestClient(
     env: Partial<ClientEnv<Range>> & Required<Pick<ClientEnv<Range>, 'configuration'>>,
 ): Client<Range> {
     return createClient<Range>({
-        authInfo: () => of(null),
+        authInfo: () => Observable.of(null),
         makeRange: r => r,
         ...env,
     })
 }
 
 describe('Client', () => {
-    const testScheduler = (): TestScheduler =>
-        new TestScheduler((actual, expected) => expect(actual).toStrictEqual(expected))
-
     describe('meta', () => {
-        test('metaChanges__asyncGenerator', async () => {
+        test('promise', async () => {
             const client = createTestClient({
                 configuration: () =>
-                    new Observable(observer => {
-                        observer.next({ enable: false, providers: {} })
-                        observer.next({
-                            enable: true,
-                            providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '1' } },
-                        })
-                        observer.next({
-                            enable: true,
-                            providers: { [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' } },
-                        })
-                        observer.complete()
+                    Promise.resolve({
+                        enable: true,
+                        providers: {
+                            [testdataFileUri('simple.js')]: true,
+                        },
                     }),
             })
+            expect(await client.meta({}, {})).toStrictEqual<EachWithProviderUri<MetaResult[]>>([
+                { name: 'simple', providerUri: testdataFileUri('simple.js'), annotations: {} },
+            ])
+        })
 
-            const values: EachWithProviderUri<MetaResult[]>[] = []
-            const signal = new AbortController().signal
-            for await (const value of client.metaChanges__asyncGenerator({}, {}, signal)) {
-                values.push(value)
-            }
+        test('simple', async () => {
+            expect(
+                await allValuesFrom(
+                    createTestClient({
+                        configuration: () =>
+                            Observable.of<ConfigurationUserInput>({
+                                enable: true,
+                                providers: {
+                                    [testdataFileUri('simple.js')]: true,
+                                },
+                            }),
+                        __mock__: {
+                            getProviderClient: () => ({
+                                meta: (_, settings) => Observable.of({ name: 'simple' }),
+                            }),
+                        },
+                    }).metaChanges({}, {}),
+                ),
+            ).toStrictEqual<EachWithProviderUri<MetaResult[]>[]>([
+                [{ name: 'simple', providerUri: testdataFileUri('simple.js') }],
+            ])
+        })
+
+        test('changes', async () => {
+            const client = createTestClient({
+                authInfo: () => Observable.of(null),
+                configuration: () =>
+                    observableOfTimedSequence<ConfigurationUserInput>(
+                        { enable: false },
+                        0,
+                        {
+                            enable: true,
+                            providers: {
+                                [testdataFileUri('simpleMeta.js')]: { nameSuffix: '1' },
+                            },
+                        },
+                        0,
+                        {
+                            enable: true,
+                            providers: {
+                                [testdataFileUri('simpleMeta.js')]: { nameSuffix: '2' },
+                            },
+                        },
+                    ),
+                providers: Observable.of<ImportedProviderConfiguration[]>([]),
+                __mock__: {
+                    getProviderClient: () => ({
+                        meta: (_, settings) =>
+                            Observable.of({
+                                name: `simpleMeta-${settings.nameSuffix}`,
+                                annotations: {},
+                            }),
+                    }),
+                },
+            })
+
+            const { values, done } = readValuesFrom(client.metaChanges({}, {}))
+            await done
+
             expect(values).toStrictEqual<typeof values>([
                 [],
-                [{ name: 'simpleMeta-1', providerUri: testdataFileUri('simpleMeta.js') }],
-                [{ name: 'simpleMeta-2', providerUri: testdataFileUri('simpleMeta.js') }],
+                [
+                    {
+                        name: 'simpleMeta-1',
+                        providerUri: testdataFileUri('simpleMeta.js'),
+                        annotations: {},
+                    },
+                ],
+                [
+                    {
+                        name: 'simpleMeta-2',
+                        providerUri: testdataFileUri('simpleMeta.js'),
+                        annotations: {},
+                    },
+                ],
+            ])
+        })
+
+        test('providers option', async () => {
+            const client = createTestClient({
+                configuration: () => Observable.of({ enable: true }),
+                providers: Observable.of([
+                    {
+                        provider: { meta: () => ({ name: 'my-provider-2' }) },
+                        providerUri: 'u2',
+                        settings: true,
+                    },
+                    {
+                        provider: { meta: () => ({ name: 'my-provider-3' }) },
+                        providerUri: 'u3',
+                        settings: true,
+                    },
+                ]),
+            })
+            expect(await client.meta({}, {})).toStrictEqual<EachWithProviderUri<MetaResult[]>>([
+                { name: 'my-provider-2', providerUri: 'u2' },
+                { name: 'my-provider-3', providerUri: 'u3' },
             ])
         })
     })
@@ -97,32 +185,33 @@ describe('Client', () => {
             expect(items).toStrictEqual<typeof items>([])
         })
 
-        test('changes', () => {
-            testScheduler().run(({ cold, expectObservable }) => {
-                expectObservable(
-                    createTestClient({
-                        authInfo: () => cold('a', { a: null }),
-                        configuration: () =>
-                            cold<ConfigurationUserInput>('a', {
-                                a: { enable: true, providers: { [testdataFileUri('simple.js')]: {} } },
-                            }),
-                        __mock__: {
-                            getProviderClient: () => ({
-                                items: () =>
-                                    of([
-                                        {
-                                            ...fixtureItem('a'),
-                                            providerUri: testdataFileUri('simple.js'),
-                                        },
-                                    ]),
-                            }),
-                        },
-                    }).itemsChanges(FIXTURE_ITEMS_PARAMS),
-                ).toBe('(0a)', {
-                    '0': [],
-                    a: [{ ...fixtureItem('a'), providerUri: testdataFileUri('simple.js') }],
-                } satisfies Record<string, EachWithProviderUri<Item[]>>)
+        test('changes', async () => {
+            const client = createTestClient({
+                authInfo: () => Observable.of(null),
+                configuration: () =>
+                    Observable.of({
+                        enable: true,
+                        providers: { [testdataFileUri('simple.js')]: {} },
+                    }),
+                __mock__: {
+                    getProviderClient: () => ({
+                        items: () =>
+                            Observable.of([
+                                {
+                                    ...fixtureItem('a'),
+                                    providerUri: testdataFileUri('simple.js'),
+                                },
+                            ]),
+                    }),
+                },
             })
+
+            const { values, done } = readValuesFrom(client.itemsChanges(FIXTURE_ITEMS_PARAMS))
+            await done
+
+            expect(values).toStrictEqual([
+                [{ ...fixtureItem('a'), providerUri: testdataFileUri('simple.js') }],
+            ])
         })
     })
 
@@ -153,24 +242,29 @@ describe('Client', () => {
             expect(anns).toStrictEqual<typeof anns>([])
         })
 
-        test('changes', () => {
-            testScheduler().run(({ cold, expectObservable }) => {
-                expectObservable(
-                    createTestClient({
-                        authInfo: () => cold('a', { a: null }),
-                        configuration: () =>
-                            cold<ConfigurationUserInput>('a', {
-                                a: { enable: true, providers: { [testdataFileUri('simple.js')]: {} } },
-                            }),
-                        __mock__: {
-                            getProviderClient: () => ({ annotations: () => of([fixtureAnn('a')]) }),
-                        },
-                    }).annotationsChanges(FIXTURE_ANNOTATIONS_PARAMS),
-                ).toBe('(0a)', {
-                    '0': [],
-                    a: [{ ...fixtureAnn('a'), providerUri: testdataFileUri('simple.js') }],
-                } satisfies Record<string, EachWithProviderUri<Annotation[]>>)
+        test('changes', async () => {
+            const client = createTestClient({
+                authInfo: () => Observable.of(null),
+                configuration: () =>
+                    Observable.of<ConfigurationUserInput>({
+                        enable: true,
+                        providers: { [testdataFileUri('simple.js')]: {} },
+                    }),
+                __mock__: {
+                    getProviderClient: () => ({
+                        annotations: () => Observable.of([fixtureAnn('a')]),
+                    }),
+                },
             })
+
+            const { values, done } = readValuesFrom(
+                client.annotationsChanges(FIXTURE_ANNOTATIONS_PARAMS),
+            )
+            await done
+
+            expect(values).toStrictEqual([
+                [{ ...fixtureAnn('a'), providerUri: testdataFileUri('simple.js') }],
+            ])
         })
     })
 })

@@ -4,9 +4,10 @@ import '../shared/polyfills'
 import type { Annotation } from '@openctx/client'
 import type { AnnotationsParams } from '@openctx/provider'
 import deepEqual from 'deep-equal'
-import { type Observable, combineLatest, distinctUntilChanged, mergeMap, throttleTime } from 'rxjs'
 import { background } from '../browser-extension/web-extension-api/runtime.js'
 import './contentScript.main.css'
+import { combineLatest, distinctUntilChanged, mergeMap, throttleTime } from '@openctx/client/observable'
+import type { Observable } from 'observable-fns'
 import { debugTap } from './debug.js'
 import { injectOnGitHubCodeView } from './github/codeView.js'
 import { injectOnGitHubPullRequestFilesView } from './github/pullRequestFilesView.js'
@@ -26,13 +27,13 @@ const subscription = locationChanges
             combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges))),
         ),
     )
-    .subscribe()
+    .subscribe({})
 window.addEventListener('unload', () => subscription.unsubscribe())
 
 function annotationsChanges(params: AnnotationsParams): Observable<Annotation[]> {
     return background.annotationsChanges(params).pipe(
         distinctUntilChanged((a, b) => deepEqual(a, b)),
-        throttleTime(200, undefined, { leading: true, trailing: true }),
+        throttleTime(200, { leading: true, trailing: true }),
         debugTap(items => {
             console.groupCollapsed('itemsChanges')
             console.count('itemsChanges count')

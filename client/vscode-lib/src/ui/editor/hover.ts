@@ -1,5 +1,6 @@
 import type { Annotation } from '@openctx/client'
-import { firstValueFrom, map } from 'rxjs'
+import { firstValueFrom } from '@openctx/client/observable'
+import { map } from 'observable-fns'
 import * as vscode from 'vscode'
 import type { Controller } from '../../controller.js'
 
@@ -7,7 +8,7 @@ export function createHoverProvider(controller: Controller): vscode.HoverProvide
     return {
         async provideHover(doc, pos): Promise<vscode.Hover | null> {
             return firstValueFrom(
-                controller.observeAnnotations(doc).pipe(
+                controller.annotationsChanges({ uri: doc.uri.toString(), content: doc.getText() }).pipe(
                     map(anns => {
                         const containedByAnns = anns?.filter(ann =>
                             (ann.range ?? ZERO_RANGE).contains(pos),

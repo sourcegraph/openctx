@@ -1,12 +1,20 @@
 import {
+    type AnnotationsParams,
     type AuthInfo,
     type Client,
+    type ClientConfiguration,
+    type ImportedProviderConfiguration,
     type ProviderMethodOptions,
     type Range,
     createClient,
 } from '@openctx/client'
-import type { ImportedProviderConfiguration } from '@openctx/client/src/configuration.js'
-import { type Observable, combineLatest, from, isObservable, map, mergeMap, of } from 'rxjs'
+import {
+    combineLatest,
+    isObservableOrInteropObservable,
+    mergeMap,
+    promiseToObservable,
+} from '@openctx/client/observable'
+import { Observable, type ObservableLike, map } from 'observable-fns'
 import * as vscode from 'vscode'
 import { getClientConfiguration } from './configuration.js'
 import { initializeOpenCtxGlobal } from './global.js'
@@ -22,32 +30,18 @@ import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/obs
 
 type VSCodeClient = Client<vscode.Range>
 
-export interface Controller {
-    observeMeta: VSCodeClient['metaChanges']
-    meta: VSCodeClient['meta']
-    metaChanges__asyncGenerator: VSCodeClient['metaChanges__asyncGenerator']
-
-    observeMentions: VSCodeClient['mentionsChanges']
-    mentions: VSCodeClient['mentions']
-    mentionsChanges__asyncGenerator: VSCodeClient['mentionsChanges__asyncGenerator']
-
-    observeItems: VSCodeClient['itemsChanges']
-    items: VSCodeClient['items']
-    itemsChanges__asyncGenerator: VSCodeClient['itemsChanges__asyncGenerator']
-
-    observeAnnotations(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-    ): ReturnType<VSCodeClient['annotationsChanges']>
-    annotations(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-        opts?: ProviderMethodOptions,
-    ): ReturnType<VSCodeClient['annotations']>
-    annotationsChanges__asyncGenerator(
-        doc: Pick<vscode.TextDocument, 'uri' | 'getText'>,
-        opts?: ProviderMethodOptions,
-        signal?: AbortSignal,
-    ): ReturnType<VSCodeClient['annotationsChanges__asyncGenerator']>
-}
+export interface Controller
+    extends Pick<
+        VSCodeClient,
+        | 'metaChanges'
+        | 'meta'
+        | 'mentionsChanges'
+        | 'mentions'
+        | 'itemsChanges'
+        | 'items'
+        | 'annotationsChanges'
+        | 'annotations'
+    > {}
 
 export function createController({
     secrets: secretsInput,
@@ -56,14 +50,19 @@ export function createController({
     getAuthInfo,
     features,
     providers,
+    mergeConfiguration,
     preloadDelay,
 }: {
-    secrets: Observable<vscode.SecretStorage> | vscode.SecretStorage
+    secrets:
+        | Observable<vscode.SecretStorage>
+        | ObservableLike<vscode.SecretStorage>
+        | vscode.SecretStorage
     extensionId: string
     outputChannel: vscode.OutputChannel
     getAuthInfo?: (secrets: vscode.SecretStorage, providerUri: string) => Promise<AuthInfo | null>
     features: { annotations?: boolean; statusBar?: boolean }
-    providers?: ImportedProviderConfiguration[]
+    providers?: ObservableLike<ImportedProviderConfiguration[]>
+    mergeConfiguration?: (configuration: ClientConfiguration) => Promise<ClientConfiguration>
     preloadDelay?: number
 }): {
     controller: Controller
@@ -76,9 +75,9 @@ export function createController({
 
     const globalConfigurationChanges = observeWorkspaceConfigurationChanges('openctx')
 
-    const secrets: Observable<vscode.SecretStorage> = isObservable(secretsInput)
-        ? secretsInput
-        : of(secretsInput)
+    const secrets: Observable<vscode.SecretStorage> = isObservableOrInteropObservable(secretsInput)
+        ? Observable.from(secretsInput)
+        : Observable.of(secretsInput)
 
     // Watch for changes that could possibly affect configuration. This is overbroad because it does
     // not specify a config scope.
@@ -87,8 +86,13 @@ export function createController({
     )
     disposables.push(configOrSecretsChanged)
 
+    const getConfiguration = async (scope?: vscode.ConfigurationScope) => {
+        const config = getClientConfiguration(scope)
+        return mergeConfiguration ? await mergeConfiguration(config) : config
+    }
+
     const toggleEnableCommand = vscode.commands.registerCommand('openctx.toggleEnable', async () => {
-        const currentValue = getClientConfiguration().enable
+        const currentValue = (await getConfiguration()).enable
         await vscode.workspace.getConfiguration('openctx').update('enable', !currentValue)
     })
     disposables.push(toggleEnableCommand)
@@ -103,11 +107,12 @@ export function createController({
                 ? vscode.Uri.parse(resource)
                 : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
-                map(() => getClientConfiguration(scope)),
+                mergeMap(() => promiseToObservable(getConfiguration(scope))),
             )
         },
         authInfo: getAuthInfo
-            ? provider => secrets.pipe(mergeMap(secrets => from(getAuthInfo(secrets, provider))))
+            ? provider =>
+                  secrets.pipe(mergeMap(secrets => promiseToObservable(getAuthInfo(secrets, provider))))
             : undefined,
         makeRange,
         logger: message => outputChannel.appendLine(message),
@@ -115,6 +120,7 @@ export function createController({
         providers,
         preloadDelay,
     })
+    disposables.push(client)
 
     const errorLog = (error: any) => {
         console.error(error)
@@ -143,82 +149,31 @@ export function createController({
         UserAction.Implicit,
         client.annotationsChanges,
     )
-    const clientAnnotationsChanges__asyncGenerator = errorReporter.wrapAsyncGenerator(
-        UserAction.Implicit,
-        client.annotationsChanges__asyncGenerator,
-    )
 
     /**
      * The controller is passed to UI feature providers for them to fetch data.
      */
     const controller: Controller = {
         meta: errorReporter.wrapPromise(UserAction.Explicit, client.meta),
-        observeMeta: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
-        metaChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
-            UserAction.Explicit,
-            client.metaChanges__asyncGenerator,
-        ),
+        metaChanges: errorReporter.wrapObservable(UserAction.Explicit, client.metaChanges),
 
         mentions: errorReporter.wrapPromise(UserAction.Explicit, client.mentions),
-        observeMentions: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
-        mentionsChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
-            UserAction.Explicit,
-            client.mentionsChanges__asyncGenerator,
-        ),
+        mentionsChanges: errorReporter.wrapObservable(UserAction.Explicit, client.mentionsChanges),
 
         items: errorReporter.wrapPromise(UserAction.Explicit, client.items),
-        observeItems: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
-        itemsChanges__asyncGenerator: errorReporter.wrapAsyncGenerator(
-            UserAction.Explicit,
-            client.itemsChanges__asyncGenerator,
-        ),
+        itemsChanges: errorReporter.wrapObservable(UserAction.Explicit, client.itemsChanges),
 
-        async annotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc)) {
+        annotations: async (params: AnnotationsParams, opts?: ProviderMethodOptions) => {
+            if (ignoreDoc(params)) {
                 return []
             }
-            return await clientAnnotations(
-                {
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                },
-                opts,
-            )
+            return await clientAnnotations(params, opts)
         },
-        observeAnnotations(doc: vscode.TextDocument, opts?: ProviderMethodOptions) {
-            if (ignoreDoc(doc)) {
-                return of([])
+        annotationsChanges(params: AnnotationsParams, opts?: ProviderMethodOptions) {
+            if (ignoreDoc(params)) {
+                return Observable.of([])
             }
-
-            return clientAnnotationsChanges(
-                {
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                },
-                opts,
-            )
-        },
-        async *annotationsChanges__asyncGenerator(
-            doc: vscode.TextDocument,
-            opts?: ProviderMethodOptions,
-            signal?: AbortSignal,
-        ) {
-            if (ignoreDoc(doc)) {
-                return
-            }
-
-            const g = clientAnnotationsChanges__asyncGenerator(
-                {
-                    uri: doc.uri.toString(),
-                    content: doc.getText(),
-                },
-                opts,
-                signal,
-            )
-            for await (const v of g) {
-                yield v
-            }
-            return
+            return clientAnnotationsChanges(params, opts)
         },
     }
 
@@ -246,11 +201,11 @@ export function createController({
     }
 }
 
-function ignoreDoc(doc: vscode.TextDocument): boolean {
+function ignoreDoc(params: AnnotationsParams): boolean {
     // Ignore:
     // - documents that are not in the editor (`output` is the VS Code output channel).
-    // - very long documents
-    return doc.uri.scheme === 'output' || doc.lineCount > 5000
+    // - very large documents
+    return params.uri.startsWith('output:') || params.content.length > 1024 * 1024
 }
 
 function makeRange(range: Range): vscode.Range {

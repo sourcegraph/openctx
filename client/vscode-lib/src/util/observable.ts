@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable } from 'observable-fns'
 import * as vscode from 'vscode'
 
 export function observeWorkspaceConfigurationChanges(

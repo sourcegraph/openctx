@@ -10,23 +10,7 @@ import type {
 import type { Provider } from '@openctx/provider'
 import type { Range } from '@openctx/schema'
 import { LRUCache } from 'lru-cache'
-import {
-    type Observable,
-    type ObservableInput,
-    type Unsubscribable,
-    catchError,
-    combineLatest,
-    concatMap,
-    distinctUntilChanged,
-    firstValueFrom,
-    from,
-    map,
-    mergeMap,
-    of,
-    shareReplay,
-    take,
-    timer,
-} from 'rxjs'
+import { Observable, type ObservableLike, map } from 'observable-fns'
 import {
     type Annotation,
     type EachWithProviderUri,
@@ -44,8 +28,20 @@ import {
     configurationFromUserInput,
 } from '../configuration.js'
 import type { Logger } from '../logger.js'
+import {
+    type Unsubscribable,
+    catchError,
+    combineLatest,
+    concatMap,
+    distinctUntilChanged,
+    firstValueFrom,
+    mergeMap,
+    promiseOrObservableToObservable,
+    shareReplay,
+    take,
+    timer,
+} from '../misc/observable.js'
 import { type ProviderClient, createProviderClient } from '../providerClient/createProviderClient.js'
-import { observableToAsyncGenerator } from './util.js'
 
 /**
  * Hooks for the OpenCtx {@link Client} to access information about the environment, such as the
@@ -65,7 +61,9 @@ export interface ClientEnv<R extends Range> {
      * @param resource URI of the active resource (such as the currently open document in an
      * editor), or `undefined` if there is none.
      */
-    configuration(resource?: string): ObservableInput<ConfigurationUserInput>
+    configuration(
+        resource?: string,
+    ): ObservableLike<ConfigurationUserInput> | Promise<ConfigurationUserInput>
 
     /**
      * The base URI to use when resolving configured provider URIs.
@@ -75,14 +73,16 @@ export interface ClientEnv<R extends Range> {
     /**
      * The list of providers already resolved and imported.
      */
-    providers?: ImportedProviderConfiguration[]
+    providers?:
+        | ObservableLike<ImportedProviderConfiguration[]>
+        | Promise<ImportedProviderConfiguration[]>
 
     /**
      * The authentication info for the provider.
      *
      * @param provider The provider URI.
      */
-    authInfo?(provider: string): ObservableInput<AuthInfo | null>
+    authInfo?(provider: string): ObservableLike<AuthInfo | null> | Promise<AuthInfo | null>
 
     /**
      * Called to print a log message.
@@ -159,9 +159,8 @@ export interface Client<R extends Range> {
      * Get information about the configured providers, including their names and features.
      *
      * It does not continue to listen for changes, as {@link Client.metaChanges} does. Using
-     * {@link Client.meta} is simpler and does not require use of observables (with a library like
-     * RxJS), but it means that the client needs to manually poll for updated item kinds if
-     * freshness is important.
+     * {@link Client.meta} is simpler and does not require use of observables, but it means that the
+     * client needs to manually poll for updated item kinds if freshness is important.
      */
     meta(params: MetaParams, opts?: ProviderMethodOptions): Promise<EachWithProviderUri<MetaResult[]>>
 
@@ -177,26 +176,11 @@ export interface Client<R extends Range> {
     ): Observable<EachWithProviderUri<MetaResult[]>>
 
     /**
-     * Observe information about the configured providers using an async generator.
-     *
-     * The returned generator streams information as it is received from the providers and continues
-     * passing along any updates until {@link signal} is aborted.
-     *
-     * @internal
-     */
-    metaChanges__asyncGenerator(
-        params: MetaParams,
-        opts?: ProviderMethodOptions,
-        signal?: AbortSignal,
-    ): AsyncGenerator<EachWithProviderUri<MetaResult[]>>
-
-    /**
      * Get the mentions returned by the configured providers.
      *
      * It does not continue to listen for changes, as {@link Client.mentionsChanges} does. Using
-     * {@link Client.Mentions} is simpler and does not require use of observables (with a library
-     * like RxJS), but it means that the client needs to manually poll for updated mentions if
-     * freshness is important.
+     * {@link Client.Mentions} is simpler and does not require use of observables, but it means that
+     * the client needs to manually poll for updated mentions if freshness is important.
      */
     mentions(
         params: MentionsParams,
@@ -215,26 +199,11 @@ export interface Client<R extends Range> {
     ): Observable<EachWithProviderUri<MentionsResult>>
 
     /**
-     * Observe OpenCtx mentions from the configured providers using an async generator.
-     *
-     * The returned generator streams mentions as they are received from the providers and continues
-     * passing along any updates until {@link signal} is aborted.
-     *
-     * @internal
-     */
-    mentionsChanges__asyncGenerator(
-        params: MentionsParams,
-        opts?: ProviderMethodOptions,
-        signal?: AbortSignal,
-    ): AsyncGenerator<EachWithProviderUri<MentionsResult>>
-
-    /**
      * Get the items returned by the configured providers.
      *
      * It does not continue to listen for changes, as {@link Client.itemsChanges} does. Using
-     * {@link Client.items} is simpler and does not require use of observables (with a library like
-     * RxJS), but it means that the client needs to manually poll for updated items if freshness is
-     * important.
+     * {@link Client.items} is simpler and does not require use of observables, but it means that
+     * the client needs to manually poll for updated items if freshness is important.
      */
     items(params: ItemsParams, opts?: ProviderMethodOptions): Promise<EachWithProviderUri<ItemsResult>>
 
@@ -250,27 +219,11 @@ export interface Client<R extends Range> {
     ): Observable<EachWithProviderUri<ItemsResult>>
 
     /**
-     * Observe OpenCtx items from the configured providers for the given resource using an async
-     * generator.
-     *
-     * The returned generator streams items as they are received from the providers and continues
-     * passing along any updates until {@link signal} is aborted.
-     *
-     * @internal
-     */
-    itemsChanges__asyncGenerator(
-        params: ItemsParams,
-        opts?: ProviderMethodOptions,
-        signal?: AbortSignal,
-    ): AsyncGenerator<EachWithProviderUri<ItemsResult>>
-
-    /**
      * Get the annotations returned by the configured providers for the given resource.
      *
      * It does not continue to listen for changes, as {@link Client.annotationsChanges} does. Using
-     * {@link Client.annotations} is simpler and does not require use of observables (with a library
-     * like RxJS), but it means that the client needs to manually poll for updated annotations if
-     * freshness is important.
+     * {@link Client.annotations} is simpler and does not require use of observables, but it means
+     * that the client needs to manually poll for updated annotations if freshness is important.
      */
     annotations(
         params: AnnotationsParams,
@@ -289,21 +242,6 @@ export interface Client<R extends Range> {
     ): Observable<EachWithProviderUri<Annotation<R>[]>>
 
     /**
-     * Observe OpenCtx annotations from the configured providers for the given resource using an
-     * async generator.
-     *
-     * The returned generator streams annotations as they are received from the providers and
-     * continues passing along any updates until {@link signal} is aborted.
-     *
-     * @internal
-     */
-    annotationsChanges__asyncGenerator(
-        params: AnnotationsParams,
-        opts?: ProviderMethodOptions,
-        signal?: AbortSignal,
-    ): AsyncGenerator<EachWithProviderUri<Annotation<R>[]>>
-
-    /**
      * Dispose of the client and release all resources.
      */
     dispose(): void
@@ -320,12 +258,12 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     const providerCache = createProviderPool()
 
     // Enable/disable logger based on the `debug` config.
-    const debug = from(env.configuration()).pipe(
+    const debug = promiseOrObservableToObservable(env.configuration()).pipe(
         map(config => configurationFromUserInput(config).debug),
         distinctUntilChanged(),
-        shareReplay(1),
+        shareReplay(),
     )
-    subscriptions.push(debug.subscribe())
+    subscriptions.push(debug.subscribe({}))
     const logger: Logger = message => {
         firstValueFrom(debug)
             .then(debug => {
@@ -337,21 +275,27 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
     }
 
     function providerClientsWithSettings(resource?: string): Observable<ProviderClientWithSettings[]> {
-        return from(env.configuration(resource))
+        return combineLatest([
+            promiseOrObservableToObservable(env.configuration(resource)),
+            env.providers ? promiseOrObservableToObservable(env.providers) : Observable.of(undefined),
+        ])
             .pipe(
-                map(config => {
+                map(([config, providers]) => {
                     if (!config.enable) {
                         config = { ...config, providers: {} }
                     }
-                    return configurationFromUserInput(config, env.providers)
+                    return [configurationFromUserInput(config, providers), providers] as const
                 }),
             )
             .pipe(
-                mergeMap(configuration =>
+                mergeMap(([configuration, providers]) =>
                     configuration.providers.length > 0
                         ? combineLatest(
                               configuration.providers.map(({ providerUri, settings }) =>
-                                  (env.authInfo ? from(env.authInfo(providerUri)) : of(null)).pipe(
+                                  (env.authInfo
+                                      ? promiseOrObservableToObservable(env.authInfo(providerUri))
+                                      : Observable.of(null)
+                                  ).pipe(
                                       map(authInfo => ({
                                           uri: providerUri,
                                           providerClient: env.__mock__?.getProviderClient
@@ -363,7 +307,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                                         logger,
                                                         importProvider: env.importProvider,
                                                     },
-                                                    env.providers?.find(
+                                                    providers?.find(
                                                         provider => provider.providerUri === providerUri,
                                                     )?.provider,
                                                 ),
@@ -373,12 +317,12 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                                           logger(
                                               `Error creating provider client for ${providerUri}: ${error}`,
                                           )
-                                          return of(null)
+                                          return Observable.of(null)
                                       }),
                                   ),
                               ),
                           )
-                        : of([]),
+                        : Observable.of([]),
                 ),
 
                 // Filter out null clients.
@@ -456,7 +400,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
         const preload = timer(env.preloadDelay)
             .pipe(concatMap(() => providerClientsWithSettings(undefined)))
             .pipe(take(1))
-        subscriptions.push(preload.subscribe())
+        subscriptions.push(preload.subscribe({}))
     }
 
     return {
@@ -465,32 +409,21 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 defaultValue: [],
             }),
         metaChanges: (params, opts) => metaChanges(params, { ...opts, emitPartial: true }),
-        metaChanges__asyncGenerator: (params, opts, signal) =>
-            observableToAsyncGenerator(metaChanges(params, { ...opts, emitPartial: true }), signal),
         mentions: (params, opts) =>
             firstValueFrom(mentionsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
         mentionsChanges: (params, opts) => mentionsChanges(params, { ...opts, emitPartial: true }),
-        mentionsChanges__asyncGenerator: (params, opts, signal) =>
-            observableToAsyncGenerator(mentionsChanges(params, { ...opts, emitPartial: true }), signal),
         items: (params, opts) =>
             firstValueFrom(itemsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
         itemsChanges: (params, opts) => itemsChanges(params, { ...opts, emitPartial: true }),
-        itemsChanges__asyncGenerator: (params, opts, signal) =>
-            observableToAsyncGenerator(itemsChanges(params, { ...opts, emitPartial: true }), signal),
         annotations: (params, opts) =>
             firstValueFrom(annotationsChanges(params, { ...opts, emitPartial: false }), {
                 defaultValue: [],
             }),
         annotationsChanges: (params, opts) => annotationsChanges(params, { ...opts, emitPartial: true }),
-        annotationsChanges__asyncGenerator: (params, opts, signal) =>
-            observableToAsyncGenerator(
-                annotationsChanges(params, { ...opts, emitPartial: true }),
-                signal,
-            ),
         dispose() {
             for (const sub of subscriptions) {
                 sub.unsubscribe()

@@ -1,4 +1,4 @@
-import type { Annotation } from '@openctx/client'
+import type { Annotation, AnnotationsParams } from '@openctx/client'
 import * as vscode from 'vscode'
 import type { Controller } from '../controller.js'
 
@@ -37,7 +37,11 @@ async function showQuickPick(controller: Controller): Promise<void> {
     quickPick.matchOnDetail = true
     quickPick.show()
 
-    const subscription = controller.observeAnnotations(editor.document).subscribe(
+    const params: AnnotationsParams = {
+        uri: editor.document.uri.toString(),
+        content: editor.document.getText(),
+    }
+    const subscription = controller.annotationsChanges(params).subscribe(
         anns => {
             quickPick.items =
                 anns && anns.length > 0

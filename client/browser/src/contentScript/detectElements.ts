@@ -1,4 +1,4 @@
-import { Observable, map } from 'rxjs'
+import { Observable, map } from 'observable-fns'
 
 /**
  * Return an Observable that emits the first DOM element that matches the given selector. If none is
@@ -17,21 +17,24 @@ export function withDOMElements<E extends Element>(selectors: string): Observabl
         const els = document.querySelectorAll<E>(selectors)
         if (els.length > 0) {
             observer.next(Array.from(els))
-        } else {
-            let calls = 0
-            const MAX_CALLS = 10
-            const intervalHandle = setInterval(() => {
-                const els = document.querySelectorAll<E>(selectors)
-                if (els.length !== 0) {
-                    observer.next(Array.from(els))
-                }
+            return undefined
+        }
 
-                calls++
-                if (els.length > 0 || calls >= MAX_CALLS) {
-                    clearInterval(intervalHandle)
-                }
-            }, 250)
-            observer.add(() => clearInterval(intervalHandle))
+        let calls = 0
+        const MAX_CALLS = 10
+        const intervalHandle = setInterval(() => {
+            const els = document.querySelectorAll<E>(selectors)
+            if (els.length !== 0) {
+                observer.next(Array.from(els))
+            }
+
+            calls++
+            if (els.length > 0 || calls >= MAX_CALLS) {
+                clearInterval(intervalHandle)
+            }
+        }, 250)
+        return () => {
+            clearInterval(intervalHandle)
         }
     })
 }

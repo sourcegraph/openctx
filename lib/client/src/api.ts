@@ -9,21 +9,18 @@ import type {
     ProviderSettings,
 } from '@openctx/protocol'
 import type { Annotation as AnnotationWithPlainRange, Range } from '@openctx/schema'
+import { Observable, type ObservableLike, filter, map } from 'observable-fns'
+import type { ClientEnv, ProviderMethodOptions } from './client/client.js'
 import {
-    type Observable,
-    type ObservableInput,
     catchError,
     combineLatest,
     defer,
     distinctUntilChanged,
-    from,
-    map,
     mergeMap,
-    of,
+    promiseOrObservableToObservable,
     startWith,
     tap,
-} from 'rxjs'
-import type { ClientEnv, ProviderMethodOptions } from './client/client.js'
+} from './misc/observable.js'
 import type { ProviderClient } from './providerClient/createProviderClient.js'
 
 /**
@@ -40,7 +37,7 @@ export interface Annotation<R extends Range = Range> extends Omit<AnnotationWith
 export type ObservableProviderClient = {
     [M in keyof ProviderClient]: (
         ...args: Parameters<Required<ProviderClient>[M]>
-    ) => ObservableInput<Awaited<ReturnType<Required<ProviderClient>[M]>>>
+    ) => ObservableLike<Awaited<ReturnType<Required<ProviderClient>[M]>>>
 }
 
 export interface ProviderClientWithSettings {
@@ -72,6 +69,14 @@ function observeProviderCall<R>(
     fn: (provider: ProviderClientWithSettings) => Observable<R[] | null>,
     { emitPartial, errorHook, logger }: Pick<ClientEnv<never>, 'logger'> & ObserveOptions,
 ): Observable<EachWithProviderUri<R[]>> {
+    // This sentinel value lets us avoid emitting a "fake" partial result when `emitPartial` is
+    // true. We use `combineLatest` below, which waits until all providers have emitted until it
+    // emits a value, so we need to use `startWith(null)`. But this means that upon subscription, we
+    // get a meaningless `[null, null, null, ...]` value. Using this sentinel value instead of
+    // `null` lets us detect that case and filter it out so our caller doesn't see it. But in the
+    // case where there are no providers, we still want to emit [] because that is a true result.
+    const EMIT_PARTIAL_SENTINEL: 'emit-partial-sentinel' = {} as any
+
     return providerClients.pipe(
         mergeMap(providerClients =>
             providerClients && providerClients.length > 0
@@ -79,7 +84,7 @@ function observeProviderCall<R>(
                       providerClients.map(({ uri, providerClient, settings }) =>
                           defer(() => fn({ uri, providerClient, settings }))
                               .pipe(
-                                  emitPartial ? startWith(null) : tap(),
+                                  emitPartial ? startWith(EMIT_PARTIAL_SENTINEL) : tap(),
                                   catchError(error => {
                                       if (errorHook) {
                                           errorHook(uri, error)
@@ -87,19 +92,32 @@ function observeProviderCall<R>(
                                           logger?.(`failed to call provider: ${error}`)
                                           console.error(error)
                                       }
-                                      return of(null)
+                                      return Observable.of(null)
                                   }),
                               )
                               .pipe(
                                   map(items =>
-                                      (items || []).map(item => ({ ...item, providerUri: uri })),
+                                      items === EMIT_PARTIAL_SENTINEL
+                                          ? items
+                                          : (items || []).map(item => ({ ...item, providerUri: uri })),
                                   ),
                               ),
                       ),
                   )
-                : of([]),
+                : Observable.of([]),
         ),
-        map(result => result.filter((v): v is EachWithProviderUri<R[]> => v !== null).flat()),
+        filter<
+            (typeof EMIT_PARTIAL_SENTINEL | EachWithProviderUri<R[]>)[],
+            (typeof EMIT_PARTIAL_SENTINEL | EachWithProviderUri<R[]>)[]
+        >(
+            result =>
+                !emitPartial || result.length === 0 || result.some(v => v !== EMIT_PARTIAL_SENTINEL),
+        ),
+        map(result =>
+            result
+                .filter((v): v is EachWithProviderUri<R[]> => v !== null && v !== EMIT_PARTIAL_SENTINEL)
+                .flat(),
+        ),
         distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
         tap(items => {
             if (LOG_VERBOSE) {
@@ -120,7 +138,9 @@ export function observeMeta(
     return observeProviderCall<MetaResult>(
         providerClients,
         ({ providerClient, settings }) =>
-            from(providerClient.meta(params, settings)).pipe(map(result => [result])),
+            promiseOrObservableToObservable(providerClient.meta(params, settings)).pipe(
+                map(result => [result]),
+            ),
         opts,
     )
 }
@@ -135,7 +155,8 @@ export function observeMentions(
 ): Observable<EachWithProviderUri<MentionsResult>> {
     return observeProviderCall(
         providerClients,
-        ({ providerClient, settings }) => from(providerClient.mentions(params, settings)),
+        ({ providerClient, settings }) =>
+            promiseOrObservableToObservable(providerClient.mentions(params, settings)),
         opts,
     )
 }
@@ -150,7 +171,8 @@ export function observeItems(
 ): Observable<EachWithProviderUri<ItemsResult>> {
     return observeProviderCall(
         providerClients,
-        ({ providerClient, settings }) => from(providerClient.items(params, settings)),
+        ({ providerClient, settings }) =>
+            promiseOrObservableToObservable(providerClient.items(params, settings)),
         opts,
     )
 }
@@ -171,7 +193,7 @@ export function observeAnnotations<R extends Range>(
     return observeProviderCall(
         providerClients,
         ({ providerClient, settings }) =>
-            from(providerClient.annotations(params, settings)).pipe(
+            promiseOrObservableToObservable(providerClient.annotations(params, settings)).pipe(
                 map(anns =>
                     anns
                         ? anns

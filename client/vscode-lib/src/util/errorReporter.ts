@@ -1,5 +1,6 @@
 import type { ProviderMethodOptions } from '@openctx/client'
-import { type Observable, catchError, of, tap } from 'rxjs'
+import { catchError, tap } from '@openctx/client/observable'
+import { Observable } from 'observable-fns'
 import type * as vscode from 'vscode'
 import { type ErrorWaiter, createErrorWaiter } from './errorWaiter.js'
 
@@ -45,7 +46,7 @@ export class ErrorReporterController implements vscode.Disposable {
         return (params: T, opts?: ProviderMethodOptions) => {
             const errorReporter = this.getErrorReporter(userAction, opts)
             if (errorReporter.skip) {
-                return of([])
+                return Observable.of([])
             }
 
             const tapper = () => {
@@ -55,7 +56,7 @@ export class ErrorReporterController implements vscode.Disposable {
             const errorCatcher = <T = any>(error: any): Observable<T[]> => {
                 errorReporter.onError(undefined, error)
                 errorReporter.report()
-                return of([])
+                return Observable.of([])
             }
 
             opts = withErrorHook(opts, (providerUri, error) => {
@@ -64,46 +65,6 @@ export class ErrorReporterController implements vscode.Disposable {
             })
 
             return providerMethod(params, opts).pipe(tap(tapper), catchError(errorCatcher))
-        }
-    }
-
-    /**
-     * wraps providerMethod to ensure it reports errors to the user.
-     */
-    public wrapAsyncGenerator<T, R>(
-        userAction: UserAction,
-        providerMethod: (
-            params: T,
-            opts?: ProviderMethodOptions,
-            signal?: AbortSignal,
-        ) => AsyncGenerator<R>,
-    ) {
-        const getErrorReporter = this.getErrorReporter.bind(this)
-        return async function* (
-            params: T,
-            opts?: ProviderMethodOptions,
-            signal?: AbortSignal,
-        ): AsyncGenerator<R> {
-            const errorReporter = getErrorReporter(userAction, opts)
-            if (errorReporter.skip) {
-                return
-            }
-
-            opts = withErrorHook(opts, (providerUri, error) => {
-                errorReporter.onError(providerUri, error)
-                errorReporter.report()
-            })
-
-            try {
-                for await (const value of providerMethod(params, opts, signal)) {
-                    errorReporter.onValue(undefined)
-                    errorReporter.report()
-                    yield value
-                }
-            } catch (error) {
-                errorReporter.onError(undefined, error)
-                errorReporter.report()
-            }
         }
     }
 
