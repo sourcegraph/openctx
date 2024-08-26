@@ -1,4 +1,5 @@
 import { MDXProvider } from '@mdx-js/react'
+import DOMPurify from 'dompurify'
 import { type ComponentType, useEffect, useState } from 'react'
 import { renderToString } from 'react-dom/server'
 import { render } from 'vike/abort'
@@ -79,10 +80,13 @@ export function createOnBeforeRender(content: ContentPages): OnBeforeRenderAsync
                 contentPageComponent: MDXContent,
                 contentPageHtml:
                     typeof window === 'undefined'
-                        ? renderToString(
-                              <MDXProvider components={MDX_COMPONENTS}>
-                                  <MDXContent />
-                              </MDXProvider>,
+                        ? DOMPurify.sanitize(
+                              renderToString(
+                                  <MDXProvider components={MDX_COMPONENTS}>
+                                      <MDXContent />
+                                  </MDXProvider>,
+                              ),
+                              { RETURN_TRUSTED_TYPE: true },
                           )
                         : undefined,
                 contentPageInfos: infos,
