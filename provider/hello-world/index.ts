@@ -21,6 +21,9 @@ const helloWorld: Provider = {
         return {
             name: '✨ Hello World!',
             annotations: {},
+            mentions: {
+                autoInclude: true,
+            },
             items: {
                 messageSelectors: [{ pattern: '.*' }],
             },
@@ -30,7 +33,7 @@ const helloWorld: Provider = {
     mentions(params: MentionsParams, settings: ProviderSettings): MentionsResult {
         return [
             {
-                title: '✨ Hello, world!',
+                title: `hello_world.${params.uri?.split('/').pop() || 'openctx'}`,
                 uri: 'https://openctx.org',
                 description: 'From OpenCtx',
             },
