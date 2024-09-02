@@ -68,9 +68,9 @@ interface MetaResult {
          */
         label?: string
         /**
-         * The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.
+         * Whether to automatically include the returned mention items as initial context for new messages.
          */
-        selectors?: MentionSelector[]
+        autoInclude?: string
     }
     /**
      * Configuration for the annotations feature.
@@ -89,16 +89,6 @@ interface MetaResult {
 interface MessageSelector {
     /**
      * The regex pattern matching a message for which the provider can return context items
-     */
-    pattern: string
-}
-
-/**
- * List of regex patterns matching the mention text for which the provider can return mentions.
- */
-interface MentionSelector {
-    /**
-     * The regex pattern matching the mention text for which the provider can return mentions
      */
     pattern: string
 }

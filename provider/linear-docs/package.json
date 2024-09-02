@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-linear-docs",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Linear Docs context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {
@@ -11,7 +11,10 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",

@@ -2,7 +2,7 @@
   "name": "openctx",
   "private": true,
   "displayName": "OpenCtx",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "publisher": "sourcegraph",
   "license": "Apache-2.0",
   "icon": "resources/logomark-v0.png",

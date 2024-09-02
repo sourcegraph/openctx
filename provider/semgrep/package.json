@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-semgrep",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Semgrep OpenCtx provider",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/semgrep",
@@ -12,7 +12,10 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "test": "vitest",

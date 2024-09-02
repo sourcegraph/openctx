@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-links",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Add links to your code based on configurable patterns (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/links",
@@ -12,7 +12,10 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",

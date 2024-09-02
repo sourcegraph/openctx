@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-notion",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Notion (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/notion",
@@ -12,7 +12,10 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",

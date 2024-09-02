@@ -1,6 +1,6 @@
 {
   "name": "@openctx/monaco-editor-extension",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "OpenCtx extension for Monaco Editor",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/clients/monaco-editor",
@@ -12,7 +12,11 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["README.md", "dist", "!**/*.test.*"],
+  "files": [
+    "README.md",
+    "dist",
+    "!**/*.test.*"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc --build",
