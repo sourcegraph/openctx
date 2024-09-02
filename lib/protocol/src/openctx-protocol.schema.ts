@@ -11,7 +11,6 @@ export type Protocol =
     | MetaResult
     | Mention
     | MessageSelector
-    | MentionSelector
     | AnnotationSelector
     | MentionsParams
     | MentionsResult
@@ -67,9 +66,9 @@ export interface MetaResult {
          */
         label?: string
         /**
-         * The list of regex patterns for triggering mentions for the provider when users directly types a matching text, for example a url, allowing the user to bypass choosing the provider manually.
+         * Whether to automatically include the returned mention items as initial context for new messages.
          */
-        selectors?: MentionSelector[]
+        autoInclude?: boolean
     }
     /**
      * Configuration for the annotations feature.
@@ -111,15 +110,6 @@ export interface MessageSelector {
     pattern: string
 }
 /**
- * List of regex patterns matching the mention text for which the provider can return mentions.
- */
-export interface MentionSelector {
-    /**
-     * The regex pattern matching the mention text for which the provider can return mentions
-     */
-    pattern: string
-}
-/**
  * Defines a scope in which a provider is called.
  *
  * To satisfy a selector, all of the selector's conditions must be met. For example, if both `path` and `content` are specified, the resource must satisfy both conditions.
@@ -141,6 +131,14 @@ export interface MentionsParams {
      * A search query that is interpreted by providers to filter the items in the result set.
      */
     query?: string
+    /**
+     * URI of the active document.
+     */
+    uri?: string
+    /**
+     * Name of the active codebase infered from .git.
+     */
+    codebase?: string
 }
 export interface ItemsParams {
     /**

@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-devdocs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Use documentation from https://devdocs.io (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/devdocs",
@@ -12,7 +12,10 @@
   "type": "module",
   "main": "dist/bundle.js",
   "types": "dist/index.d.ts",
-  "files": ["dist/bundle.js", "dist/index.d.ts"],
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
   "sideEffects": false,
   "scripts": {
     "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --platform=node --outfile=dist/bundle.js index.ts",
