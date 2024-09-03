@@ -66,7 +66,7 @@ export interface MetaResult {
          */
         label?: string
         /**
-         * Whether to automatically include the returned mention items as initial context for new messages.
+         * EXPERIMENTAL: Whether to automatically include the returned mention items as initial context for new messages.
          */
         autoInclude?: boolean
     }

@@ -8,6 +8,7 @@ describe('helloWorld', () => {
             name: '✨ Hello World!',
             annotations: {},
             items: { messageSelectors: [{ pattern: '.*' }] },
+            mentions: { autoInclude: true },
         }))
 
     test('annotations', () =>
