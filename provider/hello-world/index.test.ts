@@ -18,8 +18,8 @@ describe('helloWorld', () => {
                     uri: 'file:///a',
                     content: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k'].join('\n'),
                 },
-                {}
-            )
+                {},
+            ),
         ).toStrictEqual<AnnotationsResult>([
             {
                 uri: 'file:///a',
