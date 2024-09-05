@@ -139,6 +139,10 @@ export interface MentionsParams {
      * Name of the active codebase infered from .git.
      */
     codebase?: string
+    /**
+     * Whether the request if to get auto include default context
+     */
+    autoInclude?: boolean
 }
 export interface ItemsParams {
     /**
