@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "OpenCtx provider library",
   "license": "Apache-2.0",
   "repository": {

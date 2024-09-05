@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-hello-world",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Hello World (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/hello-world",

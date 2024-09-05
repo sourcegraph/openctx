@@ -15,5 +15,5 @@
     "@openctx/codemirror-extension": "workspace:*",
     "@openctx/provider-hello-world": "workspace:*"
   },
-  "version": "0.0.7"
+  "version": "0.0.8"
 }

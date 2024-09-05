@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-linear-issues",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Linear Issues context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {

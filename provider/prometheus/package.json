@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-prometheus",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "Hover over a Prometheus metric to see what it's doing in prod (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/prometheus",
