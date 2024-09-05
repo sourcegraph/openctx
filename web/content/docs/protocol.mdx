@@ -124,6 +124,18 @@ export interface MentionsParams {
      * A search query that is interpreted by providers to filter the items in the result set.
      */
     query?: string
+    /**
+     * URI of the active document.
+     */
+    uri?: string
+    /**
+     * Name of the active codebase.
+     */
+    codebase?: string
+    /**
+     * Whether the request if to get automatically include default context.
+     */
+    autoInclude?: string
 }
 ```
 
