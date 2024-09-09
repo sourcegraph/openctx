@@ -84,13 +84,13 @@ export const githubProvider: Provider<Settings> = {
 /** parseQuery parses a given user input and tries to extract the repo details and
  * item number from it.
  * Supported formats:
- * - https://github.com/sourcegraph/sourcegraph/issues/1234
- * - https://github.com/sourcegraph/sourcegraph/pull/1234
- * - https://ghe.example.com/sourcegraph/sourcegraph/pull/1234
- * - github.com/sourcegraph/sourcegraph/issues/1234
- * - ghe.example.com/sourcegraph/sourcegraph/issues/1234
- * - sourcegraph/sourcegraph/issues/1234
- * - sourcegraph/sourcegraph:1234
+ * - https://github.com/facebook/react/issues/1234
+ * - https://github.com/facebook/react/pull/1234
+ * - https://ghe.example.com/facebook/react/pull/1234
+ * - github.com/facebook/react/issues/1234
+ * - ghe.example.com/facebook/react/issues/1234
+ * - facebook/react/issues/1234
+ * - facebook/react:1234
  */
 export function parseQuery(query = ''): { owner: string; repoName: string; number: number } | null {
     try {

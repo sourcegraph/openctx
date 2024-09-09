@@ -33,13 +33,13 @@ By default, this provider talks to GitHub.com. Add the URL to your GitHub Enterp
 
 Then use the `@`-mention type **Github PRs & Issues** and search for issues or pull requests to include in context using the followining possible query examples:
 
-- <https://github.com/sourcegraph/sourcegraph/issues/1234>
-- <https://github.com/sourcegraph/sourcegraph/pull/1234>
-- <https://ghe.example.com/sourcegraph/sourcegraph/pull/1234>
-- github.com/sourcegraph/sourcegraph/issues/1234
-- ghe.example.com/sourcegraph/sourcegraph/issues/1234
-- sourcegraph/sourcegraph/issues/1234
-- sourcegraph/sourcegraph:1234
+- <https://github.com/facebook/react/issues/1234>
+- <https://github.com/facebook/react/pull/1234>
+- <https://ghe.example.com/facebook/react/pull/1234>
+- github.com/facebook/react/issues/1234
+- ghe.example.com/facebook/react/issues/1234
+- facebook/react/issues/1234
+- facebook/react:1234
 
 ## Development
 
