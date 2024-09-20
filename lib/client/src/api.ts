@@ -16,9 +16,9 @@ import {
     combineLatest,
     defer,
     distinctUntilChanged,
-    mergeMap,
     promiseOrObservableToObservable,
     startWith,
+    switchMap,
     tap,
 } from './misc/observable.js'
 import type { ProviderClient } from './providerClient/createProviderClient.js'
@@ -78,7 +78,7 @@ function observeProviderCall<R>(
     const EMIT_PARTIAL_SENTINEL: 'emit-partial-sentinel' = {} as any
 
     return providerClients.pipe(
-        mergeMap(providerClients =>
+        switchMap(providerClients =>
             providerClients && providerClients.length > 0
                 ? combineLatest(
                       providerClients.map(({ uri, providerClient, settings }) =>

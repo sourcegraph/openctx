@@ -1,5 +1,12 @@
 import type { Annotation, AnnotationsParams } from '@openctx/client'
-import { EMPTY, combineLatest, debounceTime, mergeMap, startWith, tap } from '@openctx/client/observable'
+import {
+    EMPTY,
+    combineLatest,
+    debounceTime,
+    startWith,
+    switchMap,
+    tap,
+} from '@openctx/client/observable'
 import { createChipList } from '@openctx/ui-standalone'
 import { Observable, map } from 'observable-fns'
 import { toLineRangeStrings } from '../../shared/util/toLineRangeStrings.js'
@@ -33,7 +40,7 @@ export function injectOnGitHubCodeView(
         withDOMElement<HTMLTextAreaElement>('#read-only-cursor-text-area'),
         withDOMElement<HTMLElement>('react-app[app-name="react-code-view"]'),
     ]).pipe(
-        mergeMap(([cursorTextArea, reactCodeView]) => {
+        switchMap(([cursorTextArea, reactCodeView]) => {
             interface GitHubCodeView {
                 cursorTextArea: HTMLTextAreaElement
                 reactCodeView: HTMLElement

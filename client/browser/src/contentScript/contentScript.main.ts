@@ -6,7 +6,7 @@ import type { AnnotationsParams } from '@openctx/provider'
 import deepEqual from 'deep-equal'
 import { background } from '../browser-extension/web-extension-api/runtime.js'
 import './contentScript.main.css'
-import { combineLatest, distinctUntilChanged, mergeMap, throttleTime } from '@openctx/client/observable'
+import { combineLatest, distinctUntilChanged, switchMap, throttleTime } from '@openctx/client/observable'
 import type { Observable } from 'observable-fns'
 import { debugTap } from './debug.js'
 import { injectOnGitHubCodeView } from './github/codeView.js'
@@ -23,7 +23,7 @@ const INJECTORS: Injector[] = [injectOnGitHubCodeView, injectOnGitHubPullRequest
 
 const subscription = locationChanges
     .pipe(
-        mergeMap(location =>
+        switchMap(location =>
             combineLatest(INJECTORS.map(injector => injector(location, annotationsChanges))),
         ),
     )

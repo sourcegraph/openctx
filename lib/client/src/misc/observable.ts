@@ -452,6 +452,40 @@ export function distinctUntilChanged<T>(
     }
 }
 
+/**
+ * Whether {@link value} is equivalent to {@link other} in terms of JSON serialization.
+ */
+export function isEqualJSON<T>(value: T, other: T): boolean {
+    if (value === other) {
+        return true
+    }
+
+    if (value == null || other == null || typeof value !== 'object' || typeof other !== 'object') {
+        return false
+    }
+
+    const isValueArray = Array.isArray(value)
+    const isOtherArray = Array.isArray(other)
+    if (isValueArray !== isOtherArray) {
+        return false
+    }
+    if (isValueArray && isOtherArray) {
+        return (
+            value.length === other.length &&
+            value.every((value, index) => isEqualJSON(value, other[index]))
+        )
+    }
+
+    const allKeys = new Set([...Object.keys(value), ...Object.keys(other)])
+    for (const key of allKeys) {
+        if (!isEqualJSON((value as any)[key], (other as any)[key])) {
+            return false
+        }
+    }
+
+    return true
+}
+
 interface Observer<T> {
     next: (value: T) => void
     error: (err: any) => void
@@ -489,10 +523,6 @@ export function tap<T>(
 
 /** Sentinel value. */
 const NO_VALUES_YET: Record<string, never> = {}
-
-function isEqualJSON(a: unknown, b: unknown): boolean {
-    return JSON.stringify(a) === JSON.stringify(b)
-}
 
 export function mergeMap<T, R>(
     project: (value: T, index: number) => ObservableLike<R>,
@@ -541,6 +571,61 @@ export function mergeMap<T, R>(
                     if (innerSubscription) {
                         unsubscribe(innerSubscription)
                     }
+                }
+            }
+        })
+    }
+}
+
+export function switchMap<T, R>(
+    project: (value: T, index: number) => ObservableLike<R>,
+): (source: ObservableLike<T>) => Observable<R> {
+    return (source: ObservableLike<T>): Observable<R> => {
+        return new Observable<R>(observer => {
+            let index = 0
+            let innerSubscription: UnsubscribableLike | null = null
+            let outerCompleted = false
+
+            const checkComplete = () => {
+                if (outerCompleted && !innerSubscription) {
+                    observer.complete()
+                }
+            }
+
+            const outerSubscription = source.subscribe({
+                next(value) {
+                    if (innerSubscription) {
+                        unsubscribe(innerSubscription)
+                        innerSubscription = null
+                    }
+
+                    const innerObservable = project(value, index++)
+                    innerSubscription = innerObservable.subscribe({
+                        next(innerValue) {
+                            observer.next(innerValue)
+                        },
+                        error(err) {
+                            observer.error(err)
+                        },
+                        complete() {
+                            innerSubscription = null
+                            checkComplete()
+                        },
+                    })
+                },
+                error(err) {
+                    observer.error(err)
+                },
+                complete() {
+                    outerCompleted = true
+                    checkComplete()
+                },
+            })
+
+            return () => {
+                unsubscribe(outerSubscription)
+                if (innerSubscription) {
+                    unsubscribe(innerSubscription)
                 }
             }
         })

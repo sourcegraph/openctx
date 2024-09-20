@@ -1,4 +1,4 @@
-import { Observable } from 'observable-fns'
+import { Observable, Subject } from 'observable-fns'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import {
     type ObservableValue,
@@ -7,12 +7,14 @@ import {
     distinctUntilChanged,
     firstValueFrom,
     fromVSCodeEvent,
+    isEqualJSON,
     memoizeLastValue,
     observableOfSequence,
     observableOfTimedSequence,
     promiseFactoryToObservable,
     readValuesFrom,
     shareReplay,
+    switchMap,
 } from './observable.js'
 
 describe('firstValueFrom', () => {
@@ -283,5 +285,153 @@ describe('shareReplay', () => {
         expect.soft(reader1.values).toEqual(WANT)
         expect.soft(reader2.values).toEqual(WANT) // reader2 got the previous value
         expect(called).toBe(1) // but the observable was only heated up once
+    })
+})
+
+describe('switchMap', () => {
+    test('switches to new inner observable when source emits', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<string>()
+        const result = source.pipe(switchMap(c => observableOfTimedSequence(10, `${c}-1`, 10, `${c}-2`)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next('a')
+        await vi.advanceTimersByTimeAsync(15)
+        expect(values).toEqual<typeof values>(['a-1'])
+        values.length = 0
+
+        source.next('b')
+        await vi.advanceTimersByTimeAsync(15)
+        expect(values).toEqual<typeof values>(['b-1'])
+        values.length = 0
+
+        await vi.advanceTimersByTimeAsync(10)
+        expect(values).toEqual<typeof values>(['b-2'])
+        values.length = 0
+
+        source.complete()
+        await done
+        expect(values).toEqual<typeof values>([])
+    })
+
+    test('unsubscribes from previous inner observable', async () => {
+        vi.useFakeTimers()
+        const innerSubject1 = new Subject<string>()
+        const innerSubject2 = new Subject<string>()
+        const source = new Subject<number>()
+        const result = source.pipe(switchMap(x => (x === 1 ? innerSubject1 : innerSubject2)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next(1)
+        innerSubject1.next('a')
+        expect(values).toEqual(['a'])
+
+        source.next(2)
+        innerSubject1.next('b') // This should be ignored
+        innerSubject2.next('c')
+        expect(values).toEqual(['a', 'c'])
+
+        source.complete()
+        innerSubject2.complete()
+        await done
+        expect(values).toEqual(['a', 'c'])
+    })
+
+    test('handles errors from source observable', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<number>()
+        const result = source.pipe(switchMap(x => observableOfSequence(x * 10)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next(1)
+        await vi.advanceTimersByTimeAsync(10)
+        source.next(2)
+        await vi.advanceTimersByTimeAsync(10)
+        source.error(new Error('Source error'))
+
+        await expect(done).rejects.toThrow('Source error')
+        expect(values).toEqual([10, 20])
+    })
+
+    test('handles errors from inner observable', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<number>()
+        const result = source.pipe(
+            switchMap(x => {
+                if (x === 2) {
+                    return new Observable(observer => observer.error(new Error('Inner error')))
+                }
+                return observableOfSequence(x * 10)
+            }),
+        )
+        const { values, done } = readValuesFrom(result)
+        done.catch(() => {})
+
+        source.next(1)
+        await vi.advanceTimersByTimeAsync(10)
+        source.next(2)
+        await vi.advanceTimersByTimeAsync(10)
+
+        await expect(done).rejects.toThrow('Inner error')
+        expect(values).toEqual([10])
+    })
+
+    test('completes when source completes and last inner observable completes', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<string>()
+        const result = source.pipe(switchMap(c => observableOfTimedSequence(10, `${c}-1`, 10, `${c}-2`)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next('a')
+        await vi.advanceTimersByTimeAsync(20)
+        source.complete()
+
+        await done
+        expect(values).toEqual(['a-1', 'a-2'])
+    })
+})
+
+describe('isEqualJSON', () => {
+    test('compares objects deeply', () => {
+        const obj1 = { a: 1, b: { c: 2 } }
+        const obj2 = { a: 1, b: { c: 2 } }
+        const obj3 = { a: 1, b: { c: 3 } }
+        const obj4 = { a: 1, b: { x: 3 } }
+
+        expect(isEqualJSON(obj1, obj2)).toBe(true)
+        expect(isEqualJSON(obj1, obj3)).toBe(false)
+        expect(isEqualJSON<unknown>(obj3, obj4)).toBe(false)
+    })
+
+    test('handles arrays', () => {
+        const arr1 = [1, 2, [3, 4]]
+        const arr2 = [1, 2, [3, 4]]
+        const arr3 = [1, 2, [3, 5]]
+
+        expect(isEqualJSON(arr1, arr2)).toBe(true)
+        expect(isEqualJSON(arr1, arr3)).toBe(false)
+
+        expect(isEqualJSON(['a'], { '0': 'a' })).toBe(false)
+        expect(isEqualJSON([undefined], { '0': undefined })).toBe(false)
+        expect(isEqualJSON([undefined], [null])).toBe(false)
+    })
+
+    test('handles null and undefined', () => {
+        expect(isEqualJSON(null, null)).toBe(true)
+        expect(isEqualJSON(undefined, undefined)).toBe(true)
+        expect(isEqualJSON(null, undefined)).toBe(false)
+    })
+
+    test('handles primitive types', () => {
+        expect(isEqualJSON(1, 1)).toBe(true)
+        expect(isEqualJSON('test', 'test')).toBe(true)
+        expect(isEqualJSON(true, true)).toBe(true)
+        expect(isEqualJSON<unknown>(1, '1')).toBe(false)
+    })
+
+    test('handles unset properties', () => {
+        expect(isEqualJSON({ a: undefined }, {})).toBe(true)
+        expect(isEqualJSON({}, { b: undefined })).toBe(true)
+        expect(isEqualJSON({}, { c: 123 })).toBe(false)
     })
 })
