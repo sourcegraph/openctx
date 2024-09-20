@@ -4,8 +4,6 @@ import { Observable } from 'observable-fns'
 import type * as vscode from 'vscode'
 import { type ErrorWaiter, createErrorWaiter } from './errorWaiter.js'
 
-const MIN_TIME_SINCE_LAST_ERROR = 1000 * 60 * 15 /* 15 min */
-
 /**
  * The users action affects our behaviour around reporting, so we explicitly
  * tell ErrorReporter the intent.
@@ -29,12 +27,8 @@ export enum UserAction {
  */
 export class ErrorReporterController implements vscode.Disposable {
     private errorWaiters = new Map<string, ErrorWaiter>()
-    private errorNotificationVisible = new Set<string>()
 
-    constructor(
-        private showErrorNotification: (providerUri: string | undefined, error: any) => Thenable<any>,
-        private errorLog: (error: any) => void,
-    ) {}
+    constructor(private errorLog: (error: any, providerUri: string | undefined) => void) {}
 
     /**
      * wraps providerMethod to ensure it reports errors to the user.
@@ -120,7 +114,7 @@ export class ErrorReporterController implements vscode.Disposable {
             errorByUri.set(providerUri, errors)
 
             // Always log the error.
-            this.errorLog(error)
+            this.errorLog(error, providerUri)
         }
 
         // report takes the seen errors so far and decides if they should be
@@ -137,21 +131,6 @@ export class ErrorReporterController implements vscode.Disposable {
 
                 const errorWaiter = this.getErrorWaiter(providerUri)
                 errorWaiter.gotError(hasError)
-
-                // From here on out it is about notifying for an error
-                if (!hasError) {
-                    continue
-                }
-
-                // Show an error notification unless we've recently shown one
-                // (to avoid annoying the user).
-                const shouldNotify =
-                    userAction === UserAction.Explicit ||
-                    errorWaiter.timeSinceLastError() > MIN_TIME_SINCE_LAST_ERROR
-                if (shouldNotify) {
-                    const error = errors.length === 1 ? errors[0] : new AggregateError(errors)
-                    this.maybeShowErrorNotification(providerUri, error)
-                }
             }
 
             // Clear out seen errors so that report may be called again.
@@ -179,22 +158,6 @@ export class ErrorReporterController implements vscode.Disposable {
         errorWaiter = createErrorWaiter(errorDelay, errorThreshold)
         this.errorWaiters.set(providerUri, errorWaiter)
         return errorWaiter
-    }
-
-    private maybeShowErrorNotification(providerUri: string, error: any) {
-        // We store the notification thenable so we can tell if the last
-        // notification for providerUri is still showing.
-        if (this.errorNotificationVisible.has(providerUri)) {
-            return
-        }
-        this.errorNotificationVisible.add(providerUri)
-        const onfinally = () => this.errorNotificationVisible.delete(providerUri)
-
-        // If providerUri is the empty string communicate that via undefined
-        this.showErrorNotification(providerUri === '' ? undefined : providerUri, error).then(
-            onfinally,
-            onfinally,
-        )
     }
 
     public dispose() {

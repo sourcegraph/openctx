@@ -22,7 +22,10 @@ export class Cache<T> {
     }
 }
 
-/** resolves promise, but will return defaultValue if promise throws or takes longer than delay ms */
+/**
+ * Try to resolve {@link promise}, but return {@link opts.defaultValue} if it throws or takes longer than
+ * {@link opts.delay} ms.
+ */
 export async function bestEffort<T>(
     promise: Promise<T>,
     opts: {
