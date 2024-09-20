@@ -7,6 +7,7 @@ import {
     distinctUntilChanged,
     firstValueFrom,
     fromVSCodeEvent,
+    isEqualJSON,
     memoizeLastValue,
     observableOfSequence,
     observableOfTimedSequence,
@@ -387,5 +388,50 @@ describe('switchMap', () => {
 
         await done
         expect(values).toEqual(['a-1', 'a-2'])
+    })
+})
+
+describe('isEqualJSON', () => {
+    test('compares objects deeply', () => {
+        const obj1 = { a: 1, b: { c: 2 } }
+        const obj2 = { a: 1, b: { c: 2 } }
+        const obj3 = { a: 1, b: { c: 3 } }
+        const obj4 = { a: 1, b: { x: 3 } }
+
+        expect(isEqualJSON(obj1, obj2)).toBe(true)
+        expect(isEqualJSON(obj1, obj3)).toBe(false)
+        expect(isEqualJSON<unknown>(obj3, obj4)).toBe(false)
+    })
+
+    test('handles arrays', () => {
+        const arr1 = [1, 2, [3, 4]]
+        const arr2 = [1, 2, [3, 4]]
+        const arr3 = [1, 2, [3, 5]]
+
+        expect(isEqualJSON(arr1, arr2)).toBe(true)
+        expect(isEqualJSON(arr1, arr3)).toBe(false)
+
+        expect(isEqualJSON(['a'], { '0': 'a' })).toBe(false)
+        expect(isEqualJSON([undefined], { '0': undefined })).toBe(false)
+        expect(isEqualJSON([undefined], [null])).toBe(false)
+    })
+
+    test('handles null and undefined', () => {
+        expect(isEqualJSON(null, null)).toBe(true)
+        expect(isEqualJSON(undefined, undefined)).toBe(true)
+        expect(isEqualJSON(null, undefined)).toBe(false)
+    })
+
+    test('handles primitive types', () => {
+        expect(isEqualJSON(1, 1)).toBe(true)
+        expect(isEqualJSON('test', 'test')).toBe(true)
+        expect(isEqualJSON(true, true)).toBe(true)
+        expect(isEqualJSON<unknown>(1, '1')).toBe(false)
+    })
+
+    test('handles unset properties', () => {
+        expect(isEqualJSON({ a: undefined }, {})).toBe(true)
+        expect(isEqualJSON({}, { b: undefined })).toBe(true)
+        expect(isEqualJSON({}, { c: 123 })).toBe(false)
     })
 })
