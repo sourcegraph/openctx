@@ -1,4 +1,4 @@
-import { Observable } from 'observable-fns'
+import { Observable, Subject } from 'observable-fns'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import {
     type ObservableValue,
@@ -13,6 +13,7 @@ import {
     promiseFactoryToObservable,
     readValuesFrom,
     shareReplay,
+    switchMap,
 } from './observable.js'
 
 describe('firstValueFrom', () => {
@@ -283,5 +284,108 @@ describe('shareReplay', () => {
         expect.soft(reader1.values).toEqual(WANT)
         expect.soft(reader2.values).toEqual(WANT) // reader2 got the previous value
         expect(called).toBe(1) // but the observable was only heated up once
+    })
+})
+
+describe('switchMap', () => {
+    test('switches to new inner observable when source emits', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<string>()
+        const result = source.pipe(switchMap(c => observableOfTimedSequence(10, `${c}-1`, 10, `${c}-2`)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next('a')
+        await vi.advanceTimersByTimeAsync(15)
+        expect(values).toEqual<typeof values>(['a-1'])
+        values.length = 0
+
+        source.next('b')
+        await vi.advanceTimersByTimeAsync(15)
+        expect(values).toEqual<typeof values>(['b-1'])
+        values.length = 0
+
+        await vi.advanceTimersByTimeAsync(10)
+        expect(values).toEqual<typeof values>(['b-2'])
+        values.length = 0
+
+        source.complete()
+        await done
+        expect(values).toEqual<typeof values>([])
+    })
+
+    test('unsubscribes from previous inner observable', async () => {
+        vi.useFakeTimers()
+        const innerSubject1 = new Subject<string>()
+        const innerSubject2 = new Subject<string>()
+        const source = new Subject<number>()
+        const result = source.pipe(switchMap(x => (x === 1 ? innerSubject1 : innerSubject2)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next(1)
+        innerSubject1.next('a')
+        expect(values).toEqual(['a'])
+
+        source.next(2)
+        innerSubject1.next('b') // This should be ignored
+        innerSubject2.next('c')
+        expect(values).toEqual(['a', 'c'])
+
+        source.complete()
+        innerSubject2.complete()
+        await done
+        expect(values).toEqual(['a', 'c'])
+    })
+
+    test('handles errors from source observable', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<number>()
+        const result = source.pipe(switchMap(x => observableOfSequence(x * 10)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next(1)
+        await vi.advanceTimersByTimeAsync(10)
+        source.next(2)
+        await vi.advanceTimersByTimeAsync(10)
+        source.error(new Error('Source error'))
+
+        await expect(done).rejects.toThrow('Source error')
+        expect(values).toEqual([10, 20])
+    })
+
+    test('handles errors from inner observable', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<number>()
+        const result = source.pipe(
+            switchMap(x => {
+                if (x === 2) {
+                    return new Observable(observer => observer.error(new Error('Inner error')))
+                }
+                return observableOfSequence(x * 10)
+            }),
+        )
+        const { values, done } = readValuesFrom(result)
+        done.catch(() => {})
+
+        source.next(1)
+        await vi.advanceTimersByTimeAsync(10)
+        source.next(2)
+        await vi.advanceTimersByTimeAsync(10)
+
+        await expect(done).rejects.toThrow('Inner error')
+        expect(values).toEqual([10])
+    })
+
+    test('completes when source completes and last inner observable completes', async () => {
+        vi.useFakeTimers()
+        const source = new Subject<string>()
+        const result = source.pipe(switchMap(c => observableOfTimedSequence(10, `${c}-1`, 10, `${c}-2`)))
+        const { values, done } = readValuesFrom(result)
+
+        source.next('a')
+        await vi.advanceTimersByTimeAsync(20)
+        source.complete()
+
+        await done
+        expect(values).toEqual(['a-1', 'a-2'])
     })
 })

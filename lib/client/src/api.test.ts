@@ -351,7 +351,7 @@ describe('observeAnnotations', () => {
     test('config changes', async () => {
         const values = await allValuesFrom(
             observeAnnotations<Range>(
-                Observable.of(
+                observableOfTimedSequence(
                     [
                         {
                             uri: 'a',
@@ -362,6 +362,7 @@ describe('observeAnnotations', () => {
                             settings: {},
                         },
                     ],
+                    0,
                     [
                         {
                             uri: 'a',

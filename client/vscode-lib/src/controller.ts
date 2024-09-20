@@ -11,8 +11,8 @@ import {
 import {
     combineLatest,
     isObservableOrInteropObservable,
-    mergeMap,
     promiseToObservable,
+    switchMap,
 } from '@openctx/client/observable'
 import { Observable, type ObservableLike, map } from 'observable-fns'
 import * as vscode from 'vscode'
@@ -107,12 +107,12 @@ export function createController({
                 ? vscode.Uri.parse(resource)
                 : vscode.workspace.workspaceFolders?.[0]?.uri
             return observeWorkspaceConfigurationChanges('openctx', scope).pipe(
-                mergeMap(() => promiseToObservable(getConfiguration(scope))),
+                switchMap(() => promiseToObservable(getConfiguration(scope))),
             )
         },
         authInfo: getAuthInfo
             ? provider =>
-                  secrets.pipe(mergeMap(secrets => promiseToObservable(getAuthInfo(secrets, provider))))
+                  secrets.pipe(switchMap(secrets => promiseToObservable(getAuthInfo(secrets, provider))))
             : undefined,
         makeRange,
         logger: message => outputChannel.appendLine(message),

@@ -547,6 +547,61 @@ export function mergeMap<T, R>(
     }
 }
 
+export function switchMap<T, R>(
+    project: (value: T, index: number) => ObservableLike<R>,
+): (source: ObservableLike<T>) => Observable<R> {
+    return (source: ObservableLike<T>): Observable<R> => {
+        return new Observable<R>(observer => {
+            let index = 0
+            let innerSubscription: UnsubscribableLike | null = null
+            let outerCompleted = false
+
+            const checkComplete = () => {
+                if (outerCompleted && !innerSubscription) {
+                    observer.complete()
+                }
+            }
+
+            const outerSubscription = source.subscribe({
+                next(value) {
+                    if (innerSubscription) {
+                        unsubscribe(innerSubscription)
+                        innerSubscription = null
+                    }
+
+                    const innerObservable = project(value, index++)
+                    innerSubscription = innerObservable.subscribe({
+                        next(innerValue) {
+                            observer.next(innerValue)
+                        },
+                        error(err) {
+                            observer.error(err)
+                        },
+                        complete() {
+                            innerSubscription = null
+                            checkComplete()
+                        },
+                    })
+                },
+                error(err) {
+                    observer.error(err)
+                },
+                complete() {
+                    outerCompleted = true
+                    checkComplete()
+                },
+            })
+
+            return () => {
+                unsubscribe(outerSubscription)
+                if (innerSubscription) {
+                    unsubscribe(innerSubscription)
+                }
+            }
+        })
+    }
+}
+
 export function defer<R>(observableFactory: () => ObservableLike<R>): Observable<R> {
     return new Observable<R>(observer => {
         let innerSubscription: UnsubscribableLike | undefined

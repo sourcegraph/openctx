@@ -35,9 +35,9 @@ import {
     concatMap,
     distinctUntilChanged,
     firstValueFrom,
-    mergeMap,
     promiseOrObservableToObservable,
     shareReplay,
+    switchMap,
     take,
     timer,
 } from '../misc/observable.js'
@@ -288,7 +288,7 @@ export function createClient<R extends Range>(env: ClientEnv<R>): Client<R> {
                 }),
             )
             .pipe(
-                mergeMap(([configuration, providers]) =>
+                switchMap(([configuration, providers]) =>
                     configuration.providers.length > 0
                         ? combineLatest(
                               configuration.providers.map(({ providerUri, settings }) =>

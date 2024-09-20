@@ -1,5 +1,5 @@
 import type { Annotation, AnnotationsParams } from '@openctx/client'
-import { EMPTY, combineLatest, fromEvent, mergeMap, startWith, tap } from '@openctx/client/observable'
+import { EMPTY, combineLatest, fromEvent, startWith, switchMap, tap } from '@openctx/client/observable'
 import { createChipList } from '@openctx/ui-standalone'
 import { type Observable, filter, map } from 'observable-fns'
 import { DEBUG, debugTap } from '../debug.js'
@@ -30,7 +30,7 @@ export function injectOnGitHubPullRequestFilesView(
         withDOMElements<HTMLElement>('.diff-view .file'),
         clicksThatInvalidateDiffViewData.pipe(startWith(undefined)),
     ]).pipe(
-        mergeMap(([fileEls]) => {
+        switchMap(([fileEls]) => {
             const diffData = getDiffViewData(fileEls)
             if (DEBUG) {
                 console.log('diffData', diffData)
@@ -110,7 +110,7 @@ const clicksThatInvalidateDiffViewData: Observable<void> = fromEvent(document.bo
 
     // Wait for it to show up. Mark .blob-expanded elements that we've seen so that this works for
     // multiple expansions.
-    mergeMap(() =>
+    switchMap(() =>
         withDOMElements('tr.blob-expanded:not(.octx-seen)').pipe(
             tap(els => {
                 for (const el of els) {
