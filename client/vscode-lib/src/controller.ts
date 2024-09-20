@@ -23,7 +23,6 @@ import { createCodeLensProvider } from './ui/editor/codeLens.js'
 import { createHoverProvider } from './ui/editor/hover.js'
 import { createShowFileItemsList } from './ui/fileItemsList.js'
 import { createStatusBarItem } from './ui/statusBarItem.js'
-import { Cache, bestEffort } from './util/cache.js'
 import { ErrorReporterController, UserAction } from './util/errorReporter.js'
 import { importProvider } from './util/importHelpers.js'
 import { observeWorkspaceConfigurationChanges, toEventEmitter } from './util/observable.js'
@@ -122,18 +121,15 @@ export function createController({
     })
     disposables.push(client)
 
-    const errorLog = (error: any) => {
-        console.error(error)
-        outputChannel.appendLine(error)
-    }
-
     // errorReporter contains a lot of logic and state on how we notify and log
     // errors, as well as state around if we should turn off a feature (see
     // skipIfImplicitAction)
-    const errorReporter = new ErrorReporterController(
-        createErrorNotifier(outputChannel, extensionId, client),
-        errorLog,
-    )
+    const errorReporter = new ErrorReporterController((error: any, providerUri: string | undefined) => {
+        const prefix = `OpenCtx error (from provider ${providerUri ?? 'unknown'}): `
+        console.error(prefix, error)
+        const errorDetail = error.stack ? `${error} (stack trace follows)\n${error.stack}` : error
+        outputChannel.appendLine(`${prefix}${errorDetail}`)
+    })
     disposables.push(errorReporter)
 
     // Note: We distingiush between an explicit user action and an implicit
@@ -210,55 +206,4 @@ function ignoreDoc(params: AnnotationsParams): boolean {
 
 function makeRange(range: Range): vscode.Range {
     return new vscode.Range(range.start.line, range.start.character, range.end.line, range.end.character)
-}
-
-function createErrorNotifier(
-    outputChannel: vscode.OutputChannel,
-    extensionId: string,
-    client: Pick<VSCodeClient, 'meta'>,
-) {
-    // Fetching the name can be slow or fail. So we use a cache + timeout when
-    // getting the name of a provider.
-    const nameCache = new Cache<string>({ ttlMs: 10 * 1000 })
-    const getName = async (providerUri: string | undefined) => {
-        if (providerUri === undefined) {
-            return undefined
-        }
-        const fill = async () => {
-            const meta = await bestEffort(client.meta({}, { providerUri: providerUri }), {
-                defaultValue: [],
-                delay: 250,
-            })
-            return meta.pop()?.name ?? providerUri
-        }
-        return await nameCache.getOrFill(providerUri, fill)
-    }
-
-    const actionItems = [
-        {
-            title: 'Show Logs',
-            do: () => {
-                outputChannel.show()
-            },
-        },
-        {
-            title: 'Open Settings',
-            do: () => {
-                vscode.commands.executeCommand('workbench.action.openSettings', {
-                    query: `@ext:${extensionId} openctx.providers`,
-                })
-            },
-        },
-    ] satisfies (vscode.MessageItem & { do: () => void })[]
-
-    return async (providerUri: string | undefined, error: any) => {
-        const name = await getName(providerUri)
-        const message = name
-            ? `Error from OpenCtx provider "${name}": ${error}`
-            : `Error from OpenCtx: ${error}`
-        const action = await vscode.window.showErrorMessage(message, ...actionItems)
-        if (action) {
-            action.do()
-        }
-    }
 }
