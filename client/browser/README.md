@@ -18,8 +18,8 @@ Supported code hosts:
 
 After installing it in Chrome, visit the following pages to see it in action:
 
-- [Example code file on GitHub](https://github.com/sourcegraph/sourcegraph/blob/main/cmd/repo-updater/internal/repoupdater/observability.go)
-- [Example pull request on GitHub](https://github.com/sourcegraph/sourcegraph/pull/58878/files)
+- [Example code file on GitHub](https://github.com/sourcegraph/sourcegraph-public-snapshot/blob/main/internal/repoupdater/client.go)
+- [Example pull request on GitHub](https://github.com/sourcegraph/sourcegraph-public-snapshot/pull/58878/files)
 
 Click the extension's icon to change your [configuration](https://openctx.org/docs/concepts#user-configuration).
 

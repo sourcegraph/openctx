@@ -19,8 +19,8 @@ import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openC
  *
  * Good URLs to test on:
  *
- * - Small file: https://github.com/sourcegraph/sourcegraph/blob/main/cmd/repo-updater/internal/repoupdater/observability.go
- * - Large file: https://github.com/sourcegraph/sourcegraph/blob/main/internal/repos/github.go#L1300
+ * - Small file: https://github.com/sourcegraph/sourcegraph-public-snapshot/blob/main/internal/repoupdater/client.go
+ * - Large file: https://github.com/sourcegraph/sourcegraph-public-snapshot/blob/main/internal/repos/github.go
  */
 export function injectOnGitHubCodeView(
     location: URL,
