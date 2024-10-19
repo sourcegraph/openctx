@@ -11,9 +11,9 @@ import { LINE_CHIPS_CLASSNAME, annsByLine, styledChipListParams } from '../openC
  *
  * Good URLs to test on:
  *
- * - Small PR: https://github.com/sourcegraph/sourcegraph/pull/59084/files
- * - Medium PR: https://github.com/sourcegraph/sourcegraph/pull/58878/files
- * - Large PR: https://github.com/sourcegraph/sourcegraph/pull/58886/files
+ * - Small PR: https://github.com/sourcegraph/sourcegraph-public-snapshot/pull/59084/files
+ * - Medium PR: https://github.com/sourcegraph/sourcegraph-public-snapshot/pull/58878/files
+ * - Large PR: https://github.com/sourcegraph/sourcegraph-public-snapshot/pull/58886/files
  */
 export function injectOnGitHubPullRequestFilesView(
     location: URL,
