@@ -1,5 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import type {
+    Annotation,
+    Hover,
     ItemsParams,
     ItemsResult,
     MentionsParams,
@@ -7,9 +9,9 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import dedent from 'dedent'
 import { XMLBuilder } from 'fast-xml-parser'
 
+import dedent from 'dedent'
 import type { UserCredentials } from './auth.js'
 
 /** Settings for the Linear Issues OpenCtx provider. */
@@ -36,11 +38,94 @@ interface Comment {
 
 const NUMBER_OF_ISSUES_TO_FETCH = 10
 
+/**
+ * TODO(sqs): This could maybe be an idea to take it further?
+ * What if just like with TODO(name): <instruction>
+ * You could have providers opt-in to providing support for any comment with a CTX(provider): <uri> line?
+ * That would make it really easy to link specific context to a file / line of code
+ */
+
+// can be used to find Markdown Style URIs in content
+const markdownStyleURIRegex = /\[[^\]]+\]\((https:\/\/linear\.app\/.*)\)/gm
+const structuredIssueURIRegex = /linear\.app\/.*\/issue\/(?<identifier>(?<team>\w+)-(?<number>\d+)).*/gm
+
 const linearIssues: Provider<Settings> = {
-    meta(): MetaResult {
-        return { name: 'Linear Issues', mentions: {} }
+    meta(settings): MetaResult {
+        if (!settings.userCredentialsPath && !settings.accessToken) {
+            return { name: 'Linear Issues (Not Configured)' }
+        }
+
+        return {
+            name: 'Linear Issues',
+            mentions: {},
+            annotations: {
+                selectors: [{ contentContains: 'https://linear.app/' }],
+            },
+        }
     },
 
+    //TODO: This doesn't seem to be called anymore in the latest build?
+    async annotations(params, settings) {
+        if (!settings.userCredentialsPath && !settings.accessToken) {
+            return []
+        }
+
+        const annotationsWithoutItems: Annotation[] = []
+
+        let match: RegExpExecArray | null = null
+        let line = 0
+        let character = 0
+        // biome-ignore lint/suspicious/noAssignInExpressions: <this is a typical idiom w.r.t. regex looping>
+        while ((match = markdownStyleURIRegex.exec(params.content)) !== null) {
+            // The TLDR for this loop; we go through each regex match and
+            // calculate the range incrementally to save us having to do a lot
+            // of expensive string.slice() after which we might create a
+            // annotation out of it.
+
+            // TODO: we probably want to make this a helper
+            const matchIndex = match.index
+            const matchLength = match[0].length
+
+            // Calculate start position
+            const startLine = line
+            const startCharacter = character
+
+            // Update line and character positions up to the start of the match
+            for (let i = 0; i < matchIndex; i++) {
+                if (params.content[i] === '\n') {
+                    line++
+                    character = 0
+                } else {
+                    character++
+                }
+            }
+
+            // Calculate end position
+            const endLine = line
+            const endCharacter = character + matchLength
+
+            // Move past the current match
+            markdownStyleURIRegex.lastIndex = matchIndex + matchLength
+
+            // Now, we can see if we actually want to use the match
+            const issueId = parseIssueIDFromURL(match[1])
+            if (!issueId) {
+                continue
+            }
+
+            //TODO(rnauta): there's still a off-by-1 error here
+            annotationsWithoutItems.push({
+                uri: match[1],
+                range: {
+                    start: { line: startLine, character: startCharacter },
+                    end: { line: endLine, character: endCharacter },
+                },
+                item: { title: issueId },
+            })
+        }
+
+        return getAnnotationsWithCachedItems(annotationsWithoutItems, settings)
+    },
     async mentions(params: MentionsParams, settingsInput: Settings): Promise<MentionsResult> {
         let issues: Issue[] = []
 
@@ -77,33 +162,54 @@ const linearIssues: Provider<Settings> = {
         }
 
         const variables = { id: issueId }
-        const data = await linearApiRequest(issueWithCommentsQuery, variables, settingsInput)
-        const issue = data.data.issue as Issue
-        const comments = issue.comments?.nodes as Comment[]
-
-        const issueInfo = xmlBuilder.build({
-            title: issue.title,
-            description: issue.description || '',
-            comments: comments.map(comment => comment.body).join('\n'),
-            url: issue.url,
-        })
-        const content = dedent`
-            Here is the Linear issue. Use it to check if it helps.
-            Ignore it if it is not relevant.
-
-            ${issueInfo}
-        `
+        const response = await linearApiRequest(issueWithCommentsQuery, variables, settingsInput)
+        const issue = response.data.issue as Issue
 
         return [
             {
                 title: issue.title,
                 url: issue.url,
                 ai: {
-                    content,
+                    content: issueToAIContent(issue),
                 },
             },
         ]
     },
+}
+
+function issueToAIContent(issue: Issue): string {
+    const comments = issue.comments?.nodes as Comment[]
+
+    const issueInfo = xmlBuilder.build({
+        title: issue.title,
+        description: issue.description || '',
+        comments: comments.map(comment => comment.body).join('\n'),
+        url: issue.url,
+    })
+    const content = dedent`
+            Here is the Linear issue. Use it to check if it helps.
+            Ignore it if it is not relevant.
+
+            ${issueInfo}
+        `
+    return content
+}
+
+function issueToUIHover(issue: Issue): Hover {
+    return {
+        markdown: dedent`
+        # This is a issue with some more details
+
+        ## ${issue.title}
+
+        ${issue.description}
+
+        ## Comments
+
+        ${issue.comments?.nodes.map(comment => comment.body).join('\n')}
+        `,
+        text: issue.description,
+    }
 }
 
 export default linearIssues
@@ -235,6 +341,7 @@ const dedupeWith = <T>(items: T[], key: keyof T | ((item: T) => string)): T[] =>
     }, [] as T[])
 }
 
+// TODO: Probably want to generate proper GraphQL types or use Linear's typed SDK
 const issueFragment = `
   fragment IssueFragment on Issue {
       identifier
@@ -286,3 +393,137 @@ const issueWithCommentsQuery = `
 
   ${issueFragment}
 `
+
+const allIssuesWithCommentsQuery = `
+    query AllIssuesWithComments($filter: IssueFilter!, $total: Int!) {
+        issues(filter: $filter, first: $total, includeArchived: true) {
+            nodes {
+                ...IssueFragment
+                comments {
+                    nodes {
+                        body
+                    }
+                }
+            }
+        }
+    }
+
+    ${issueFragment}
+`
+
+/**
+ * This cache is specific for the `getAnnotationsWithCachedItems` function.
+ */
+const annotationIssueCache: Map<string, Issue> = new Map()
+/**
+ * Returns the requested annotations with their items set. Annotations that
+ * could not have their item resolved are removed.
+ *
+ * @param annotations - The annotations to try and resolve
+ * @returns Returns the annotations with their items set. Annotations that were
+ * passed in which could not be resolved are removed.
+ */
+async function getAnnotationsWithCachedItems(
+    annotations: Annotation[],
+    settings: Settings
+): Promise<Annotation[]> {
+    // bulk fetches can't filter by identifier directly and instead need to
+    // group numbers by their team ID
+    const toFetch: Record<string, Set<number>> = {}
+
+    // to track which IDs were requested. This will be used to clean the cache after.
+    const touchedIdentifiers: Set<string> = new Set()
+    const uriToIdentifier = new Map<string, string>()
+    let totalToFetch = 0
+
+    // either updat the annotation from cache or schedule a fetch
+    for (const annotation of annotations) {
+        const issueID = structuredIssueURIRegex.exec(annotation.uri)
+        if (!issueID) {
+            continue
+        }
+        const { identifier, team, number: numberString } = issueID.groups ?? {}
+        const number = parseInt(numberString)
+
+        uriToIdentifier.set(annotation.uri, identifier)
+        touchedIdentifiers.add(identifier)
+
+        if (annotationIssueCache.has(identifier)) {
+            continue
+        }
+
+        if (!toFetch[team]) {
+            toFetch[team] = new Set()
+        }
+        totalToFetch++
+        toFetch[team].add(number)
+    }
+
+    // we invalidate cache keys that haven't been requested
+    const untouchedCacheKeys = Array.from(annotationIssueCache.keys()).filter(
+        key => !touchedIdentifiers.has(key)
+    )
+    for (const key of untouchedCacheKeys) {
+        annotationIssueCache.delete(key)
+    }
+
+    // The filter consists of an OR-ed together set of AND queries that group
+    // each issue nubmer by their team. This is because there is no way of
+    // filtering by issue identifier.
+    const filter = {
+        or: Object.entries(toFetch).map(([team, numberedAnnotations]) => ({
+            and: {
+                team: {
+                    key: {
+                        eq: team,
+                    },
+                },
+                number: {
+                    in: Array.from(numberedAnnotations.values()),
+                },
+            },
+        })),
+    }
+
+    if (totalToFetch > 0) {
+        // Fetch the issues and update the cache
+        const response = await linearApiRequest(
+            allIssuesWithCommentsQuery,
+            { filter, total: totalToFetch },
+            settings
+        )
+
+        const issues = response.data.issues.nodes as Issue[]
+        for (const issue of issues) {
+            const identifier = issue.identifier
+            annotationIssueCache.set(identifier, issue)
+        }
+    }
+
+    const validAnnotations = annotations
+        .map(annotation => {
+            const identifier = uriToIdentifier.get(annotation.uri)! // this should always be set
+            console.assert(identifier, 'Could not find identifier for annotation')
+            //TODO(rnauta): Fix this
+            const issue = annotationIssueCache.get(identifier)
+            if (!issue) {
+                return undefined as unknown as Annotation
+            }
+            return {
+                ...annotation,
+                item: {
+                    title: issue.title,
+                    url: issue.url,
+                    ai: {
+                        content: issueToAIContent(issue),
+                    },
+                    ui: {
+                        hover: issueToUIHover(issue),
+                    },
+                },
+            } satisfies Annotation
+        })
+        .filter(Boolean)
+
+    return validAnnotations
+}
