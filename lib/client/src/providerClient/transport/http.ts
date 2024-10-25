@@ -85,9 +85,11 @@ export function createHttpTransport(
     }
 
     return {
-        meta: async params => send<MetaResult>({ method: 'meta', params }),
-        mentions: async params => send<MentionsResult>({ method: 'mentions', params }),
-        items: async params => send<ItemsResult>({ method: 'items', params }),
-        annotations: async params => send<AnnotationsResult>({ method: 'annotations', params }),
+        meta: async (params, settings) => send<MetaResult>({ method: 'meta', params, settings }),
+        mentions: async (params, settings) =>
+            send<MentionsResult>({ method: 'mentions', params, settings }),
+        items: async (params, settings) => send<ItemsResult>({ method: 'items', params, settings }),
+        annotations: async (params, settings) =>
+            send<AnnotationsResult>({ method: 'annotations', params, settings }),
     }
 }
