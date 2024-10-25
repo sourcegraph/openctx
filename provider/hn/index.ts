@@ -6,6 +6,7 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import { extractHNArticles } from './hn.js'
 
 /**
  * An OpenCtx provider that fetches the content of a URL and provides it as an item.
@@ -13,22 +14,44 @@ import type {
 const urlFetcher: Provider = {
     meta(): MetaResult {
         return {
-            name: 'Web URLs',
-            mentions: { label: 'Paste a URL...' },
+            name: 'HN',
+            mentions: { label: 'Paste a URL or search HN articles...' },
             annotations: { selectors: [] },
         }
     },
 
+    /**
+     * Returns HN articles whose titles match the search query.
+     *
+     * @param params The search parameters, including an optional query string
+     * @returns A list of matching HN article mentions with their titles and URLs
+     */
     async mentions(params: MentionsParams): Promise<MentionsResult> {
-        const [item] = await fetchItem({ message: params.query }, 2000)
-        if (!item) {
-            return []
-        }
+        const hnArticles = await extractHNArticles()
+        const matchingArticles = hnArticles.filter(article =>
+            article.title.toLowerCase().includes((params.query ?? '').toLowerCase()),
+        )
 
-        return [{ title: item.title, uri: item.url || '', data: { content: item.ai?.content } }]
+        return matchingArticles.map(article => ({
+            title: article.title,
+            uri: article.url,
+            data: { isHN: true },
+        }))
     },
 
     async items(params: ItemsParams): Promise<ItemsResult> {
+        if (params.mention?.data?.isHN) {
+            // Handle HN article mentions
+            const content = await fetchContentForURLContextItem(params.mention.uri)
+            return [
+                {
+                    url: params.mention.uri,
+                    title: params.mention.title,
+                    ui: { hover: { text: `HN Article: ${params.mention.title}` } },
+                    ai: { content: content ?? undefined },
+                },
+            ]
+        }
         return fetchItem(params)
     },
 }
