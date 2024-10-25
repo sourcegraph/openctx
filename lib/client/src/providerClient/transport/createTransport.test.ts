@@ -1,11 +1,13 @@
 import { afterEach } from 'node:test'
-import type { MetaResult, ResponseMessage } from '@openctx/protocol'
+import type { MetaResult, ProviderSettings, ResponseMessage } from '@openctx/protocol'
 import { afterAll, beforeAll, describe, expect, test, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 import { type ProviderTransport, createTransport } from './createTransport.js'
 
+const SETTINGS_FIXTURE: ProviderSettings = { a: 1 }
+
 async function expectProviderTransport(provider: ProviderTransport) {
-    expect(await provider.meta({}, {})).toEqual<MetaResult>({
+    expect(await provider.meta({}, SETTINGS_FIXTURE)).toEqual<MetaResult>({
         annotations: { selectors: [{ path: 'foo' }] },
         name: 'foo',
     })
@@ -67,6 +69,13 @@ describe('createTransport', () => {
             )
             const provider = createTransport('https://example.com/openctx', {})
             await expectProviderTransport(provider)
+
+            const body = await fetchMocker.requests()[0].json()
+            expect(body).toEqual({
+                method: 'meta',
+                params: {},
+                settings: SETTINGS_FIXTURE,
+            })
         })
 
         describe('errors', () => {
