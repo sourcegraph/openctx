@@ -13,7 +13,7 @@ import type {
 const urlFetcher: Provider = {
     meta(): MetaResult {
         return {
-            name: 'Web URLs',
+            name: 'Web URLs copy',
             mentions: { label: 'Paste a URL...' },
             annotations: { selectors: [] },
         }
