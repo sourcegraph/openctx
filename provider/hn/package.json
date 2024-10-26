@@ -1,0 +1,31 @@
+{
+  "name": "@openctx/provider-hn",
+  "version": "0.0.11",
+  "description": "Use information from HN (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/hn",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/hn"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest",
+    "watch": "tsc --build --watch & esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js --watch index.ts"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*",
+    "@types/cheerio": "^0.22.35",
+    "cheerio": "^1.0.0"
+  }
+}
