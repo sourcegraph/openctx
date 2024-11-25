@@ -1,0 +1,30 @@
+{
+  "name": "@openctx/provider-mcp",
+  "version": "0.0.11",
+  "description": "Use information from MCP providers",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/mcp"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest",
+    "watch": "tsc --build --watch & esbuild --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js --watch index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.7.0",
+    "@openctx/provider": "workspace:*"
+  }
+}
