@@ -1,13 +1,13 @@
 {
-  "name": "@openctx/provider-mcp",
+  "name": "@openctx/provider-modelcontextprotocol",
   "version": "0.0.11",
   "description": "Use information from MCP providers",
   "license": "Apache-2.0",
-  "homepage": "https://openctx.org/docs/providers/mcp",
+  "homepage": "https://openctx.org/docs/providers/modelcontextprotocol",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/mcp"
+    "directory": "provider/modelcontextprotocol"
   },
   "type": "module",
   "main": "dist/bundle.js",
