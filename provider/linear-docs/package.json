@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-linear-docs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Linear Docs context for code AI and editors (OpenCtx provider)",
   "license": "Apache-2.0",
   "repository": {

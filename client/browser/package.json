@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "@openctx/browser-extension",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "license": "Apache-2.0",
   "scripts": {
     "dev": "vite",
