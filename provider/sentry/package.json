@@ -1,6 +1,6 @@
 {
   "name": "@openctx/provider-sentry",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "Use information from Sentry.io issues (OpenCtx provider)",
   "license": "Apache-2.0",
   "homepage": "https://openctx.org/docs/providers/sentry",
