@@ -27,6 +27,7 @@
     "@openctx/provider": "workspace:*",
     "@types/cheerio": "^0.22.35",
     "@types/jsdom": "^21.1.7",
+    "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "jsdom": "^25.0.1"
   }
