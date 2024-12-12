@@ -6,6 +6,7 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
+import { fetchHNFrontPage } from './hn.js'
 
 /**
  * An OpenCtx provider that fetches the content of a URL and provides it as an item.
@@ -13,26 +14,26 @@ import type {
 const urlFetcher: Provider = {
     meta(): MetaResult {
         return {
-            name: 'Web URLs copy',
-            mentions: { label: 'Paste a URL...' },
+            name: 'Hacker News',
+            mentions: { label: 'Search HN articles...' },
             annotations: { selectors: [] },
         }
     },
 
     async mentions(params: MentionsParams): Promise<MentionsResult> {
-        const [item] = await fetchItem({ message: params.query }, 2000)
-        if (!item) {
-            return []
-        }
+        const articles = await fetchHNFrontPage()
 
-        return [{ title: item.title, uri: item.url || '', data: { content: item.ai?.content } }]
+        return articles.map(article => ({
+            title: article.title,
+            uri: article.url,
+            data: { content: article.title }, // Including title as content for context
+        }))
     },
 
     async items(params: ItemsParams): Promise<ItemsResult> {
         return fetchItem(params)
     },
 }
-
 async function fetchItem(params: ItemsParams, timeoutMs?: number): Promise<ItemsResult> {
     if (typeof params.mention?.data?.content === 'string') {
         return [
