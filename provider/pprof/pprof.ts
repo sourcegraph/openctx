@@ -1,6 +1,6 @@
-import { execSync } from 'child_process'
-import { constants, accessSync, readdirSync } from 'fs'
-import { basename, dirname, join, parse } from 'path'
+import { execSync } from 'node:child_process'
+import { constants, accessSync, readdirSync } from 'node:fs'
+import { basename, dirname, join, parse } from 'node:path'
 import { matchGlob } from '@openctx/provider'
 
 /**
@@ -30,14 +30,14 @@ export function getPprof(): Pprof | null {
         if (!stdout.endsWith('not found')) {
             return new Pprof('go tool pprof')
         }
-    } catch (e) {}
+    } catch (e) { }
 
     try {
         const stdout = execSync('which pprof').toString('utf-8').trim()
         if (!stdout.endsWith('not found')) {
             return new Pprof('pprof')
         }
-    } catch (e) {}
+    } catch (e) { }
 
     return null
 }
@@ -283,10 +283,10 @@ export class Pprof {
             // information to Cody.
             nodes.push({
                 function: node.func,
-                flat: parseFloat(node.flat),
-                flatPerc: parseFloat(node.flatPerc),
-                cum: parseFloat(node.cum),
-                cumPerc: parseFloat(node.cumPerc),
+                flat: Number.parseFloat(node.flat),
+                flatPerc: Number.parseFloat(node.flatPerc),
+                cum: Number.parseFloat(node.cum),
+                cumPerc: Number.parseFloat(node.cumPerc),
             })
         }
 

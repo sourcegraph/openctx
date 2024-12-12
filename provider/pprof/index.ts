@@ -1,4 +1,4 @@
-import { dirname } from 'path'
+import { dirname } from 'node:path'
 import type {
     Annotation,
     AnnotationsParams,
@@ -107,9 +107,8 @@ const pprof: Provider<Settings> = {
             }
 
             let item: Item = {
-                title: `pprof ${top.type}: cum ${node.cum}${top.unit}, ${node.cumPerc}% (#${
-                    i + 1
-                }, sort=${settings.top?.sort || 'cum'})`,
+                title: `pprof ${top.type}: cum ${node.cum}${top.unit}, ${node.cumPerc}% (#${i + 1
+                    }, sort=${settings.top?.sort || 'cum'})`,
             }
 
             const list = pprof.list(node.function)

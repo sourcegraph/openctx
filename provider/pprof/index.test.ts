@@ -41,8 +41,8 @@ describe('pprof', () => {
                     uri: '/pkg/thing_test.go',
                     content: content,
                 },
-                {}
-            )
+                {},
+            ),
         ).toHaveLength(0)
         expect(getPprofMock).not.toBeCalled()
     })

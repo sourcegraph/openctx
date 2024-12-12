@@ -8,8 +8,8 @@
  * It's only a temporary fixture -- there's probably a better solution to this.
  */
 
-import { appendFileSync, closeSync, mkdirSync, openSync, statSync } from 'fs'
-import { join } from 'path'
+import { appendFileSync, closeSync, mkdirSync, openSync, statSync } from 'node:fs'
+import { join } from 'node:path'
 
 const logDir = `${process.env.HOME}/log/openctx`
 const logFile = join(logDir, 'provider-pprof.log')

@@ -1,5 +1,5 @@
-import { execSync } from 'child_process'
-import { type Dirent, type PathLike, accessSync, readdirSync } from 'fs'
+import { execSync } from 'node:child_process'
+import { type Dirent, type PathLike, accessSync, readdirSync } from 'node:fs'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import {
     type ListOutput,
@@ -285,7 +285,7 @@ ROUTINE ======================== main.buildDiamond in /Users/johndoe/go/src/loca
 
         expect(execSyncMock).toHaveBeenCalledOnce()
         expect(execSync).toHaveBeenCalledWith(
-            `pprof -list "example\\.\\(\\*Thing\\)\\.Do" ./mybinary report.mprof`
+            `pprof -list "example\\.\\(\\*Thing\\)\\.Do" ./mybinary report.mprof`,
         )
         expect(list).toStrictEqual<ListOutput>({ raw: stdout })
     })
