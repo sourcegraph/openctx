@@ -30,14 +30,14 @@ export function getPprof(): Pprof | null {
         if (!stdout.endsWith('not found')) {
             return new Pprof('go tool pprof')
         }
-    } catch (e) { }
+    } catch (e) {}
 
     try {
         const stdout = execSync('which pprof').toString('utf-8').trim()
         if (!stdout.endsWith('not found')) {
             return new Pprof('pprof')
         }
-    } catch (e) { }
+    } catch (e) {}
 
     return null
 }
@@ -291,7 +291,7 @@ export class Pprof {
         }
 
         return {
-            type: reportType ? reportType[1] ?? 'cpu' : '',
+            type: reportType ? (reportType[1] ?? 'cpu') : '',
             file: binaryName ? binaryName[1] : undefined,
             unit: unit ?? 's',
             nodes: nodes,
