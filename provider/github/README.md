@@ -31,7 +31,7 @@ By default, this provider talks to GitHub.com. Add the URL to your GitHub Enterp
 },
 ```
 
-Then use the `@`-mention type **Github PRs & Issues** and search for issues or pull requests to include in context using the followining possible query examples:
+Then use the `@`-mention type **GitHub PRs & Issues** and search for issues or pull requests to include in context using the followining possible query examples:
 
 - <https://github.com/facebook/react/issues/1234>
 - <https://github.com/facebook/react/pull/1234>
