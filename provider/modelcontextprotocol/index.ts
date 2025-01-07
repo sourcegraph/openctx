@@ -132,6 +132,7 @@ class MCPProxy implements Provider {
     }
 
     async items?(params: ItemsParams, _settings: ProviderSettings): Promise<ItemsResult> {
+        console.log('items', params)
         if (!params.mention || !this.mcpClient) {
             return []
         }
