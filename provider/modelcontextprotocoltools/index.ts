@@ -3,9 +3,10 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import {
     CreateMessageRequestSchema,
-    ListResourcesResultSchema,
+    ListToolsResultSchema,
     ProgressNotificationSchema,
-    ReadResourceResultSchema,
+    CallToolResultSchema,
+    
 } from '@modelcontextprotocol/sdk/types.js'
 import type {
     Item,
@@ -56,7 +57,7 @@ async function createClient(
     return client
 }
 
-class MCPProxy implements Provider {
+class MCPToolsProxy implements Provider {
     private mcpClient?: Promise<Client>
 
     async meta(_params: MetaParams, settings: ProviderSettings): Promise<MetaResult> {
@@ -93,22 +94,22 @@ class MCPProxy implements Provider {
             return []
         }
         const mcpClient = await this.mcpClient
-        const resourcesResp = await mcpClient.request(
+        const toolsResp = await mcpClient.request(
             {
-                method: 'resources/list',
+                method: 'tools/list',
                 params: {},
             },
-            ListResourcesResultSchema,
+            ListToolsResultSchema,
         )
 
-        const { resources } = resourcesResp
+        const { tools } = toolsResp
         const mentions: Mention[] = []
-        for (const resource of resources) {
+        for (const tool of tools) {
             const r = {
-                uri: resource.uri,
-                title: resource.name,
-                description: resource.description,
-            }
+                uri: tool.uri,
+                title: tool.name,
+                description: tool.description,
+            } as Mention
             mentions.push(r)
         }
 
@@ -132,26 +133,24 @@ class MCPProxy implements Provider {
     }
 
     async items?(params: ItemsParams, _settings: ProviderSettings): Promise<ItemsResult> {
-        console.log('items', params)
-        if (!params.mention || !this.mcpClient) {
+        if ( !this.mcpClient) {
             return []
         }
         const mcpClient = await this.mcpClient
         const response = await mcpClient.request(
             {
-                method: 'resources/read' as const,
-                params: { uri: params.mention.uri },
+                method: 'tools/call' as const,
+                params: { name: params.mention?.title,
+                    arguments: params.mention?.data },
             },
-            ReadResourceResultSchema,
+            CallToolResultSchema,
         )
-
-        const { contents } = response
-
+        const contents = response.content
         const items: Item[] = []
         for (const content of contents) {
             if (content.text) {
                 items.push({
-                    title: content.uri,
+                    title: (content.uri as string) ?? '',
                     ai: {
                         content: (content.text as string) ?? '',
                     },
@@ -172,5 +171,5 @@ class MCPProxy implements Provider {
     }
 }
 
-const proxy = new MCPProxy()
+const proxy = new MCPToolsProxy()
 export default proxy

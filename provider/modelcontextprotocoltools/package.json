@@ -1,13 +1,13 @@
 {
-  "name": "@openctx/provider-modelcontextprotocol",
+  "name": "@openctx/provider-modelcontextprotocoltools",
   "version": "0.0.13",
   "description": "Use information from MCP providers",
   "license": "Apache-2.0",
-  "homepage": "https://openctx.org/docs/providers/modelcontextprotocol",
+  "homepage": "https://openctx.org/docs/providers/modelcontextprotocoltools",
   "repository": {
     "type": "git",
     "url": "https://github.com/sourcegraph/openctx",
-    "directory": "provider/modelcontextprotocol"
+    "directory": "provider/modelcontextprotocoltools"
   },
   "type": "module",
   "main": "dist/bundle.js",
@@ -27,9 +27,6 @@
   "dependencies": {
     "@openctx/provider": "workspace:*",
     "@modelcontextprotocol/sdk": "1.0.1",
-    "express": "^4.21.1",
-    "zod": "^3.23.8",
-    "zod-to-json-schema": "^3.23.5"
-
+    "express": "^4.21.1"
   }
 }
