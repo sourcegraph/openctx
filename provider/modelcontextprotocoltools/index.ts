@@ -128,10 +128,11 @@ class MCPToolsProxy implements Provider {
 
         return [...prefixMatches, ...substringMatches]
     }
-        // Add a method to get the stored schema
-        getToolSchema(toolName: string): any {
-            return JSON.parse(this.toolSchemas.get(toolName) as string)
-        }
+
+    // Add a method to get the stored schema
+    getToolSchema(toolName: string): any {
+        return JSON.parse(this.toolSchemas.get(toolName) as string)
+    }
 
     async items?(params: ItemsParams, _settings: ProviderSettings): Promise<ItemsResult> {
         if (!this.mcpClient) {

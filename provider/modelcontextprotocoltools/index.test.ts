@@ -81,7 +81,7 @@ describe('Module exports', () => {
         const isValidInput = ajv.validate(inputSchema, validInput);
         console.log('Valid input:', isValidInput, validInput);
 
-        const items = await proxy.items!({ mention: { uri: 'test', title: 'echo', data: { message: 'hello' } } }, {})
+        const items = await proxy.items!({ mention: { uri: 'test', title: 'add', data: { a: 2, b: 3 } } }, {})
         console.log(items)
 
 
