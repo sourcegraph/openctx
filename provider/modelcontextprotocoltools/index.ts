@@ -8,7 +8,7 @@ import {
     
 } from '@modelcontextprotocol/sdk/types.js'
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-
+import Ajv from 'ajv';
 import { createServer } from "./everything.js";
 import type {
     Item,
@@ -59,6 +59,7 @@ async function createClient(
 
 class MCPToolsProxy implements Provider {
     private mcpClient?: Promise<Client>
+    private toolSchemas: Map<string, any> = new Map() // Add this line to store schemas
 
     async meta(settings: ProviderSettings): Promise<MetaResult> {
         const nodeCommand: string = (settings.nodeCommand as string) ?? 'node'
@@ -88,7 +89,6 @@ class MCPToolsProxy implements Provider {
             },
         }
     }
-
     async mentions?(params: MentionsParams, _settings: ProviderSettings): Promise<MentionsResult> {
         if (!this.mcpClient) {
             return []
@@ -99,6 +99,9 @@ class MCPToolsProxy implements Provider {
         const { tools } = toolsResp
         const mentions: Mention[] = []
         for (const tool of tools) {
+            // Store the schema in the Map using tool name as key
+            this.toolSchemas.set(tool.name, JSON.stringify(tool.inputSchema))
+            
             const r = {
                 uri: tool.uri,
                 title: tool.name,
@@ -126,17 +129,45 @@ class MCPToolsProxy implements Provider {
 
         return [...prefixMatches, ...substringMatches]
     }
+        // Add a method to get the stored schema
+        getToolSchema(toolName: string): any {
+            return this.toolSchemas.get(toolName)
+        }
 
     async items?(params: ItemsParams, _settings: ProviderSettings): Promise<ItemsResult> {
-        if ( !this.mcpClient) {
+        if (!this.mcpClient) {
             return []
         }
         const mcpClient = await this.mcpClient
+
+        // Get the tool name and validate its input
+        const toolName = params.mention?.title
+        const toolInput = params.mention?.data
+
+        if (toolName && toolInput) {
+            // Get the stored schema for this tool
+            const schema = JSON.parse(this.toolSchemas.get(toolName) as string)
+            console.log("we have the schema", schema)
+            if (schema) {
+                // Validate the input against the schema
+                const Ajv = require("ajv");
+                const ajv = new Ajv()
+                const isValid = ajv.validate(schema, toolInput)
+                
+                if (!isValid) {
+                    console.error('Invalid tool input:', ajv.errors)
+                    throw new Error(`Invalid input for tool ${toolName}: ${JSON.stringify(ajv.errors)}`)
+                }
+            }
+        }
+
         const response = await mcpClient.request(
             {
                 method: 'tools/call' as const,
-                params: { name: params.mention?.title,
-                    arguments: params.mention?.data },
+                params: { 
+                    name: toolName,
+                    arguments: toolInput 
+                },
             },
             CallToolResultSchema,
         )

@@ -80,6 +80,9 @@ describe('Module exports', () => {
         const isValidInput = ajv.validate(inputSchema, validInput);
         console.log('Valid input:', isValidInput, validInput);
 
+        const items = await proxy.items!({ mention: { uri: 'test', title: 'echo', data: { message: 'hello' } } }, {})
+        console.log(items)
+
 
         // While we can't test types directly, we can verify the module has exports
         // expect(mentions.length).toBeGreaterThan(0)
