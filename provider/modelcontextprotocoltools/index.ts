@@ -3,11 +3,13 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import {
     CreateMessageRequestSchema,
-    ListToolsResultSchema,
     ProgressNotificationSchema,
     CallToolResultSchema,
     
 } from '@modelcontextprotocol/sdk/types.js'
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+
+import { createServer } from "./everything.js";
 import type {
     Item,
     ItemsParams,
@@ -15,7 +17,6 @@ import type {
     Mention,
     MentionsParams,
     MentionsResult,
-    MetaParams,
     MetaResult,
     Provider,
     ProviderSettings,
@@ -44,7 +45,6 @@ async function createClient(
         args: [mcpProviderFile, ...mcpProviderArgs],
     })
     await client.connect(transport)
-    console.log('connected to MCP server')
 
     client.setNotificationHandler(ProgressNotificationSchema, notification => {
         console.log('got MCP notif', notification)
@@ -60,7 +60,7 @@ async function createClient(
 class MCPToolsProxy implements Provider {
     private mcpClient?: Promise<Client>
 
-    async meta(_params: MetaParams, settings: ProviderSettings): Promise<MetaResult> {
+    async meta(settings: ProviderSettings): Promise<MetaResult> {
         const nodeCommand: string = (settings.nodeCommand as string) ?? 'node'
         const mcpProviderUri = settings['mcp.provider.uri'] as string
         if (!mcpProviderUri) {
@@ -94,13 +94,7 @@ class MCPToolsProxy implements Provider {
             return []
         }
         const mcpClient = await this.mcpClient
-        const toolsResp = await mcpClient.request(
-            {
-                method: 'tools/list',
-                params: {},
-            },
-            ListToolsResultSchema,
-        )
+        const toolsResp = await mcpClient.listTools()
 
         const { tools } = toolsResp
         const mentions: Mention[] = []
@@ -109,6 +103,7 @@ class MCPToolsProxy implements Provider {
                 uri: tool.uri,
                 title: tool.name,
                 description: tool.description,
+                inputSchema: JSON.stringify(tool.inputSchema),
             } as Mention
             mentions.push(r)
         }
@@ -170,6 +165,26 @@ class MCPToolsProxy implements Provider {
         }
     }
 }
+
+async function main() {
+  const transport = new StdioServerTransport();
+  const { server, cleanup } = createServer();
+
+  await server.connect(transport);
+
+  // Cleanup on exit
+  process.on("SIGINT", async () => {
+    await cleanup();
+    await server.close();
+    process.exit(0);
+  });
+}
+
+main().catch((error) => {
+    console.error("Server error:", error);
+    process.exit(1);
+  });
+  
 
 const proxy = new MCPToolsProxy()
 export default proxy

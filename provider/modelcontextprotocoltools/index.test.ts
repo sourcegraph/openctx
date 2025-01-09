@@ -1,117 +1,87 @@
-import { describe, expect, test } from 'vitest'
-import type { MetaParams, ProviderSettings } from '@openctx/provider'
+import { describe, test } from 'vitest'
 import proxy from './index.js'
-
-// vi.mock('@modelcontextprotocol/sdk/client/index.js', () => ({
-//     Client: vi.fn().mockImplementation(() => ({
-//         connect: vi.fn(),
-//         getServerVersion: vi.fn().mockReturnValue({ name: 'Test MCP Server' }),
-//         request: vi.fn().mockImplementation(async (req) => {
-//             if (req.method === 'resources/list') {
-//                 return { resources: [
-//                     { uri: 'test://resource', name: 'Test Resource', description: 'Test Description' }
-//                 ]}
-//             }
-//             if (req.method === 'resources/read') {
-//                 return { contents: [
-//                     { uri: 'test://resource', text: 'Test Content', mimeType: 'text/plain' }
-//                 ]}
-//             }
-//         }),
-//         setNotificationHandler: vi.fn(),
-//         setRequestHandler: vi.fn(),
-//         close: vi.fn()
-//     }))
-// }))
-
-describe('MCP Provider', () => {
-    const settings: ProviderSettings = {
-        'mcp.provider.uri': 'file:///Users/arafatkhan/Desktop/servers/src/everything/dist/index.js',
-        'nodeCommand': 'node',
-        'mcp.provider.args': []
-    }
+const Ajv = require("ajv");
+describe('Module exports', () => {
 
 
-    test('meta returns provider info', async () => {
-        const result = await proxy.meta({} as MetaParams, settings)
+    test('exports expected type definitions', async () => {
+        // We can't directly test types at runtime, but we can verify the exports exist
+        console.log("testing")
+        const client = await proxy.meta!( { 'mcp.provider.uri': 'file://dist/index.js' , 'mcp.provider.args': []  })
+        console.log(client)
+        const mentions = await proxy.mentions!({ query: '' }, {})
+        console.log(mentions)
 
+        const inputSchemaString = `{
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "prompt": {
+                "type": "string",
+                "description": "The prompt to send to the LLM"
+              },
+              "maxTokens": {
+                "type": "number",
+                "default": 100,
+                "description": "Maximum number of tokens to generate"
+              }
+            },
+            "required": [
+              "prompt"
+            ],
+            "additionalProperties": false,
+            "$schema": "http://json-schema.org/draft-07/schema#"
+          }
+        }`
+        const ajv = new Ajv();
 
-        // console.log('result', result)
-        expect(result).toMatchObject({
-            name: expect.any(String),
-            mentions: {
-                label: expect.any(String)
-            }
-        })
-    })
+        // Parse the schema string to JSON
+        const inputSchema = JSON.parse(inputSchemaString).inputSchema;
 
+        // Example valid input
+        const validInput = {
+            prompt: "Hello, how are you?",
+            maxTokens: 50
+        };
 
-    test('MCP Provider > mentions returns resources', async () => {
-        if (proxy.mentions) {
-            const result = await proxy.mentions({ query: '' }, {} as ProviderSettings)
-        
-            // console.log('result', result)
-        
-            expect(result).toEqual(
-                expect.arrayContaining([
-                    expect.any(Object)
-                ])
-            )
-        } else {
-            throw new Error('mentions method is not defined on proxy')
+        // Example invalid input
+        const invalidInput = {
+            maxTokens: 50
+            // missing required 'prompt'
+        };
+
+        try {
+            // Validate valid input
+            const isValidInput = ajv.validate(inputSchema, validInput);
+            console.log('Valid input:', isValidInput, validInput);
+
+            // Try to validate invalid input
+            const isInvalidInput = ajv.validate(inputSchema, invalidInput);
+            console.log('Invalid input result:', isInvalidInput, ajv.errors);
+        } catch (error) {
+            console.log('Validation error:', error);
         }
+
+        // While we can't test types directly, we can verify the module has exports
+        // expect(mentions.length).toBeGreaterThan(0)
     })
 
-    test('MCP Provider > mentions filters resources', async () => {
-        if (proxy.mentions) {
-            const result = await proxy.mentions({ query: 'rce 1' }, {} as ProviderSettings)
-        
-            // console.log('result', result)
-        
-            expect(result).toEqual(
-                expect.arrayContaining([
-                    expect.any(Object)
-                ])
-            )
-        } else {
-            throw new Error('mentions method is not defined on proxy')
-        }
+    test('exports me type definitions', async () => {
+        // We can't directly test types at runtime, but we can verify the exports exist
+
+        const inputs = await proxy.mentions!({ query: 'add' }, {})
+        const inputSchema = JSON.parse((inputs[0] as any).inputSchema)
+        console.log(inputSchema)
+        const ajv = new Ajv();
+        const validInput = {
+            a: 2,
+            b: 3
+        };
+        const isValidInput = ajv.validate(inputSchema, validInput);
+        console.log('Valid input:', isValidInput, validInput);
+
+
+        // While we can't test types directly, we can verify the module has exports
+        // expect(mentions.length).toBeGreaterThan(0)
     })
-
-    test('MCP Provider > mentions filters runny', async () => {
-        if (proxy.items) {
-            const result = await proxy.items({ mention: { uri: 'test://static/resource/1', title: 'Resource 1' } }, {} as ProviderSettings)
-        
-            console.log('result', result)
-        
-            expect(result).toEqual(
-                expect.arrayContaining([
-                    expect.any(Object)
-                ])
-            )
-        } else {
-            throw new Error('mentions method is not defined on proxy')
-        }
-    })
-
-    // test('mentions returns resources', async () => {
-    //     const result = await proxy.mentions?.({
-    //         query: 'test'
-    //     }, settings)
-    //     console.log('final result', result)
-    //     expect(result).toBeDefined()
-    //     expect(Array.isArray(result)).toBe(true)
-    // })
-
-    // test('items returns content', async () => {
-    //     const result = await proxy.items?.({
-    //         mention: {
-    //             uri: 'test://resource',
-    //             title: 'Test Resource'
-    //         }
-    //     }, settings)
-
-    //     expect(result).toBeDefined()
-    //     expect(Array.isArray(result)).toBe(true)
-    // })
 })

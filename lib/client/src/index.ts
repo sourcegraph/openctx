@@ -1,7 +1,7 @@
 export type * from '@openctx/protocol'
 export type { Provider } from '@openctx/provider'
 export type * from '@openctx/schema'
-export { observeItems, type Annotation, type EachWithProviderUri } from './api.js'
+export { type Annotation, type EachWithProviderUri } from './api.js'
 export {
     createClient,
     type AuthInfo,
