@@ -7,9 +7,6 @@ import {
     CallToolResultSchema,
     
 } from '@modelcontextprotocol/sdk/types.js'
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import Ajv from 'ajv';
-import { createServer } from "./everything.js";
 import type {
     Item,
     ItemsParams,
@@ -21,6 +18,7 @@ import type {
     Provider,
     ProviderSettings,
 } from '@openctx/provider'
+const Ajv = require('ajv')
 
 async function createClient(
     nodeCommand: string,
@@ -59,7 +57,8 @@ async function createClient(
 
 class MCPToolsProxy implements Provider {
     private mcpClient?: Promise<Client>
-    private toolSchemas: Map<string, any> = new Map() // Add this line to store schemas
+    private toolSchemas: Map<string, any> = new Map()
+    private ajv = new Ajv()
 
     async meta(settings: ProviderSettings): Promise<MetaResult> {
         const nodeCommand: string = (settings.nodeCommand as string) ?? 'node'
@@ -131,7 +130,7 @@ class MCPToolsProxy implements Provider {
     }
         // Add a method to get the stored schema
         getToolSchema(toolName: string): any {
-            return this.toolSchemas.get(toolName)
+            return JSON.parse(this.toolSchemas.get(toolName) as string)
         }
 
     async items?(params: ItemsParams, _settings: ProviderSettings): Promise<ItemsResult> {
@@ -140,23 +139,16 @@ class MCPToolsProxy implements Provider {
         }
         const mcpClient = await this.mcpClient
 
-        // Get the tool name and validate its input
         const toolName = params.mention?.title
         const toolInput = params.mention?.data
 
         if (toolName && toolInput) {
-            // Get the stored schema for this tool
-            const schema = JSON.parse(this.toolSchemas.get(toolName) as string)
-            console.log("we have the schema", schema)
+            const schema = this.getToolSchema(toolName)
             if (schema) {
-                // Validate the input against the schema
-                const Ajv = require("ajv");
-                const ajv = new Ajv()
-                const isValid = ajv.validate(schema, toolInput)
-                
+                const isValid = this.ajv.validate(schema, toolInput)
                 if (!isValid) {
-                    console.error('Invalid tool input:', ajv.errors)
-                    throw new Error(`Invalid input for tool ${toolName}: ${JSON.stringify(ajv.errors)}`)
+                    console.error('Invalid tool input:', this.ajv.errors)
+                    throw new Error(`Invalid input for tool ${toolName}: ${JSON.stringify(this.ajv.errors)}`)
                 }
             }
         }
@@ -197,25 +189,6 @@ class MCPToolsProxy implements Provider {
     }
 }
 
-async function main() {
-  const transport = new StdioServerTransport();
-  const { server, cleanup } = createServer();
-
-  await server.connect(transport);
-
-  // Cleanup on exit
-  process.on("SIGINT", async () => {
-    await cleanup();
-    await server.close();
-    process.exit(0);
-  });
-}
-
-main().catch((error) => {
-    console.error("Server error:", error);
-    process.exit(1);
-  });
-  
 
 const proxy = new MCPToolsProxy()
 export default proxy
