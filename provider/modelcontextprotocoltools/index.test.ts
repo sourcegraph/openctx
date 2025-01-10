@@ -61,27 +61,26 @@ describe('Module exports', () => {
     //     } catch (error) {
     //         console.log('Validation error:', error);
     //     }
-
     //     // While we can't test types directly, we can verify the module has exports
     //     // expect(mentions.length).toBeGreaterThan(0)
     // })
 
     test('exports me type definitions', async () => {
         // We can't directly test types at runtime, but we can verify the exports exist
-        const client = await proxy.meta!( { 'mcp.provider.uri': 'file:///Users/arafatkhan/Desktop/servers/src/everything/dist/index.js' , 'mcp.provider.args': []  })
+        const client = await proxy.meta!( {}, { 'mcp.provider.uri': 'file:///Users/arafatkhan/Desktop/servers/src/everything/dist/index.js' , 'mcp.provider.args': []  })
         console.log(client)
-        const inputs = await proxy.mentions!({ query: 'add' }, {})
-        const inputSchema = JSON.parse((inputs[0] as any).inputSchema)
-        console.log(inputSchema)
+        const inputs = await proxy.mentions!({ query: '' }, {})
+        console.log("inputs response is :", inputs[0].data)
+        const inputSchema = inputs[0].data
+        console.log("inputSchema is :", inputSchema)
         const ajv = new Ajv();
         const validInput = {
-            a: 2,
-            b: 3
+            message: "hello"
         };
         const isValidInput = ajv.validate(inputSchema, validInput);
         console.log('Valid input:', isValidInput, validInput);
 
-        const items = await proxy.items!({ mention: { uri: 'test', title: 'add', data: { a: 2, b: 3 } } }, {})
+        const items = await proxy.items!({ mention: { uri: 'test', title: 'echo', data: { message: 'hello' } } }, {})
         console.log(items)
 
 

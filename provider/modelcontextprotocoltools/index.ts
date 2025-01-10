@@ -14,6 +14,7 @@ import type {
     Mention,
     MentionsParams,
     MentionsResult,
+    MetaParams,
     MetaResult,
     Provider,
     ProviderSettings,
@@ -60,7 +61,7 @@ class MCPToolsProxy implements Provider {
     private toolSchemas: Map<string, any> = new Map()
     private ajv = new Ajv()
 
-    async meta(settings: ProviderSettings): Promise<MetaResult> {
+    async meta(_params: MetaParams, settings: ProviderSettings): Promise<MetaResult> {
         const nodeCommand: string = (settings.nodeCommand as string) ?? 'node'
         const mcpProviderUri = settings['mcp.provider.uri'] as string
         if (!mcpProviderUri) {
@@ -88,6 +89,7 @@ class MCPToolsProxy implements Provider {
             },
         }
     }
+
     async mentions?(params: MentionsParams, _settings: ProviderSettings): Promise<MentionsResult> {
         if (!this.mcpClient) {
             return []
@@ -105,7 +107,7 @@ class MCPToolsProxy implements Provider {
                 uri: tool.uri,
                 title: tool.name,
                 description: tool.description,
-                inputSchema: JSON.stringify(tool.inputSchema),
+                data: (tool.inputSchema),
             } as Mention
             mentions.push(r)
         }
