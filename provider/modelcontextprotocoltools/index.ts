@@ -2,8 +2,6 @@ import { basename } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import {
-    CreateMessageRequestSchema,
-    ProgressNotificationSchema,
     CallToolResultSchema,
     
 } from '@modelcontextprotocol/sdk/types.js'
@@ -28,7 +26,7 @@ async function createClient(
 ): Promise<Client> {
     const client = new Client(
         {
-            name: 'mcp-inspector',
+            name: 'mcp-tool',
             version: '0.0.1',
         },
         {
@@ -44,15 +42,6 @@ async function createClient(
         args: [mcpProviderFile, ...mcpProviderArgs],
     })
     await client.connect(transport)
-
-    client.setNotificationHandler(ProgressNotificationSchema, notification => {
-        console.log('got MCP notif', notification)
-    })
-
-    client.setRequestHandler(CreateMessageRequestSchema, request => {
-        console.log('got MCP request', request)
-        return { _meta: {} }
-    })
     return client
 }
 
@@ -61,6 +50,7 @@ class MCPToolsProxy implements Provider {
     private toolSchemas: Map<string, any> = new Map()
     private ajv = new Ajv()
 
+    // Gets the Metadata for the MCP Tools Provider
     async meta(_params: MetaParams, settings: ProviderSettings): Promise<MetaResult> {
         const nodeCommand: string = (settings.nodeCommand as string) ?? 'node'
         const mcpProviderUri = settings['mcp.provider.uri'] as string
@@ -90,6 +80,7 @@ class MCPToolsProxy implements Provider {
         }
     }
 
+    // Gets Lists All the tools available in the MCP Provider along with their schemas
     async mentions?(params: MentionsParams, _settings: ProviderSettings): Promise<MentionsResult> {
         if (!this.mcpClient) {
             return []
@@ -119,6 +110,7 @@ class MCPToolsProxy implements Provider {
         const prefixMatches: Mention[] = []
         const substringMatches: Mention[] = []
 
+        // Filters the tools based on the query
         for (const mention of mentions) {
             const title = mention.title.toLowerCase()
             if (title.startsWith(query)) {
@@ -128,14 +120,16 @@ class MCPToolsProxy implements Provider {
             }
         }
 
+        // Combines the prefix and substring matches
         return [...prefixMatches, ...substringMatches]
     }
 
-    // Add a method to get the stored schema
+    // Retrieves the schema for a tool from the Map using the tool name as key
     getToolSchema(toolName: string): any {
         return JSON.parse(this.toolSchemas.get(toolName) as string)
     }
 
+    // Calls the tool with the provided input and returns the result
     async items?(params: ItemsParams, _settings: ProviderSettings): Promise<ItemsResult> {
         if (!this.mcpClient) {
             return []
@@ -145,6 +139,7 @@ class MCPToolsProxy implements Provider {
         const toolName = params.mention?.title
         const toolInput = params.mention?.data
 
+        // Validates the tool input against the stored schema
         if (toolName && toolInput) {
             const schema = this.getToolSchema(toolName)
             if (schema) {
@@ -156,6 +151,7 @@ class MCPToolsProxy implements Provider {
             }
         }
 
+        // Calls the tool with the provided input
         const response = await mcpClient.request(
             {
                 method: 'tools/call' as const,
@@ -166,12 +162,13 @@ class MCPToolsProxy implements Provider {
             },
             CallToolResultSchema,
         )
+        
         const contents = response.content
         const items: Item[] = []
         for (const content of contents) {
             if (content.text) {
                 items.push({
-                    title: (content.uri as string) ?? '',
+                    title: (toolName as string) ?? '',
                     ai: {
                         content: (content.text as string) ?? '',
                     },
