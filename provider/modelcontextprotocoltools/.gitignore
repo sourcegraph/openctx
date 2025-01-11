@@ -1,0 +1,5 @@
+index.test.ts
+package-lock.json
+dist/
+vitest.config.ts
+vitest.config.t
