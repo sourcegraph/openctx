@@ -2,8 +2,6 @@ import { describe, test } from 'vitest'
 import proxy from './index.js'
 const Ajv = require("ajv");
 describe('Module exports', () => {
-
-
     // test('exports expected type definitions', async () => {
     //     // We can't directly test types at runtime, but we can verify the exports exist
     //     console.log("testing")
@@ -34,7 +32,6 @@ describe('Module exports', () => {
     //       }
     //     }`
     //     const ajv = new Ajv();
-
     //     // Parse the schema string to JSON
     //     const inputSchema = JSON.parse(inputSchemaString).inputSchema;
 
@@ -80,7 +77,7 @@ describe('Module exports', () => {
         const isValidInput = ajv.validate(inputSchema, validInput);
         console.log('Valid input:', isValidInput, validInput);
 
-        const items = await proxy.items!({ mention: { uri: 'test', title: 'echo', data: { message: 'hello' } } }, {})
+        const items = await proxy.items!({ mention: { uri: '', title: 'brownianModel', data: { message: 'hello to me' } } }, {})
         console.log(items)
 
 
