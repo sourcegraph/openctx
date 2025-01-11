@@ -29,10 +29,7 @@
     "@modelcontextprotocol/sdk": "1.0.1",
     "@openctx/provider": "workspace:*",
     "ajv": "^8.17.1",
-    "express": "^4.21.1",
-    "json-schema-to-zod": "^0.1.5",
-    "zod": "^3.24.1",
-    "zod-to-json-schema": "^3.24.1"
+    "express": "^4.21.1"
   },
   "pnpm": {
     "peerDependencyRules": {
