@@ -25,17 +25,9 @@
     "watch": "tsc --build --watch & esbuild --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js --watch index.ts"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.7.3",
     "@modelcontextprotocol/sdk": "1.0.1",
     "@openctx/provider": "workspace:*",
     "ajv": "^8.17.1",
     "express": "^4.21.1"
-  },
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowAny": [
-        "@apidevtools/json-schema-ref-parser"
-      ]
-    }
   }
 }

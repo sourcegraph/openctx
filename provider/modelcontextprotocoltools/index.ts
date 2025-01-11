@@ -1,10 +1,7 @@
 import { basename } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-import {
-    CallToolResultSchema,
-    
-} from '@modelcontextprotocol/sdk/types.js'
+import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js'
 import type {
     Item,
     ItemsParams,
@@ -19,6 +16,7 @@ import type {
 } from '@openctx/provider'
 const Ajv = require('ajv')
 
+// Creates a new MCP client specific to the MCP Tools Provider
 async function createClient(
     nodeCommand: string,
     mcpProviderFile: string,
@@ -93,12 +91,12 @@ class MCPToolsProxy implements Provider {
         for (const tool of tools) {
             // Store the schema in the Map using tool name as key
             this.toolSchemas.set(tool.name, JSON.stringify(tool.inputSchema))
-            
+
             const r = {
                 uri: tool.uri,
                 title: tool.name,
                 description: tool.description,
-                data: (tool.inputSchema),
+                data: tool.inputSchema,
             } as Mention
             mentions.push(r)
         }
@@ -146,7 +144,9 @@ class MCPToolsProxy implements Provider {
                 const isValid = this.ajv.validate(schema, toolInput)
                 if (!isValid) {
                     console.error('Invalid tool input:', this.ajv.errors)
-                    throw new Error(`Invalid input for tool ${toolName}: ${JSON.stringify(this.ajv.errors)}`)
+                    throw new Error(
+                        `Invalid input for tool ${toolName}: ${JSON.stringify(this.ajv.errors)}`,
+                    )
                 }
             }
         }
@@ -155,14 +155,14 @@ class MCPToolsProxy implements Provider {
         const response = await mcpClient.request(
             {
                 method: 'tools/call' as const,
-                params: { 
+                params: {
                     name: toolName,
-                    arguments: toolInput 
+                    arguments: toolInput,
                 },
             },
             CallToolResultSchema,
         )
-        
+
         const contents = response.content
         const items: Item[] = []
         for (const content of contents) {
@@ -188,7 +188,6 @@ class MCPToolsProxy implements Provider {
         }
     }
 }
-
 
 const proxy = new MCPToolsProxy()
 export default proxy
