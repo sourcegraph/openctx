@@ -14,4 +14,4 @@ Currently, only MCP over stdio is supported (HTTP is not yet supported).
 
 To create tools that can be used with this provider, see the [MCP documentation](https://modelcontextprotocol.io) on implementing tool endpoints in your MCP server.
 
-> Note: This provider is under active development. Additional documentation and features will be added once design decisions are finalized.
+> Note: This provider documentation is under active development. Additional documentation and features examples will be added once design decisions are finalized.
