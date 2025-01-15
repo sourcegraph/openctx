@@ -7,7 +7,7 @@ import type { Settings } from './settings.js'
 export const githubProvider: Provider<Settings> = {
     meta(): MetaResult {
         return {
-            name: 'Github PRs & Issues',
+            name: 'GitHub PRs & Issues',
             mentions: { label: 'Search issues and pull requests...' },
         }
     },
