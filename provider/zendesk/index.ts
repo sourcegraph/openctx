@@ -1,5 +1,4 @@
 import type {
-    Item,
     ItemsParams,
     ItemsResult,
     MentionsParams,
@@ -8,88 +7,89 @@ import type {
     MetaResult,
     Provider,
 } from '@openctx/provider'
-import { type Ticket, fetchTicket, searchTickets } from './api.js'
+import { type Summary, Ticket, fetchSummary, searchTickets } from './api.js'
 
 export type Settings = {
     subdomain: string
     email: string
     apiToken: string
+    sgToken: string
+    sgDomain: string
+    prompt: string
+    model: string
 }
 
 const checkSettings = (settings: Settings) => {
-    const missingKeys = ['subdomain', 'email', 'apiToken'].filter(key => !(key in settings))
+    const missingKeys = ['subdomain', 'email', 'apiToken', 'sgToken', 'sgDomain', 'prompt', 'model'].filter(key => !(key in settings))
     if (missingKeys.length > 0) {
         throw new Error(`Missing settings: ${JSON.stringify(missingKeys)}`)
     }
 }
-
-const ticketToItem = (ticket: Ticket): Item => ({
-    url: ticket.url,
-    title: ticket.subject,
-    ui: {
-        hover: {
-            markdown: ticket.description,
-            text: ticket.description || ticket.subject,
-        },
-    },
-    ai: {
-        content:
-            `The following represents contents of the Zendesk ticket ${ticket.id}: ` +
-            JSON.stringify({
-                ticket: {
-                    id: ticket.id,
-                    subject: ticket.subject,
-                    url: ticket.url,
-                    description: ticket.description,
-                    tags: ticket.tags,
-                    status: ticket.status,
-                    priority: ticket.priority,
-                    created_at: ticket.created_at,
-                    updated_at: ticket.updated_at,
-                    comments: ticket.comments.map(comment => ({
-                        id: comment.id,
-                        type: comment.type,
-                        author_id: comment.author_id,
-                        body: comment.body,
-                        html_body: comment.html_body,
-                        plain_body: comment.plain_body,
-                        public: comment.public,
-                        created_at: comment.created_at,
-                    }))
-                },
-            }),
-    },
-})
 
 const zendeskProvider: Provider = {
     meta(params: MetaParams, settings: Settings): MetaResult {
         return { name: 'Zendesk', mentions: { label: 'Search by subject, id, or paste url...' } }
     },
     async mentions(params: MentionsParams, settings: Settings): Promise<MentionsResult> {
+        if (!params.query) {
+            return []
+        }
+
         checkSettings(settings)
 
-        return searchTickets(params.query, settings).then(items =>
-            items.map(item => ({
-                title: `#${item.id}`,
-                uri: item.url,
-                description: item.subject,
-                data: { id: item.id },
-            })),
-        )
+        const ticketResults = await searchTickets(params.query, settings)
+
+        return [
+            {
+                title: ticketResults.subject,
+                uri: '',
+                description: ticketResults.subject,
+                data: { tickets: ticketResults.tickets },
+            },
+        ]
     },
 
     async items(params: ItemsParams, settings: Settings): Promise<ItemsResult> {
         checkSettings(settings)
 
-        const id = (params.mention?.data as { id: number }).id
+        const tickets = (params.mention?.data as { tickets: Ticket[] }).tickets
+        const allSummaries: Summary[] = []
 
-        const ticket = await fetchTicket(id, settings)
+        const fetchSummaries = await Promise.all(
+            tickets.map(ticket => fetchSummary(ticket, settings))
+        )
 
-        if (!ticket) {
+        fetchSummaries.forEach(summary => {
+            if (summary) {
+                allSummaries.push({ id: summary.id, summary: summary.summary, subject: summary.subject })
+            }
+        })
+
+        if (!allSummaries) {
             return []
         }
 
-        return [ticketToItem(ticket)]
+        console.log('allSummaries', allSummaries)
+
+        return [{
+            url: '',
+            title: params.mention?.title || '',
+            ui: {
+                hover: {
+                    markdown: '',
+                    text: '',
+                },
+            },
+            ai: {
+                content:
+                    `The following represents contents of the Zendesk tickets:` +
+                    JSON.stringify({
+                        ticket: {
+                            summaries: allSummaries
+                        },
+                    }),
+            },
+        }]
     },
 }
 
