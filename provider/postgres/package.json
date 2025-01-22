@@ -1,0 +1,29 @@
+{
+  "name": "@openctx/provider-postgres",
+  "version": "0.0.1",
+  "description": "Context from your Postgres for code AI and editors (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/postgres"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --platform=node --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "dedent": "^1.5.3",
+    "@openctx/provider": "workspace:*",
+    "postgres": "^3.4.4"
+  }
+}
