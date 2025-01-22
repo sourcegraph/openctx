@@ -726,6 +726,21 @@ importers:
         specifier: ^1.0.3
         version: 1.0.3
 
+  provider/sourcegraph-refs:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+      '@types/lodash':
+        specifier: ^4.17.13
+        version: 4.17.13
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+
   provider/sourcegraph-search:
     dependencies:
       '@openctx/provider':
@@ -6838,6 +6853,10 @@ packages:
   /@types/lodash@4.14.195:
     resolution: {integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==}
     dev: true
+
+  /@types/lodash@4.17.13:
+    resolution: {integrity: sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==}
+    dev: false
 
   /@types/mdast@4.0.3:
     resolution: {integrity: sha512-LsjtqsyF+d2/yFOYaN22dHZI1Cpwkrj+g06G8+qtUKlhovPW89YhqSnfKtMbkgmEtYpH2gydRNULd6y8mciAFg==}

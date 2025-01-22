@@ -1,0 +1,32 @@
+{
+  "name": "@openctx/provider-sourcegraph-refs",
+  "version": "0.0.13",
+  "description": "Use Sourcegraph references as context (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "homepage": "https://openctx.org/docs/providers/sourcegraph-refs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sourcegraph/openctx",
+    "directory": "provider/sourcegraph-refs"
+  },
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest",
+    "watch": "tsc --build --watch & esbuild --log-level=error --bundle --format=esm --outfile=dist/bundle.js --watch index.ts"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*",
+    "@types/lodash": "^4.17.13",
+    "lodash": "^4.17.21",
+    "zod": "^3.23.8"
+  }
+}
