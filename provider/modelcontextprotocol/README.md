@@ -12,7 +12,7 @@ Currently, only MCP over stdio is supported (HTTP is not yet supported).
     ```json
     "openctx.providers": {
         // ...other providers...
-        "https://openctx.org/npm/@openctx/provider-modelcontextprotocol": {
+        "https://openctx.org/npm/@openctx/provider-modelcontextprotocol?everything": {
             "nodeCommand": "node",
             "mcp.provider.uri": "file:///path/to/servers/root/build/everything/index.js",
         }
@@ -20,12 +20,14 @@ Currently, only MCP over stdio is supported (HTTP is not yet supported).
     ```
 1. Reload the VS Code window. You should see `servers/everything` in the `@`-mention dropdown.
 
+You may use query params in the key url to differentiate between MCP providers.
+
 To hook up to the Postgres MCP provider, use:
 
 ```json
 "openctx.providers": {
     // ...other providers...
-    "https://openctx.org/npm/@openctx/provider-modelcontextprotocol": {
+    "https://openctx.org/npm/@openctx/provider-modelcontextprotocol?postgres": {
         "nodeCommand": "node",
         "mcp.provider.uri": "file:///path/to/servers/root/build/postgres/index.js",
         "mcp.provider.args": [
