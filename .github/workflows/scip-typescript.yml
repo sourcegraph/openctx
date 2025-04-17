@@ -6,12 +6,16 @@ on:
       - '**.tsx'
       - '**.js'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   scip-typescript:
     if: github.repository == 'sourcegraph/openctx'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
+      - uses: actions/checkout@v3
       - uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # SECURITY: pin third-party action hashes
         id: pnpm-install
         with:
@@ -21,7 +25,7 @@ jobs:
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@e12d46a63a90f2fae62d114769bbf2a179198b5c
+      - uses: actions/cache@v3
         name: Setup pnpm cache
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
