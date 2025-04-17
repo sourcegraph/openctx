@@ -7,9 +7,7 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-      "nursery": {
-        "noDuplicateJsonKeys": "error"
-      },
+      "nursery": {},
       "correctness": {
         "noUnusedImports": "error",
         "noUnusedPrivateClassMembers": "error"

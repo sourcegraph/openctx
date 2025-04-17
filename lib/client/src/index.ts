@@ -9,9 +9,9 @@ export {
     type ClientEnv,
     type ProviderMethodOptions,
 } from './client/client.js'
-export {
-    type ConfigurationUserInput as ClientConfiguration,
-    type ImportedProviderConfiguration,
+export type {
+    ConfigurationUserInput as ClientConfiguration,
+    ImportedProviderConfiguration,
 } from './configuration.js'
 export type { Logger } from './logger.js'
 export { fetchProviderSource } from './providerClient/transport/module.js'
