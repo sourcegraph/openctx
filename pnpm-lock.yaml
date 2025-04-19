@@ -673,6 +673,12 @@ importers:
         specifier: workspace:*
         version: link:../../lib/provider
 
+  provider/pprof:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+
   provider/prometheus:
     dependencies:
       '@openctx/provider':
