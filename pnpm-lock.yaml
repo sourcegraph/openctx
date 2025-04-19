@@ -673,6 +673,18 @@ importers:
         specifier: workspace:*
         version: link:../../lib/provider
 
+  provider/postgres:
+    dependencies:
+      '@openctx/provider':
+        specifier: workspace:*
+        version: link:../../lib/provider
+      dedent:
+        specifier: ^1.5.3
+        version: 1.5.3
+      postgres:
+        specifier: ^3.4.4
+        version: 3.4.4
+
   provider/prometheus:
     dependencies:
       '@openctx/provider':
@@ -13159,6 +13171,11 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.2.0
     dev: true
+
+  /postgres@3.4.4:
+    resolution: {integrity: sha512-IbyN+9KslkqcXa8AO9fxpk97PA4pzewvpi2B3Dwy9u4zpV32QicaEdgmF3eSQUzdRk7ttDHQejNgAEr4XoeH4A==}
+    engines: {node: '>=12'}
+    dev: false
 
   /prebuild-install@7.1.1:
     resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
