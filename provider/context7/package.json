@@ -1,0 +1,26 @@
+{
+  "name": "@openctx/provider-context7",
+  "private": false,
+  "version": "0.0.15",
+  "description": "Context7 (OpenCtx provider)",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "dist/bundle.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/bundle.js",
+    "dist/index.d.ts"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "bundle": "tsc --build && esbuild --log-level=error --bundle --format=cjs --outfile=dist/bundle.js index.ts",
+    "prepublishOnly": "tsc --build --clean && npm run --silent bundle",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@openctx/provider": "workspace:*",
+    "fuzzysort": "^3.0.1",
+    "gpt-tokenizer": "^2.9.0",
+    "quick-lru": "^7.0.1"
+  }
+}
